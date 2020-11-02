@@ -29,7 +29,9 @@ jobs:
         run: npm run lint
 
       - name: Execute Unit Tests
-        run: npm run test
+        run: |
+          echo "NODE_ENV=local" > .env
+          npm run test
 
       - name: Publish to NPM
         run: npx semantic-release
