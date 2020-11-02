@@ -1,0 +1,118 @@
+{
+  "name": "@bechara/nestjs-core",
+  "version": "0.1.0",
+  "description": "Core Components for NestJS Projects",
+  "author": {
+    "name": "Etienne Bechara",
+    "email": "bechara.etienne@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etienne-bechara/nestjs-core"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "npm run index && rimraf ./dist && tsc -p tsconfig.build.json && rimraf ./source/index.ts",
+    "index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
+    "lint": "eslint **/*.ts",
+    "lint:fix": "eslint **/*.ts --fix",
+    "test": "jest --verbose --forceExit --passWithNoTests",
+    "test:watch": "jest --verbose --watch",
+    "test:coverage": "jest --coverage --watchAll=false --passWithNoTests",
+    "update:patch": "ncu -u --semverLevel minor && npm i && npm audit fix",
+    "update:minor": "ncu -u --semverLevel major && npm i && npm audit fix",
+    "update:major": "ncu -u && npm i && npm audit fix --force"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged --allow-empty"
+    }
+  },
+  "jest": {
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "ts$": "ts-jest"
+    }
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^7.5.1",
+    "@nestjs/core": "^7.5.1",
+    "@nestjs/platform-express": "^7.5.1"
+  },
+  "dependencies": {
+    "@sentry/node": "5.27.2",
+    "axios": "0.21.0",
+    "chalk": "4.1.0",
+    "class-transformer": "0.3.1",
+    "class-validator": "0.12.2",
+    "clean-stack": "3.0.0",
+    "cycle": "1.0.3",
+    "dotenv": "8.2.0",
+    "flat": "5.0.2",
+    "globby": "11.0.1",
+    "jsonwebtoken": "8.5.1",
+    "moment": "2.29.1",
+    "qs": "6.9.4",
+    "reflect-metadata": "0.1.13",
+    "request-ip": "2.1.3",
+    "rxjs": "6.6.3",
+    "uuid": "8.3.1"
+  },
+  "devDependencies": {
+    "@bechara/eslint-config-bechara-ts": "1.0.0",
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "@nestjs/cli": "7.5.1",
+    "@nestjs/common": "7.5.1",
+    "@nestjs/core": "7.5.1",
+    "@nestjs/platform-express": "7.5.1",
+    "@nestjs/testing": "7.5.1",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/commit-analyzer": "8.0.1",
+    "@semantic-release/git": "9.0.0",
+    "@semantic-release/github": "7.1.1",
+    "@semantic-release/npm": "7.0.6",
+    "@semantic-release/release-notes-generator": "9.0.1",
+    "@types/express": "4.17.8",
+    "@types/flat": "5.0.1",
+    "@types/jest": "26.0.15",
+    "@types/jsonwebtoken": "8.5.0",
+    "@types/node": "14.14.6",
+    "@types/uuid": "8.3.0",
+    "barrelsby": "2.2.0",
+    "eslint": "7.12.1",
+    "husky": "4.3.0",
+    "jest": "26.6.2",
+    "lint-staged": "10.5.1",
+    "npm-check-updates": "9.2.3",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.4.3",
+    "ts-node-dev": "1.0.0",
+    "typescript": "4.0.5"
+  }
+}
