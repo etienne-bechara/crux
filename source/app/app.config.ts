@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { Transform } from 'class-transformer';
-import { IsIn, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsIn, IsNumber, IsObject, IsString, Max, Min, ValidateNested } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
 import { AppEnvironment } from './app.enum';
+import { AppCorsOptions } from './app.interface';
 
 @Injectable()
 export class AppConfig {
@@ -18,16 +19,29 @@ export class AppConfig {
   @Min(1024) @Max(65535)
   public readonly APP_PORT: number;
 
-  public readonly APP_GLOBAL_PREFIX = '';
+  @InjectSecret({ default: '' })
+  @IsString()
+  public readonly APP_GLOBAL_PREFIX: string;
 
-  public readonly APP_JSON_LIMIT = '10mb';
+  @InjectSecret({ default: '10mb' })
+  @IsString()
+  public readonly APP_JSON_LIMIT: string;
 
-  public readonly APP_TIMEOUT = 90 * 1000;
+  @InjectSecret({ default: 90 * 1000 })
+  @IsNumber()
+  public readonly APP_TIMEOUT: number;
 
-  public readonly APP_CORS_OPTIONS: CorsOptions = {
-    origin: '*',
-    methods: 'DELETE, GET, OPTIONS, POST, PUT',
-    allowedHeaders: 'Accept, Authorization, Content-Type',
-  };
+  @InjectSecret({
+    json: true,
+    default: {
+      origin: '*',
+      methods: 'DELETE, GET, OPTIONS, POST, PUT',
+      allowedHeaders: 'Accept, Authorization, Content-Type',
+    },
+  })
+  @ValidateNested()
+  @Type(() => AppCorsOptions)
+  @IsObject()
+  public readonly APP_CORS_OPTIONS: CorsOptions;
 
 }

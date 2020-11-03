@@ -58,6 +58,7 @@ export class AppModule {
    */
   public static async bootServer(options: AppBootOptions = { }): Promise<void> {
     const entryModule = this.buildEntryModule(options);
+
     const nestApp = await NestFactory.create(entryModule, {
       logger: [ 'error', 'warn' ],
     });
@@ -88,46 +89,67 @@ export class AppModule {
    * @param options
    */
   private static buildEntryModule(options: AppBootOptions = { }): DynamicModule {
+    if (!options.configs) options.configs = [ ];
+    if (!options.modules) options.modules = [ ];
+    const preloadedImports = [ ];
+    const preloadedExports = [ ];
+    const preloadedConfigs = [ ];
+
     const defaultConfigs = [
       AppConfig,
       HttpsConfig,
       LoggerConfig,
       ConsoleConfig,
       SentryConfig,
-      ...UtilModule.globRequire([
-        's*rc*/**/*.config.{js,ts}',
-        '!**/*test*',
-      ]),
     ];
 
     const defaultModules = [
-      LoggerModule,
       ConsoleModule,
+      LoggerModule,
       SentryModule,
       UtilModule,
-      ...UtilModule.globRequire([
+    ];
+
+    if (options.loadDefaultConfigs !== false) {
+      preloadedConfigs.push(...defaultConfigs);
+    }
+
+    if (options.loadSourceConfigs !== false) {
+      const sourceConfigs = UtilModule.globRequire([
+        's*rc*/**/*.config.{js,ts}',
+        '!**/*test*',
+      ]);
+      preloadedConfigs.push(...sourceConfigs);
+    }
+
+    if (options.loadDefaultModules !== false) {
+      preloadedImports.push(
+        ConfigModule.registerAsync({
+          envPath: options.envPath,
+          configs: [ ...preloadedConfigs, ...options.configs ],
+        }),
+        ...defaultModules,
+      );
+
+      preloadedExports.push(
+        ConfigModule,
+        ...defaultModules,
+      );
+    }
+
+    if (options.loadSourceModules !== false) {
+      const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',
-      ]),
-    ];
-
-    const defaultImports = [
-      ConfigModule.registerAsync({
-        envPath: options.envPath,
-        configs: options.configs || defaultConfigs,
-      }),
-      ...defaultModules,
-    ];
-
-    const defaultExports = [
-      ConfigModule,
-      ...defaultModules,
-    ];
+      ]);
+      preloadedImports.push(...sourceModules);
+      preloadedExports.push(...sourceModules);
+    }
 
     return {
       module: AppModule,
-      imports: options.imports || defaultImports,
-      exports: options.exports || defaultExports,
+      imports: [ ...preloadedImports, ...options.modules ],
+      exports: [ ...preloadedExports, ...options.modules ],
     };
   }
 

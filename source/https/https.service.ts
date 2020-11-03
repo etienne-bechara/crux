@@ -6,6 +6,7 @@ import qs from 'qs';
 
 import { HttpsConfig } from './https.config';
 import { HttpsReturnType } from './https.enum';
+import { HttpsInjectionToken } from './https.enum/https.injection.token';
 import { HttpsCookie, HttpsModuleOptions, HttpsRequestParams, HttpsServiceBases,
   HttpsServiceDefaults } from './https.interface';
 
@@ -18,7 +19,7 @@ export class HttpsService {
   private instance: AxiosInstance;
 
   public constructor(
-    @Inject(HttpsConfig.HTTPS_MODULE_OPTIONS_TOKEN)
+    @Inject(HttpsInjectionToken.MODULE_OPTIONS)
     private readonly httpsModuleOptions: HttpsModuleOptions,
     private readonly httpsConfig: HttpsConfig,
   ) {

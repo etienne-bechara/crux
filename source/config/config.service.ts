@@ -3,7 +3,6 @@ import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
 
-import { AppEnvironment } from '../app/app.enum';
 import { ConfigSecretRecord } from './config.interface';
 import { ConfigModuleOptions } from './config.interface/config.module.options';
 
@@ -25,6 +24,16 @@ export class ConfigService {
     const secret = this.SECRET_CACHE.find((record) => {
       return record.key.toUpperCase() === key.toUpperCase();
     });
+
+    if (secret?.value && secret?.json && typeof secret?.value === 'string') {
+      try {
+        secret.value = JSON.parse(secret.value);
+      }
+      catch {
+        secret.value = 'invalid json string';
+      }
+    }
+
     return secret?.value || secret?.default;
   }
 
@@ -46,7 +55,6 @@ export class ConfigService {
     if (secretIndex >= 0) {
       const currentSecret = this.SECRET_CACHE[secretIndex];
       currentSecret.value = secret.value;
-      currentSecret.default = secret.default || currentSecret.default;
     }
     else {
       this.SECRET_CACHE.push(secret);
@@ -103,27 +111,6 @@ export class ConfigService {
 
       this.setSecret({ key: secretKey, value: secretValue });
     });
-  }
-
-  /**
-   * Determines the parent path of secrets, which by default
-   * is the environment level.
-   */
-  private static buildParentPath(): string {
-    const envStage = process.env.NODE_ENV as AppEnvironment;
-
-    switch (envStage) {
-      case AppEnvironment.PRODUCTION:
-        return 'prod';
-
-      case AppEnvironment.STAGING:
-        return 'staging';
-
-      case AppEnvironment.DEVELOPMENT:
-      case AppEnvironment.LOCAL:
-      default:
-        return 'dev';
-    }
   }
 
   /**

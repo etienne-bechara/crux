@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { v4 } from 'uuid';
 
 import { HttpsConfig } from './https.config';
+import { HttpsInjectionToken } from './https.enum/https.injection.token';
 import { HttpsAsyncModuleOptions, HttpsModuleOptions } from './https.interface';
 import { HttpsService } from './https.service';
 
@@ -10,13 +11,13 @@ import { HttpsService } from './https.service';
     HttpsConfig,
     HttpsService,
     {
-      provide: HttpsConfig.HTTPS_MODULE_OPTIONS_TOKEN,
+      provide: HttpsInjectionToken.MODULE_OPTIONS,
       useValue: { },
     },
   ],
   exports: [
     HttpsService,
-    HttpsConfig.HTTPS_MODULE_OPTIONS_TOKEN,
+    HttpsInjectionToken.MODULE_OPTIONS,
   ],
 })
 export class HttpsModule {
@@ -30,11 +31,11 @@ export class HttpsModule {
       module: HttpsModule,
       providers: [
         {
-          provide: HttpsConfig.HTTPS_MODULE_ID_TOKEN,
+          provide: HttpsInjectionToken.MODULE_ID,
           useValue: v4(),
         },
         {
-          provide: HttpsConfig.HTTPS_MODULE_OPTIONS_TOKEN,
+          provide: HttpsInjectionToken.MODULE_OPTIONS,
           useValue: options,
         },
       ],
@@ -52,11 +53,11 @@ export class HttpsModule {
       imports: options.imports,
       providers: [
         {
-          provide: HttpsConfig.HTTPS_MODULE_ID_TOKEN,
+          provide: HttpsInjectionToken.MODULE_ID,
           useValue: v4(),
         },
         {
-          provide: HttpsConfig.HTTPS_MODULE_OPTIONS_TOKEN,
+          provide: HttpsInjectionToken.MODULE_OPTIONS,
           inject: options.inject,
           useFactory: options.useFactory,
         },

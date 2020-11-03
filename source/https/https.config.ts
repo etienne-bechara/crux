@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { IsNumber } from 'class-validator';
+
+import { InjectSecret } from '../config/config.decorator';
 
 @Injectable()
 export class HttpsConfig {
 
-  public readonly HTTPS_DEFAULT_TIMEOUT = 60 * 1000;
-
-  public static readonly HTTPS_MODULE_ID_TOKEN = 'HTTPS_MODULE_ID_TOKEN';
-
-  public static readonly HTTPS_MODULE_OPTIONS_TOKEN = 'HTTPS_MODULE_OPTIONS_TOKEN';
+  @InjectSecret({ default: 60 * 1000 })
+  @IsNumber()
+  public readonly HTTPS_DEFAULT_TIMEOUT: number;
 
 }

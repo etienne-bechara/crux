@@ -1,5 +1,5 @@
-export interface ConfigSecretRecord {
-  key?: string;
+import { ConfigInjectionOptions } from './config.injection.options';
+
+export interface ConfigSecretRecord extends ConfigInjectionOptions{
   value?: any;
-  default?: any;
 }

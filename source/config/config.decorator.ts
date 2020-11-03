@@ -18,6 +18,7 @@ export function InjectSecret(options: ConfigInjectionOptions = { }): any {
       key: secretKey,
       value: null,
       default: options.default,
+      json: options.json,
     });
 
     Object.defineProperty(target, propertyKey, {
