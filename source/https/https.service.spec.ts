@@ -3,7 +3,6 @@ import { HttpStatus } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
-import { HttpsConfig } from './https.config';
 import { HttpsModule } from './https.module';
 import { HttpsService } from './https.service';
 
@@ -11,6 +10,7 @@ const mockService = 'https://jsonplaceholder.typicode.com';
 
 TestModule.createSandbox({
   name: 'HttpsService',
+
   imports: [
     HttpsModule.register({
       bases: {
@@ -18,7 +18,6 @@ TestModule.createSandbox({
       },
     }),
   ],
-  providers: [ HttpsConfig, HttpsService ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
     let httpsService: HttpsService;

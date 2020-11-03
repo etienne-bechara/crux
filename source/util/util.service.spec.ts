@@ -1,6 +1,7 @@
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
+import { UtilModule } from './util.module';
 import { UtilService } from './util.service';
 
 const mockFailure = (c): void => {
@@ -10,7 +11,7 @@ const mockFailure = (c): void => {
 
 TestModule.createSandbox({
   name: 'UtilService',
-  providers: [ UtilService ],
+  imports: [ UtilModule ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
     let utilService: UtilService;

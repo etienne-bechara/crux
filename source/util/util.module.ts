@@ -2,14 +2,24 @@ import { Module } from '@nestjs/common';
 import globby from 'globby';
 
 import { HttpsModule } from '../https/https.module';
+import { LoggerModule } from '../logger/logger.module';
 import { UtilController } from './util.controller';
 import { UtilService } from './util.service';
 
 @Module({
-  imports: [ HttpsModule.register() ],
-  controllers: [ UtilController ],
-  providers: [ UtilService ],
-  exports: [ UtilService ],
+  imports: [
+    HttpsModule.register(),
+    LoggerModule,
+  ],
+  controllers: [
+    UtilController,
+  ],
+  providers: [
+    UtilService,
+  ],
+  exports: [
+    UtilService,
+  ],
 })
 export class UtilModule {
 
