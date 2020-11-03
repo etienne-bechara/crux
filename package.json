@@ -23,9 +23,9 @@
     "test": "jest --verbose --forceExit --passWithNoTests",
     "test:watch": "jest --verbose --watch",
     "test:coverage": "jest --coverage --watchAll=false --passWithNoTests",
-    "update:patch": "ncu -u --semverLevel minor && npm i && npm audit fix",
-    "update:minor": "ncu -u --semverLevel major && npm i && npm audit fix",
-    "update:major": "ncu -u && npm i && npm audit fix --force"
+    "update:patch": "ncu -u --dep dev,prod -t minor && npm i && npm audit fix",
+    "update:minor": "ncu -u --dep dev,prod -t major && npm i && npm audit fix",
+    "update:major": "ncu -u --dep dev,prod -t latest && npm i && npm audit fix --force"
   },
   "commitlint": {
     "extends": [
@@ -60,9 +60,9 @@
     ]
   },
   "peerDependencies": {
-    "@nestjs/common": "^7.5.1",
-    "@nestjs/core": "^7.5.1",
-    "@nestjs/platform-express": "^7.5.1"
+    "@nestjs/common": "^7.0.0",
+    "@nestjs/core": "^7.0.0",
+    "@nestjs/platform-express": "^7.0.0"
   },
   "dependencies": {
     "@sentry/node": "5.27.2",
@@ -75,7 +75,6 @@
     "dotenv": "8.2.0",
     "flat": "5.0.2",
     "globby": "11.0.1",
-    "jsonwebtoken": "8.5.1",
     "moment": "2.29.1",
     "qs": "6.9.4",
     "reflect-metadata": "0.1.13",
@@ -101,7 +100,6 @@
     "@types/express": "4.17.8",
     "@types/flat": "5.0.1",
     "@types/jest": "26.0.15",
-    "@types/jsonwebtoken": "8.5.0",
     "@types/node": "14.14.6",
     "@types/uuid": "8.3.0",
     "barrelsby": "2.2.0",
