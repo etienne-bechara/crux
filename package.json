@@ -1,6 +1,6 @@
 {
   "name": "@bechara/nestjs-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Core Components for NestJS Projects",
   "author": {
     "name": "Etienne Bechara",
