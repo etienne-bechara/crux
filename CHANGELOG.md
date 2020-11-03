@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.2...v1.0.3) (2020-11-03)
+
+
+### Bug Fixes
+
+* add all core modules to the test module ([21128c0](https://github.com/etienne-bechara/nestjs-core/commit/21128c07aba61fb8082fff3de8aa50c898c12b1c))
+
 ## [1.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.1...v1.0.2) (2020-11-03)
 
 
