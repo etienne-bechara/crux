@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.3...v1.0.4) (2020-11-03)
+
+
+### Bug Fixes
+
+* correctly resolve module interdepencies to prevent using globals ([4a145d1](https://github.com/etienne-bechara/nestjs-core/commit/4a145d1cbee7a064b9673da5f5f3ab74d07ef9f9))
+
 ## [1.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.2...v1.0.3) (2020-11-03)
 
 
