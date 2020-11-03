@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.1...v1.0.2) (2020-11-03)
+
+
+### Bug Fixes
+
+* add test as valid environment (used by jest) ([d6ba43b](https://github.com/etienne-bechara/nestjs-core/commit/d6ba43b95cb43b9973181671a7f7bdcebeeb4888))
+
 ## [1.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.0...v1.0.1) (2020-11-02)
 
 
