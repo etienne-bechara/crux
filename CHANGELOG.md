@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.4...v1.1.0) (2020-11-03)
+
+
+### Features
+
+* allow all base configs to be injected through environment ([8f716a1](https://github.com/etienne-bechara/nestjs-core/commit/8f716a1a79d8041ef9403a94b9a084072984d43f))
+
 ## [1.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.3...v1.0.4) (2020-11-03)
 
 
