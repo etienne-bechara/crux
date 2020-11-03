@@ -29,9 +29,7 @@ jobs:
         run: npm run lint
 
       - name: Execute Unit Tests
-        run: |
-          echo "NODE_ENV=local" > .env
-          npm run test
+        run: npm run test
 
       - name: Build Distributable Package
         run: npm run build

@@ -3,4 +3,5 @@ export enum AppEnvironment {
   STAGING = 'staging',
   DEVELOPMENT = 'development',
   LOCAL = 'local',
+  TEST = 'test',
 }

@@ -1,1 +1,1 @@
-# Bechara - NestJS Core Components
+# NestJS Core Components
