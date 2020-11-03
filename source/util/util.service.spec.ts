@@ -1,6 +1,5 @@
 import { TestingModuleBuilder } from '@nestjs/testing';
 
-import { HttpsModule } from '../https/https.module';
 import { TestModule } from '../test';
 import { UtilService } from './util.service';
 
@@ -11,7 +10,6 @@ const mockFailure = (c): void => {
 
 TestModule.createSandbox({
   name: 'UtilService',
-  imports: [ HttpsModule.register() ],
   providers: [ UtilService ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
