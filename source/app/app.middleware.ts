@@ -1,4 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+import jwt from 'jsonwebtoken';
 
 import { UtilService } from '../util/util.service';
 import { AppRequest, AppResponse } from './app.interface';
@@ -32,7 +33,9 @@ export class AppMiddleware implements NestMiddleware {
       clientIp: this.utilService.getClientIp(req),
       serverIp: await this.utilService.getServerIp(),
       userAgent: req.headers ? req.headers['user-agent'] : null,
-      jwtPayload: { },
+      jwtPayload: req.headers?.authorization
+        ? jwt.decode(req.headers.authorization.replace('Bearer ', '')) || { }
+        : { },
     };
   }
 
