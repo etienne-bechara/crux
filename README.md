@@ -14,7 +14,7 @@ All characteristics from NestJS [documentation](https://docs.nestjs.com/) plus:
 
 - [[AppModule](#App-Module)] Bootstrap around Express server with CORS and JSON size limit configurations.
 - [[AppModule](#App-Module)] Global exception filter integrated to logger service.
-- [[AppModule](#App-Module)] Global entry point middleware for request IP and User Agent extraction.
+- [[AppModule](#App-Module)] Global entry point middleware for request IP, User Agent and JWT payload extraction.
 - [[AppModule](#App-Module)] Global timeout interceptor to cancel any running request.
 - [[AppModule](#App-Module)] Global validation pipe and serializer to verify decorated DTOs and automatically throw bad requests.
 - [[ConfigModule](#Config-Module)] Support for custom configuration classes.
@@ -28,9 +28,10 @@ All characteristics from NestJS [documentation](https://docs.nestjs.com/) plus:
 - [[LoggerModule](#Logger-Module)] Custom colored console printer (local environment only)].
 - [[LoggerModule](#Logger-Module)] Integration with Sentry monitoring provider.
 - [[LoggerModule](#Logger-Module)] Publish enriching data with severity and inbound request data.
-- [[UtilModule](#UtilModule)] Glob pattern matcher to require modules.
-- [[UtilModule](#UtilModule)] IP address resolver for client and server.
-- [[UtilModule](#UtilModule)] Async method retrier customizable by quantity or time.
+- [[UtilModule](#Util-Module)] Glob pattern matcher to require modules.
+- [[UtilModule](#Util-Module)] IP address resolver for client and server.
+- [[UtilModule](#Util-Module)] Async method retrier customizable by quantity or time.
+- [[TestModule](#Test-Module)] Jest wrapper to create a full sandbox when testing individual modules.
 
 ---
 
@@ -498,3 +499,89 @@ export class CatService {
     })
   }
 }
+```
+
+## Testing
+
+To enable testing in your project, install these extra development dependencies:
+
+```
+npm i -D @nestjs-testing jest ts-jest
+```
+
+Then, to support tests written in TypeScript, add this property to `package.json`:
+
+```json
+"jest": {
+  "coverageDirectory": "coverage",
+  "testEnvironment": "node",
+  "testRegex": ".spec.ts$",
+  "transform": {
+    "ts$": "ts-jest"
+  }
+},
+```
+
+Finally, add some npm scripts for convenient running:
+
+```json
+"scripts": {
+  "test": "jest --verbose --forceExit --passWithNoTests",
+  "test:watch": "jest --verbose --watch",
+  "test:coverage": "jest --coverage --watchAll=false --passWithNoTests"
+}
+```
+
+### Test Module
+
+Before proceeding, we recommend reading the official [NestJS testing documentation](https://docs.nestjs.com/fundamentals/testing#testing).
+
+Since we are usually dealing with environment configurations, test boilerplating may become extensive.
+
+With that in mind, you may optionally use the built-in `createSandbox()` method provided in the package.
+
+**Example**
+
+```ts
+import { TestingModuleBuilder } from '@nestjs/testing';
+import { TestModule } from '@bechara/nestjs-core/dist/test';
+
+TestModule.createSandbox({
+  name: 'CatService',
+  imports: [ CatModule ],
+  configs: [ CatConfig ],
+
+  descriptor: (testingBuilder: TestingModuleBuilder) => {
+    let catService: CatService;
+
+    beforeAll(async () => {
+      const testingModule = await testingBuilder.compile();
+      catService = testingModule.get(CatService);
+    });
+
+    describe('readById', () => {
+      it('should read a cat entity', async () => {
+        const cat = catService.readById(1);
+        expect(cat).toBe({ name: 'bob' });
+      });
+    });
+  },
+
+});
+```
+
+Basically, write your tests as you usually do but inside the `descriptor` property, which will always take a function that returns the Nest testing builder.
+
+The difference is that we also expose the `imports`, `controllers`, `providers` and `configs` properties which allows you to simulate the necessary injections.
+
+If you added the npm scripts from previous steps you may run all your tests with:
+
+```
+npm test
+```
+
+Alternatively, run a single by regex match:
+
+```
+npm test -- cat
+```
