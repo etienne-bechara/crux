@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.1.0...v1.2.0) (2020-11-04)
+
+
+### Features
+
+* add json decoding to middleware (no validation) ([470039c](https://github.com/etienne-bechara/nestjs-core/commit/470039c39cb3524f6c97e0cf7c30ddbfd3abf2fe))
+
 # [1.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.0.4...v1.1.0) (2020-11-03)
 
 
