@@ -1,7 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import https from 'https';
-import moment from 'moment';
 import qs from 'qs';
 
 import { HttpsConfig } from './https.config';
@@ -127,17 +126,19 @@ export class HttpsService {
   private mergeBaseParams(params: HttpsRequestParams): HttpsRequestParams {
     const mergedParams = Object.assign({ }, params);
 
-    if (this.bases.url) {
-      mergedParams.url = `${this.bases.url}${params.url}`;
+    if (this.bases.url && !params.url?.startsWith('http')) {
+      const resolvedUrl = typeof this.bases.url === 'string'
+        ? this.bases.url
+        : this.bases.url();
+      mergedParams.url = `${resolvedUrl}${params.url}`;
     }
 
     if (this.bases.headers || params.headers) {
-      if (!params.headers) params.headers = { };
       mergedParams.headers = { ...this.bases.headers, ...params.headers };
     }
 
-    if (this.bases.query) {
-      mergedParams.params = { ...this.bases.query, ...params.params };
+    if (this.bases.query || params.params || params.query) {
+      mergedParams.params = { ...this.bases.query, ...params.params, ...params.query };
     }
 
     if (this.bases.body) {
@@ -153,6 +154,7 @@ export class HttpsService {
    * Apply the following request params replacements:
    * • URLs with :param_name to its equivalent at replacements property
    * • Request data as stringified form if property is present.
+   * • Remove properties unrecognizable by Axios.
    * @param params
    */
   private replaceVariantParams(params: HttpsRequestParams): HttpsRequestParams {
@@ -166,14 +168,20 @@ export class HttpsService {
       }
     }
 
+    if (params.query) {
+      delete replacedParams.query;
+    }
+
     if (params.form) {
       replacedParams.headers['content-type'] = 'application/x-www-form-urlencoded';
       replacedParams.data = qs.stringify(params.form);
+      delete replacedParams.form;
     }
 
     if (params.json) {
       replacedParams.headers['content-type'] = 'application/json';
       replacedParams.data = params.json;
+      delete replacedParams.json;
     }
 
     return replacedParams;
@@ -199,14 +207,21 @@ export class HttpsService {
       const expires = /expires=(.+?)(?:$|;)/gi.exec(cookie);
       if (!name || !content) continue;
 
+      let utcExpiration;
+
+      try {
+        utcExpiration = new Date(expires[1]).toISOString();
+      }
+      catch {
+        utcExpiration = null;
+      }
+
       cookies.push({
         name: name[1],
         content: content[1],
         path: path ? path[1] : null,
         domain: domain ? domain[1] : null,
-        expires: expires
-          ? moment.utc(expires[1], 'ddd, DD-MMM-YYYY HH:mm:ss').toISOString()
-          : null,
+        expires: utcExpiration,
       });
     }
 
@@ -263,7 +278,7 @@ export class HttpsService {
   }
 
   /**
-   * GET.
+   * Send a GET request.
    * @param url
    * @param params
    */
@@ -274,7 +289,18 @@ export class HttpsService {
   }
 
   /**
-   * POST.
+   * Send a HEAD request.
+   * @param url
+   * @param params
+   */
+  public async head<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+    params.method = 'HEAD';
+    params.url = url;
+    return this.request<T>(params);
+  }
+
+  /**
+   * Send a POST request.
    * @param url
    * @param params
    */
@@ -285,7 +311,7 @@ export class HttpsService {
   }
 
   /**
-   * PUT.
+   * Send a PUT request.
    * @param url
    * @param params
    */
@@ -296,12 +322,34 @@ export class HttpsService {
   }
 
   /**
-   * DELETE.
+   * Send a DELETE request.
    * @param url
    * @param params
    */
   public async delete<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
     params.method = 'DELETE';
+    params.url = url;
+    return this.request<T>(params);
+  }
+
+  /**
+   * Send an OPTIONS request.
+   * @param url
+   * @param params
+   */
+  public async options<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+    params.method = 'OPTIONS';
+    params.url = url;
+    return this.request<T>(params);
+  }
+
+  /**
+   * Send a PATCH request.
+   * @param url
+   * @param params
+   */
+  public async patch<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+    params.method = 'PATCH';
     params.url = url;
     return this.request<T>(params);
   }

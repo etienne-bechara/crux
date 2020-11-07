@@ -193,8 +193,7 @@ If you wish, you may disable the automatic module and configuration imports from
 
 ```ts
 AppModule.bootServer({
-  loadSourceConfigs: false,
-  loadSourceModules: false,
+  disableSourceImports: true,
   modules: [ CatModule ],
   configs: [ CatConfig ],
 });
@@ -204,10 +203,8 @@ Also, you may disable the native integrations and add everything manually:
 
 ```ts
 AppModule.bootServer({
-  loadDefaultConfigs: false,
-  loadDefaultModules: false,
-  loadSourceConfigs: false,
-  loadSourceModules: false,
+  disableDefaultImports: true,
+  disableSourceImports: true,
   modules: [
     LoggerModule,
     SentryModule,

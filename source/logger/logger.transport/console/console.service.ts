@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
-import chalk from 'chalk';
-import moment from 'moment';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { LoggerLevel } from '../../logger.enum';
@@ -37,12 +35,13 @@ export class ConsoleService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const now = moment().format('YYYY-MM-DD HH:mm:ss');
     const env = this.consoleConfig.NODE_ENV;
     const style = this.getStyle(params.level);
+    const now = this.getLocalTime();
+    const chalk = this.getColorizer();
 
     // Colored
-    if (env === AppEnvironment.LOCAL) {
+    if (env === AppEnvironment.LOCAL && chalk) {
       const msg = chalk`{grey ${now}} {${style.labelColor}  ${style.label} } {${style.messageColor} ${params.message}}`;
       console.log(msg);
 
@@ -89,6 +88,31 @@ export class ConsoleService implements LoggerTransport {
       case LoggerLevel.DEBUG:
         return { label: 'DBG', labelColor: 'black.bgBlackBright', messageColor: 'blackBright' };
     }
+  }
+
+  /**
+   * Returns current machine time in SQL format.
+   */
+  private getLocalTime(): string {
+    const now = new Date();
+    const nowOffsetted = new Date(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+    return nowOffsetted.toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  /**
+   * Returns the colorizing middleware (local only).
+   */
+  private getColorizer(): any {
+    let colorizer;
+
+    try {
+      colorizer = require('chalk');
+    }
+    catch {
+      /* undefined */
+    }
+
+    return colorizer;
   }
 
 }

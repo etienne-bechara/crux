@@ -1,9 +1,7 @@
 export interface AppBootOptions {
   envPath?: string;
-  loadDefaultConfigs?: boolean;
-  loadDefaultModules?: boolean;
-  loadSourceConfigs?: boolean;
-  loadSourceModules?: boolean;
+  disableDefaultImports?: boolean;
+  disableSourceImports?: boolean;
   configs?: any[];
   modules?: any[];
 }

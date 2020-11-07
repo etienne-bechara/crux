@@ -17,10 +17,10 @@ export interface HttpsModuleOptions {
 }
 
 export interface HttpsServiceBases {
-  url?: string;
-  query?: Record<string, string>;
-  body?: Record<string, unknown>;
+  url?: string | (() => string);
   headers?: Record<string, string>;
+  query?: Record<string, any>;
+  body?: Record<string, any>;
 }
 
 export interface HttpsServiceDefaults {

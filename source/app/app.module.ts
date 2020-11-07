@@ -110,11 +110,11 @@ export class AppModule {
       UtilModule,
     ];
 
-    if (options.loadDefaultConfigs !== false) {
+    if (!options.disableDefaultImports) {
       preloadedConfigs.push(...defaultConfigs);
     }
 
-    if (options.loadSourceConfigs !== false) {
+    if (!options.disableSourceImports) {
       const sourceConfigs = UtilModule.globRequire([
         's*rc*/**/*.config.{js,ts}',
         '!**/*test*',
@@ -122,7 +122,7 @@ export class AppModule {
       preloadedConfigs.push(...sourceConfigs);
     }
 
-    if (options.loadDefaultModules !== false) {
+    if (!options.disableDefaultImports) {
       preloadedImports.push(
         ConfigModule.registerAsync({
           envPath: options.envPath,
@@ -137,7 +137,7 @@ export class AppModule {
       );
     }
 
-    if (options.loadSourceModules !== false) {
+    if (!options.disableSourceImports) {
       const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',

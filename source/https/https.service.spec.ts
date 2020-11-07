@@ -3,6 +3,8 @@ import { HttpStatus } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
+import { HttpsReturnType } from './https.enum';
+import { HttpsResponse } from './https.interface';
 import { HttpsModule } from './https.module';
 import { HttpsService } from './https.service';
 
@@ -35,7 +37,7 @@ TestModule.createSandbox({
           title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
         };
         const data = await httpsService.get('/posts/:postId', {
-          replacements: { postId: 1 },
+          replacements: { postId: '1' },
         });
         expect(data).toMatchObject(mockPost);
       });
@@ -56,7 +58,7 @@ TestModule.createSandbox({
     describe('delete', () => {
       it('should remove a placeholder resource', async () => {
         const data = await httpsService.delete('/posts/:postId', {
-          replacements: { postId: 1 },
+          replacements: { postId: '1' },
         });
         expect(Object.keys(data).length).toBe(0);
       });
@@ -87,6 +89,17 @@ TestModule.createSandbox({
         }
 
         expect(errorStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+      });
+    });
+
+    describe('parseResponseCookies', () => {
+      it('should parse a response cookie', async () => {
+        const res: HttpsResponse = await httpsService.get('https://www.google.com', {
+          returnType: HttpsReturnType.FULL,
+        });
+        expect(res.cookies[0]).toBeDefined();
+        expect(res.cookies[0].domain).toMatch(/google/g);
+        expect(res.cookies[0].expires).toMatch(/\d{4}-\d{2}-\d{2}/g);
       });
     });
   },

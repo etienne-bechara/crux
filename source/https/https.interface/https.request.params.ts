@@ -6,10 +6,10 @@ import { HttpsReturnType } from '../https.enum';
  * Adds extra request options to Axios package.
  */
 export interface HttpsRequestParams extends AxiosRequestConfig {
-
-  replacements?: Record<string, unknown>;
-  form?: Record<string, unknown>;
-  json?: Record<string, unknown>;
+  replacements?: Record<string, string>;
+  query?: Record<string, any>;
+  form?: Record<string, any>;
+  json?: Record<string, any>;
 
   returnType?: HttpsReturnType;
 
