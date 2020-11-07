@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.2.0...v1.3.0) (2020-11-07)
+
+
+### Features
+
+* improve http module and reduce dependencies ([6b8e2b8](https://github.com/etienne-bechara/nestjs-core/commit/6b8e2b8e696853c7182f95656e9e685d2a794fc6))
+
 # [1.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.1.0...v1.2.0) (2020-11-04)
 
 
