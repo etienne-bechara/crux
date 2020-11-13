@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
+import chalk from 'chalk';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { LoggerLevel } from '../../logger.enum';
@@ -38,7 +39,6 @@ export class ConsoleService implements LoggerTransport {
     const env = this.consoleConfig.NODE_ENV;
     const style = this.getStyle(params.level);
     const now = this.getLocalTime();
-    const chalk = this.getColorizer();
 
     // Colored
     if (env === AppEnvironment.LOCAL && chalk) {
@@ -97,22 +97,6 @@ export class ConsoleService implements LoggerTransport {
     const now = new Date();
     const nowOffsetted = new Date(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
     return nowOffsetted.toISOString().slice(0, 19).replace('T', ' ');
-  }
-
-  /**
-   * Returns the colorizing middleware (local only).
-   */
-  private getColorizer(): any {
-    let colorizer;
-
-    try {
-      colorizer = require('chalk');
-    }
-    catch {
-      /* undefined */
-    }
-
-    return colorizer;
   }
 
 }

@@ -68,6 +68,7 @@
   "dependencies": {
     "@sentry/node": "5.27.2",
     "axios": "0.21.0",
+    "chalk": "4.1.0",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",
     "clean-stack": "3.0.0",
@@ -103,7 +104,6 @@
     "@types/node": "14.14.6",
     "@types/uuid": "8.3.0",
     "barrelsby": "2.2.0",
-    "chalk": "4.1.0",
     "eslint": "7.12.1",
     "husky": "4.3.0",
     "jest": "26.6.2",
