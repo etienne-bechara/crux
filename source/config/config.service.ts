@@ -96,20 +96,17 @@ export class ConfigService {
   }
 
   /**
-   * Given provided configuration classes, read properties decorated
-   * with InjectedSecret and caches their key/value pairs.
+   * For each property injected with secret decorator,
+   * populate their values from runtime environment.
    */
   private static populateSecretCache(): void {
-    const desiredSecrets = this.SECRET_CACHE.map((record) => record.key);
-
-    desiredSecrets.forEach((secretKey) => {
-      let secretValue = null;
-
-      if (process.env[secretKey] || process.env[secretKey.toUpperCase()]) {
-        secretValue = process.env[secretKey];
+    this.SECRET_CACHE.forEach((secret) => {
+      if (process.env[secret.key] || process.env[secret.key.toUpperCase()]) {
+        this.setSecret({
+          key: secret.key,
+          value: process.env[secret.key],
+        });
       }
-
-      this.setSecret({ key: secretKey, value: secretValue });
     });
   }
 
