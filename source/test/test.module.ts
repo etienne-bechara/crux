@@ -1,6 +1,8 @@
 import { Test } from '@nestjs/testing';
+import dotenv from 'dotenv';
 
 import { ConfigModule } from '../config/config.module';
+import { UtilModule } from '../util/util.module';
 import { TestSandboxOptions } from './test.interface';
 
 /**
@@ -15,13 +17,17 @@ export class TestModule {
    * @param options
    */
   public static createSandbox(options: TestSandboxOptions): void {
-    if (!options.imports) options.imports = [ ];
+    const envPath = options.envPath || UtilModule.searchEnvFile();
+    const envFile = dotenv.config({ path: envPath }).parsed || { };
+    process.env = { ...process.env, ...envFile };
 
-    if (options.skip) {
+    if (options.skip?.()) {
       // eslint-disable-next-line jest/valid-title, jest/no-disabled-tests
       describe.skip(options.name, () => options.descriptor(null));
       return;
     }
+
+    if (!options.imports) options.imports = [ ];
 
     if (options.configs) {
       options.imports.unshift(

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import fs from 'fs';
 import globby from 'globby';
 
 import { HttpsModule } from '../https/https.module';
@@ -46,6 +47,27 @@ export class UtilModule {
     });
 
     return [].concat(...exportsArrays);
+  }
+
+  /**
+   * Given current working directory, attempt to find
+   * an .env file up to the desired maximum depth.
+   * @param maxDepth
+   */
+  public static searchEnvFile(maxDepth: number = 5): string {
+    let testPath = process.cwd();
+    let testFile = `${testPath}/.env`;
+
+    for (let i = 0; i < maxDepth; i++) {
+      const pathExist = fs.existsSync(testPath);
+      const fileExist = fs.existsSync(testFile);
+
+      if (!pathExist) break;
+      if (fileExist) return testFile;
+
+      testPath = `${testPath}/..`;
+      testFile = testFile.replace(/\.env$/g, '../.env');
+    }
   }
 
 }

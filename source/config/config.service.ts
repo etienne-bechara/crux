@@ -86,8 +86,7 @@ export class ConfigService {
    * @param options
    */
   private static loadInitialEnvironment(options: ConfigModuleOptions = { }): void {
-    const envPath = `${process.cwd()}/${options.envPath || '.env'}`;
-    const envFile = dotenv.config({ path: envPath }).parsed || { };
+    const envFile = dotenv.config({ path: options.envPath }).parsed || { };
     process.env = { ...process.env, ...envFile };
 
     for (const ConfigClass of options.configs) {

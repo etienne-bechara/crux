@@ -91,6 +91,7 @@ export class AppModule {
   private static buildEntryModule(options: AppBootOptions = { }): DynamicModule {
     if (!options.configs) options.configs = [ ];
     if (!options.modules) options.modules = [ ];
+
     const preloadedImports = [ ];
     const preloadedExports = [ ];
     const preloadedConfigs = [ ];
