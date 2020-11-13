@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.0...v1.3.1) (2020-11-13)
+
+
+### Bug Fixes
+
+* attempt to find env file automatically ([dbf258b](https://github.com/etienne-bechara/nestjs-core/commit/dbf258b1208bff0ab09cdbf8a9da95a35ab586dd))
+* simplify config method ([c6aa947](https://github.com/etienne-bechara/nestjs-core/commit/c6aa9471cdd393f1c5b49c9cc117f53d8f687ccb))
+
 # [1.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.2.0...v1.3.0) (2020-11-07)
 
 
