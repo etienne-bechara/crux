@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.1...v1.3.2) (2020-11-13)
+
+
+### Bug Fixes
+
+* move chalk to bungle dependency ([16e266d](https://github.com/etienne-bechara/nestjs-core/commit/16e266d6337d9f0ce745e03d7aecea75c09aaefd))
+
 ## [1.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.0...v1.3.1) (2020-11-13)
 
 
