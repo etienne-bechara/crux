@@ -24,8 +24,8 @@
     "test": "jest --verbose --forceExit --passWithNoTests",
     "test:watch": "jest --verbose --watch",
     "test:coverage": "jest --coverage --watchAll=false --passWithNoTests",
-    "update:patch": "ncu -u --dep dev,prod -t minor && npm i && npm audit fix",
-    "update:minor": "ncu -u --dep dev,prod -t major && npm i && npm audit fix",
+    "update:patch": "ncu -u --dep dev,prod -t patch && npm i && npm audit fix",
+    "update:minor": "ncu -u --dep dev,prod -t minor && npm i && npm audit fix",
     "update:major": "ncu -u --dep dev,prod -t latest && npm i && npm audit fix --force"
   },
   "commitlint": {
