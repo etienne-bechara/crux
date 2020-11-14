@@ -1,3 +1,5 @@
+import 'source-map-support';
+import 'reflect-metadata';
 
 import { ClassSerializerInterceptor, DynamicModule, Global,
   MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';

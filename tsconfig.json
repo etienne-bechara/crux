@@ -2,10 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "moduleResolution": "node",
     "lib": [ "es6", "dom" ],
+    "moduleResolution": "node",
     "rootDir": "source",
     "outDir": "dist",
+    "sourceMap": true,
+    "sourceRoot": "./source",
     "declaration": true,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
