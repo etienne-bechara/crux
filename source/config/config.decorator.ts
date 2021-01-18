@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { ConfigMetadataKey } from './config.enum';
 import { ConfigInjectionOptions } from './config.interface';
 import { ConfigService } from './config.service';
 
@@ -13,6 +14,7 @@ import { ConfigService } from './config.service';
 export function InjectSecret(options: ConfigInjectionOptions = { }): any {
   return function (target: any, propertyKey: string): void {
     const secretKey = options.key || propertyKey;
+    Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, secretKey, target, propertyKey);
 
     ConfigService.setSecret({
       key: secretKey,

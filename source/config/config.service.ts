@@ -13,7 +13,6 @@ import { ConfigModuleOptions } from './config.interface/config.module.options';
 export class ConfigService {
 
   private static readonly SECRET_CACHE: ConfigSecretRecord[] = [ ];
-  private static secretCacheFreeze: boolean;
 
   /**
    * Returns a secret value, key is case insensitive.
@@ -44,10 +43,6 @@ export class ConfigService {
   public static setSecret(secret: ConfigSecretRecord = { }): void {
     if (!secret.key) return;
 
-    if (this.secretCacheFreeze) {
-      throw new Error('cannot update secret cache after it has been initialized');
-    }
-
     const secretIndex = this.SECRET_CACHE.findIndex((record) => {
       return record.key.toUpperCase() === secret.key.toUpperCase();
     });
@@ -73,7 +68,6 @@ export class ConfigService {
     this.loadInitialEnvironment(options);
     this.populateSecretCache();
     const errors = this.validateConfigs(options);
-    this.secretCacheFreeze = true;
     return errors;
   }
 
@@ -100,10 +94,12 @@ export class ConfigService {
    */
   private static populateSecretCache(): void {
     this.SECRET_CACHE.forEach((secret) => {
-      if (process.env[secret.key] || process.env[secret.key.toUpperCase()]) {
+      const processValue = process.env[secret.key] || process.env[secret.key.toUpperCase()];
+
+      if (processValue) {
         this.setSecret({
           key: secret.key,
-          value: process.env[secret.key],
+          value: processValue,
         });
       }
     });
@@ -121,7 +117,7 @@ export class ConfigService {
     this.SECRET_CACHE.forEach((record) => secretEnv[record.key] = record.value || record.default);
 
     for (const ConfigClass of options.configs) {
-      const validationInstance = plainToClass(ConfigClass, secretEnv);
+      const validationInstance: ValidationError[] = plainToClass(ConfigClass, secretEnv);
       const partialErrors = validateSync(validationInstance, {
         validationError: { target: false },
       });

@@ -53,21 +53,6 @@ TestModule.createSandbox({
       });
     });
 
-    describe('setSecret', () => {
-      it('should disallow setting a secret after initialization', () => {
-        let setError: boolean;
-
-        try {
-          ConfigService.setSecret({ key: 'SECRET_NUMBER', value: 1 });
-        }
-        catch {
-          setError = true;
-        }
-
-        expect(setError).toBeTruthy();
-      });
-    });
-
     describe('validateConfigs', () => {
       it('should flag a configuration error', () => {
         expect(validationErrors.length).toBeGreaterThanOrEqual(1);
