@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
-import { HttpsReturnType } from './https.enum';
+import { HttpsPredefinedHandler, HttpsReturnType } from './https.enum';
 import { HttpsResponse } from './https.interface';
 import { HttpsModule } from './https.module';
 import { HttpsService } from './https.service';
@@ -90,12 +90,27 @@ TestModule.createSandbox({
 
         expect(errorStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
       });
+
+      it('should throw a not found exception', async () => {
+        let errorStatus: number;
+
+        try {
+          await httpsService.get('/404', {
+            exceptionHandler: HttpsPredefinedHandler.PROXY_HTTP_STATUS,
+          });
+        }
+        catch (e) {
+          errorStatus = e.status;
+        }
+
+        expect(errorStatus).toEqual(HttpStatus.NOT_FOUND);
+      });
     });
 
     describe('parseResponseCookies', () => {
       it('should parse a response cookie', async () => {
         const res: HttpsResponse = await httpsService.get('https://www.google.com', {
-          returnType: HttpsReturnType.FULL,
+          returnType: HttpsReturnType.FULL_RESPONSE,
         });
         expect(res.cookies[0]).toBeDefined();
         expect(res.cookies[0].domain).toMatch(/google/g);

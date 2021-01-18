@@ -1,4 +1,4 @@
 export enum HttpsReturnType {
-  FULL = 'FULL',
-  DATA = 'DATA',
+  BODY_CONTENT = 'BODY_CONTENT',
+  FULL_RESPONSE = 'FULL_RESPONSE',
 }

@@ -1,20 +1,20 @@
-import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from 'axios';
+import { setupCache } from 'axios-cache-adapter';
+import { Agent } from 'http';
 import https from 'https';
 import qs from 'qs';
 
 import { HttpsConfig } from './https.config';
-import { HttpsReturnType } from './https.enum';
-import { HttpsInjectionToken } from './https.enum/https.injection.token';
-import { HttpsCookie, HttpsModuleOptions, HttpsRequestParams, HttpsServiceBases,
-  HttpsServiceDefaults } from './https.interface';
+import { HttpsInjectionToken, HttpsPredefinedHandler, HttpsReturnType } from './https.enum';
+import { HttpsCookie, HttpsExceptionHandler, HttpsHandlerParams, HttpsModuleOptions, HttpsRequestParams,
+  HttpsServiceBases, HttpsServiceDefaults } from './https.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpsService {
 
   private bases: HttpsServiceBases = { };
   private defaults: HttpsServiceDefaults= { };
-  private httpsAgent: https.Agent;
   private instance: AxiosInstance;
 
   public constructor(
@@ -22,7 +22,7 @@ export class HttpsService {
     private readonly httpsModuleOptions: HttpsModuleOptions,
     private readonly httpsConfig: HttpsConfig,
   ) {
-    this.setupInstance(httpsModuleOptions);
+    this.setup(httpsModuleOptions);
   }
 
   /**
@@ -31,20 +31,62 @@ export class HttpsService {
    * handler to standardize exception reporting.
    * @param params
    */
-  private setupInstance(params: HttpsModuleOptions = { }): void {
+  public setup(params: HttpsModuleOptions = { }): void {
     this.setDefaultParams(params);
     this.setBaseParams(params);
-    this.setHttpsAgent(params);
+
     this.instance = axios.create({
+      adapter: this.buildAdapter(params),
+      httpsAgent: this.buildHttpsAgent(params),
       timeout: this.defaults.timeout,
       validateStatus: () => true,
-      httpsAgent: this.httpsAgent,
     });
   }
 
   /**
+   * Given instance configuration and an optional handler with
+   * priority over default, resolves which handler to use.
+   * @param priorityHandler
+   */
+  private getExceptionHandler(priorityHandler?: HttpsExceptionHandler): (params: HttpsHandlerParams) => Promise<void> {
+    const handler = priorityHandler
+      || this.defaults.exceptionHandler
+      || HttpsPredefinedHandler.INTERNAL_SERVER_ERROR;
+
+    if (typeof handler !== 'string') return handler;
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    return async (params): Promise<void> => {
+      const req = params.upstreamRequest;
+      const res = params.upstreamResponse;
+
+      const status = handler === HttpsPredefinedHandler.INTERNAL_SERVER_ERROR
+        ? HttpStatus.INTERNAL_SERVER_ERROR
+        : res?.status;
+
+      const data = {
+        message: `${req.method} ${req.url} ${params.errorMessage}`,
+        proxy_response: handler === HttpsPredefinedHandler.PROXY_FULL_RESPONSE
+          ? true
+          : undefined,
+        upstream_response: {
+          status,
+          data: res?.data,
+        },
+        upstream_request: {
+          method: req.method,
+          url: req.url,
+          ...req,
+        },
+      };
+
+      throw new HttpException(data, status);
+    };
+  }
+
+  /**
    * Defines and stores instance defaults, if not available set them to:
-   * • Return type to DATA (Axios response data)
+   * • Return type to BODY_CONTENT (Axios response data)
    * • Timeout to global default configured at https.setting
    * • Validator to pass on status lower than 400 (< bad request).
    * @param params
@@ -53,27 +95,14 @@ export class HttpsService {
     if (!params.defaults) params.defaults = { };
     const defaultTimeout = this.httpsConfig.HTTPS_DEFAULT_TIMEOUT;
 
-    this.defaults.returnType = params.defaults.returnType || HttpsReturnType.DATA;
+    this.defaults.returnType = params.defaults.returnType || HttpsReturnType.BODY_CONTENT;
     this.defaults.timeout = params.defaults.timeout || defaultTimeout;
 
     this.defaults.validator = params.defaults.validator
       ? params.defaults.validator
       : (s): boolean => s < 400;
 
-    this.defaults.exceptionHandler = params.defaults.exceptionHandler
-      ? params.defaults.exceptionHandler
-      // eslint-disable-next-line @typescript-eslint/require-await
-      : async (params, res, msg): Promise<void> => {
-        throw new InternalServerErrorException({
-          message: `${params.method} ${params.url} ${msg}`,
-          upstream_request: params,
-          upstream_response: {
-            status: res ? res.status : undefined,
-            headers: res ? res.headers : undefined,
-            data: res ? res.data : undefined,
-          },
-        });
-      };
+    this.defaults.exceptionHandler = this.getExceptionHandler(params.defaults.exceptionHandler);
   }
 
   /**
@@ -95,25 +124,48 @@ export class HttpsService {
    * • If ignoreHttpsErrors, customize it with a simple rejectUnauthorized.
    * @param params
    */
-  private setHttpsAgent(params: HttpsModuleOptions): void {
-    if (!params.agent) {
-      return;
+  private buildHttpsAgent(params: HttpsModuleOptions): Agent {
+    if (params.agent?.custom) {
+      return params.agent.custom;
     }
-    else if (params.agent.custom) {
-      this.httpsAgent = params.agent.custom;
-    }
-    else if (params.agent.ssl) {
-      this.httpsAgent = new https.Agent({
+
+    if (params.agent?.ssl) {
+      return new https.Agent({
         cert: Buffer.from(params.agent.ssl.cert, 'base64').toString('ascii'),
         key: Buffer.from(params.agent.ssl.key, 'base64').toString('ascii'),
         passphrase: params.agent.ssl.passphrase,
         rejectUnauthorized: !params.agent.ignoreHttpsErrors,
       });
     }
-    else if (params.agent.ignoreHttpsErrors) {
-      this.httpsAgent = new https.Agent({
+
+    if (params.agent?.ignoreHttpsErrors) {
+      return new https.Agent({
         rejectUnauthorized: false,
       });
+    }
+  }
+
+  /**
+   * Configures the request adapter which may have added cache properties.
+   * Alter original default properties to add maximum limit as well as
+   * remove query param restriction.
+   * @param params
+   */
+  private buildAdapter(params: HttpsModuleOptions): AxiosAdapter {
+    if (params.cache) {
+      if (params.cache.maxAge === undefined) {
+        params.cache.maxAge = this.httpsConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
+      }
+
+      if (params.cache.limit === undefined) {
+        params.cache.limit = this.httpsConfig.HTTPS_DEFAULT_CACHE_LIMIT as any;
+      }
+
+      if (params.cache.exclude === undefined) {
+        params.cache.exclude = { query: false };
+      }
+
+      return setupCache(params.cache).adapter;
     }
   }
 
@@ -162,6 +214,12 @@ export class HttpsService {
 
     if (params.replacements) {
       for (const key in params.replacements) {
+        const replacement = params.replacements[key];
+
+        if (!replacement || typeof replacement !== 'string' || replacement === '') {
+          throw new InternalServerErrorException(`path parameter ${key} must be a defined string`);
+        }
+
         const replaceRegex = new RegExp(`:${key}`, 'g');
         const value = encodeURIComponent(params.replacements[key].toString());
         replacedParams.url = replacedParams.url.replace(replaceRegex, value);
@@ -237,12 +295,12 @@ export class HttpsService {
    * @param params
    */
   public async request<T>(params: HttpsRequestParams): Promise<T> {
-    if (!this.instance) this.setupInstance();
+    if (!this.instance) this.setup();
 
     const finalParams = this.replaceVariantParams(this.mergeBaseParams(params));
     const returnType = finalParams.returnType || this.defaults.returnType;
     const validator = finalParams.validateStatus || this.defaults.validator;
-    const exceptionHandler = finalParams.exceptionHandler || this.defaults.exceptionHandler;
+    const exceptionHandler = this.getExceptionHandler(finalParams.exceptionHandler);
     const timeout = finalParams.timeout || this.defaults.timeout;
     const cancelSource = axios.CancelToken.source();
 
@@ -270,9 +328,15 @@ export class HttpsService {
         : `failed due to ${e.message}`;
     }
 
-    if (errorMsg) await exceptionHandler(params, res, errorMsg);
+    if (errorMsg) {
+      await exceptionHandler({
+        errorMessage: errorMsg,
+        upstreamRequest: params,
+        upstreamResponse: res,
+      });
+    }
 
-    return res && returnType === HttpsReturnType.DATA
+    return res && returnType === HttpsReturnType.BODY_CONTENT
       ? res.data
       : this.parseResponseCookies(res);
   }

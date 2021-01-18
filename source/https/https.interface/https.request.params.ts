@@ -1,6 +1,7 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 
 import { HttpsReturnType } from '../https.enum';
+import { HttpsExceptionHandler } from './https.exception.handler';
 
 /**
  * Adds extra request options to Axios package.
@@ -13,10 +14,6 @@ export interface HttpsRequestParams extends AxiosRequestConfig {
 
   returnType?: HttpsReturnType;
 
-  exceptionHandler?: (
-    requestParams: HttpsRequestParams,
-    upstreamResponse: AxiosResponse | any,
-    errorMessage: string
-  ) => Promise<void>;
+  exceptionHandler?: HttpsExceptionHandler;
 
 }

@@ -1,9 +1,9 @@
 import { ModuleMetadata } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
+import { IAxiosCacheAdapterOptions } from 'axios-cache-adapter';
 import https from 'https';
 
 import { HttpsReturnType } from '../https.enum';
-import { HttpsRequestParams } from './https.request.params';
+import { HttpsExceptionHandler } from './https.exception.handler';
 
 export interface HttpsAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
@@ -13,6 +13,7 @@ export interface HttpsAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'>
 export interface HttpsModuleOptions {
   agent?: HttpsServiceAgent;
   bases?: HttpsServiceBases;
+  cache?: IAxiosCacheAdapterOptions;
   defaults?: HttpsServiceDefaults;
 }
 
@@ -27,11 +28,7 @@ export interface HttpsServiceDefaults {
   returnType?: HttpsReturnType;
   timeout?: number;
   validator?: (status: number) => boolean;
-  exceptionHandler?: (
-    requestParams: HttpsRequestParams,
-    upstreamResponse: AxiosResponse | any,
-    errorMessage: string
-  ) => Promise<void>;
+  exceptionHandler?: HttpsExceptionHandler;
 }
 
 export interface HttpsServiceAgent {
