@@ -7,7 +7,7 @@
     "rootDir": "source",
     "outDir": "dist",
     "sourceMap": true,
-    "sourceRoot": "./source",
+    "sourceRoot": "../source",
     "declaration": true,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,

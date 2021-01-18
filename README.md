@@ -18,7 +18,6 @@ All characteristics from NestJS [documentation](https://docs.nestjs.com/) plus:
 - [[AppModule](#App-Module)] Global timeout interceptor to cancel any running request.
 - [[AppModule](#App-Module)] Global validation pipe and serializer to verify decorated DTOs and automatically throw bad requests.
 - [[ConfigModule](#Config-Module)] Support for custom configuration classes.
-- [[ConfigModule](#Config-Module)] Secret injection through custom decorator.
 - [[ConfigModule](#Config-Module)] Secret variables validation.
 - [[HttpsModule](#Https-Module)] Creation of base instance with reusable url, headers or body.
 - [[HttpsModule](#Https-Module)] Customize exception handler and client side timeout implementation.
@@ -27,6 +26,7 @@ All characteristics from NestJS [documentation](https://docs.nestjs.com/) plus:
 - [[LoggerModule](#Logger-Module)] Support for custom transports.
 - [[LoggerModule](#Logger-Module)] Custom colored console printer (local environment only)].
 - [[LoggerModule](#Logger-Module)] Integration with Sentry monitoring provider.
+- [[LoggerModule](#Logger-Module)] Integration with Slack webhooks for channel posting.
 - [[LoggerModule](#Logger-Module)] Publish enriching data with severity and inbound request data.
 - [[UtilModule](#Util-Module)] Glob pattern matcher to require modules.
 - [[UtilModule](#Util-Module)] IP address resolver for client and server.
@@ -238,7 +238,7 @@ export class CatConfig {
 
   // You can use 'key' if the env variable has
   // a different name than the property.
-  @InjectSecret({ key: 'CAT_AUTHORIZATION' })
+  @InjectSecret({ key: 'cat_authorization', ssm: true })
   CAT_API_KEY: string;
 
   // You can use 'default' if you wish to set
@@ -265,7 +265,7 @@ export class CatConfig {
   @IsUrl()
   CAT_API_URL: string;
 
-  @InjectSecret({ key: 'CAT_AUTHORIZATION' })
+  @InjectSecret({ key: 'cat_authorization' })
   @IsString() @Length(36)
   CAT_API_KEY: string;
 
@@ -282,18 +282,16 @@ Finally, to use the secrets, you must add the configuration class to the array o
 **Example**
 
 ```ts
-import { CatsConfig } from '@bechara/nestjs-core';
-
 @Injectable()
 export class CatService {
   private catsBeingFetched: number;
 
   public constructor(
-    private readonly catsConfig: CatsConfig,
+    private readonly catConfig: CatConfig,
   ) { }
 
   public async getCat(id: number) {
-    const maxConc = this.catsConfig.CAT_API_MAX_CONCURRENCY;
+    const maxConc = this.catConfig.CAT_API_MAX_CONCURRENCY;
     
     if (this.catsBeingFetched >= maxConc) {
       throw new Error('too many cats being fetched');
@@ -385,6 +383,8 @@ export class CatModule { }
 Variable | Type | Default
 :--- | :---: | :---
 HTTPS_DEFAULT_TIMEOUT | number | 60000 (60s)
+HTTPS_DEFAULT_CACHE_MAX_AGE | number | 900000 (15m)
+HTTPS_DEFAULT_CACHE_LIMIT | number | 10000
 
 
 ### Logger Module
@@ -397,9 +397,9 @@ Each method is related to its matching severity, and by default the publishing w
 
 Method | Local | Development | Staging | Production
 :--- | :---: | :---: | :---: | :---:
-`.critical()` | Console | Console<br>Sentry | Console<br>Sentry | Console<br>Sentry
-`.error()` | Console | Console<br>Sentry | Console<br>Sentry | Console<br>Sentry
-`.warning()` | Console | Console | Console | Console
+`.critical()` | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
+`.error()` | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
+`.warning()` | Console | Console<br>Slack | Console<br>Slack | Console<br>Slack
 `.notice()` | Console | Console | -  | -
 `.info()` | Console | - | -  | -
 `.http()` | Console | - | -  | -
@@ -448,6 +448,18 @@ Variable | Type | Default
 SENTRY_DSN | string | `undefined`
 SENTRY_TRANSPORT_OPTIONS | [LoggerTransportOptions](source/logger/logger.interface/logger.transport.options.ts)[] | See table above.
 
+**Slack Configuration**
+
+To enable this integration it is mandatory to provide `SLACK_WEBHOOK` and `SLACK_CHANNEL`, you may customize it further with the following environment variables.
+
+Variable | Type | Default
+:--- | :---: | :---
+SLACK_WEBHOOK | string | `ssm:slack_alert_hook`
+SLACK_CHANNEL | string | `ssm:slack_alert_channel`
+SLACK_USERNAME | string | Notification Bot
+SLACK_ICON_URL | string | `undefined`
+SLACK_TRANSPORT_OPTIONS | [LoggerTransportOptions](source/logger/logger.interface/logger.transport.options.ts)[] | See table above.
+
 **Example**
 
 ```ts
@@ -495,37 +507,6 @@ export class CatService {
       retries: 5,
     })
   }
-}
-```
-
-## Testing
-
-To enable testing in your project, install these extra development dependencies:
-
-```
-npm i -D @nestjs-testing jest ts-jest
-```
-
-Then, to support tests written in TypeScript, add this property to `package.json`:
-
-```json
-"jest": {
-  "coverageDirectory": "coverage",
-  "testEnvironment": "node",
-  "testRegex": ".spec.ts$",
-  "transform": {
-    "ts$": "ts-jest"
-  }
-},
-```
-
-Finally, add some npm scripts for convenient running:
-
-```json
-"scripts": {
-  "test": "jest --verbose --forceExit --passWithNoTests",
-  "test:watch": "jest --verbose --watch",
-  "test:coverage": "jest --coverage --watchAll=false --passWithNoTests"
 }
 ```
 
