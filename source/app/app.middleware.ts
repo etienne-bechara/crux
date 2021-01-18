@@ -20,6 +20,7 @@ export class AppMiddleware implements NestMiddleware {
    */
   public async use(req: AppRequest, res: AppResponse, next: any): Promise<void> {
     await this.addRequestMetadata(req);
+    this.flattenJwtMetadata(req);
     next();
   }
 
@@ -28,7 +29,7 @@ export class AppMiddleware implements NestMiddleware {
    * to user ip, agent and jwt payload.
    * @param req
    */
-  public async addRequestMetadata(req: AppRequest): Promise<void> {
+  private async addRequestMetadata(req: AppRequest): Promise<void> {
     req.metadata = {
       clientIp: this.utilService.getClientIp(req),
       serverIp: await this.utilService.getServerIp(),
@@ -37,6 +38,22 @@ export class AppMiddleware implements NestMiddleware {
         ? jwt.decode(req.headers.authorization.replace('Bearer ', '')) || { }
         : { },
     };
+  }
+
+  /**
+   * Given a request with JWT payload already decoded,
+   * flatten its OIDC conformant metadata claims.
+   * @param req
+   */
+  private flattenJwtMetadata(req: AppRequest): void {
+    const jwtPayload = req?.metadata?.jwtPayload;
+    if (!jwtPayload) return;
+
+    const appMetadataKey = Object.keys(jwtPayload).find((k) => k.includes('/app_metadata'));
+    const userMetadataKey = Object.keys(jwtPayload).find((k) => k.includes('/user_metadata'));
+
+    if (appMetadataKey) jwtPayload.app_metadata = jwtPayload[appMetadataKey];
+    if (userMetadataKey) jwtPayload.user_metadata = jwtPayload[userMetadataKey];
   }
 
 }

@@ -1,4 +1,4 @@
-import 'source-map-support';
+import 'source-map-support/register';
 import 'reflect-metadata';
 
 import { ClassSerializerInterceptor, DynamicModule, Global,
@@ -15,6 +15,8 @@ import { ConsoleConfig } from '../logger/logger.transport/console/console.config
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
 import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
+import { SlackModule } from '../logger/logger.transport/slack/slack.module';
+import { UtilConfig } from '../util/util.config';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
 import { AppFilter } from './app.filter';
@@ -23,22 +25,7 @@ import { AppBootOptions } from './app.interface/app.boot.options';
 import { AppMiddleware } from './app.middleware';
 
 @Global()
-@Module({
-  providers: [
-    AppConfig,
-    { provide: APP_FILTER, useClass: AppFilter },
-    { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
-    { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
-    { provide: APP_INTERCEPTOR, useClass: AppTimeoutInterceptor },
-    {
-      provide: APP_PIPE,
-      useFactory: (): ValidationPipe => new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    },
-  ],
-})
+@Module({ })
 export class AppModule {
 
   /**
@@ -94,8 +81,19 @@ export class AppModule {
     if (!options.configs) options.configs = [ ];
     if (!options.modules) options.modules = [ ];
 
-    const preloadedImports = [ ];
-    const preloadedExports = [ ];
+    return {
+      module: AppModule,
+      providers: this.buildEntryProviders(options),
+      imports: this.buildEntryModules(options, 'imports'),
+      exports: this.buildEntryModules(options, 'exports'),
+    };
+  }
+
+  /**
+   * Merge default, project source and user provided modules.
+   * @param options
+   */
+  private static buildEntryConfigs(options: AppBootOptions): any[] {
     const preloadedConfigs = [ ];
 
     const defaultConfigs = [
@@ -104,13 +102,7 @@ export class AppModule {
       LoggerConfig,
       ConsoleConfig,
       SentryConfig,
-    ];
-
-    const defaultModules = [
-      ConsoleModule,
-      LoggerModule,
-      SentryModule,
-      UtilModule,
+      UtilConfig,
     ];
 
     if (!options.disableDefaultImports) {
@@ -125,35 +117,87 @@ export class AppModule {
       preloadedConfigs.push(...sourceConfigs);
     }
 
-    if (!options.disableDefaultImports) {
-      preloadedImports.push(
-        ConfigModule.registerAsync({
-          envPath: options.envPath,
-          configs: [ ...preloadedConfigs, ...options.configs ],
-        }),
-        ...defaultModules,
-      );
+    return [ ...preloadedConfigs, ...options.configs ];
+  }
 
-      preloadedExports.push(
-        ConfigModule,
+  /**
+   * Merge defaults, project source and user provided modules.
+   * @param options
+   * @param type
+   */
+  private static buildEntryModules(options: AppBootOptions, type: 'imports' | 'exports'): any[] {
+    const preloadedModules = [ ];
+
+    const defaultModules = [
+      ConsoleModule,
+      LoggerModule,
+      SentryModule,
+      SlackModule,
+      UtilModule,
+    ];
+
+    if (!options.disableDefaultImports) {
+      preloadedModules.push(
+
+        type === 'exports'
+          ? ConfigModule
+          : ConfigModule.registerAsync({
+            envPath: options.envPath,
+            configs: [
+              ...this.buildEntryConfigs(options),
+              ...options.configs,
+            ],
+          }),
+
         ...defaultModules,
       );
     }
 
-    if (!options.disableSourceImports) {
+    if (!options.disableDefaultImports) {
       const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',
       ]);
-      preloadedImports.push(...sourceModules);
-      preloadedExports.push(...sourceModules);
+      preloadedModules.push(...sourceModules);
     }
 
-    return {
-      module: AppModule,
-      imports: [ ...preloadedImports, ...options.modules ],
-      exports: [ ...preloadedExports, ...options.modules ],
-    };
+    return [ ...preloadedModules, ...options.modules ];
+  }
+
+  /**
+   * Adds exception filter, serializer, logger, timeout
+   * and validation pipe.
+   * @param options
+   */
+  private static buildEntryProviders(options: AppBootOptions): any[] {
+    const preloadedProviders: any[] = [ AppConfig ];
+
+    if (!options.disableDefaultFilters) {
+      preloadedProviders.push({
+        provide: APP_FILTER,
+        useClass: AppFilter,
+      });
+    }
+
+    if (!options.disableDefaultInterceptors) {
+      preloadedProviders.push(
+        { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
+        { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
+        { provide: APP_INTERCEPTOR, useClass: AppTimeoutInterceptor },
+      );
+    }
+
+    if (!options.disableDefaultPipes) {
+      preloadedProviders.push({
+        provide: APP_PIPE,
+        useFactory: (): ValidationPipe => new ValidationPipe({
+          whitelist: true,
+          forbidNonWhitelisted: true,
+        }),
+      });
+    }
+
+    return preloadedProviders;
   }
 
 }

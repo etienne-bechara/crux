@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from
 import { decycle } from 'cycle';
 
 import { LoggerService } from '../logger/logger.service';
+import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppRequest, AppResponse } from './app.interface';
@@ -10,8 +11,9 @@ import { AppException, AppRequest, AppResponse } from './app.interface';
 export class AppFilter implements ExceptionFilter {
 
   public constructor(
-    private readonly appConfig: AppConfig,
-    private readonly loggerService: LoggerService,
+    protected readonly appConfig: AppConfig,
+    protected readonly loggerService: LoggerService,
+    protected readonly utilService: UtilService,
   ) { }
 
   /**
@@ -36,9 +38,7 @@ export class AppFilter implements ExceptionFilter {
       this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION
       && appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
 
-    res.setHeader('Content-Type', 'application/json');
-    res.statusCode = appException.errorCode;
-    res.end(JSON.stringify({
+    const normalizedResponse = {
       error: appException.errorCode,
       message: !productionServerError
         ? appException.message
@@ -46,37 +46,47 @@ export class AppFilter implements ExceptionFilter {
       details: !productionServerError
         ? appException.details
         : { },
-    }));
+    };
+
+    const outboundResponse = appException.details.proxy_response
+      ? appException.details.upstream_response?.data
+      : normalizedResponse;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = appException.errorCode;
+    res.end(JSON.stringify(outboundResponse));
   }
 
   /**
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  private getErrorCode(exception: HttpException | Error): number {
-    return exception instanceof HttpException
-      ? exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
+  protected getErrorCode(exception: HttpException | Error): HttpStatus {
+    let errorCode: HttpStatus;
+
+    if (exception instanceof HttpException) {
+      errorCode = exception.getStatus();
+    }
+
+    return errorCode || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   /**
    * Given an exception, extracts a detailing message.
    * @param exception
    */
-  private getMessage(exception: HttpException | Error): string {
+  protected getMessage(exception: HttpException | Error): string {
     let message;
 
     if (exception instanceof HttpException) {
+      const details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
-      message = exception.getResponse();
 
-      if (status === HttpStatus.BAD_REQUEST) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.upstream_response) {
         message = 'request validation failed';
       }
-      else if (message && typeof message === 'object') {
-        if (message['message'] && typeof message['message'] === 'string') {
-          message = message['message'];
-        }
+      else if (details?.message && typeof details.message === 'string') {
+        message = details.message;
       }
     }
     else {
@@ -93,23 +103,23 @@ export class AppFilter implements ExceptionFilter {
    * Ensures that circular references are eliminated.
    * @param exception
    */
-  private getDetails(exception: HttpException | Error): unknown {
-    let details: unknown;
+  protected getDetails(exception: HttpException | Error): Record<string, any> {
+    let details: Record<string, any>;
 
     if (exception instanceof HttpException) {
+      details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
-      details = exception.getResponse();
 
-      if (status === HttpStatus.BAD_REQUEST) {
-        const constraints = Array.isArray(details['message'])
-          ? details['message']
-          : [ details['message'] ];
+      if (status === HttpStatus.BAD_REQUEST && !details?.upstream_response) {
+        const constraints = Array.isArray(details.message)
+          ? details.message
+          : [ details.message ];
         details = { constraints };
       }
       else if (details && typeof details === 'object') {
-        delete details['statusCode'];
-        delete details['message'];
-        delete details['error'];
+        delete details.statusCode;
+        delete details.message;
+        delete details.error;
       }
     }
 
@@ -126,44 +136,30 @@ export class AppFilter implements ExceptionFilter {
    * @param appException
    * @param req
    */
-  private logException(appException: AppException, req: AppRequest): void {
+  protected logException(appException: AppException, req: AppRequest): void {
     const logData = {
       message: appException.message,
       details: appException.details,
     };
 
     if (appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.loggerService.error(appException.exception, {
+      const exceptionMessage = {
         message: logData.message,
         ...logData.details,
         inbound_request: {
-          url: req.url,
-          headers: this.removeSensitiveData(req.headers),
-          params: this.removeSensitiveData(req.params),
-          query: this.removeSensitiveData(req.query),
-          body: this.removeSensitiveData(req.body),
-          metadata: req.metadata,
+          url: req.url.split('?')[0],
+          params: this.utilService.removeSensitiveData(req.params),
+          query: this.utilService.removeSensitiveData(req.query),
+          body: this.utilService.removeSensitiveData(req.body),
+          headers: this.utilService.removeSensitiveData(req.headers),
+          metadata: this.utilService.removeSensitiveData(req.metadata),
         },
-      });
+      };
+      this.loggerService.error(appException.exception, exceptionMessage);
     }
     else {
       this.loggerService.info(appException.exception, logData);
     }
-  }
-
-  /**
-   * Check if object has any keys and remove sensitive
-   * data form them
-   * If empty, return undefined to send less data.
-   * @param object
-   */
-  private removeSensitiveData(object: any): any {
-    if (!object || typeof object !== 'object' || Object.keys(object).length === 0) {
-      return;
-    }
-
-    delete object.authorization;
-    return object;
   }
 
 }

@@ -1,8 +1,8 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export interface AppException {
   exception: HttpException | Error;
-  errorCode: number;
+  errorCode: HttpStatus;
   message: string;
   details: Record<string, any>;
 }

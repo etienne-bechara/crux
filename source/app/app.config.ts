@@ -15,7 +15,7 @@ export class AppConfig {
   public readonly NODE_ENV: AppEnvironment;
 
   @InjectSecret({ default: 8080 })
-  @Transform((v) => Number.parseInt(v))
+  @Transform((v) => Number.parseInt(v.value))
   @Min(1024) @Max(65535)
   public readonly APP_PORT: number;
 
@@ -35,8 +35,9 @@ export class AppConfig {
     json: true,
     default: {
       origin: '*',
-      methods: 'DELETE, GET, OPTIONS, POST, PUT',
-      allowedHeaders: 'Accept, Authorization, Content-Type',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
     },
   })
   @ValidateNested()
