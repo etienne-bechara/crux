@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.2...v1.4.0) (2020-11-14)
+
+
+### Features
+
+* add sourcemap support ([130624d](https://github.com/etienne-bechara/nestjs-core/commit/130624dbc59bd15977bd115869c92eb3b89f7b39))
+
 ## [1.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.1...v1.3.2) (2020-11-13)
 
 
