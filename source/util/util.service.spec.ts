@@ -66,6 +66,19 @@ TestModule.createSandbox({
       });
     });
 
+    describe('removeSensitiveData', () => {
+      it('should delete sensitive keys from object', () => {
+        const sensitiveObject = {
+          notSensitive: 'hello world',
+          password: '1234',
+          authorization: 'Bearer eyj1f0h9j0982ef',
+        };
+
+        const censoredObject = utilService.removeSensitiveData(sensitiveObject);
+        expect(Object.keys(censoredObject).length).toBe(1);
+      });
+    });
+
     describe('getClientIp', () => {
       it('should extract a client ip', () => {
         const mockReq = { headers: { 'x-client-ip': '123.45.67.8' } };

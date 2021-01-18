@@ -4,21 +4,26 @@ import globby from 'globby';
 
 import { HttpsModule } from '../https/https.module';
 import { LoggerModule } from '../logger/logger.module';
+import { UtilConfig } from './util.config';
 import { UtilController } from './util.controller';
 import { UtilService } from './util.service';
 
 @Module({
   imports: [
-    HttpsModule.register(),
+    HttpsModule.register({
+      cache: { },
+    }),
     LoggerModule,
   ],
   controllers: [
     UtilController,
   ],
   providers: [
+    UtilConfig,
     UtilService,
   ],
   exports: [
+    UtilConfig,
     UtilService,
   ],
 })

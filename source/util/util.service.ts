@@ -5,15 +5,15 @@ import requestIp from 'request-ip';
 import { AppRequest } from '../app/app.interface';
 import { HttpsService } from '../https/https.service';
 import { LoggerService } from '../logger/logger.service';
+import { UtilConfig } from './util.config';
 import { UtilAppStatus } from './util.interface';
 import { UtilRetryParams } from './util.interface/util.retry.params';
 
 @Injectable()
 export class UtilService {
 
-  private serverIp: string;
-
   public constructor(
+    private readonly utilConfig: UtilConfig,
     private readonly httpsService: HttpsService,
     private readonly loggerService: LoggerService,
   ) { }
@@ -67,6 +67,33 @@ export class UtilService {
   }
 
   /**
+   * Check if object has any keys matching blacklist and remove them.
+   * If any key value is undefined, delete it.
+   * @param object
+   */
+  public removeSensitiveData(object: any): any {
+    if (typeof object !== 'object') return object;
+
+    if (Array.isArray(object)) {
+      const clone = [ ...object ];
+      return clone.map((o) => this.removeSensitiveData(o));
+    }
+
+    const clone = { ...object };
+
+    for (const key in clone) {
+      if (this.utilConfig.UTIL_SENSITIVE_KEYS.includes(key) || clone[key] === undefined) {
+        delete clone[key];
+      }
+      else if (typeof clone[key] === 'object') {
+        clone[key] = this.removeSensitiveData(clone[key]);
+      }
+    }
+
+    return clone;
+  }
+
+  /**
    * Given a request object, extracts the client ip.
    * @param req
    */
@@ -88,18 +115,18 @@ export class UtilService {
    * In case of error log an exception but do not throw.
    */
   public async getServerIp(): Promise<string> {
-    if (!this.serverIp) {
-      try {
-        this.serverIp = await this.httpsService.get('https://api64.ipify.org', {
-          timeout: 5000,
-        });
-      }
-      catch (e) {
-        this.loggerService.error('failed to acquire server ip address', e);
-      }
+    let serverIp: string;
+
+    try {
+      serverIp = await this.httpsService.get('https://api64.ipify.org', {
+        timeout: 5 * 1000,
+      });
+    }
+    catch (e) {
+      this.loggerService.error('failed to acquire server ip address', e);
     }
 
-    return this.serverIp;
+    return serverIp;
   }
 
   /**
