@@ -1,3 +1,14 @@
+# [1.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.4.0...v1.5.0) (2021-01-18)
+
+
+### Features
+
+* **config:** remove config freeze and use metadata keys ([7e22f40](https://github.com/etienne-bechara/nestjs-core/commit/7e22f40e91e1214f280dcdc11c59d23ab88e0fd2))
+* **https:** add request cache support ([5005287](https://github.com/etienne-bechara/nestjs-core/commit/5005287fb3f5f77ba485bc821760865c8bc70747))
+* **slack:** add slack logger transport ([ec04258](https://github.com/etienne-bechara/nestjs-core/commit/ec0425802200c6a3ea752308b744a30cbbe432a1))
+* **util:** add sensitive keys removal tool ([6db00b9](https://github.com/etienne-bechara/nestjs-core/commit/6db00b9b4a471064fc032cf0d72231351e2fdf62))
+* add more boot disable options and automatic jwt flattening ([5ac1e56](https://github.com/etienne-bechara/nestjs-core/commit/5ac1e56255cf5da38916b952986b6f54059e9b80))
+
 # [1.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.3.2...v1.4.0) (2020-11-14)
 
 
