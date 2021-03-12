@@ -1,3 +1,3 @@
-import { ServerResponse } from 'http';
+import { Response } from 'express';
 
-export class AppResponse extends ServerResponse { }
+export type AppResponse = Response;

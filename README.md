@@ -49,7 +49,7 @@ $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 npm init -y
 
 npm i -D typescript @types/node ts-node-dev
-npm i @bechara/nestjs-core @nestjs/core @nestjs/common @nestjs/platform-express
+npm i @bechara/nestjs-core @nestjs/core @nestjs/common @nestjs/platform-express @types/express
 
 echo "NODE_ENV=local" > .env
 echo "import { AppModule } from '@bechara/nestjs-core';" > main.ts
@@ -103,7 +103,7 @@ npm i -D ts-node-dev
 Install NestJS core and common packages as well as the Express server platform:
 
 ```
-npm i @nestjs/core @nestjs/common @nestjs/platform-express
+npm i @nestjs/core @nestjs/common @nestjs/platform-express @types/express
 ```
 
 At this point you already have a NestJS enable repo, but instead of generating their standard boilerplate, install this package:

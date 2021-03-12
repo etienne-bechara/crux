@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Type } from 'class-transformer';
-import { IsArray, IsObject, IsUrl, ValidateIf, ValidateNested } from 'class-validator';
+import { IsArray, IsObject, Matches, ValidateIf, ValidateNested } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
@@ -12,7 +12,7 @@ import { LoggerTransportOptions } from '../../logger.interface';
 export class SentryConfig extends LoggerConfig {
 
   @InjectSecret()
-  @IsUrl()
+  @Matches('^http.+?sentry\\.io')
   @ValidateIf((o: SentryConfig) => {
     const envSetting = o.SENTRY_TRANSPORT_OPTIONS.find((s) => s.environment === o.NODE_ENV);
     return envSetting?.level ? true : false;

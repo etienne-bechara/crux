@@ -15,7 +15,7 @@ export class AppConfig {
   public readonly NODE_ENV: AppEnvironment;
 
   @InjectSecret({ default: 8080 })
-  @Transform((v) => Number.parseInt(v.value))
+  @Transform((o) => Number.parseInt(o.value))
   @Min(1024) @Max(65535)
   public readonly APP_PORT: number;
 

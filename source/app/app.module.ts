@@ -153,7 +153,7 @@ export class AppModule {
       );
     }
 
-    if (!options.disableDefaultImports) {
+    if (!options.disableSourceImports) {
       const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',
