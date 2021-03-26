@@ -12,6 +12,8 @@ import { UtilRetryParams } from './util.interface/util.retry.params';
 @Injectable()
 export class UtilService {
 
+  private cachedServerIpAddress: string;
+
   public constructor(
     private readonly utilConfig: UtilConfig,
     private readonly httpsService: HttpsService,
@@ -115,18 +117,18 @@ export class UtilService {
    * In case of error log an exception but do not throw.
    */
   public async getServerIp(): Promise<string> {
-    let serverIp: string;
-
-    try {
-      serverIp = await this.httpsService.get('https://api64.ipify.org', {
-        timeout: 5 * 1000,
-      });
+    if (!this.cachedServerIpAddress) {
+      try {
+        this.cachedServerIpAddress = await this.httpsService.get('https://api64.ipify.org', {
+          timeout: 5 * 1000,
+        });
+      }
+      catch (e) {
+        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
+      }
     }
-    catch (e) {
-      this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-    }
 
-    return serverIp;
+    return this.cachedServerIpAddress;
   }
 
   /**
