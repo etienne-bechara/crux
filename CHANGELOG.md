@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.1...v1.5.2) (2021-03-26)
+
+
+### Performance Improvements
+
+* make configurations easier to use and add better https service debugging ([d832d3c](https://github.com/etienne-bechara/nestjs-core/commit/d832d3cb78b15aaef9d32e38e8554a4322708235))
+
 ## [1.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.0...v1.5.1) (2021-03-12)
 
 
