@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.0...v2.0.1) (2021-03-26)
+
+
+### Bug Fixes
+
+* **https:** incorrect form encoded implementation ([26dffd3](https://github.com/etienne-bechara/nestjs-core/commit/26dffd32a8f3ae4e4090d85a9eba2e6923afa92c))
+
 # [2.0.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.2...v2.0.0) (2021-03-26)
 
 
