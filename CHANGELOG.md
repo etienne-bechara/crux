@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.0...v1.5.1) (2021-03-12)
+
+
+### Bug Fixes
+
+* **app:** type signature fixes ([942f3ab](https://github.com/etienne-bechara/nestjs-core/commit/942f3ab50be5b964ce65601c39a80b15ea58c424))
+
 # [1.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.4.0...v1.5.0) (2021-01-18)
 
 
