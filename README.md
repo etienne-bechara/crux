@@ -423,13 +423,6 @@ this.loggerService.error(a: Error, b: Object, c: Object);
 
 The framework will be responsible of identifying and parsing accordingly.
 
-**Console Configuration**
-
-Variable | Type | Default
-:--- | :---: | :---
-CONSOLE_TRANSPORT_OPTIONS | [LoggerTransportOptions](source/logger/logger.interface/logger.transport.options.ts)[] | See table above.
-
-
 **Sentry Configuration**
 
 To enable this integration it is mandatory to create a project at Sentry platform and provide its `SENTRY_DSN` as environment variable.
@@ -439,7 +432,6 @@ Keep in mind that it is unique for every project.
 Variable | Type | Default
 :--- | :---: | :---
 SENTRY_DSN | string | `undefined`
-SENTRY_TRANSPORT_OPTIONS | [LoggerTransportOptions](source/logger/logger.interface/logger.transport.options.ts)[] | See table above.
 
 **Slack Configuration**
 
@@ -451,7 +443,6 @@ SLACK_WEBHOOK | string | `ssm:slack_alert_hook`
 SLACK_CHANNEL | string | `ssm:slack_alert_channel`
 SLACK_USERNAME | string | Notification Bot
 SLACK_ICON_URL | string | `undefined`
-SLACK_TRANSPORT_OPTIONS | [LoggerTransportOptions](source/logger/logger.interface/logger.transport.options.ts)[] | See table above.
 
 **Example**
 
