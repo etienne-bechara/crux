@@ -245,7 +245,7 @@ export class HttpsService {
     if (params.form) {
       if (!replacedParams.headers) replacedParams.headers = { };
       replacedParams.headers['content-type'] = 'application/x-www-form-urlencoded';
-      replacedParams.query = params.form;
+      replacedParams.body = qs.stringify(params.form);
       delete replacedParams.form;
     }
 
@@ -329,7 +329,7 @@ export class HttpsService {
         method: finalParams.method,
         url: finalParams.url,
         headers: finalParams.headers,
-        params: qs.stringify(finalParams.query),
+        params: finalParams.query,
         data: finalParams.body,
         cancelToken: cancelSource.token,
         ...finalParams.extras,

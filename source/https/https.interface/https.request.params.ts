@@ -10,7 +10,7 @@ export interface HttpsRequestParams {
   replacements?: Record<string, string>;
   headers?: Record<string, string>;
   query?: Record<string, any>;
-  body?: Record<string, any>;
+  body?: any;
 
   form?: Record<string, any>;
   json?: Record<string, any>;
