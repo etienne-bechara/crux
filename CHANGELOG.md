@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.2...v2.0.0) (2021-03-26)
+
+
+### Features
+
+* improve overall configuration and http logging ([5a0889a](https://github.com/etienne-bechara/nestjs-core/commit/5a0889a7fb6d408e68698f2d6886a4a1148b94a1))
+
+
+### BREAKING CHANGES
+
+* improve overall configuration and http logging
+
 ## [1.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v1.5.1...v1.5.2) (2021-03-26)
 
 
