@@ -179,7 +179,8 @@ APP_PORT | number | 8080
 APP_GLOBAL_PREFIX | string | `empty`
 APP_JSON_LIMIT | string | 10mb
 APP_TIMEOUT | number | 90000 (90s)
-APP_CORS_OPTIONS | [AppCorsOptions](source/app/app.interface/app.cors.options.ts) | See [app.config.ts](source/app/app.config.ts).
+APP_CORS_ORIGIN | string | *
+APP_CORS_METHODS | string | GET,HEAD,PUT,PATCH,POST,DELETE
 
 To fully bootstrap your application with predefined rules, call the method `bootServer()` from your `main.ts` file:
 
@@ -377,14 +378,6 @@ import { HttpsModule } from '@bechara/nestjs-core';
 })
 export class CatModule { }
 ```
-
-**Configuration**
-
-Variable | Type | Default
-:--- | :---: | :---
-HTTPS_DEFAULT_TIMEOUT | number | 60000 (60s)
-HTTPS_DEFAULT_CACHE_MAX_AGE | number | 900000 (15m)
-HTTPS_DEFAULT_CACHE_LIMIT | number | 10000
 
 
 ### Logger Module

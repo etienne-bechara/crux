@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsObject, IsOptional,
-  IsString, IsUrl, ValidateIf, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
@@ -13,19 +11,13 @@ import { LoggerTransportOptions } from '../../logger.interface';
 export class SlackConfig extends LoggerConfig {
 
   @InjectSecret()
+  @IsOptional()
   @IsUrl()
-  @ValidateIf((o: SlackConfig) => {
-    const envSetting = o.SLACK_TRANSPORT_OPTIONS.find((s) => s.environment === o.NODE_ENV);
-    return envSetting?.level ? true : false;
-  })
   public readonly SLACK_WEBHOOK: string;
 
   @InjectSecret()
+  @IsOptional()
   @IsString() @IsNotEmpty()
-  @ValidateIf((o: SlackConfig) => {
-    const envSetting = o.SLACK_TRANSPORT_OPTIONS.find((s) => s.environment === o.NODE_ENV);
-    return envSetting?.level ? true : false;
-  })
   public readonly SLACK_CHANNEL: string;
 
   @InjectSecret()
@@ -38,19 +30,11 @@ export class SlackConfig extends LoggerConfig {
   @IsUrl()
   public readonly SLACK_ICON_URL: string;
 
-  @InjectSecret({
-    json: true,
-    default: [
-      { environment: AppEnvironment.LOCAL, level: null },
-      { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.WARNING },
-      { environment: AppEnvironment.STAGING, level: LoggerLevel.WARNING },
-      { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.WARNING },
-    ],
-  })
-  @ValidateNested({ each: true })
-  @Type(() => LoggerTransportOptions)
-  @IsArray()
-  @IsObject({ each: true })
-  public readonly SLACK_TRANSPORT_OPTIONS: LoggerTransportOptions[] ;
+  public readonly SLACK_TRANSPORT_OPTIONS: LoggerTransportOptions[] = [
+    { environment: AppEnvironment.LOCAL, level: null },
+    { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.WARNING },
+    { environment: AppEnvironment.STAGING, level: LoggerLevel.WARNING },
+    { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.WARNING },
+  ];
 
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Type } from 'class-transformer';
-import { IsArray, IsObject, Matches, ValidateIf, ValidateNested } from 'class-validator';
+import { IsOptional, Matches } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
@@ -12,26 +11,15 @@ import { LoggerTransportOptions } from '../../logger.interface';
 export class SentryConfig extends LoggerConfig {
 
   @InjectSecret()
+  @IsOptional()
   @Matches('^http.+?sentry\\.io')
-  @ValidateIf((o: SentryConfig) => {
-    const envSetting = o.SENTRY_TRANSPORT_OPTIONS.find((s) => s.environment === o.NODE_ENV);
-    return envSetting?.level ? true : false;
-  })
   public readonly SENTRY_DSN: string;
 
-  @InjectSecret({
-    json: true,
-    default: [
-      { environment: AppEnvironment.LOCAL, level: null },
-      { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.ERROR },
-      { environment: AppEnvironment.STAGING, level: LoggerLevel.ERROR },
-      { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.ERROR },
-    ],
-  })
-  @ValidateNested({ each: true })
-  @Type(() => LoggerTransportOptions)
-  @IsArray()
-  @IsObject({ each: true })
-  public readonly SENTRY_TRANSPORT_OPTIONS: LoggerTransportOptions[] ;
+  public readonly SENTRY_TRANSPORT_OPTIONS: LoggerTransportOptions[] = [
+    { environment: AppEnvironment.LOCAL, level: null },
+    { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.ERROR },
+    { environment: AppEnvironment.STAGING, level: LoggerLevel.ERROR },
+    { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.ERROR },
+  ];
 
 }

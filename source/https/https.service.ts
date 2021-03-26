@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosAdapter, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { setupCache } from 'axios-cache-adapter';
 import { Agent } from 'http';
 import https from 'https';
 import qs from 'qs';
 
+import { AppEnvironment } from '../app/app.enum';
+import { LoggerService } from '../logger/logger.service';
 import { HttpsConfig } from './https.config';
 import { HttpsInjectionToken, HttpsPredefinedHandler, HttpsReturnType } from './https.enum';
 import { HttpsCookie, HttpsExceptionHandler, HttpsHandlerParams, HttpsModuleOptions, HttpsRequestParams,
@@ -21,6 +23,7 @@ export class HttpsService {
     @Inject(HttpsInjectionToken.MODULE_OPTIONS)
     private readonly httpsModuleOptions: HttpsModuleOptions,
     private readonly httpsConfig: HttpsConfig,
+    private readonly loggerService: LoggerService,
   ) {
     this.setup(httpsModuleOptions);
   }
@@ -35,6 +38,7 @@ export class HttpsService {
     this.setDefaultParams(params);
     this.setBaseParams(params);
 
+    this.loggerService.debug(`[HttpsService] Creating instance for ${params.name || this.bases.url}...`);
     this.instance = axios.create({
       adapter: this.buildAdapter(params),
       httpsAgent: this.buildHttpsAgent(params),
@@ -112,7 +116,7 @@ export class HttpsService {
   private setBaseParams(params: HttpsModuleOptions): void {
     if (!params.bases) params.bases = { };
     this.bases.url = params.bases.url,
-    this.bases.headers = params.bases.headers || { };
+    this.bases.headers = params.bases.headers;
     this.bases.query = params.bases.query;
     this.bases.body = params.bases.body;
   }
@@ -152,21 +156,33 @@ export class HttpsService {
    * @param params
    */
   private buildAdapter(params: HttpsModuleOptions): AxiosAdapter {
-    if (params.cache) {
-      if (params.cache.maxAge === undefined) {
-        params.cache.maxAge = this.httpsConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
-      }
+    if (!params.cache) return;
 
-      if (params.cache.limit === undefined) {
-        params.cache.limit = this.httpsConfig.HTTPS_DEFAULT_CACHE_LIMIT as any;
-      }
-
-      if (params.cache.exclude === undefined) {
-        params.cache.exclude = { query: false };
-      }
-
-      return setupCache(params.cache).adapter;
+    if (params.cache.maxAge === undefined) {
+      params.cache.maxAge = this.httpsConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
     }
+
+    if (params.cache.limit === undefined) {
+      params.cache.limit = this.httpsConfig.HTTPS_DEFAULT_CACHE_LIMIT;
+    }
+
+    if (!params.cache.exclude) {
+      params.cache.exclude = { query: false };
+    }
+
+    if (!params.cache.invalidate && this.httpsConfig.NODE_ENV === AppEnvironment.LOCAL) {
+      // eslint-disable-next-line @typescript-eslint/require-await
+      params.cache.invalidate = async (cacheConfig: any): Promise<void> => {
+        if (Object.keys(cacheConfig?.store?.store).includes(cacheConfig.uuid)) {
+          this.loggerService.debug(`[HttpsService] Cache hit: ${cacheConfig.uuid}`);
+        }
+        else {
+          this.loggerService.debug(`[HttpsService] Cache miss: ${cacheConfig.uuid}`);
+        }
+      };
+    }
+
+    return setupCache(params.cache).adapter;
   }
 
   /**
@@ -189,12 +205,12 @@ export class HttpsService {
       mergedParams.headers = { ...this.bases.headers, ...params.headers };
     }
 
-    if (this.bases.query || params.params || params.query) {
-      mergedParams.params = { ...this.bases.query, ...params.params, ...params.query };
+    if (this.bases.query || params.query) {
+      mergedParams.query = { ...this.bases.query, ...params.query };
     }
 
     if (this.bases.body) {
-      if (params.data) mergedParams.data = { ...this.bases.body, ...params.data };
+      if (params.body) mergedParams.body = { ...this.bases.body, ...params.body };
       if (params.form) mergedParams.form = { ...this.bases.body, ...params.form };
       if (params.json) mergedParams.json = { ...this.bases.body, ...params.json };
     }
@@ -226,19 +242,17 @@ export class HttpsService {
       }
     }
 
-    if (params.query) {
-      delete replacedParams.query;
-    }
-
     if (params.form) {
+      if (!replacedParams.headers) replacedParams.headers = { };
       replacedParams.headers['content-type'] = 'application/x-www-form-urlencoded';
-      replacedParams.data = qs.stringify(params.form);
+      replacedParams.query = params.form;
       delete replacedParams.form;
     }
 
     if (params.json) {
+      if (!replacedParams.headers) replacedParams.headers = { };
       replacedParams.headers['content-type'] = 'application/json';
-      replacedParams.data = params.json;
+      replacedParams.body = params.json;
       delete replacedParams.json;
     }
 
@@ -296,22 +310,34 @@ export class HttpsService {
    */
   public async request<T>(params: HttpsRequestParams): Promise<T> {
     if (!this.instance) this.setup();
-
     const finalParams = this.replaceVariantParams(this.mergeBaseParams(params));
+
     const returnType = finalParams.returnType || this.defaults.returnType;
     const validator = finalParams.validateStatus || this.defaults.validator;
     const exceptionHandler = this.getExceptionHandler(finalParams.exceptionHandler);
+
     const timeout = finalParams.timeout || this.defaults.timeout;
     const cancelSource = axios.CancelToken.source();
 
     let errorMsg: string;
-    let res: AxiosResponse | void;
-    finalParams.cancelToken = cancelSource.token;
+    let res: AxiosResponse | any;
+
+    this.loggerService.debug('[HttpsService] Executing external request...', finalParams);
 
     try {
+      const axiosConfig: AxiosRequestConfig = {
+        method: finalParams.method,
+        url: finalParams.url,
+        headers: finalParams.headers,
+        params: qs.stringify(finalParams.query),
+        data: finalParams.body,
+        cancelToken: cancelSource.token,
+        ...finalParams.extras,
+      };
+
       res = await Promise.race([
-        this.instance(finalParams),
-        new Promise((resolve) => setTimeout(resolve, timeout)) as any,
+        this.instance(axiosConfig),
+        new Promise((resolve) => setTimeout(resolve, timeout)),
       ]);
 
       if (!res) {
@@ -331,7 +357,7 @@ export class HttpsService {
     if (errorMsg) {
       await exceptionHandler({
         errorMessage: errorMsg,
-        upstreamRequest: params,
+        upstreamRequest: finalParams,
         upstreamResponse: res,
       });
     }

@@ -56,10 +56,17 @@ export class AppModule {
     const loggerService: LoggerService = nestApp.get('LoggerService');
 
     nestApp.setGlobalPrefix(appConfig.APP_GLOBAL_PREFIX);
-    nestApp.enableCors(appConfig.APP_CORS_OPTIONS);
+
     nestApp.use(
       json({ limit: appConfig.APP_JSON_LIMIT }),
     );
+
+    nestApp.enableCors({
+      origin: appConfig.APP_CORS_ORIGIN,
+      methods: appConfig.APP_CORS_METHODS,
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+    });
 
     const httpServerPort = appConfig.APP_PORT;
     const httpServer = await nestApp.listen(httpServerPort);
@@ -68,8 +75,8 @@ export class AppModule {
     const timeoutStr = appConfig.APP_TIMEOUT
       ? `set to ${(appConfig.APP_TIMEOUT / 1000).toString()}s`
       : 'disabled';
-    loggerService.debug(`Server timeouts are ${timeoutStr}`);
-    loggerService.notice(`Server listening on port ${httpServerPort}`);
+    loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
+    loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
   }
 
   /**
@@ -80,9 +87,14 @@ export class AppModule {
   private static buildEntryModule(options: AppBootOptions = { }): DynamicModule {
     if (!options.configs) options.configs = [ ];
     if (!options.modules) options.modules = [ ];
+    if (!options.controllers) options.controllers = [ ];
+    if (!options.providers) options.providers = [ ];
+    if (!options.imports) options.imports = [ ];
+    if (!options.exports) options.exports = [ ];
 
     return {
       module: AppModule,
+      controllers: options.controllers,
       providers: this.buildEntryProviders(options),
       imports: this.buildEntryModules(options, 'imports'),
       exports: this.buildEntryModules(options, 'exports'),
@@ -90,13 +102,11 @@ export class AppModule {
   }
 
   /**
-   * Merge default, project source and user provided modules.
+   * Merge default, project source and user provided configs.
    * @param options
    */
   private static buildEntryConfigs(options: AppBootOptions): any[] {
-    const preloadedConfigs = [ ];
-
-    const defaultConfigs = [
+    const preloadedConfigs = [
       AppConfig,
       HttpsConfig,
       LoggerConfig,
@@ -105,11 +115,7 @@ export class AppModule {
       UtilConfig,
     ];
 
-    if (!options.disableDefaultImports) {
-      preloadedConfigs.push(...defaultConfigs);
-    }
-
-    if (!options.disableSourceImports) {
+    if (!options.disableConfigScan) {
       const sourceConfigs = UtilModule.globRequire([
         's*rc*/**/*.config.{js,ts}',
         '!**/*test*',
@@ -126,9 +132,9 @@ export class AppModule {
    * @param type
    */
   private static buildEntryModules(options: AppBootOptions, type: 'imports' | 'exports'): any[] {
-    const preloadedModules = [ ];
+    const preloadedModules: any[] = [ ];
 
-    const defaultModules = [
+    const defaultModules: any[] = [
       ConsoleModule,
       LoggerModule,
       SentryModule,
@@ -136,29 +142,35 @@ export class AppModule {
       UtilModule,
     ];
 
-    if (!options.disableDefaultImports) {
+    if (type === 'imports') {
       preloadedModules.push(
-
-        type === 'exports'
-          ? ConfigModule
-          : ConfigModule.registerAsync({
-            envPath: options.envPath,
-            configs: [
-              ...this.buildEntryConfigs(options),
-              ...options.configs,
-            ],
-          }),
-
+        ConfigModule.registerAsync({
+          envPath: options.envPath,
+          configs: this.buildEntryConfigs(options),
+        }),
+        ...defaultModules,
+      );
+    }
+    else {
+      preloadedModules.push(
+        ConfigModule,
         ...defaultModules,
       );
     }
 
-    if (!options.disableSourceImports) {
+    if (!options.disableModuleScan) {
       const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',
       ]);
       preloadedModules.push(...sourceModules);
+    }
+
+    if (type === 'imports') {
+      preloadedModules.push(...options.imports);
+    }
+    else {
+      preloadedModules.push(...options.exports);
     }
 
     return [ ...preloadedModules, ...options.modules ];
@@ -172,14 +184,14 @@ export class AppModule {
   private static buildEntryProviders(options: AppBootOptions): any[] {
     const preloadedProviders: any[] = [ AppConfig ];
 
-    if (!options.disableDefaultFilters) {
+    if (!options.disableFilters) {
       preloadedProviders.push({
         provide: APP_FILTER,
         useClass: AppFilter,
       });
     }
 
-    if (!options.disableDefaultInterceptors) {
+    if (!options.disableInterceptors) {
       preloadedProviders.push(
         { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
         { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
@@ -187,7 +199,7 @@ export class AppModule {
       );
     }
 
-    if (!options.disableDefaultPipes) {
+    if (!options.disablePipes) {
       preloadedProviders.push({
         provide: APP_PIPE,
         useFactory: (): ValidationPipe => new ValidationPipe({
@@ -197,7 +209,7 @@ export class AppModule {
       });
     }
 
-    return preloadedProviders;
+    return [ ...preloadedProviders, ...options.providers ];
   }
 
 }

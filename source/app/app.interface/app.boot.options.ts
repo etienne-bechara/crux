@@ -1,10 +1,12 @@
-export interface AppBootOptions {
+import { ModuleMetadata } from '@nestjs/common';
+
+export interface AppBootOptions extends ModuleMetadata {
   envPath?: string;
-  disableSourceImports?: boolean;
-  disableDefaultImports?: boolean;
-  disableDefaultFilters?: boolean;
-  disableDefaultInterceptors?: boolean;
-  disableDefaultPipes?: boolean;
+  disableModuleScan?: boolean;
+  disableConfigScan?: boolean;
+  disableFilters?: boolean;
+  disableInterceptors?: boolean;
+  disablePipes?: boolean;
   configs?: any[];
   modules?: any[];
 }

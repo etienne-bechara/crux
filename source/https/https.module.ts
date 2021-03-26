@@ -1,12 +1,16 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { v4 } from 'uuid';
 
+import { LoggerModule } from '../logger/logger.module';
 import { HttpsConfig } from './https.config';
 import { HttpsInjectionToken } from './https.enum/https.injection.token';
 import { HttpsAsyncModuleOptions, HttpsModuleOptions } from './https.interface';
 import { HttpsService } from './https.service';
 
 @Module({
+  imports: [
+    LoggerModule,
+  ],
   providers: [
     HttpsConfig,
     HttpsService,

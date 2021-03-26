@@ -23,7 +23,7 @@ export class LoggerService {
    */
   private setupLogger(): void {
     const env = this.loggerConfig.NODE_ENV;
-    this.info(`Environment configured as ${env}`);
+    this.debug(`[LoggerService] Environment configured as ${env}`);
 
     process.on('uncaughtException', (err) => {
       this.error(err, { unexpected: true });

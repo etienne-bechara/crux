@@ -35,7 +35,7 @@ export class SentryService implements LoggerTransport {
       environment: options.environment,
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
-    this.loggerService.notice(`Sentry transport connected at ${dsn}`);
+    this.loggerService.notice(`[SentryService] Transport connected at ${dsn}`);
   }
 
   /**
@@ -44,6 +44,11 @@ export class SentryService implements LoggerTransport {
   public getOptions(): LoggerTransportOptions {
     const environment = this.sentryConfig.NODE_ENV;
     const options = this.sentryConfig.SENTRY_TRANSPORT_OPTIONS;
+
+    if (!this.sentryConfig.SENTRY_DSN) {
+      return { environment, level: null };
+    }
+
     return options.find((o) => o.environment === environment);
   }
 

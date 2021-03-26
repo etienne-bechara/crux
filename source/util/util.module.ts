@@ -11,7 +11,10 @@ import { UtilService } from './util.service';
 @Module({
   imports: [
     HttpsModule.register({
-      cache: { },
+      name: 'UtilModule',
+      cache: {
+        maxAge: 1 * 60 * 60 * 1000,
+      },
     }),
     LoggerModule,
   ],

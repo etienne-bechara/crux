@@ -33,7 +33,7 @@ export class UtilService {
   public async retryOnException<T>(params: UtilRetryParams): Promise<T> {
     const methodName = params.name || 'Unnamed';
 
-    let startMsg = `${methodName}: running with ${params.retries || '∞'} `;
+    let startMsg = `[UtilService] ${methodName}: running with ${params.retries || '∞'} `;
     startMsg += `retries and ${params.timeout / 1000 || '∞ '}s timeout...`;
     this.loggerService.debug(startMsg);
 
@@ -54,7 +54,7 @@ export class UtilService {
         else if (params.breakIf?.(e)) throw e;
         tentative++;
 
-        let retryMsg = `${methodName}: ${e.message} | Retry #${tentative}/${params.retries || '∞'}`;
+        let retryMsg = `[UtilService] ${methodName}: ${e.message} | Retry #${tentative}/${params.retries || '∞'}`;
         retryMsg += `, elapsed ${elapsed / 1000}/${params.timeout / 1000 || '∞ '}s...`;
         this.loggerService.debug(retryMsg);
 
@@ -62,7 +62,7 @@ export class UtilService {
       }
     }
 
-    this.loggerService.debug(`${methodName}: finished successfully!`);
+    this.loggerService.debug(`[UtilService] ${methodName}: finished successfully!`);
     return result;
   }
 
@@ -123,7 +123,7 @@ export class UtilService {
       });
     }
     catch (e) {
-      this.loggerService.error('failed to acquire server ip address', e);
+      this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
     }
 
     return serverIp;

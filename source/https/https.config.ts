@@ -1,24 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { IsNumber } from 'class-validator';
 
+import { AppEnvironment } from '../app/app.enum';
 import { InjectSecret } from '../config/config.decorator';
 
 @Injectable()
 export class HttpsConfig {
 
+  @InjectSecret()
+  public readonly NODE_ENV: AppEnvironment;
+
   // 1 minute
-  @InjectSecret({ default: 1 * 60 * 1000 })
-  @IsNumber()
-  public readonly HTTPS_DEFAULT_TIMEOUT: number;
+  public readonly HTTPS_DEFAULT_TIMEOUT = 1 * 60 * 1000;
 
   // 15 minutes
-  @InjectSecret({ default: 15 * 60 * 1000 })
-  @IsNumber()
-  public readonly HTTPS_DEFAULT_CACHE_MAX_AGE: number;
+  public readonly HTTPS_DEFAULT_CACHE_MAX_AGE = 15 * 60 * 1000;
 
   // 10.000 cached requests (per instance)
-  @InjectSecret({ default: 10000 })
-  @IsNumber()
-  public readonly HTTPS_DEFAULT_CACHE_LIMIT: number;
+  public readonly HTTPS_DEFAULT_CACHE_LIMIT = 10000;
 
 }

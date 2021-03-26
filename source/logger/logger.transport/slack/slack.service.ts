@@ -26,6 +26,11 @@ export class SlackService implements LoggerTransport {
   public getOptions(): LoggerTransportOptions {
     const environment = this.slackConfig.NODE_ENV;
     const options = this.slackConfig.SLACK_TRANSPORT_OPTIONS;
+
+    if (!this.slackConfig.SLACK_WEBHOOK || !this.slackConfig.SLACK_CHANNEL) {
+      return { environment, level: null };
+    }
+
     return options.find((o) => o.environment === environment);
   }
 
@@ -87,7 +92,7 @@ export class SlackService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning('failed to publish slack message', e, { messageBlocks });
+      this.loggerService.warning('[SlackService] Failed to publish slack message', e, { messageBlocks });
     }
   }
 

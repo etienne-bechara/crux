@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { Transform, Type } from 'class-transformer';
-import { IsIn, IsNumber, IsObject, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsIn, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
 import { AppEnvironment } from './app.enum';
-import { AppCorsOptions } from './app.interface';
-
 @Injectable()
 export class AppConfig {
 
@@ -16,33 +13,28 @@ export class AppConfig {
 
   @InjectSecret({ default: 8080 })
   @Transform((o) => Number.parseInt(o.value))
-  @Min(1024) @Max(65535)
+  @IsNumber() @Min(1024) @Max(65535)
   public readonly APP_PORT: number;
+
+  @InjectSecret({ default: 90 * 1000 })
+  @Transform((o) => Number.parseInt(o.value))
+  @IsNumber() @Min(1000)
+  public readonly APP_TIMEOUT: number;
 
   @InjectSecret({ default: '' })
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
 
   @InjectSecret({ default: '10mb' })
-  @IsString()
+  @IsString() @IsNotEmpty()
   public readonly APP_JSON_LIMIT: string;
 
-  @InjectSecret({ default: 90 * 1000 })
-  @IsNumber()
-  public readonly APP_TIMEOUT: number;
+  @InjectSecret({ default: '*' })
+  @IsString() @IsNotEmpty()
+  public readonly APP_CORS_ORIGIN: string;
 
-  @InjectSecret({
-    json: true,
-    default: {
-      origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-    },
-  })
-  @ValidateNested()
-  @Type(() => AppCorsOptions)
-  @IsObject()
-  public readonly APP_CORS_OPTIONS: CorsOptions;
+  @InjectSecret({ default: 'GET,HEAD,PUT,PATCH,POST,DELETE' })
+  @IsString() @IsNotEmpty()
+  public readonly APP_CORS_METHODS: string;
 
 }
