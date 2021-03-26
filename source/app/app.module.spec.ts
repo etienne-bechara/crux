@@ -7,7 +7,11 @@ TestModule.createSandbox({
   descriptor: () => {
     describe('bootServer', () => {
       it('should boot the application successfully', async () => {
-        await AppModule.bootServer();
+        await AppModule.bootServer({
+          disableModuleScan: true,
+          disableConfigScan: true,
+        });
+
         expect(true).toBeDefined();
       });
     });
