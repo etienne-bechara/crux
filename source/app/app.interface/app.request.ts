@@ -7,7 +7,6 @@ export interface AppRequest extends Request {
 
 export interface AppRequestMetadata {
   clientIp?: string;
-  serverIp?: string;
   userAgent?: string;
   jwtPayload?: any;
 }

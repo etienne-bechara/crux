@@ -18,8 +18,8 @@ export class AppMiddleware implements NestMiddleware {
    * @param res
    * @param next
    */
-  public async use(req: AppRequest, res: AppResponse, next: any): Promise<void> {
-    await this.addRequestMetadata(req);
+  public use(req: AppRequest, res: AppResponse, next: any): void {
+    this.addRequestMetadata(req);
     this.flattenJwtMetadata(req);
     next();
   }
@@ -29,10 +29,9 @@ export class AppMiddleware implements NestMiddleware {
    * to user ip, agent and jwt payload.
    * @param req
    */
-  private async addRequestMetadata(req: AppRequest): Promise<void> {
+  private addRequestMetadata(req: AppRequest): void {
     req.metadata = {
       clientIp: this.utilService.getClientIp(req),
-      serverIp: await this.utilService.getServerIp(),
       userAgent: req.headers ? req.headers['user-agent'] : null,
       jwtPayload: req.headers?.authorization
         ? jwt.decode(req.headers.authorization.replace('Bearer ', '')) || { }
