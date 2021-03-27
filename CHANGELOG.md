@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.1...v2.0.2) (2021-03-26)
+
+
+### Bug Fixes
+
+* **util:** store cached ip in service instead of adapter ([6ae5748](https://github.com/etienne-bechara/nestjs-core/commit/6ae57481adf9e5afa4ef8268af8fbbaaea627245))
+
 ## [2.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.0...v2.0.1) (2021-03-26)
 
 
