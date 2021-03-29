@@ -48,8 +48,8 @@ export class AppFilter implements ExceptionFilter {
         : { },
     };
 
-    const outboundResponse = appException.details.proxy_response
-      ? appException.details.upstream_response?.data
+    const outboundResponse = appException.details.proxyResponse
+      ? appException.details.upstreamResponse?.data
       : normalizedResponse;
 
     res.setHeader('Content-Type', 'application/json');
@@ -82,7 +82,7 @@ export class AppFilter implements ExceptionFilter {
       const details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.upstream_response) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.upstreamResponse) {
         message = 'request validation failed';
       }
       else if (details?.message && typeof details.message === 'string') {
@@ -110,7 +110,7 @@ export class AppFilter implements ExceptionFilter {
       details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.upstream_response) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.upstreamResponse) {
         const constraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
@@ -137,28 +137,32 @@ export class AppFilter implements ExceptionFilter {
    * @param req
    */
   protected logException(appException: AppException, req: AppRequest): void {
+    const exception = appException.exception;
     const logData = {
       message: appException.message,
       details: appException.details,
     };
 
     if (appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR) {
-      const exceptionMessage = {
+      const inboundRequest = {
+        url: req.url.split('?')[0],
+        params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined,
+        query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
+        body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
+        headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
+        metadata: req.metadata,
+      };
+
+      const errorData = this.utilService.removeSensitiveData({
         message: logData.message,
         ...logData.details,
-        inbound_request: {
-          url: req.url.split('?')[0],
-          params: this.utilService.removeSensitiveData(req.params),
-          query: this.utilService.removeSensitiveData(req.query),
-          body: this.utilService.removeSensitiveData(req.body),
-          headers: this.utilService.removeSensitiveData(req.headers),
-          metadata: this.utilService.removeSensitiveData(req.metadata),
-        },
-      };
-      this.loggerService.error(appException.exception, exceptionMessage);
+        inboundRequest,
+      });
+
+      this.loggerService.error(exception, errorData);
     }
     else {
-      this.loggerService.info(appException.exception, logData);
+      this.loggerService.info(exception, logData);
     }
   }
 

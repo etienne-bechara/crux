@@ -18,6 +18,6 @@ export interface UtilAppStatus {
 }
 
 export interface UtilAppNetwork {
-  public_ip: string;
+  publicIp: string;
   interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>;
 }

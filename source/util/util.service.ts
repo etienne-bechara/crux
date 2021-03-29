@@ -147,7 +147,7 @@ export class UtilService {
       },
       cpus: os.cpus(),
       network: {
-        public_ip: await this.getServerIp(),
+        publicIp: await this.getServerIp(),
         interfaces: os.networkInterfaces(),
       },
     };

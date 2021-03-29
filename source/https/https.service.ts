@@ -70,14 +70,14 @@ export class HttpsService {
 
       const data = {
         message: `${req.method} ${req.url} ${params.errorMessage}`,
-        proxy_response: handler === HttpsPredefinedHandler.PROXY_FULL_RESPONSE
+        proxyResponse: handler === HttpsPredefinedHandler.PROXY_FULL_RESPONSE
           ? true
           : undefined,
-        upstream_response: {
+        upstreamResponse: {
           status,
           data: res?.data,
         },
-        upstream_request: {
+        upstreamRequest: {
           method: req.method,
           url: req.url,
           ...req,

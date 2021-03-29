@@ -239,7 +239,7 @@ export class CatConfig {
 
   // You can use 'key' if the env variable has
   // a different name than the property.
-  @InjectSecret({ key: 'cat_authorization', ssm: true })
+  @InjectSecret({ key: 'cat_authorization' })
   CAT_API_KEY: string;
 
   // You can use 'default' if you wish to set
@@ -439,8 +439,8 @@ To enable this integration it is mandatory to provide `SLACK_WEBHOOK` and `SLACK
 
 Variable | Type | Default
 :--- | :---: | :---
-SLACK_WEBHOOK | string | `ssm:slack_alert_hook`
-SLACK_CHANNEL | string | `ssm:slack_alert_channel`
+SLACK_WEBHOOK | string | `undefined`
+SLACK_CHANNEL | string | `undefined`
 SLACK_USERNAME | string | Notification Bot
 SLACK_ICON_URL | string | `undefined`
 
