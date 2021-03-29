@@ -1,3 +1,13 @@
+## [2.0.5](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.4...v2.0.5) (2021-03-29)
+
+
+### Bug Fixes
+
+* add overrides and built-in nest dependencies ([1cb1f17](https://github.com/etienne-bechara/nestjs-core/commit/1cb1f1775e174c14095b2a00a50dbd9989278019))
+* lock file ([7de7bd2](https://github.com/etienne-bechara/nestjs-core/commit/7de7bd25b08c3c953339af024edae2188a90bf00))
+* override default http ([d8798ac](https://github.com/etienne-bechara/nestjs-core/commit/d8798ace3993db3dd4e3ff971f1e127905eedd46))
+* update lock file ([ddcf684](https://github.com/etienne-bechara/nestjs-core/commit/ddcf68431f883f53b12e57e636ee03b31731f42b))
+
 ## [2.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.3...v2.0.4) (2021-03-29)
 
 
