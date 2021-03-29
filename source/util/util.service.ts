@@ -3,7 +3,7 @@ import os from 'os';
 import requestIp from 'request-ip';
 
 import { AppRequest } from '../app/app.interface';
-import { HttpsService } from '../https/https.service';
+import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { UtilConfig } from './util.config';
 import { UtilAppStatus } from './util.interface';
@@ -14,7 +14,7 @@ export class UtilService {
 
   public constructor(
     private readonly utilConfig: UtilConfig,
-    private readonly httpsService: HttpsService,
+    private readonly httpService: HttpService,
     private readonly loggerService: LoggerService,
   ) { }
 
@@ -118,7 +118,7 @@ export class UtilService {
     let serverIp: string;
 
     try {
-      serverIp = await this.httpsService.get('https://api64.ipify.org', { timeout: 5000 });
+      serverIp = await this.httpService.get('https://api64.ipify.org', { timeout: 5000 });
     }
     catch (e) {
       this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);

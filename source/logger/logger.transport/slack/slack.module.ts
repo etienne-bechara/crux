@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { HttpsModule } from '../../../https/https.module';
+import { HttpModule } from '../../../http/http.module';
 import { LoggerModule } from '../../logger.module';
 import { SlackConfig } from './slack.config';
 import { SlackService } from './slack.service';
 
 @Module({
   imports: [
-    HttpsModule.registerAsync({
+    HttpModule.registerAsync({
       inject: [ SlackConfig ],
       useFactory: (slackConfig: SlackConfig) => ({
         name: 'SlackModule',

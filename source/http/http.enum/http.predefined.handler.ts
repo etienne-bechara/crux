@@ -1,4 +1,4 @@
-export enum HttpsPredefinedHandler {
+export enum HttpPredefinedHandler {
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   PROXY_HTTP_STATUS = 'PROXY_HTTP_STATUS',
   PROXY_FULL_RESPONSE = 'PROXY_FULL_RESPONSE',

@@ -7,7 +7,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core
 import { json } from 'express';
 
 import { ConfigModule } from '../config/config.module';
-import { HttpsConfig } from '../https/https.config';
+import { HttpConfig } from '../http/http.config';
 import { LoggerConfig } from '../logger/logger.config';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
@@ -108,7 +108,7 @@ export class AppModule {
   private static buildEntryConfigs(options: AppBootOptions): any[] {
     const preloadedConfigs = [
       AppConfig,
-      HttpsConfig,
+      HttpConfig,
       LoggerConfig,
       ConsoleConfig,
       SentryConfig,

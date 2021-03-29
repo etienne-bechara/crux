@@ -1,9 +1,9 @@
 import { AxiosRequestConfig, Method } from 'axios';
 
-import { HttpsReturnType } from '../https.enum';
-import { HttpsExceptionHandler } from './https.exception.handler';
+import { HttpReturnType } from '../http.enum';
+import { HttpExceptionHandler } from './http.exception.handler';
 
-export interface HttpsRequestParams {
+export interface HttpRequestParams {
   method?: Method;
   url?: string;
 
@@ -15,8 +15,8 @@ export interface HttpsRequestParams {
   form?: Record<string, any>;
   json?: Record<string, any>;
 
-  exceptionHandler?: HttpsExceptionHandler;
-  returnType?: HttpsReturnType;
+  exceptionHandler?: HttpExceptionHandler;
+  returnType?: HttpReturnType;
   timeout?: number;
   validateStatus?: (status: number) => boolean;
 

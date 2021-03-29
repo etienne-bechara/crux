@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { decycle } from 'cycle';
 
 import { AppEnvironment } from '../../../app/app.enum';
-import { HttpsService } from '../../../https/https.service';
+import { HttpService } from '../../../http/http.service';
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
 import { LoggerTransportOptions } from '../../logger.interface/logger.transport.options';
@@ -15,7 +15,7 @@ export class SlackService implements LoggerTransport {
   public constructor(
     protected readonly slackConfig: SlackConfig,
     protected readonly loggerService: LoggerService,
-    protected readonly httpsService: HttpsService,
+    protected readonly httpService: HttpService,
   ) {
     this.loggerService.registerTransport(this);
   }
@@ -82,7 +82,7 @@ export class SlackService implements LoggerTransport {
    */
   public async publishSlackMessage(messageBlocks: any[]): Promise<void> {
     try {
-      await this.httpsService.post('', {
+      await this.httpService.post('', {
         json: {
           channel: this.slackConfig.SLACK_CHANNEL,
           username: this.slackConfig.SLACK_USERNAME || 'Notification Bot',

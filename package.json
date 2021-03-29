@@ -21,12 +21,7 @@
     "build": "rimraf ./dist && npm run index && tsc -p tsconfig.build.json && ncp ./source ./dist/source && rimraf ./source/index.ts",
     "index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
     "lint": "eslint **/*.ts --max-warnings=0",
-    "lint:fix": "eslint **/*.ts --fix",
-    "test": "jest --verbose --forceExit --passWithNoTests",
-    "test:watch": "jest --verbose --watch",
-    "test:coverage": "jest --coverage --watchAll=false --passWithNoTests",
-    "update:patch": "ncu -u --dep dev,prod -t minor && npm i && npm audit fix",
-    "update:minor": "ncu -u --dep dev,prod -t major && npm i && npm audit fix",
+    "test": "jest --verbose --forceExit --passWithNoTests --maxWorkers=1",
     "update:major": "ncu -u --dep dev,prod -t latest && npm i && npm audit fix --force"
   },
   "commitlint": {

@@ -3,18 +3,18 @@ import { HttpStatus } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
-import { HttpsPredefinedHandler, HttpsReturnType } from './https.enum';
-import { HttpsResponse } from './https.interface';
-import { HttpsModule } from './https.module';
-import { HttpsService } from './https.service';
+import { HttpPredefinedHandler, HttpReturnType } from './http.enum';
+import { HttpResponse } from './http.interface';
+import { HttpModule } from './http.module';
+import { HttpService } from './http.service';
 
 const mockService = 'https://jsonplaceholder.typicode.com';
 
 TestModule.createSandbox({
-  name: 'HttpsService',
+  name: 'HttpService',
 
   imports: [
-    HttpsModule.register({
+    HttpModule.register({
       bases: {
         url: mockService,
       },
@@ -22,11 +22,11 @@ TestModule.createSandbox({
   ],
 
   descriptor: (testingBuilder: TestingModuleBuilder) => {
-    let httpsService: HttpsService;
+    let httpService: HttpService;
 
     beforeAll(async () => {
       const testingModule = await testingBuilder.compile();
-      httpsService = await testingModule.resolve(HttpsService);
+      httpService = await testingModule.resolve(HttpService);
     });
 
     describe('get', () => {
@@ -36,7 +36,7 @@ TestModule.createSandbox({
           id: 1,
           title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
         };
-        const data = await httpsService.get('/posts/:postId', {
+        const data = await httpService.get('/posts/:postId', {
           replacements: { postId: '1' },
         });
         expect(data).toMatchObject(mockPost);
@@ -50,14 +50,14 @@ TestModule.createSandbox({
           body: 'bar',
           userId: 1,
         };
-        const data = await httpsService.post('/posts', { json: mockPost });
+        const data = await httpService.post('/posts', { json: mockPost });
         expect(data).toMatchObject(mockPost);
       });
     });
 
     describe('delete', () => {
       it('should remove a placeholder resource', async () => {
-        const data = await httpsService.delete('/posts/:postId', {
+        const data = await httpService.delete('/posts/:postId', {
           replacements: { postId: '1' },
         });
         expect(Object.keys(data).length).toBe(0);
@@ -69,7 +69,7 @@ TestModule.createSandbox({
         let errorMessage: string;
 
         try {
-          await httpsService.get('/posts', { timeout: 1 });
+          await httpService.get('/posts', { timeout: 1 });
         }
         catch (e) {
           errorMessage = e.message;
@@ -82,7 +82,7 @@ TestModule.createSandbox({
         let errorStatus: number;
 
         try {
-          await httpsService.get('/404');
+          await httpService.get('/404');
         }
         catch (e) {
           errorStatus = e.status;
@@ -95,8 +95,8 @@ TestModule.createSandbox({
         let errorStatus: number;
 
         try {
-          await httpsService.get('/404', {
-            exceptionHandler: HttpsPredefinedHandler.PROXY_HTTP_STATUS,
+          await httpService.get('/404', {
+            exceptionHandler: HttpPredefinedHandler.PROXY_HTTP_STATUS,
           });
         }
         catch (e) {
@@ -109,8 +109,8 @@ TestModule.createSandbox({
 
     describe('parseResponseCookies', () => {
       it('should parse a response cookie', async () => {
-        const res: HttpsResponse = await httpsService.get('https://www.google.com', {
-          returnType: HttpsReturnType.FULL_RESPONSE,
+        const res: HttpResponse = await httpService.get('https://www.google.com', {
+          returnType: HttpReturnType.FULL_RESPONSE,
         });
         expect(res.cookies[0]).toBeDefined();
         expect(res.cookies[0].domain).toMatch(/google/g);

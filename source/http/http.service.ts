@@ -7,22 +7,22 @@ import qs from 'qs';
 
 import { AppEnvironment } from '../app/app.enum';
 import { LoggerService } from '../logger/logger.service';
-import { HttpsConfig } from './https.config';
-import { HttpsInjectionToken, HttpsPredefinedHandler, HttpsReturnType } from './https.enum';
-import { HttpsCookie, HttpsExceptionHandler, HttpsHandlerParams, HttpsModuleOptions, HttpsRequestParams,
-  HttpsServiceBases, HttpsServiceDefaults } from './https.interface';
+import { HttpConfig } from './http.config';
+import { HttpInjectionToken, HttpPredefinedHandler, HttpReturnType } from './http.enum';
+import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions, HttpRequestParams,
+  HttpServiceBases, HttpServiceDefaults } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class HttpsService {
+export class HttpService {
 
-  private bases: HttpsServiceBases = { };
-  private defaults: HttpsServiceDefaults= { };
+  private bases: HttpServiceBases = { };
+  private defaults: HttpServiceDefaults= { };
   private instance: AxiosInstance;
 
   public constructor(
-    @Inject(HttpsInjectionToken.MODULE_OPTIONS)
-    private readonly httpsModuleOptions: HttpsModuleOptions,
-    private readonly httpsConfig: HttpsConfig,
+    @Inject(HttpInjectionToken.MODULE_OPTIONS)
+    private readonly httpsModuleOptions: HttpModuleOptions,
+    private readonly httpsConfig: HttpConfig,
     private readonly loggerService: LoggerService,
   ) {
     this.setup(httpsModuleOptions);
@@ -34,14 +34,14 @@ export class HttpsService {
    * handler to standardize exception reporting.
    * @param params
    */
-  public setup(params: HttpsModuleOptions = { }): void {
+  public setup(params: HttpModuleOptions = { }): void {
     this.setDefaultParams(params);
     this.setBaseParams(params);
 
-    this.loggerService.debug(`[HttpsService] Creating instance for ${params.name || this.bases.url}...`);
+    this.loggerService.debug(`[HttpService] Creating instance for ${params.name || this.bases.url}...`);
     this.instance = axios.create({
       adapter: this.buildAdapter(params),
-      httpsAgent: this.buildHttpsAgent(params),
+      httpsAgent: this.buildHttpAgent(params),
       timeout: this.defaults.timeout,
       validateStatus: () => true,
     });
@@ -52,10 +52,10 @@ export class HttpsService {
    * priority over default, resolves which handler to use.
    * @param priorityHandler
    */
-  private getExceptionHandler(priorityHandler?: HttpsExceptionHandler): (params: HttpsHandlerParams) => Promise<void> {
+  private getExceptionHandler(priorityHandler?: HttpExceptionHandler): (params: HttpHandlerParams) => Promise<void> {
     const handler = priorityHandler
       || this.defaults.exceptionHandler
-      || HttpsPredefinedHandler.INTERNAL_SERVER_ERROR;
+      || HttpPredefinedHandler.INTERNAL_SERVER_ERROR;
 
     if (typeof handler !== 'string') return handler;
 
@@ -64,13 +64,13 @@ export class HttpsService {
       const req = params.upstreamRequest;
       const res = params.upstreamResponse;
 
-      const status = handler === HttpsPredefinedHandler.INTERNAL_SERVER_ERROR
+      const status = handler === HttpPredefinedHandler.INTERNAL_SERVER_ERROR
         ? HttpStatus.INTERNAL_SERVER_ERROR
         : res?.status;
 
       const data = {
         message: `${req.method} ${req.url} ${params.errorMessage}`,
-        proxyResponse: handler === HttpsPredefinedHandler.PROXY_FULL_RESPONSE
+        proxyResponse: handler === HttpPredefinedHandler.PROXY_FULL_RESPONSE
           ? true
           : undefined,
         upstreamResponse: {
@@ -95,11 +95,11 @@ export class HttpsService {
    * • Validator to pass on status lower than 400 (< bad request).
    * @param params
    */
-  private setDefaultParams(params: HttpsModuleOptions): void {
+  private setDefaultParams(params: HttpModuleOptions): void {
     if (!params.defaults) params.defaults = { };
     const defaultTimeout = this.httpsConfig.HTTPS_DEFAULT_TIMEOUT;
 
-    this.defaults.returnType = params.defaults.returnType || HttpsReturnType.BODY_CONTENT;
+    this.defaults.returnType = params.defaults.returnType || HttpReturnType.BODY_CONTENT;
     this.defaults.timeout = params.defaults.timeout || defaultTimeout;
 
     this.defaults.validator = params.defaults.validator
@@ -113,7 +113,7 @@ export class HttpsService {
    * Store base URL, body and headers if configured at setup.
    * @param params
    */
-  private setBaseParams(params: HttpsModuleOptions): void {
+  private setBaseParams(params: HttpModuleOptions): void {
     if (!params.bases) params.bases = { };
     this.bases.url = params.bases.url,
     this.bases.headers = params.bases.headers;
@@ -125,10 +125,10 @@ export class HttpsService {
    * Configures the https agent according to priority:
    * • If httpsAgent property is set, use it
    * • If ssl property is set, decode certificate and use it
-   * • If ignoreHttpsErrors, customize it with a simple rejectUnauthorized.
+   * • If ignoreHttpErrors, customize it with a simple rejectUnauthorized.
    * @param params
    */
-  private buildHttpsAgent(params: HttpsModuleOptions): Agent {
+  private buildHttpAgent(params: HttpModuleOptions): Agent {
     if (params.agent?.custom) {
       return params.agent.custom;
     }
@@ -138,11 +138,11 @@ export class HttpsService {
         cert: Buffer.from(params.agent.ssl.cert, 'base64').toString('ascii'),
         key: Buffer.from(params.agent.ssl.key, 'base64').toString('ascii'),
         passphrase: params.agent.ssl.passphrase,
-        rejectUnauthorized: !params.agent.ignoreHttpsErrors,
+        rejectUnauthorized: !params.agent.ignoreHttpErrors,
       });
     }
 
-    if (params.agent?.ignoreHttpsErrors) {
+    if (params.agent?.ignoreHttpErrors) {
       return new https.Agent({
         rejectUnauthorized: false,
       });
@@ -155,7 +155,7 @@ export class HttpsService {
    * remove query param restriction.
    * @param params
    */
-  private buildAdapter(params: HttpsModuleOptions): AxiosAdapter {
+  private buildAdapter(params: HttpModuleOptions): AxiosAdapter {
     if (!params.cache) return;
 
     if (params.cache.maxAge === undefined) {
@@ -174,10 +174,10 @@ export class HttpsService {
       // eslint-disable-next-line @typescript-eslint/require-await
       params.cache.invalidate = async (cacheConfig: any): Promise<void> => {
         if (Object.keys(cacheConfig?.store?.store).includes(cacheConfig.uuid)) {
-          this.loggerService.debug(`[HttpsService] Cache hit: ${cacheConfig.uuid}`);
+          this.loggerService.debug(`[HttpService] Cache hit: ${cacheConfig.uuid}`);
         }
         else {
-          this.loggerService.debug(`[HttpsService] Cache miss: ${cacheConfig.uuid}`);
+          this.loggerService.debug(`[HttpService] Cache miss: ${cacheConfig.uuid}`);
         }
       };
     }
@@ -191,7 +191,7 @@ export class HttpsService {
    * In case of conflicts the defaults are overwritten.
    * @param params
    */
-  private mergeBaseParams(params: HttpsRequestParams): HttpsRequestParams {
+  private mergeBaseParams(params: HttpRequestParams): HttpRequestParams {
     const mergedParams = Object.assign({ }, params);
 
     if (this.bases.url && !params.url?.startsWith('http')) {
@@ -225,7 +225,7 @@ export class HttpsService {
    * • Remove properties unrecognizable by Axios.
    * @param params
    */
-  private replaceVariantParams(params: HttpsRequestParams): HttpsRequestParams {
+  private replaceVariantParams(params: HttpRequestParams): HttpRequestParams {
     const replacedParams = Object.assign({ }, params);
 
     if (params.replacements) {
@@ -265,7 +265,7 @@ export class HttpsService {
    * @param res
    */
   private parseResponseCookies(res: any): any {
-    const cookies: HttpsCookie[] = [ ];
+    const cookies: HttpCookie[] = [ ];
 
     if (!res?.headers || !res.headers['set-cookie']) {
       res.headers['set-cookie'] = [ ];
@@ -308,7 +308,7 @@ export class HttpsService {
    * • Error standardization: Add several data for easier debugging.
    * @param params
    */
-  public async request<T>(params: HttpsRequestParams): Promise<T> {
+  public async request<T>(params: HttpRequestParams): Promise<T> {
     if (!this.instance) this.setup();
     const finalParams = this.replaceVariantParams(this.mergeBaseParams(params));
 
@@ -322,7 +322,7 @@ export class HttpsService {
     let errorMsg: string;
     let res: AxiosResponse | any;
 
-    this.loggerService.debug('[HttpsService] Executing external request...', finalParams);
+    this.loggerService.debug('[HttpService] Executing external request...', finalParams);
 
     try {
       const axiosConfig: AxiosRequestConfig = {
@@ -362,7 +362,7 @@ export class HttpsService {
       });
     }
 
-    return res && returnType === HttpsReturnType.BODY_CONTENT
+    return res && returnType === HttpReturnType.BODY_CONTENT
       ? res.data
       : this.parseResponseCookies(res);
   }
@@ -372,7 +372,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async get<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async get<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'GET';
     params.url = url;
     return this.request<T>(params);
@@ -383,7 +383,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async head<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async head<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'HEAD';
     params.url = url;
     return this.request<T>(params);
@@ -394,7 +394,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async post<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async post<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'POST';
     params.url = url;
     return this.request<T>(params);
@@ -405,7 +405,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async put<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async put<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'PUT';
     params.url = url;
     return this.request<T>(params);
@@ -416,7 +416,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async delete<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async delete<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'DELETE';
     params.url = url;
     return this.request<T>(params);
@@ -427,7 +427,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async options<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async options<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'OPTIONS';
     params.url = url;
     return this.request<T>(params);
@@ -438,7 +438,7 @@ export class HttpsService {
    * @param url
    * @param params
    */
-  public async patch<T>(url: string, params: HttpsRequestParams = { }): Promise<T> {
+  public async patch<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
     params.method = 'PATCH';
     params.url = url;
     return this.request<T>(params);

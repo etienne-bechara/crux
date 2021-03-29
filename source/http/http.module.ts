@@ -2,44 +2,44 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { v4 } from 'uuid';
 
 import { LoggerModule } from '../logger/logger.module';
-import { HttpsConfig } from './https.config';
-import { HttpsInjectionToken } from './https.enum/https.injection.token';
-import { HttpsAsyncModuleOptions, HttpsModuleOptions } from './https.interface';
-import { HttpsService } from './https.service';
+import { HttpConfig } from './http.config';
+import { HttpInjectionToken } from './http.enum/http.injection.token';
+import { HttpAsyncModuleOptions, HttpModuleOptions } from './http.interface';
+import { HttpService } from './http.service';
 
 @Module({
   imports: [
     LoggerModule,
   ],
   providers: [
-    HttpsConfig,
-    HttpsService,
+    HttpConfig,
+    HttpService,
     {
-      provide: HttpsInjectionToken.MODULE_OPTIONS,
+      provide: HttpInjectionToken.MODULE_OPTIONS,
       useValue: { },
     },
   ],
   exports: [
-    HttpsService,
-    HttpsInjectionToken.MODULE_OPTIONS,
+    HttpService,
+    HttpInjectionToken.MODULE_OPTIONS,
   ],
 })
-export class HttpsModule {
+export class HttpModule {
 
   /**
    * Configures the underlying https service synchronously.
    * @param options
    */
-  public static register(options: HttpsModuleOptions = { }): DynamicModule {
+  public static register(options: HttpModuleOptions = { }): DynamicModule {
     return {
-      module: HttpsModule,
+      module: HttpModule,
       providers: [
         {
-          provide: HttpsInjectionToken.MODULE_ID,
+          provide: HttpInjectionToken.MODULE_ID,
           useValue: v4(),
         },
         {
-          provide: HttpsInjectionToken.MODULE_OPTIONS,
+          provide: HttpInjectionToken.MODULE_OPTIONS,
           useValue: options,
         },
       ],
@@ -51,17 +51,17 @@ export class HttpsModule {
    * acquiring data from other injectable services (i.e. Config).
    * @param options
    */
-  public static registerAsync(options: HttpsAsyncModuleOptions = { }): DynamicModule {
+  public static registerAsync(options: HttpAsyncModuleOptions = { }): DynamicModule {
     return {
-      module: HttpsModule,
+      module: HttpModule,
       imports: options.imports,
       providers: [
         {
-          provide: HttpsInjectionToken.MODULE_ID,
+          provide: HttpInjectionToken.MODULE_ID,
           useValue: v4(),
         },
         {
-          provide: HttpsInjectionToken.MODULE_OPTIONS,
+          provide: HttpInjectionToken.MODULE_OPTIONS,
           inject: options.inject,
           useFactory: options.useFactory,
         },

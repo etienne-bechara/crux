@@ -19,9 +19,9 @@ All characteristics from NestJS [documentation](https://docs.nestjs.com/) plus:
 - [[AppModule](#App-Module)] Global validation pipe and serializer to verify decorated DTOs and automatically throw bad requests.
 - [[ConfigModule](#Config-Module)] Support for custom configuration classes.
 - [[ConfigModule](#Config-Module)] Secret variables validation.
-- [[HttpsModule](#Https-Module)] Creation of base instance with reusable url, headers or body.
-- [[HttpsModule](#Https-Module)] Customize exception handler and client side timeout implementation.
-- [[HttpsModule](#Https-Module)] Response cookies parser.
+- [[HttpModule](#Http-Module)] Creation of base instance with reusable url, headers or body.
+- [[HttpModule](#Http-Module)] Customize exception handler and client side timeout implementation.
+- [[HttpModule](#Http-Module)] Response cookies parser.
 - [[LoggerModule](#Logger-Module)] Custom logger with 7 severity levels.
 - [[LoggerModule](#Logger-Module)] Support for custom transports.
 - [[LoggerModule](#Logger-Module)] Custom colored console printer (local environment only)].
@@ -297,7 +297,7 @@ export class CatService {
 ```
 
 
-### Https Module
+### Http Module
 
 Works as a wrapper of Axios library and exposes methods to make http requests.
 
@@ -309,10 +309,10 @@ For this to work correctly, you must register it in every module to which a prov
 
 ```ts
 // First at cat.module.ts
-import { HttpsModule } from '@bechara/nestjs-core';
+import { HttpModule } from '@bechara/nestjs-core';
 
 @Module({
-  imports: [ HttpsModule.register() ],
+  imports: [ HttpModule.register() ],
   controller: [ CatController ],
   providers: [ CatService ],
 })
@@ -321,17 +321,17 @@ export class CatModule { }
 
 ```ts
 // Then at cat.service.ts
-import { HttpsService } from '@bechara/nestjs-core';
+import { HttpService } from '@bechara/nestjs-core';
 
 @Injectable()
 export class CatService {
 
   public constructor(
-    private readonly httpsService: HttpsService,
+    private readonly httpService: HttpService,
   ) { }
 
   public async getCat(id: number) {
-    const catData = await this.httpsService.get('https://cats.com/cat/:id', {
+    const catData = await this.httpService.get('https://cats.com/cat/:id', {
       replacements: { id },
     });
     return catData;
@@ -345,11 +345,11 @@ To be able to do this while acquiring this secrets in an async fashion, you may 
 
 ```ts
 // Async registration at cat.module.ts
-import { HttpsModule } from '@bechara/nestjs-core';
+import { HttpModule } from '@bechara/nestjs-core';
 
 @Module({
   imports: [ 
-    HttpsModule.registerAsync({
+    HttpModule.registerAsync({
       inject: [ CatConfig ],
       useFactory: (catConfig: CatConfig) => ({
         bases: {
@@ -360,7 +360,7 @@ import { HttpsModule } from '@bechara/nestjs-core';
           timeout: 20 * 1000,
         },
         agent: {
-          ignoreHttpsErrors: true,
+          ignoreHttpErrors: true,
         }
       })
     })

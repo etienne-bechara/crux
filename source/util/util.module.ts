@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import fs from 'fs';
 import globby from 'globby';
 
-import { HttpsModule } from '../https/https.module';
+import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { UtilConfig } from './util.config';
 import { UtilController } from './util.controller';
@@ -10,7 +10,7 @@ import { UtilService } from './util.service';
 
 @Module({
   imports: [
-    HttpsModule.register({
+    HttpModule.register({
       name: 'UtilModule',
       cache: {
         maxAge: 1 * 60 * 60 * 1000,

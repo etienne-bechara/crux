@@ -4,7 +4,7 @@ import { AppEnvironment } from '../app/app.enum';
 import { InjectSecret } from '../config/config.decorator';
 
 @Injectable()
-export class HttpsConfig {
+export class HttpConfig {
 
   @InjectSecret()
   public readonly NODE_ENV: AppEnvironment;
