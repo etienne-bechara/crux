@@ -1,3 +1,10 @@
+## [2.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.3...v2.0.4) (2021-03-29)
+
+
+### Bug Fixes
+
+* remove snake_case outputs ([59f5764](https://github.com/etienne-bechara/nestjs-core/commit/59f57645ee4fc0d026d42acfa9e24f24aa440ecf))
+
 ## [2.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.2...v2.0.3) (2021-03-27)
 
 
