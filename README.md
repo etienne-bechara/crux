@@ -49,7 +49,7 @@ $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 npm init -y
 
 npm i -D typescript @types/node ts-node-dev
-npm i @bechara/nestjs-core @nestjs/core @nestjs/common @nestjs/platform-express @types/express
+npm i @bechara/nestjs-core
 
 echo "NODE_ENV=local" > .env
 echo "import { AppModule } from '@bechara/nestjs-core';" > main.ts
@@ -57,7 +57,6 @@ echo "AppModule.bootServer();" >> main.ts
 
 npx tsc --init
 npx tsnd main.ts
-
 ```
 
 To validate its functionality, navigate to:
@@ -100,13 +99,7 @@ To be able to run your project without the need to transpile every time, install
 npm i -D ts-node-dev
 ```
 
-Install NestJS core and common packages as well as the Express server platform:
-
-```
-npm i @nestjs/core @nestjs/common @nestjs/platform-express @types/express
-```
-
-At this point you already have a NestJS enable repo, but instead of generating their standard boilerplate, install this package:
+Install this package which will also add compatible NestJS framework:
 
 ```
 npm i @bechara/nestjs-core

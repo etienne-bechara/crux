@@ -63,14 +63,12 @@
       "@semantic-release/github"
     ]
   },
-  "peerDependencies": {
-    "@nestjs/common": "^7.0.0",
-    "@nestjs/core": "^7.0.0",
-    "@nestjs/platform-express": "^7.0.0",
-    "@types/express": "^4.0.0"
-  },
   "dependencies": {
+    "@nestjs/common": "7.6.15",
+    "@nestjs/core": "7.6.15",
+    "@nestjs/platform-express": "7.6.15",
     "@sentry/node": "6.2.3",
+    "@types/express": "4.17.11",
     "axios": "0.21.1",
     "axios-cache-adapter": "2.7.3",
     "chalk": "4.1.0",
@@ -92,9 +90,6 @@
     "@bechara/eslint-config-bechara-ts": "1.0.1",
     "@commitlint/cli": "12.0.1",
     "@commitlint/config-conventional": "12.0.1",
-    "@nestjs/common": "7.6.15",
-    "@nestjs/core": "7.6.15",
-    "@nestjs/platform-express": "7.6.15",
     "@nestjs/testing": "7.6.15",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/commit-analyzer": "8.0.1",
@@ -102,7 +97,6 @@
     "@semantic-release/github": "7.2.0",
     "@semantic-release/npm": "7.0.10",
     "@semantic-release/release-notes-generator": "9.0.2",
-    "@types/express": "4.17.11",
     "@types/flat": "5.0.1",
     "@types/jest": "26.0.22",
     "@types/jsonwebtoken": "8.5.1",
