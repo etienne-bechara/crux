@@ -21,7 +21,7 @@
     "build": "rimraf ./dist && npm run index && tsc -p tsconfig.build.json && ncp ./source ./dist/source && rimraf ./source/index.ts",
     "index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
     "lint": "eslint **/*.ts --max-warnings=0",
-    "test": "jest --verbose --forceExit --passWithNoTests --maxWorkers=1",
+    "test": "jest --verbose --forceExit --passWithNoTests",
     "update:major": "ncu -u --dep dev,prod -t latest && npm i && npm audit fix --force"
   },
   "commitlint": {
