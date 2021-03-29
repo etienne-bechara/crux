@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.2...v2.0.3) (2021-03-27)
+
+
+### Bug Fixes
+
+* disallow automatic server ip acquisition ([e1c4b69](https://github.com/etienne-bechara/nestjs-core/commit/e1c4b69ee8d69e3d4ab90e9b87123c43d1f17498))
+
 ## [2.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.1...v2.0.2) (2021-03-26)
 
 
