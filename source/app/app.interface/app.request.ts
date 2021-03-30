@@ -5,7 +5,7 @@ export interface AppRequest extends Request {
   metadata: AppRequestMetadata;
 }
 
-export interface AppRequestMetadata {
+export interface AppRequestMetadata extends Record<string, any> {
   clientIp?: string;
   userAgent?: string;
   jwtPayload?: any;
