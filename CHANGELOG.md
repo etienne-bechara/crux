@@ -1,3 +1,10 @@
+## [2.0.6](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.5...v2.0.6) (2021-03-30)
+
+
+### Bug Fixes
+
+* allow custom request metadata ([648cbd5](https://github.com/etienne-bechara/nestjs-core/commit/648cbd5108911dd132d505d376dae07dadda3c20))
+
 ## [2.0.5](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.4...v2.0.5) (2021-03-29)
 
 
