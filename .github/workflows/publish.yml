@@ -22,11 +22,10 @@ jobs:
         with:
           node-version: 14.x
 
-      - name: Install Package Manager
-        run: npm i -g pnpm
-
       - name: Install Dependencies
-        run: pnpm i --frozen-lockfile
+        run: |
+          npm i -g pnpm
+          pnpm i --frozen-lockfile
 
       - name: Run Lint Check
         run: pnpm run lint
