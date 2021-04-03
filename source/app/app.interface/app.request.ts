@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 export interface AppRequest extends Request {
-  headers: { [key: string]: string };
+  headers: Record<string, string>;
   metadata: AppRequestMetadata;
 }
 
