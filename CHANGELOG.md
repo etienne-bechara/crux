@@ -1,3 +1,10 @@
+## [2.0.7](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.6...v2.0.7) (2021-04-03)
+
+
+### Bug Fixes
+
+* express dependency ([bd519b9](https://github.com/etienne-bechara/nestjs-core/commit/bd519b99533982ea9ca89bf711839af57ec7cd7c))
+
 ## [2.0.6](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.5...v2.0.6) (2021-03-30)
 
 
