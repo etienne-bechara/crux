@@ -162,7 +162,7 @@ export class AppModule {
       const sourceModules = UtilModule.globRequire([
         's*rc*/**/*.module.{js,ts}',
         '!**/*test*',
-      ]);
+      ]).reverse();
       preloadedModules.push(...sourceModules);
     }
 
