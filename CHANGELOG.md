@@ -1,3 +1,10 @@
+## [2.0.8](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.7...v2.0.8) (2021-04-06)
+
+
+### Bug Fixes
+
+* reverse module to prevent controller collision ([76fcab1](https://github.com/etienne-bechara/nestjs-core/commit/76fcab158f9cd978c59dd073c9c50dc874bd32c7))
+
 ## [2.0.7](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.6...v2.0.7) (2021-04-03)
 
 
