@@ -16,19 +16,52 @@ TestModule.createSandbox({
       loggerService = testingModule.get(LoggerService);
     });
 
-    describe('filterSensitiveData', () => {
+    describe('sanitize', () => {
       it('should delete sensitive keys from object', () => {
         const sensitiveObject = {
-          notSensitive: 'hello world',
-          password: '1234',
-          authorization: 'Bearer eyj1f0h9j0982ef',
+          string: 'abc',
+          number: 123,
+          headers: {
+            authorization: 'Bearer eyj....s3h',
+            key: undefined,
+          },
+          auth: {
+            nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
+            user: 'admin',
+            pass: '1234',
+          },
+          mfa: [
+            {
+              user: 'john.doe',
+              password: '1234',
+            },
+            {
+              user: undefined,
+              password: undefined,
+            },
+          ],
         };
 
-        const censoredObject = loggerService.filterSensitiveData(sensitiveObject);
+        const censoredObject = loggerService.sanitize(sensitiveObject);
+
         expect(censoredObject).toMatchObject({
-          notSensitive: 'hello world',
-          password: '[filtered]',
-          authorization: '[filtered]',
+          string: 'abc',
+          number: 123,
+          headers: {
+            authorization: '[filtered]',
+          },
+          auth: {
+            nonce: '[filtered]',
+            user: 'admin',
+            pass: '[filtered]',
+          },
+          mfa: [
+            {
+              user: 'john.doe',
+              password: '[filtered]',
+            },
+            { },
+          ],
         });
       });
     });

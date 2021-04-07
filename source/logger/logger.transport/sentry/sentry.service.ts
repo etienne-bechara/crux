@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
-import { decycle } from 'cycle';
 
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
@@ -66,7 +65,7 @@ export class SentryService implements LoggerTransport {
       scope.setLevel(this.getSentrySeverity(params.level));
       if (params.data?.unexpected) scope.setTag('unexpected', 'true');
       scope.setExtras({
-        details: JSON.stringify(decycle(params.data || { }), null, 2),
+        details: JSON.stringify(params.data || { }, null, 2),
       });
       Sentry.captureException(params.error);
     });

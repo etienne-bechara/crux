@@ -55,7 +55,7 @@ export class LoggerService {
   private log(level: LoggerLevel, message: string | Error, ...data: (Error | Record<string, any>)[]): void {
     const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
 
-    const logMessage = {
+    const logMessage: LoggerParams = {
       level,
       message: this.getLogMessage(message),
       error: this.getLogError(message, ...data),
@@ -128,7 +128,7 @@ export class LoggerService {
     }
 
     return Object.keys(dataObject).length > 0
-      ? this.filterSensitiveData(decycle(dataObject))
+      ? this.sanitize(dataObject)
       : undefined;
   }
 
@@ -136,23 +136,28 @@ export class LoggerService {
    * Check if object has any keys matching blacklist and remove them.
    * If any key value is undefined, delete it.
    * @param object
+   * @param decycled
    */
-  public filterSensitiveData(object: any): any {
+  public sanitize(object: any, decycled: boolean = false): any {
     if (typeof object !== 'object') return object;
+    if (!decycled) decycle(object);
 
     if (Array.isArray(object)) {
       const clone = [ ...object ];
-      return clone.map((o) => this.filterSensitiveData(o));
+      return clone.map((o) => this.sanitize(o, true));
     }
 
     const clone = { ...object };
 
     for (const key in clone) {
-      if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(key) || clone[key] === undefined) {
+      if (clone[key] === undefined) {
+        delete clone[key];
+      }
+      else if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(key)) {
         clone[key] = '[filtered]';
       }
       else if (typeof clone[key] === 'object') {
-        clone[key] = this.filterSensitiveData(clone[key]);
+        clone[key] = this.sanitize(clone[key], true);
       }
     }
 

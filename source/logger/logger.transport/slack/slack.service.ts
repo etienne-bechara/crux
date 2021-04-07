@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { decycle } from 'cycle';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { HttpService } from '../../../http/http.service';
@@ -57,7 +56,7 @@ export class SlackService implements LoggerTransport {
     ];
 
     if (params.data) {
-      const details = JSON.stringify(decycle(params.data || { }), null, 2);
+      const details = JSON.stringify(params.data || { }, null, 2);
       messageBlocks.push({
         type: 'section',
         text: { type: 'mrkdwn', text: `*Details*\n\`\`\`\n${details}\n\`\`\`` },
