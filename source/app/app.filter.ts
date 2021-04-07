@@ -153,11 +153,11 @@ export class AppFilter implements ExceptionFilter {
         metadata: req.metadata,
       };
 
-      const errorData = this.utilService.removeSensitiveData({
+      const errorData = {
         message: logData.message,
         ...logData.details,
         inboundRequest,
-      });
+      };
 
       this.loggerService.error(exception, errorData);
     }

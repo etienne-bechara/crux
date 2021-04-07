@@ -128,8 +128,35 @@ export class LoggerService {
     }
 
     return Object.keys(dataObject).length > 0
-      ? decycle(dataObject)
+      ? this.filterSensitiveData(decycle(dataObject))
       : undefined;
+  }
+
+  /**
+   * Check if object has any keys matching blacklist and remove them.
+   * If any key value is undefined, delete it.
+   * @param object
+   */
+  public filterSensitiveData(object: any): any {
+    if (typeof object !== 'object') return object;
+
+    if (Array.isArray(object)) {
+      const clone = [ ...object ];
+      return clone.map((o) => this.filterSensitiveData(o));
+    }
+
+    const clone = { ...object };
+
+    for (const key in clone) {
+      if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(key) || clone[key] === undefined) {
+        clone[key] = '[filtered]';
+      }
+      else if (typeof clone[key] === 'object') {
+        clone[key] = this.filterSensitiveData(clone[key]);
+      }
+    }
+
+    return clone;
   }
 
   /**

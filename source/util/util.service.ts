@@ -1,20 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 import os from 'os';
 import requestIp from 'request-ip';
 
 import { AppRequest } from '../app/app.interface';
-import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
-import { UtilConfig } from './util.config';
 import { UtilAppStatus } from './util.interface';
 import { UtilRetryParams } from './util.interface/util.retry.params';
 
 @Injectable()
 export class UtilService {
 
+  private cachedServerIp: string;
+
   public constructor(
-    private readonly utilConfig: UtilConfig,
-    private readonly httpService: HttpService,
     private readonly loggerService: LoggerService,
   ) { }
 
@@ -67,33 +66,6 @@ export class UtilService {
   }
 
   /**
-   * Check if object has any keys matching blacklist and remove them.
-   * If any key value is undefined, delete it.
-   * @param object
-   */
-  public removeSensitiveData(object: any): any {
-    if (typeof object !== 'object') return object;
-
-    if (Array.isArray(object)) {
-      const clone = [ ...object ];
-      return clone.map((o) => this.removeSensitiveData(o));
-    }
-
-    const clone = { ...object };
-
-    for (const key in clone) {
-      if (this.utilConfig.UTIL_SENSITIVE_KEYS.includes(key) || clone[key] === undefined) {
-        delete clone[key];
-      }
-      else if (typeof clone[key] === 'object') {
-        clone[key] = this.removeSensitiveData(clone[key]);
-      }
-    }
-
-    return clone;
-  }
-
-  /**
    * Given a request object, extracts the client ip.
    * @param req
    */
@@ -115,16 +87,17 @@ export class UtilService {
    * In case of error log an exception but do not throw.
    */
   public async getServerIp(): Promise<string> {
-    let serverIp: string;
-
-    try {
-      serverIp = await this.httpService.get('https://api64.ipify.org', { timeout: 5000 });
+    if (!this.cachedServerIp) {
+      try {
+        const { data } = await axios.get('https://api64.ipify.org', { timeout: 5000 });
+        this.cachedServerIp = data;
+      }
+      catch (e) {
+        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
+      }
     }
-    catch (e) {
-      this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-    }
 
-    return serverIp;
+    return this.cachedServerIp;
   }
 
   /**

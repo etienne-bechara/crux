@@ -21,11 +21,11 @@ export class HttpService {
 
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
-    private readonly httpsModuleOptions: HttpModuleOptions,
-    private readonly httpsConfig: HttpConfig,
+    private readonly httpModuleOptions: HttpModuleOptions,
+    private readonly httpConfig: HttpConfig,
     private readonly loggerService: LoggerService,
   ) {
-    this.setup(httpsModuleOptions);
+    this.setup(httpModuleOptions);
   }
 
   /**
@@ -97,7 +97,7 @@ export class HttpService {
    */
   private setDefaultParams(params: HttpModuleOptions): void {
     if (!params.defaults) params.defaults = { };
-    const defaultTimeout = this.httpsConfig.HTTPS_DEFAULT_TIMEOUT;
+    const defaultTimeout = this.httpConfig.HTTPS_DEFAULT_TIMEOUT;
 
     this.defaults.returnType = params.defaults.returnType || HttpReturnType.BODY_CONTENT;
     this.defaults.timeout = params.defaults.timeout || defaultTimeout;
@@ -159,18 +159,18 @@ export class HttpService {
     if (!params.cache) return;
 
     if (params.cache.maxAge === undefined) {
-      params.cache.maxAge = this.httpsConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
+      params.cache.maxAge = this.httpConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
     }
 
     if (params.cache.limit === undefined) {
-      params.cache.limit = this.httpsConfig.HTTPS_DEFAULT_CACHE_LIMIT;
+      params.cache.limit = this.httpConfig.HTTPS_DEFAULT_CACHE_LIMIT;
     }
 
     if (!params.cache.exclude) {
       params.cache.exclude = { query: false };
     }
 
-    if (!params.cache.invalidate && this.httpsConfig.NODE_ENV === AppEnvironment.LOCAL) {
+    if (!params.cache.invalidate && this.httpConfig.NODE_ENV === AppEnvironment.LOCAL) {
       // eslint-disable-next-line @typescript-eslint/require-await
       params.cache.invalidate = async (cacheConfig: any): Promise<void> => {
         if (Object.keys(cacheConfig?.store?.store).includes(cacheConfig.uuid)) {

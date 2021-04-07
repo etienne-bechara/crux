@@ -9,4 +9,14 @@ export class LoggerConfig {
   @InjectSecret()
   public readonly NODE_ENV: AppEnvironment;
 
+  public readonly LOGGER_SENSITIVE_KEYS = [
+    'at_hash',
+    'aud',
+    'authorization',
+    'nonce',
+    'pass',
+    'password',
+    'sub',
+  ];
+
 }
