@@ -1,3 +1,10 @@
+## [2.0.9](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.8...v2.0.9) (2021-04-07)
+
+
+### Bug Fixes
+
+* filter sensitive data when logging anything not just errors ([0181d08](https://github.com/etienne-bechara/nestjs-core/commit/0181d08d0f9e409b753d0c132719583a9c96df56))
+
 ## [2.0.8](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.7...v2.0.8) (2021-04-06)
 
 
