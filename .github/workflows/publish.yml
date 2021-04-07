@@ -37,4 +37,4 @@ jobs:
         run: pnpm run build
 
       - name: Publish Package to NPM
-        run: pnpx semantic-release
+        run: pnpx -y semantic-release
