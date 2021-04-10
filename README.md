@@ -15,3 +15,4 @@ This package offers a wrapper around NestJS core components adding extra functio
 ---
 
 [Next: Installation](docs/installation.md)
+
