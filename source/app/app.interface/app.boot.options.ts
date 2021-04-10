@@ -1,4 +1,5 @@
 import { ModuleMetadata } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 export interface AppBootOptions extends ModuleMetadata {
   envPath?: string;
@@ -9,4 +10,7 @@ export interface AppBootOptions extends ModuleMetadata {
   disablePipes?: boolean;
   configs?: any[];
   modules?: any[];
+  timeout?: number;
+  jsonLimit?: string;
+  cors?: CorsOptions;
 }

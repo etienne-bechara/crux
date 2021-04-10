@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { Transform } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
 import { AppEnvironment } from './app.enum';
@@ -16,25 +17,21 @@ export class AppConfig {
   @IsNumber() @Min(1024) @Max(65535)
   public readonly APP_PORT: number;
 
-  @InjectSecret({ default: 90 * 1000 })
-  @Transform((o) => Number.parseInt(o.value))
-  @IsNumber() @Min(1000)
-  public readonly APP_TIMEOUT: number;
-
   @InjectSecret({ default: '' })
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
 
-  @InjectSecret({ default: '10mb' })
-  @IsString() @IsNotEmpty()
-  public readonly APP_JSON_LIMIT: string;
+  public readonly APP_DEFAULT_TIMEOUT = 90 * 1000;
 
-  @InjectSecret({ default: '*' })
-  @IsString() @IsNotEmpty()
-  public readonly APP_CORS_ORIGIN: string;
+  public readonly APP_DEFAULT_JSON_LIMIT= '10MB';
 
-  @InjectSecret({ default: 'GET,HEAD,PUT,PATCH,POST,DELETE' })
-  @IsString() @IsNotEmpty()
-  public readonly APP_CORS_METHODS: string;
+  public readonly APP_DEFAULT_CORS_OPTIONS: CorsOptions = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  };
+
+  public appTimeout: number;
 
 }

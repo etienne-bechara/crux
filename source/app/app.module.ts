@@ -54,26 +54,19 @@ export class AppModule {
     const appConfig: AppConfig = nestApp.get('AppConfig');
     const loggerService: LoggerService = nestApp.get('LoggerService');
 
+    appConfig.appTimeout = options.timeout ?? appConfig.APP_DEFAULT_TIMEOUT;
     nestApp.setGlobalPrefix(appConfig.APP_GLOBAL_PREFIX);
-
-    nestApp.use(
-      json({ limit: appConfig.APP_JSON_LIMIT }),
-    );
-
-    nestApp.enableCors({
-      origin: appConfig.APP_CORS_ORIGIN,
-      methods: appConfig.APP_CORS_METHODS,
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-    });
+    nestApp.use(json({ limit: options.jsonLimit || appConfig.APP_DEFAULT_JSON_LIMIT }));
+    nestApp.enableCors(options.cors || appConfig.APP_DEFAULT_CORS_OPTIONS);
 
     const httpServerPort = appConfig.APP_PORT;
     const httpServer = await nestApp.listen(httpServerPort);
     httpServer.setTimeout(0);
 
-    const timeoutStr = appConfig.APP_TIMEOUT
-      ? `set to ${(appConfig.APP_TIMEOUT / 1000).toString()}s`
+    const timeoutStr = options.timeout
+      ? `set to ${(options.timeout / 1000).toString()}s`
       : 'disabled';
+
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
     loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
   }
