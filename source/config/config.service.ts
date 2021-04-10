@@ -15,16 +15,31 @@ export class ConfigService {
   private static readonly SECRET_CACHE: ConfigSecretRecord[] = [ ];
 
   /**
+   * Orchestrates initial secret acquisition and storage.
+   * This procedure should be called only once at the registration
+   * of config module in your application.
+   * @param options
+   */
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public static async setupSecretEnvironment(options: ConfigModuleOptions = { }): Promise<ValidationError[]> {
+    if (!options.configs) options.configs = [ ];
+    this.loadInitialEnvironment(options);
+    this.populateSecretCache();
+    const errors = this.validateConfigs(options);
+    return errors;
+  }
+
+  /**
    * Returns a secret value, key is case insensitive.
    * @param key
    */
   public static getSecret(key: string): any {
     if (!key) return;
-    const secret = this.SECRET_CACHE.find((record) => {
-      return record.key.toUpperCase() === key.toUpperCase();
-    });
 
-    if (secret?.value && secret?.json && typeof secret?.value === 'string') {
+    const secret = this.SECRET_CACHE.find((s) => s.key.toUpperCase() === key.toUpperCase());
+    if (!secret) return;
+
+    if (secret.value && secret.json && typeof secret.value === 'string') {
       try {
         secret.value = JSON.parse(secret.value);
       }
@@ -33,7 +48,12 @@ export class ConfigService {
       }
     }
 
-    return secret?.value || secret?.default;
+    if (!secret.value && secret.default && typeof secret.default === 'function') {
+      const nodeEnv = this.getSecret('NODE_ENV');
+      secret.default = secret.default(nodeEnv);
+    }
+
+    return secret.value ?? secret.default;
   }
 
   /**
@@ -54,21 +74,6 @@ export class ConfigService {
     else {
       this.SECRET_CACHE.push(secret);
     }
-  }
-
-  /**
-   * Orchestrates initial secret acquisition and storage.
-   * This procedure should be called only once at the registration
-   * of config module in your application.
-   * @param options
-   */
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public static async setupSecretEnvironment(options: ConfigModuleOptions = { }): Promise<ValidationError[]> {
-    if (!options.configs) options.configs = [ ];
-    this.loadInitialEnvironment(options);
-    this.populateSecretCache();
-    const errors = this.validateConfigs(options);
-    return errors;
   }
 
   /**

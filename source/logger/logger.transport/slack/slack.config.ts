@@ -5,8 +5,6 @@ import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
-import { LoggerTransportOptions } from '../../logger.interface';
-
 @Injectable()
 export class SlackConfig extends LoggerConfig {
 
@@ -30,11 +28,16 @@ export class SlackConfig extends LoggerConfig {
   @IsUrl()
   public readonly SLACK_ICON_URL: string;
 
-  public readonly SLACK_TRANSPORT_OPTIONS: LoggerTransportOptions[] = [
-    { environment: AppEnvironment.LOCAL, level: null },
-    { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.WARNING },
-    { environment: AppEnvironment.STAGING, level: LoggerLevel.WARNING },
-    { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.WARNING },
-  ];
+  @InjectSecret({
+    default: (nodeEnv) => {
+      switch (nodeEnv) {
+        case AppEnvironment.LOCAL: return null;
+        case AppEnvironment.DEVELOPMENT: return LoggerLevel.WARNING;
+        case AppEnvironment.STAGING: return LoggerLevel.WARNING;
+        case AppEnvironment.PRODUCTION: return LoggerLevel.WARNING;
+      }
+    },
+  })
+  public readonly SLACK_LEVEL: LoggerLevel;
 
 }

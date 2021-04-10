@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/node';
 
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
-import { LoggerTransportOptions } from '../../logger.interface/logger.transport.options';
 import { LoggerService } from '../../logger.service';
 import { SentryConfig } from './sentry.config';
 
@@ -24,31 +23,29 @@ export class SentryService implements LoggerTransport {
    * are customizing it at logger service.
    */
   private setupTransport(): void {
-    const options = this.getOptions();
-    if (!options?.level && options?.level !== 0) return;
-
     const dsn = this.sentryConfig.SENTRY_DSN;
+    const level = this.getLevel();
+    if (!level && level !== 0) return;
+
+    if (!dsn) {
+      setTimeout(() => this.loggerService.warning('[SentryService] Missing Sentry DSN'), 500);
+      return;
+    }
 
     Sentry.init({
       dsn,
-      environment: options.environment,
+      environment: this.sentryConfig.NODE_ENV,
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
-    this.loggerService.notice(`[SentryService] Transport connected at ${dsn}`);
+
+    setTimeout(() => this.loggerService.notice(`[SentryService] Transport connected at ${dsn}`), 500);
   }
 
   /**
-   * Returns the options array for this logging transport.
+   * Returns minimum level for logging this transport.
    */
-  public getOptions(): LoggerTransportOptions {
-    const environment = this.sentryConfig.NODE_ENV;
-    const options = this.sentryConfig.SENTRY_TRANSPORT_OPTIONS;
-
-    if (!this.sentryConfig.SENTRY_DSN) {
-      return { environment, level: null };
-    }
-
-    return options.find((o) => o.environment === environment);
+  public getLevel(): LoggerLevel {
+    return this.sentryConfig.SENTRY_LEVEL;
   }
 
   /**

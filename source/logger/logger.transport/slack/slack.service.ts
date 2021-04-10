@@ -4,7 +4,6 @@ import { AppEnvironment } from '../../../app/app.enum';
 import { HttpService } from '../../../http/http.service';
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
-import { LoggerTransportOptions } from '../../logger.interface/logger.transport.options';
 import { LoggerService } from '../../logger.service';
 import { SlackConfig } from './slack.config';
 
@@ -17,20 +16,31 @@ export class SlackService implements LoggerTransport {
     protected readonly httpService: HttpService,
   ) {
     this.loggerService.registerTransport(this);
+    this.setupTransport();
   }
 
   /**
-   * Returns the options array for this logging transport.
+   * Checks if necessary variables are present and warn through console if not.
    */
-  public getOptions(): LoggerTransportOptions {
-    const environment = this.slackConfig.NODE_ENV;
-    const options = this.slackConfig.SLACK_TRANSPORT_OPTIONS;
+  private setupTransport(): void {
+    const webhook = this.slackConfig.SLACK_WEBHOOK;
+    const channel = this.slackConfig.SLACK_CHANNEL;
+    const level = this.getLevel();
+    if (!level && level !== 0) return;
 
-    if (!this.slackConfig.SLACK_WEBHOOK || !this.slackConfig.SLACK_CHANNEL) {
-      return { environment, level: null };
+    if (!webhook || !channel) {
+      setTimeout(() => this.loggerService.warning('[SlackService] Missing Slack channel or webhook'), 500);
+      return;
     }
 
-    return options.find((o) => o.environment === environment);
+    setTimeout(() => this.loggerService.notice(`[SlackService] Transport connected at #${channel}`), 500);
+  }
+
+  /**
+   * Returns minimum level for logging this transport.
+   */
+  public getLevel(): LoggerLevel {
+    return this.slackConfig.SLACK_LEVEL;
   }
 
   /**

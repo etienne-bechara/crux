@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
 import { AppEnvironment } from '../../../app/app.enum';
+import { InjectSecret } from '../../../config/config.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
-import { LoggerTransportOptions } from '../../logger.interface';
 
 @Injectable()
 export class ConsoleConfig extends LoggerConfig {
 
-  public readonly CONSOLE_TRANSPORT_OPTIONS: LoggerTransportOptions[] = [
-    { environment: AppEnvironment.LOCAL, level: LoggerLevel.DEBUG },
-    { environment: AppEnvironment.DEVELOPMENT, level: LoggerLevel.NOTICE },
-    { environment: AppEnvironment.STAGING, level: LoggerLevel.WARNING },
-    { environment: AppEnvironment.PRODUCTION, level: LoggerLevel.WARNING },
-  ];
+  @InjectSecret({
+    default: (nodeEnv) => {
+      switch (nodeEnv) {
+        case AppEnvironment.LOCAL: return LoggerLevel.DEBUG;
+        case AppEnvironment.DEVELOPMENT: return LoggerLevel.NOTICE;
+        case AppEnvironment.STAGING: return LoggerLevel.WARNING;
+        case AppEnvironment.PRODUCTION: return LoggerLevel.WARNING;
+      }
+    },
+  })
+  public readonly CONSOLE_LEVEL: LoggerLevel;
 
 }

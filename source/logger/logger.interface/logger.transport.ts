@@ -1,9 +1,7 @@
-
-import { LoggerParams } from '.';
-import { LoggerTransportOptions } from './logger.transport.options';
+import { LoggerLevel } from '../logger.enum';
+import { LoggerParams } from './logger.params';
 
 export interface LoggerTransport {
-  getOptions: () => LoggerTransportOptions;
+  getLevel: () => LoggerLevel;
   log: (params: LoggerParams) => void;
 }
-

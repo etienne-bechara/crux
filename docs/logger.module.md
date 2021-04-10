@@ -67,6 +67,15 @@ This package offers 3 built-in transporters: Console, Sentry and Slack.
 
 Configuration will be acquired from environment according to the following variables.
 
+### Console
+
+Basic integration with terminal, level can be configured by environment.
+
+Variable | Mandatory | Type | Default
+:--- | :---: | :---: | :---
+CONSOLE_LEVEL | No | string | See [console.config.ts](../source/logger/logger.transport/console/console.config.ts)
+
+
 ### Sentry
 
 To enable this integration it is mandatory to create a project at Sentry platform and provide its `SENTRY_DSN`.
@@ -76,6 +85,8 @@ Keep in mind that this should be unique for every project.
 Variable | Mandatory | Type | Default
 :--- | :---: | :---: | :---
 SENTRY_DSN | Yes | string | `undefined`
+SENTRY_LEVEL | No | string | See [sentry.config.ts](../source/logger/logger.transport/sentry/sentry.config.ts)
+
 
 ### Slack
 
@@ -87,6 +98,7 @@ SLACK_WEBHOOK | Yes | string | `undefined`
 SLACK_CHANNEL | Yes | string | `undefined`
 SLACK_USERNAME | No | string | Notification Bot
 SLACK_ICON_URL | No | string | `undefined`
+SLACK_LEVEL | No | string | See [slack.config.ts](../source/logger/logger.transport/slack/slack.config.ts)
 
 
 ## Severity Levels

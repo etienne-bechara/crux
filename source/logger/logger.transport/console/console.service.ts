@@ -5,7 +5,6 @@ import chalk from 'chalk';
 import { AppEnvironment } from '../../../app/app.enum';
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
-import { LoggerTransportOptions } from '../../logger.interface/logger.transport.options';
 import { LoggerService } from '../../logger.service';
 import { ConsoleConfig } from './console.config';
 import { ConsoleStyle } from './console.interface';
@@ -21,13 +20,10 @@ export class ConsoleService implements LoggerTransport {
   }
 
   /**
-   * Returns the options object for current
-   * application environment.
+   * Returns minimum level for logging this transport.
    */
-  public getOptions(): LoggerTransportOptions {
-    const environment = this.consoleConfig.NODE_ENV;
-    const options = this.consoleConfig.CONSOLE_TRANSPORT_OPTIONS;
-    return options.find((o) => o.environment === environment);
+  public getLevel(): LoggerLevel {
+    return this.consoleConfig.CONSOLE_LEVEL;
   }
 
   /**

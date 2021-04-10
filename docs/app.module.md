@@ -4,10 +4,10 @@ Acts as an entry point, wrapping other modules provided in this package as well 
 
 The following custom enhancers will be globally applied:
 
-* [app.middleware.ts](source/app/app.middleware.ts) - Middleware to extract request IP, User Agent and JWT payload.
-* [app.timeout.interceptor.ts](source/app/app.interceptor/app.timeout.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
-* [app.logger.interceptor.ts](source/app/app.interceptor/app.logger.interceptor.ts) - Logger interceptor to print debugging information.
-* [app.filter.ts](source/app/app.filter.ts) - Exception filter integrated witch logger service to standardize error outputs.
+* [app.middleware.ts](../source/app/app.middleware.ts) - Middleware to extract request IP, User Agent and JWT payload.
+* [app.timeout.interceptor.ts](../source/app/app.interceptor/app.timeout.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
+* [app.logger.interceptor.ts](../source/app/app.interceptor/app.logger.interceptor.ts) - Logger interceptor to print debugging information.
+* [app.filter.ts](../source/app/app.filter.ts) - Exception filter integrated witch logger service to standardize error outputs.
 
 Plus these techniques as officially documented:
 
