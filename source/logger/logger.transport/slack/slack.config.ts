@@ -5,6 +5,7 @@ import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
+
 @Injectable()
 export class SlackConfig extends LoggerConfig {
 

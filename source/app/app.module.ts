@@ -15,6 +15,7 @@ import { ConsoleConfig } from '../logger/logger.transport/console/console.config
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
 import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
+import { SlackConfig } from '../logger/logger.transport/slack/slack.config';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
@@ -104,6 +105,7 @@ export class AppModule {
       LoggerConfig,
       ConsoleConfig,
       SentryConfig,
+      SlackConfig,
     ];
 
     if (!options.disableConfigScan) {
