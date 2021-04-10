@@ -1,3 +1,10 @@
+## [2.0.10](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.9...v2.0.10) (2021-04-07)
+
+
+### Bug Fixes
+
+* logger sanitization ([0eb2f36](https://github.com/etienne-bechara/nestjs-core/commit/0eb2f36680ab4d091f593f0bb143759d88c8d24e))
+
 ## [2.0.9](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.8...v2.0.9) (2021-04-07)
 
 
