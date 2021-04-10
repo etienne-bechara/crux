@@ -1,3 +1,12 @@
+## [2.0.11](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.10...v2.0.11) (2021-04-10)
+
+
+### Bug Fixes
+
+* allow easier logger transport configuration by environment ([ea7f70b](https://github.com/etienne-bechara/nestjs-core/commit/ea7f70b252bf611e181720de971d45b53e366e37))
+* move config not relevant by environment to boot ([d6c069d](https://github.com/etienne-bechara/nestjs-core/commit/d6c069d3a129be7decde98340f0fc826f3ad877d))
+* slack config not being preloaded ([04deddc](https://github.com/etienne-bechara/nestjs-core/commit/04deddcf973293f282a39ebc1dc3020d9ab02ef9))
+
 ## [2.0.10](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.9...v2.0.10) (2021-04-07)
 
 
