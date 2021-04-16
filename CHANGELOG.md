@@ -1,3 +1,10 @@
+## [2.0.12](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.11...v2.0.12) (2021-04-16)
+
+
+### Bug Fixes
+
+* lower default timeout to 60s ([4123599](https://github.com/etienne-bechara/nestjs-core/commit/4123599667b14e4c10018127aedd5c9be1c2b5a9))
+
 ## [2.0.11](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.10...v2.0.11) (2021-04-10)
 
 
