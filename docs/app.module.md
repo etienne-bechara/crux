@@ -69,7 +69,7 @@ void AppModule.bootServer({
   exports: [ ],
 
   // Time in milliseconds to trigger timeout interceptor
-  timeout: 90 * 1000,
+  timeout: 60 * 1000,
 
   // Maximum request JSON body size
   jsonLimit: '10mb',

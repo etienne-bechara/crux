@@ -21,7 +21,7 @@ export class AppConfig {
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
 
-  public readonly APP_DEFAULT_TIMEOUT = 90 * 1000;
+  public readonly APP_DEFAULT_TIMEOUT = 60 * 1000;
 
   public readonly APP_DEFAULT_JSON_LIMIT= '10MB';
 
