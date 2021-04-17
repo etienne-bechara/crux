@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/no-process-exit */
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
@@ -134,12 +136,13 @@ export class ConfigService {
 
     const uniqueErrors = validationErrors.filter((v, i, a) => a.findIndex(t => t.property === v.property) === i);
 
+    // On validation failure, exit in 100ms in order for errors to print
     if (uniqueErrors.length > 0 && !options.allowValidationErrors) {
-      console.error(...uniqueErrors); // eslint-disable-line no-console
-      process.exit(1); // eslint-disable-line unicorn/no-process-exit
+      console.error(...uniqueErrors);
+      setTimeout(() => process.exit(1), 100);
     }
     else if (uniqueErrors.length > 0) {
-      console.warn(...uniqueErrors); // eslint-disable-line no-console
+      console.warn(...uniqueErrors);
     }
 
     return uniqueErrors;
