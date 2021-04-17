@@ -1,3 +1,10 @@
+## [2.0.13](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.12...v2.0.13) (2021-04-17)
+
+
+### Bug Fixes
+
+* delay exit on validation error ([64445f7](https://github.com/etienne-bechara/nestjs-core/commit/64445f76e627c01925504127038eef081be546fc))
+
 ## [2.0.12](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.11...v2.0.12) (2021-04-16)
 
 
