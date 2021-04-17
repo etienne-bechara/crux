@@ -15,7 +15,6 @@ export class SlackService implements LoggerTransport {
     protected readonly loggerService: LoggerService,
     protected readonly httpService: HttpService,
   ) {
-    this.loggerService.registerTransport(this);
     this.setupTransport();
   }
 
@@ -34,6 +33,7 @@ export class SlackService implements LoggerTransport {
     }
 
     setTimeout(() => this.loggerService.notice(`[SlackService] Transport connected at #${channel}`), 500);
+    this.loggerService.registerTransport(this);
   }
 
   /**

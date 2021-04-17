@@ -13,7 +13,6 @@ export class SentryService implements LoggerTransport {
     protected readonly sentryConfig: SentryConfig,
     protected readonly loggerService: LoggerService,
   ) {
-    this.loggerService.registerTransport(this);
     this.setupTransport();
   }
 
@@ -39,6 +38,7 @@ export class SentryService implements LoggerTransport {
     });
 
     setTimeout(() => this.loggerService.notice(`[SentryService] Transport connected at ${dsn}`), 500);
+    this.loggerService.registerTransport(this);
   }
 
   /**
