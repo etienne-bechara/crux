@@ -1,3 +1,10 @@
+## [2.0.14](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.13...v2.0.14) (2021-04-17)
+
+
+### Bug Fixes
+
+* log transport looping ([d024ea9](https://github.com/etienne-bechara/nestjs-core/commit/d024ea97d3f3a7775a82b6baf49995c3382ecfd0))
+
 ## [2.0.13](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.12...v2.0.13) (2021-04-17)
 
 
