@@ -1,3 +1,10 @@
+## [2.0.15](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.14...v2.0.15) (2021-04-19)
+
+
+### Bug Fixes
+
+* improve exception filter ([d24c0d2](https://github.com/etienne-bechara/nestjs-core/commit/d24c0d24a1c7143b3a3c302c3e13c7b94ac4017c))
+
 ## [2.0.14](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.13...v2.0.14) (2021-04-17)
 
 
