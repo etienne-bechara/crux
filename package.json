@@ -16,7 +16,6 @@
     "dist/**"
   ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "prepare": "husky install .config/husky",
     "start": "nodemon",
     "build": "rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && ncp ./source ./dist/source && rimraf ./source/index.ts",
