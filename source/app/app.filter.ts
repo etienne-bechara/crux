@@ -34,23 +34,19 @@ export class AppFilter implements ExceptionFilter {
 
     this.logException(appException, req);
 
-    const productionServerError =
+    const productionError =
       this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION
       && appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const normalizedResponse = {
+    const filteredResponse = {
       error: appException.errorCode,
-      message: !productionServerError
-        ? appException.message
-        : 'unexpected error',
-      details: !productionServerError
-        ? appException.details
-        : { },
+      message: productionError ? 'unexpected error' : appException.message,
+      ...productionError ? { } : appException.details,
     };
 
     const outboundResponse = appException.details.proxyResponse
       ? appException.details.upstreamResponse?.data
-      : normalizedResponse;
+      : filteredResponse;
 
     res.setHeader('Content-Type', 'application/json');
     res.statusCode = appException.errorCode;
@@ -138,9 +134,10 @@ export class AppFilter implements ExceptionFilter {
    */
   protected logException(appException: AppException, req: AppRequest): void {
     const exception = appException.exception;
-    const logData = {
+
+    const logData: Record<string, any> = {
       message: appException.message,
-      details: appException.details,
+      ...appException.details,
     };
 
     if (appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR) {
@@ -153,13 +150,8 @@ export class AppFilter implements ExceptionFilter {
         metadata: req.metadata,
       };
 
-      const errorData = {
-        message: logData.message,
-        ...logData.details,
-        inboundRequest,
-      };
-
-      this.loggerService.error(exception, errorData);
+      logData.inboundRequest = inboundRequest;
+      this.loggerService.error(exception, logData);
     }
     else {
       this.loggerService.info(exception, logData);
