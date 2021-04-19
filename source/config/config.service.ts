@@ -100,7 +100,7 @@ export class ConfigService {
    * populate their values from runtime environment.
    */
   private static populateSecretCache(): void {
-    this.SECRET_CACHE.forEach((secret) => {
+    for (const secret of this.SECRET_CACHE) {
       const processValue = process.env[secret.key] || process.env[secret.key.toUpperCase()];
 
       if (processValue) {
@@ -109,7 +109,7 @@ export class ConfigService {
           value: processValue,
         });
       }
-    });
+    }
   }
 
   /**
@@ -121,7 +121,7 @@ export class ConfigService {
     const validationErrors: ValidationError[] = [ ];
 
     const secretEnv: Record<string, any> = { };
-    this.SECRET_CACHE.forEach((record) => secretEnv[record.key] = record.value || record.default);
+    for (const record of this.SECRET_CACHE) secretEnv[record.key] = record.value || record.default;
 
     for (const ConfigClass of options.configs) {
       const validationInstance: ValidationError[] = plainToClass(ConfigClass, secretEnv);

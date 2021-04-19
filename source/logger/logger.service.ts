@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import cleanStack from 'clean-stack';
 import { decycle } from 'cycle';
 
 import { LoggerConfig } from './logger.config';
@@ -112,7 +111,6 @@ export class LoggerService {
       }
     }
 
-    error.stack = cleanStack(error.stack);
     return error;
   }
 

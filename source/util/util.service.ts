@@ -36,7 +36,7 @@ export class UtilService {
     startMsg += `retries and ${params.timeout / 1000 || '∞ '}s timeout...`;
     this.loggerService.debug(startMsg);
 
-    const startTime = new Date().getTime();
+    const startTime = Date.now();
     let tentative = 1;
     let result: T;
 
@@ -46,7 +46,7 @@ export class UtilService {
         break;
       }
       catch (e) {
-        const elapsed = new Date().getTime() - startTime;
+        const elapsed = Date.now() - startTime;
 
         if (params.retries && tentative > params.retries) throw e;
         else if (params.timeout && elapsed > params.timeout) throw e;

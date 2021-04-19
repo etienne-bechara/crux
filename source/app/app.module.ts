@@ -1,8 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, DynamicModule, Global,
-  MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, DynamicModule, Global, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { json } from 'express';
 

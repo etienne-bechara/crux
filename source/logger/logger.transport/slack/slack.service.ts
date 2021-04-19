@@ -78,9 +78,7 @@ export class SlackService implements LoggerTransport {
       elements: [
         { type: 'mrkdwn', text: `Reported at ${new Date().toUTCString()}` },
       ],
-    });
-
-    messageBlocks.push({ type: 'divider' });
+    }, { type: 'divider' });
 
     void this.publishSlackMessage(messageBlocks);
   }

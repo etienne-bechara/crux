@@ -22,7 +22,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req: AppRequest = context.switchToHttp().getRequest();
-    const start = new Date().getTime();
+    const start = Date.now();
 
     const reqTarget = `${req.method.padEnd(6, ' ')} ${req.url}`;
 
@@ -35,7 +35,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
       .pipe(
         finalize(() => {
           const res: AppResponse = context.switchToHttp().getResponse();
-          this.loggerService.http(`< ${reqTarget} | ${res.statusCode} | ${new Date().getTime() - start} ms`);
+          this.loggerService.http(`< ${reqTarget} | ${res.statusCode} | ${Date.now() - start} ms`);
         }),
       );
   }

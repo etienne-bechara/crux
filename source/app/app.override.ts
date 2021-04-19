@@ -9,4 +9,4 @@ export * from '@nestjs/common';
 export * from '@nestjs/core';
 export * from '@nestjs/platform-express';
 
-export { HttpAdapterHost, HttpService, HttpModule, HttpModuleOptions, LoggerService };
+export { HttpAdapterHost, HttpModule, HttpModuleOptions, HttpService, LoggerService };

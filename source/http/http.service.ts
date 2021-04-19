@@ -9,14 +9,13 @@ import { AppEnvironment } from '../app/app.enum';
 import { LoggerService } from '../logger/logger.service';
 import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpPredefinedHandler, HttpReturnType } from './http.enum';
-import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions, HttpRequestParams,
-  HttpServiceBases, HttpServiceDefaults } from './http.interface';
+import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions, HttpRequestParams, HttpServiceBases, HttpServiceDefaults } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  private bases: HttpServiceBases = { };
-  private defaults: HttpServiceDefaults= { };
+  private bases: HttpServiceBases = {};
+  private defaults: HttpServiceDefaults= {};
   private instance: AxiosInstance;
 
   public constructor(
@@ -34,7 +33,7 @@ export class HttpService {
    * handler to standardize exception reporting.
    * @param params
    */
-  public setup(params: HttpModuleOptions = { }): void {
+  public setup(params: HttpModuleOptions = {}): void {
     this.setDefaultParams(params);
     this.setBaseParams(params);
 
@@ -96,7 +95,7 @@ export class HttpService {
    * @param params
    */
   private setDefaultParams(params: HttpModuleOptions): void {
-    if (!params.defaults) params.defaults = { };
+    if (!params.defaults) params.defaults = {};
     const defaultTimeout = this.httpConfig.HTTPS_DEFAULT_TIMEOUT;
 
     this.defaults.returnType = params.defaults.returnType || HttpReturnType.BODY_CONTENT;
@@ -114,7 +113,7 @@ export class HttpService {
    * @param params
    */
   private setBaseParams(params: HttpModuleOptions): void {
-    if (!params.bases) params.bases = { };
+    if (!params.bases) params.bases = {};
     this.bases.url = params.bases.url,
     this.bases.headers = params.bases.headers;
     this.bases.query = params.bases.query;
@@ -192,7 +191,7 @@ export class HttpService {
    * @param params
    */
   private mergeBaseParams(params: HttpRequestParams): HttpRequestParams {
-    const mergedParams = Object.assign({ }, params);
+    const mergedParams = Object.assign({}, params);
 
     if (this.bases.url && !params.url?.startsWith('http')) {
       const resolvedUrl = typeof this.bases.url === 'string'
@@ -226,7 +225,7 @@ export class HttpService {
    * @param params
    */
   private replaceVariantParams(params: HttpRequestParams): HttpRequestParams {
-    const replacedParams = Object.assign({ }, params);
+    const replacedParams = Object.assign({}, params);
 
     if (params.replacements) {
       for (const key in params.replacements) {
@@ -243,14 +242,14 @@ export class HttpService {
     }
 
     if (params.form) {
-      if (!replacedParams.headers) replacedParams.headers = { };
+      if (!replacedParams.headers) replacedParams.headers = {};
       replacedParams.headers['content-type'] = 'application/x-www-form-urlencoded';
       replacedParams.body = qs.stringify(params.form);
       delete replacedParams.form;
     }
 
     if (params.json) {
-      if (!replacedParams.headers) replacedParams.headers = { };
+      if (!replacedParams.headers) replacedParams.headers = {};
       replacedParams.headers['content-type'] = 'application/json';
       replacedParams.body = params.json;
       delete replacedParams.json;
@@ -372,7 +371,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async get<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async get<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'GET';
     params.url = url;
     return this.request<T>(params);
@@ -383,7 +382,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async head<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async head<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'HEAD';
     params.url = url;
     return this.request<T>(params);
@@ -394,7 +393,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async post<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async post<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'POST';
     params.url = url;
     return this.request<T>(params);
@@ -405,7 +404,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async put<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async put<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'PUT';
     params.url = url;
     return this.request<T>(params);
@@ -416,7 +415,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async delete<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async delete<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'DELETE';
     params.url = url;
     return this.request<T>(params);
@@ -427,7 +426,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async options<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async options<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'OPTIONS';
     params.url = url;
     return this.request<T>(params);
@@ -438,7 +437,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async patch<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
+  public async patch<T>(url: string, params: HttpRequestParams = {}): Promise<T> {
     params.method = 'PATCH';
     params.url = url;
     return this.request<T>(params);

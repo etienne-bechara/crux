@@ -44,7 +44,8 @@ export class UtilModule {
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });
 
-    return [].concat(...exportsArrays);
+    // eslint-disable-next-line unicorn/prefer-spread
+    return [ ].concat(...exportsArrays);
   }
 
   /**

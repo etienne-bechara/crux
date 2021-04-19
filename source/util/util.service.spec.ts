@@ -24,9 +24,9 @@ TestModule.createSandbox({
     describe('halt', () => {
       it('should halt code execution for 1000ms', async () => {
         const haltTime = 1000;
-        const start = new Date().getTime();
+        const start = Date.now();
         await utilService.halt(haltTime);
-        const elapsed = new Date().getTime() - start;
+        const elapsed = Date.now() - start;
         expect(elapsed).toBeGreaterThan(haltTime * 0.95);
         expect(elapsed).toBeLessThan(haltTime * 1.05);
       });
