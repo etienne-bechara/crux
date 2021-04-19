@@ -1,3 +1,10 @@
+## [2.0.16](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.15...v2.0.16) (2021-04-19)
+
+
+### Bug Fixes
+
+* do not force pnpm ([d92fce4](https://github.com/etienne-bechara/nestjs-core/commit/d92fce46a04066353c275657b11d1dd4f39e7521))
+
 ## [2.0.15](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.14...v2.0.15) (2021-04-19)
 
 
