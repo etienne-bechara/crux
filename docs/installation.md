@@ -29,8 +29,8 @@ echo ".env" >> .gitignore
 echo "import { AppModule } from '@bechara/nestjs-core';" > main.ts
 echo "AppModule.bootServer();" >> main.ts
 
-pnpx -y tsc --init
-pnpx -y tsnd main.ts
+npx tsc --init
+npx tsnd main.ts
 ```
 
 At this point you should have a full application running on port `8080`.

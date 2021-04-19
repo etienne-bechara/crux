@@ -15,38 +15,6 @@
   "files": [
     "dist/**"
   ],
-  "scripts": {
-    "prepare": "husky install .config/husky",
-    "start": "nodemon",
-    "build": "rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && ncp ./source ./dist/source && rimraf ./source/index.ts",
-    "index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
-    "lint": "eslint **/*.ts --max-warnings=0",
-    "test": "jest --verbose --forceExit --passWithNoTests"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "lint-staged": {
-    "*.ts": "eslint --cache --fix"
-  },
-  "nodemonConfig": {
-    "exec": "node --inspect=9229 -r ts-node/register ./source/test/test.main.ts",
-    "ext": "ts",
-    "watch": [
-      ".env",
-      "source"
-    ]
-  },
-  "jest": {
-    "coverageDirectory": "coverage",
-    "testEnvironment": "node",
-    "testRegex": ".spec.ts$",
-    "transform": {
-      "ts$": "ts-jest"
-    }
-  },
   "release": {
     "plugins": [
       "@semantic-release/commit-analyzer",
@@ -56,6 +24,14 @@
       "@semantic-release/git",
       "@semantic-release/github"
     ]
+  },
+  "scripts": {
+    "prepare": "husky install .config/husky",
+    "start": "tsnd --exit-child --transpile-only --watch *.env --inspect=0.0.0.0:9229 ./source/test/test.main.ts",
+    "build": "npx rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && npx ncp ./source ./dist/source && npx rimraf ./source/index.ts",
+    "index": "npx rimraf ./source/index.ts && npx barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
+    "lint": "eslint **/*.ts --max-warnings=0",
+    "test": "jest --verbose --forceExit --passWithNoTests --config .config/jest/jest.config.js"
   },
   "dependencies": {
     "@nestjs/common": "7.6.15",
@@ -85,24 +61,14 @@
     "@commitlint/cli": "12.1.1",
     "@commitlint/config-conventional": "12.1.1",
     "@nestjs/testing": "7.6.15",
-    "@semantic-release/changelog": "5.0.1",
-    "@semantic-release/git": "9.0.0",
-    "@types/flat": "5.0.1",
     "@types/jest": "26.0.22",
-    "@types/jsonwebtoken": "8.5.1",
     "@types/node": "14.14.41",
-    "@types/uuid": "8.3.0",
-    "barrelsby": "2.2.0",
     "eslint": "7.24.0",
     "husky": "6.0.0",
     "jest": "26.6.3",
     "lint-staged": "10.5.4",
-    "ncp": "2.0.0",
-    "nodemon": "2.0.7",
-    "rimraf": "3.0.2",
-    "semantic-release": "17.4.2",
     "ts-jest": "26.5.5",
-    "ts-node": "9.1.1",
+    "ts-node-dev": "1.1.6",
     "typescript": "4.2.4"
   }
 }
