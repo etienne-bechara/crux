@@ -1,3 +1,10 @@
+## [2.0.17](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.16...v2.0.17) (2021-04-20)
+
+
+### Bug Fixes
+
+* semantic-release intallation ([2853dc2](https://github.com/etienne-bechara/nestjs-core/commit/2853dc2e39b63bd4322c4bec0a8f212519d7fd37))
+
 ## [2.0.16](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.15...v2.0.16) (2021-04-19)
 
 
