@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { decycle } from 'cycle';
 
 import { LoggerConfig } from './logger.config';
@@ -58,7 +58,7 @@ export class LoggerService {
       level,
       message: this.getLogMessage(message),
       error: this.getLogError(message, ...data),
-      data: this.getLogData(...data),
+      data: this.getLogData(message, ...data),
     };
 
     if (this.transports.length === 0) {
@@ -116,14 +116,27 @@ export class LoggerService {
 
   /**
    * Given an event to log, extract it details.
+   * @param message
    * @param data
    */
-  private getLogData(...data: (Error | Record<string, any>)[]): Record<string, any> {
-    const dataRecords = data.filter((data) => !(data instanceof Error));
+  private getLogData(message: string | Error, ...data: (Error | Record<string, any>)[]): Record<string, any> {
+    if (message instanceof HttpException) {
+      data.push(message);
+    }
+
     let dataObject = { };
 
-    for (const record of dataRecords) {
-      dataObject = { ...dataObject, ...record };
+    for (const record of data) {
+      if (record instanceof HttpException) {
+        const details = record.getResponse();
+
+        if (details && typeof details === 'object') {
+          dataObject = { ...dataObject, ...details };
+        }
+      }
+      else if (!(record instanceof Error)) {
+        dataObject = { ...dataObject, ...record };
+      }
     }
 
     return Object.keys(dataObject).length > 0
