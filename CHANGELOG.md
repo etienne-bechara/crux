@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.19...v2.1.0) (2021-04-23)
+
+
+### Features
+
+* add trace and fatal log levels ([3871191](https://github.com/etienne-bechara/nestjs-core/commit/3871191f62090e9153927117283f5fe55f5e2c92))
+
 ## [2.0.19](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.18...v2.0.19) (2021-04-23)
 
 
