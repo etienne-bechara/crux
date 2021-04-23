@@ -105,7 +105,6 @@ export class UtilService {
    * Let network acquisition fail if unable to fetch ips.
    */
   public async getAppStatus(): Promise<UtilAppStatus> {
-    this.loggerService.trace('useless...');
     return {
       system: {
         version: os.version(),
