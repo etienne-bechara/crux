@@ -1,3 +1,10 @@
+## [2.0.18](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.17...v2.0.18) (2021-04-23)
+
+
+### Bug Fixes
+
+* improve logging of non-http errors ([8946904](https://github.com/etienne-bechara/nestjs-core/commit/89469042b44f86af63dee4d09b87f81b9c9fd016))
+
 ## [2.0.17](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.16...v2.0.17) (2021-04-20)
 
 
