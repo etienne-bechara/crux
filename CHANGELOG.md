@@ -1,3 +1,10 @@
+## [2.0.19](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.18...v2.0.19) (2021-04-23)
+
+
+### Bug Fixes
+
+* object not being decycled ([5b64ea9](https://github.com/etienne-bechara/nestjs-core/commit/5b64ea90945ca43fbc8bb0a83feb580b0b1b2360))
+
 ## [2.0.18](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.17...v2.0.18) (2021-04-23)
 
 
