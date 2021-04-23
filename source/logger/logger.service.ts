@@ -152,7 +152,7 @@ export class LoggerService {
    */
   public sanitize(object: any, decycled: boolean = false): any {
     if (typeof object !== 'object') return object;
-    if (!decycled) decycle(object);
+    if (!decycled) object = decycle(object);
 
     if (Array.isArray(object)) {
       const clone = [ ...object ];
