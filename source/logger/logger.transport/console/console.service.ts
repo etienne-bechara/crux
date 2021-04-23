@@ -69,6 +69,8 @@ export class ConsoleService implements LoggerTransport {
    */
   private getStyle(level: LoggerLevel): ConsoleStyle {
     switch (level) {
+      case LoggerLevel.FATAL:
+        return { label: 'FTL', labelColor: 'white.bgRedBright', messageColor: 'redBright' };
       case LoggerLevel.CRITICAL:
         return { label: 'CRT', labelColor: 'white.bgRedBright', messageColor: 'redBright' };
       case LoggerLevel.ERROR:
@@ -83,6 +85,8 @@ export class ConsoleService implements LoggerTransport {
         return { label: 'HTP', labelColor: 'black.bgBlue', messageColor: 'blue' };
       case LoggerLevel.DEBUG:
         return { label: 'DBG', labelColor: 'black.bgBlackBright', messageColor: 'blackBright' };
+      case LoggerLevel.TRACE:
+        return { label: 'TRC', labelColor: 'black.bgBlackBright', messageColor: 'blackBright' };
     }
   }
 

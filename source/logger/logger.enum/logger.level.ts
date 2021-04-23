@@ -1,4 +1,5 @@
 export enum LoggerLevel {
+  FATAL,
   CRITICAL,
   ERROR,
   WARNING,
@@ -6,4 +7,5 @@ export enum LoggerLevel {
   INFO,
   HTTP,
   DEBUG,
+  TRACE,
 }

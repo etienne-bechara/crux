@@ -74,6 +74,7 @@ export class SentryService implements LoggerTransport {
    */
   public getSentrySeverity(level: LoggerLevel): Sentry.Severity {
     switch (level) {
+      case LoggerLevel.FATAL: return Sentry.Severity.Fatal;
       case LoggerLevel.CRITICAL: return Sentry.Severity.Critical;
       case LoggerLevel.ERROR: return Sentry.Severity.Error;
       case LoggerLevel.WARNING: return Sentry.Severity.Warning;
@@ -81,6 +82,7 @@ export class SentryService implements LoggerTransport {
       case LoggerLevel.INFO: return Sentry.Severity.Info;
       case LoggerLevel.HTTP: return Sentry.Severity.Debug;
       case LoggerLevel.DEBUG: return Sentry.Severity.Debug;
+      case LoggerLevel.TRACE: return Sentry.Severity.Debug;
     }
   }
 

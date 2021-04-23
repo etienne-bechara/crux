@@ -105,8 +105,11 @@ SLACK_LEVEL | No | string | See [slack.config.ts](../source/logger/logger.transp
 
 The table below describes each available severity as well as the default configuration for deciding between publishing or not at one of the providers.
 
+The `Fatal` severity will kill the application after 2 seconds.
+
 Severity | Local | Development | Staging | Production
 :--- | :---: | :---: | :---: | :---:
+Fatal | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
 Critical | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
 Error | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
 Warning | Console | Console<br>Slack | Console<br>Slack | Console<br>Slack
@@ -114,6 +117,7 @@ Notice | Console | Console | -  | -
 Info | Console | - | - | -
 Http | Console | - | - | -
 Debug | Console | - | - | -
+Trace | Console | - | - | -
 
 ---
 

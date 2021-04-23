@@ -177,6 +177,17 @@ export class LoggerService {
   }
 
   /**
+   * Logs a FATAL event and KILLS the application.
+   * @param message
+   * @param data
+   */
+  public fatal(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
+    this.log(LoggerLevel.FATAL, message, ...data);
+    // eslint-disable-next-line unicorn/no-process-exit
+    setTimeout(() => process.exit(1), 2000);
+  }
+
+  /**
    * Logs a CRITICAL event.
    * @param message
    * @param data
@@ -237,6 +248,15 @@ export class LoggerService {
    */
   public debug(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
     return this.log(LoggerLevel.DEBUG, message, ...data);
+  }
+
+  /**
+   * Logs a TRACE event.
+   * @param message
+   * @param data
+   */
+  public trace(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
+    return this.log(LoggerLevel.TRACE, message, ...data);
   }
 
 }

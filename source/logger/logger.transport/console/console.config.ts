@@ -11,7 +11,7 @@ export class ConsoleConfig extends LoggerConfig {
   @InjectSecret({
     default: (nodeEnv) => {
       switch (nodeEnv) {
-        case AppEnvironment.LOCAL: return LoggerLevel.DEBUG;
+        case AppEnvironment.LOCAL: return LoggerLevel.TRACE;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.NOTICE;
         case AppEnvironment.STAGING: return LoggerLevel.WARNING;
         case AppEnvironment.PRODUCTION: return LoggerLevel.WARNING;
