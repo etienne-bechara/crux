@@ -38,5 +38,5 @@ jobs:
 
       - name: Publish Package to NPM
         run: |
-          npm i -g @semantic-release/changelog @semantic-release/git
+          npm i -g @semantic-release/changelog @semantic-release/git semantic-release
           npx semantic-release
