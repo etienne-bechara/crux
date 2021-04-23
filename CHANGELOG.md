@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.0...v2.1.1) (2021-04-23)
+
+
+### Bug Fixes
+
+* remove testing code ([a0496de](https://github.com/etienne-bechara/nestjs-core/commit/a0496de7f4ff3d1fb13d62d3f8b20283ecc909a0))
+
 # [2.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.0.19...v2.1.0) (2021-04-23)
 
 
