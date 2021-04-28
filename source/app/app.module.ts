@@ -3,7 +3,7 @@ import 'reflect-metadata';
 
 import { ClassSerializerInterceptor, DynamicModule, Global, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
-import { json } from 'express';
+import { json } from 'body-parser';
 
 import { ConfigModule } from '../config/config.module';
 import { HttpConfig } from '../http/http.config';
