@@ -37,7 +37,7 @@
     "@nestjs/common": "7.6.15",
     "@nestjs/core": "7.6.15",
     "@nestjs/platform-express": "7.6.15",
-    "@sentry/node": "6.3.0",
+    "@sentry/node": "6.3.1",
     "@types/express": "4.17.11",
     "axios": "0.21.1",
     "axios-cache-adapter": "2.7.3",

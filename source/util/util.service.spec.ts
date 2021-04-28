@@ -21,14 +21,14 @@ TestModule.createSandbox({
       utilService = testingModule.get(UtilService);
     });
 
-    describe('halt', () => {
-      it('should halt code execution for 1000ms', async () => {
-        const haltTime = 1000;
+    describe('sleep', () => {
+      it('should sleep code execution for 1000ms', async () => {
+        const sleepTime = 1000;
         const start = Date.now();
-        await utilService.halt(haltTime);
+        await utilService.sleep(sleepTime);
         const elapsed = Date.now() - start;
-        expect(elapsed).toBeGreaterThan(haltTime * 0.95);
-        expect(elapsed).toBeLessThan(haltTime * 1.05);
+        expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
+        expect(elapsed).toBeLessThan(sleepTime * 1.05);
       });
     });
 

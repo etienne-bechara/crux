@@ -21,7 +21,7 @@ export class UtilService {
    * Asynchronously wait for desired amount of milliseconds.
    * @param ms
    */
-  public async halt(ms: number): Promise<void> {
+  public async sleep(ms: number): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
@@ -30,7 +30,7 @@ export class UtilService {
    * @param params
    */
   public async retryOnException<T>(params: UtilRetryParams): Promise<T> {
-    const methodName = params.name || 'Unnamed';
+    const methodName = params.name || 'retryOnException()';
 
     let startMsg = `[UtilService] ${methodName}: running with ${params.retries || '∞'} `;
     startMsg += `retries and ${params.timeout / 1000 || '∞ '}s timeout...`;
@@ -40,7 +40,8 @@ export class UtilService {
     let tentative = 1;
     let result: T;
 
-    while (true) { // eslint-disable-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       try {
         result = await params.method();
         break;
@@ -57,7 +58,7 @@ export class UtilService {
         retryMsg += `, elapsed ${elapsed / 1000}/${params.timeout / 1000 || '∞ '}s...`;
         this.loggerService.debug(retryMsg);
 
-        await this.halt(params.delay || 0);
+        await this.sleep(params.delay || 0);
       }
     }
 
