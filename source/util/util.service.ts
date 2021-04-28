@@ -30,15 +30,15 @@ export class UtilService {
    * @param params
    */
   public async retryOnException<T>(params: UtilRetryParams): Promise<T> {
-    const methodName = params.name || 'retryOnException()';
-
-    let startMsg = `[UtilService] ${methodName}: running with ${params.retries || '∞'} `;
-    startMsg += `retries and ${params.timeout / 1000 || '∞ '}s timeout...`;
-    this.loggerService.debug(startMsg);
-
+    const txtPrefix = `[UtilService] ${params.name || 'retryOnException()'}:`;
+    const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
+    const txtTimeout = params.timeout ? params.timeout / 1000 : '∞ ';
+    const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout...`;
     const startTime = Date.now();
     let tentative = 1;
     let result: T;
+
+    this.loggerService.debug(msgStart);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -49,20 +49,26 @@ export class UtilService {
       catch (e) {
         const elapsed = Date.now() - startTime;
 
-        if (params.retries && tentative > params.retries) throw e;
-        else if (params.timeout && elapsed > params.timeout) throw e;
-        else if (params.breakIf?.(e)) throw e;
+        if (
+          (params.retries || params.retries === 0) && tentative > params.retries
+          || params.timeout && elapsed > params.timeout
+          || params.breakIf?.(e)
+        ) {
+          throw e;
+        }
+
         tentative++;
 
-        let retryMsg = `[UtilService] ${methodName}: ${e.message} | Retry #${tentative}/${params.retries || '∞'}`;
-        retryMsg += `, elapsed ${elapsed / 1000}/${params.timeout / 1000 || '∞ '}s...`;
-        this.loggerService.debug(retryMsg);
+        const txtElapsed = `${elapsed / 1000}/${txtTimeout}`;
+        const msgRetry = `${txtPrefix} ${e.message} | Retry #${tentative}/${txtRetry}, elapsed ${txtElapsed}s...`;
+
+        this.loggerService.debug(msgRetry);
 
         await this.sleep(params.delay || 0);
       }
     }
 
-    this.loggerService.debug(`[UtilService] ${methodName}: finished successfully!`);
+    this.loggerService.debug(`${txtPrefix} finished successfully!`);
     return result;
   }
 

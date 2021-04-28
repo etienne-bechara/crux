@@ -33,7 +33,7 @@ TestModule.createSandbox({
     });
 
     describe('retryOnException', () => {
-      it('should retry a function for 5 times', async () => {
+      it('should retry a method for 5 times', async () => {
         const counter = { quantity: 0 };
         const retries = 5;
 
@@ -48,7 +48,7 @@ TestModule.createSandbox({
         expect(counter.quantity).toBe(retries + 1);
       });
 
-      it('should retry a function for 2 seconds', async () => {
+      it('should retry a method for 2 seconds', async () => {
         const counter = { quantity: 0 };
         const timeout = 2000;
         const delay = 550;
@@ -63,6 +63,21 @@ TestModule.createSandbox({
         catch { /* Handled by expect */ }
 
         expect(counter.quantity).toBe(Math.ceil(timeout / delay) + 1);
+      });
+
+      it('should not retry a method', async () => {
+        const counter = { quantity: 0 };
+        const retries = 0;
+
+        try {
+          await utilService.retryOnException({
+            method: () => mockFailure(counter),
+            retries,
+          });
+        }
+        catch { /* Handled by expect */ }
+
+        expect(counter.quantity).toBe(1);
       });
     });
 
