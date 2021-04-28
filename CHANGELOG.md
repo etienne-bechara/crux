@@ -1,3 +1,11 @@
+## [2.1.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.1...v2.1.2) (2021-04-28)
+
+
+### Bug Fixes
+
+* remove express deps ([2b22add](https://github.com/etienne-bechara/nestjs-core/commit/2b22add41789b75d1dbbb681e3043c04cf8468ce))
+* sleep and re-enable http tests ([371955b](https://github.com/etienne-bechara/nestjs-core/commit/371955bb62c0b49203c55d7069365b25be62a170))
+
 ## [2.1.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.0...v2.1.1) (2021-04-23)
 
 
