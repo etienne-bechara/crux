@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.2...v2.1.3) (2021-04-28)
+
+
+### Bug Fixes
+
+* allow retry = 0 on retryOnException ([3317b06](https://github.com/etienne-bechara/nestjs-core/commit/3317b06dfe953cc93d48a1ac7ab4e103c7bb2c2b))
+
 ## [2.1.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.1...v2.1.2) (2021-04-28)
 
 
