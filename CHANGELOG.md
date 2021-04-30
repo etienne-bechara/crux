@@ -1,3 +1,10 @@
+## [2.1.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.3...v2.1.4) (2021-04-30)
+
+
+### Bug Fixes
+
+* bump rxjs to 7 ([f4e37fe](https://github.com/etienne-bechara/nestjs-core/commit/f4e37febad334bf2cdd494735a45e6c151ff2116))
+
 ## [2.1.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.2...v2.1.3) (2021-04-28)
 
 
