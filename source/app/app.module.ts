@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, DynamicModule, Global, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { json } from 'body-parser';
 
@@ -44,7 +44,7 @@ export class AppModule {
    * • Disable timeout (handled in custom interceptor).
    * @param options
    */
-  public static async bootServer(options: AppBootOptions = { }): Promise<void> {
+  public static async bootServer(options: AppBootOptions = { }): Promise<INestApplication> {
     const entryModule = this.buildEntryModule(options);
 
     const nestApp = await NestFactory.create(entryModule, {
@@ -68,6 +68,8 @@ export class AppModule {
 
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
     loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
+
+    return nestApp;
   }
 
   /**
