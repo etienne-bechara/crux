@@ -12,6 +12,7 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
 
 export interface HttpModuleOptions {
   name?: string;
+  manual?: boolean;
   agent?: HttpServiceAgent;
   bases?: HttpServiceBases;
   cache?: IAxiosCacheAdapterOptions;

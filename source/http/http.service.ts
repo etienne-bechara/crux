@@ -14,17 +14,19 @@ import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions,
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  private bases: HttpServiceBases = {};
-  private defaults: HttpServiceDefaults= {};
-  private instance: AxiosInstance;
+  protected bases: HttpServiceBases = {};
+  protected defaults: HttpServiceDefaults= {};
+  protected instance: AxiosInstance;
 
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
-    private readonly httpModuleOptions: HttpModuleOptions,
-    private readonly httpConfig: HttpConfig,
-    private readonly loggerService: LoggerService,
+    protected readonly httpModuleOptions: HttpModuleOptions,
+    protected readonly httpConfig: HttpConfig,
+    protected readonly loggerService: LoggerService,
   ) {
-    this.setup(httpModuleOptions);
+    if (!httpModuleOptions?.manual) {
+      this.setup(httpModuleOptions);
+    }
   }
 
   /**
