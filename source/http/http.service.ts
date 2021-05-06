@@ -53,7 +53,7 @@ export class HttpService {
    * priority over default, resolves which handler to use.
    * @param priorityHandler
    */
-  private getExceptionHandler(priorityHandler?: HttpExceptionHandler): (params: HttpHandlerParams) => Promise<void> {
+  protected getExceptionHandler(priorityHandler?: HttpExceptionHandler): (params: HttpHandlerParams) => Promise<void> {
     const handler = priorityHandler
       || this.defaults.exceptionHandler
       || HttpPredefinedHandler.INTERNAL_SERVER_ERROR;
@@ -96,9 +96,9 @@ export class HttpService {
    * • Validator to pass on status lower than 400 (< bad request).
    * @param params
    */
-  private setDefaultParams(params: HttpModuleOptions): void {
+  protected setDefaultParams(params: HttpModuleOptions): void {
     if (!params.defaults) params.defaults = {};
-    const defaultTimeout = this.httpConfig.HTTPS_DEFAULT_TIMEOUT;
+    const defaultTimeout = this.httpConfig.HTTP_DEFAULT_TIMEOUT;
 
     this.defaults.returnType = params.defaults.returnType || HttpReturnType.BODY_CONTENT;
     this.defaults.timeout = params.defaults.timeout || defaultTimeout;
@@ -114,7 +114,7 @@ export class HttpService {
    * Store base URL, body and headers if configured at setup.
    * @param params
    */
-  private setBaseParams(params: HttpModuleOptions): void {
+  protected setBaseParams(params: HttpModuleOptions): void {
     if (!params.bases) params.bases = {};
     this.bases.url = params.bases.url,
     this.bases.headers = params.bases.headers;
@@ -129,7 +129,7 @@ export class HttpService {
    * • If ignoreHttpErrors, customize it with a simple rejectUnauthorized.
    * @param params
    */
-  private buildHttpAgent(params: HttpModuleOptions): Agent {
+  protected buildHttpAgent(params: HttpModuleOptions): Agent {
     if (params.agent?.custom) {
       return params.agent.custom;
     }
@@ -156,15 +156,15 @@ export class HttpService {
    * remove query param restriction.
    * @param params
    */
-  private buildAdapter(params: HttpModuleOptions): AxiosAdapter {
+  protected buildAdapter(params: HttpModuleOptions): AxiosAdapter {
     if (!params.cache) return;
 
     if (params.cache.maxAge === undefined) {
-      params.cache.maxAge = this.httpConfig.HTTPS_DEFAULT_CACHE_MAX_AGE;
+      params.cache.maxAge = this.httpConfig.HTTP_DEFAULT_CACHE_MAX_AGE;
     }
 
     if (params.cache.limit === undefined) {
-      params.cache.limit = this.httpConfig.HTTPS_DEFAULT_CACHE_LIMIT;
+      params.cache.limit = this.httpConfig.HTTP_DEFAULT_CACHE_LIMIT;
     }
 
     if (!params.cache.exclude) {
@@ -192,7 +192,7 @@ export class HttpService {
    * In case of conflicts the defaults are overwritten.
    * @param params
    */
-  private mergeBaseParams(params: HttpRequestParams): HttpRequestParams {
+  protected mergeBaseParams(params: HttpRequestParams): HttpRequestParams {
     const mergedParams = Object.assign({}, params);
 
     if (this.bases.url && !params.url?.startsWith('http')) {
@@ -226,7 +226,7 @@ export class HttpService {
    * • Remove properties unrecognizable by Axios.
    * @param params
    */
-  private replaceVariantParams(params: HttpRequestParams): HttpRequestParams {
+  protected replaceVariantParams(params: HttpRequestParams): HttpRequestParams {
     const replacedParams = Object.assign({}, params);
 
     if (params.replacements) {
@@ -265,7 +265,7 @@ export class HttpService {
    * easily accessible array of interfaces.
    * @param res
    */
-  private parseResponseCookies(res: any): any {
+  protected parseResponseCookies(res: any): any {
     const cookies: HttpCookie[] = [ ];
 
     if (!res?.headers || !res.headers['set-cookie']) {
