@@ -65,6 +65,22 @@ TestModule.createSandbox({
         expect(counter.quantity).toBe(Math.ceil(timeout / delay) + 1);
       });
 
+      it('should timeout a method after 1 second', async () => {
+        const start = Date.now();
+        const timeout = 1000;
+
+        try {
+          await utilService.retryOnException({
+            method: () => utilService.sleep(2000),
+            timeout,
+          });
+        }
+        catch { /* Handled by expect */ }
+
+        const elapsed = Date.now() - start;
+        expect(elapsed).toBeLessThan(timeout * 1.1);
+      });
+
       it('should not retry a method', async () => {
         const counter = { quantity: 0 };
         const retries = 0;

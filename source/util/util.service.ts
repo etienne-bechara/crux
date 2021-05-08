@@ -26,11 +26,34 @@ export class UtilService {
   }
 
   /**
+   * Wait for target promise resolution withing desired timeout.
+   * On failure throw a timeout exception.
+   * @param promise
+   * @param timeout
+   */
+  public async resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
+    this.loggerService.debug(`[UtilService] Resolving promise with ${timeout / 1000}s timeout...`);
+
+    const result = await Promise.race([
+      promise,
+      new Promise((reject) => setTimeout(() => reject('timed out'), timeout)),
+    ]);
+
+    if (result === 'timed out') {
+      throw new Error(`async resolution timed out after ${timeout / 1000}s`);
+    }
+
+    return result as T;
+  }
+
+  /**
    * Retry a method for configured times or until desired timeout.
    * @param params
    */
+  // eslint-disable-next-line complexity
   public async retryOnException<T>(params: UtilRetryParams): Promise<T> {
-    const txtPrefix = `[UtilService] ${params.name || 'retryOnException()'}:`;
+    const txtName = `${params.name || 'retryOnException()'}`;
+    const txtPrefix = `[UtilService] ${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
     const txtTimeout = params.timeout ? params.timeout / 1000 : '∞ ';
     const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout...`;
@@ -43,7 +66,12 @@ export class UtilService {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        result = await params.method();
+        const elapsed = Date.now() - startTime;
+
+        result = params.timeout
+          ? await this.resolveOrTimeout(params.method(), params.timeout - elapsed)
+          : await params.method();
+
         break;
       }
       catch (e) {
@@ -54,6 +82,10 @@ export class UtilService {
           || params.timeout && elapsed > params.timeout
           || params.breakIf?.(e)
         ) {
+          if (e?.message?.startsWith('async resolution timed out')) {
+            e.message = `${txtName} timed out after ${params.timeout / 1000}s`;
+          }
+
           throw e;
         }
 
