@@ -27,7 +27,7 @@
   },
   "scripts": {
     "prepare": "husky install .config/husky",
-    "start": "tsnd --exit-child --transpile-only --watch *.env --inspect=0.0.0.0:9229 ./source/test/test.main.ts",
+    "start": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./source/test/test.main.ts",
     "build": "npx rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && npx ncp ./source ./dist/source && npx rimraf ./source/index.ts",
     "index": "npx rimraf ./source/index.ts && npx barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
     "lint": "eslint **/*.ts --max-warnings=0",

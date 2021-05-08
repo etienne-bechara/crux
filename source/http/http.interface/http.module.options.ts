@@ -15,7 +15,7 @@ export interface HttpModuleOptions {
   manual?: boolean;
   agent?: HttpServiceAgent;
   bases?: HttpServiceBases;
-  cache?: IAxiosCacheAdapterOptions;
+  cache?: IAxiosCacheAdapterOptions | boolean;
   defaults?: HttpServiceDefaults;
 }
 

@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import fs from 'fs';
 import globby from 'globby';
 
+import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { UtilController } from './util.controller';
 import { UtilService } from './util.service';
 
 @Module({
   imports: [
+    HttpModule.register({ cache: true }),
     LoggerModule,
   ],
   controllers: [

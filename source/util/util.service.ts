@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
 import os from 'os';
 import requestIp from 'request-ip';
 
 import { AppRequest } from '../app/app.interface';
+import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { UtilAppStatus } from './util.interface';
 import { UtilRetryParams } from './util.interface/util.retry.params';
@@ -11,9 +11,8 @@ import { UtilRetryParams } from './util.interface/util.retry.params';
 @Injectable()
 export class UtilService {
 
-  private cachedServerIp: string;
-
   public constructor(
+    private readonly httpService: HttpService,
     private readonly loggerService: LoggerService,
   ) { }
 
@@ -126,17 +125,14 @@ export class UtilService {
    * In case of error log an exception but do not throw.
    */
   public async getServerIp(): Promise<string> {
-    if (!this.cachedServerIp) {
-      try {
-        const { data } = await axios.get('https://api64.ipify.org', { timeout: 5000 });
-        this.cachedServerIp = data;
-      }
-      catch (e) {
-        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-      }
+    try {
+      const serverIp: string = await this.httpService.get('https://api64.ipify.org', { timeout: 5000 });
+      return serverIp;
     }
-
-    return this.cachedServerIp;
+    catch (e) {
+      this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
+      return null;
+    }
   }
 
   /**

@@ -105,7 +105,8 @@ import { HttpModule, HttpReturnType, HttpExceptionHandler } from '@bechara/nestj
           passphrase: 'password',
         },
       },
-      // See axios-cache-adapter from NPM
+      // You may use 'cache: true' to configure with default options
+      // See axios-cache-adapter for full documentation
       cache: {
         maxAge: 15 * 60 * 1000,
         limit: 10000,

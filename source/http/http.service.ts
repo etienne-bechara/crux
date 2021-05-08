@@ -5,7 +5,6 @@ import { Agent } from 'http';
 import https from 'https';
 import qs from 'qs';
 
-import { AppEnvironment } from '../app/app.enum';
 import { LoggerService } from '../logger/logger.service';
 import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpPredefinedHandler, HttpReturnType } from './http.enum';
@@ -157,33 +156,35 @@ export class HttpService {
    * @param params
    */
   protected buildAdapter(params: HttpModuleOptions): AxiosAdapter {
-    if (!params.cache) return;
+    if (params.cache === true) params.cache = { };
+    const { cache } = params;
+    if (!cache) return;
 
-    if (params.cache.maxAge === undefined) {
-      params.cache.maxAge = this.httpConfig.HTTP_DEFAULT_CACHE_MAX_AGE;
-    }
+    cache.maxAge ??= this.httpConfig.HTTP_DEFAULT_CACHE_MAX_AGE;
+    cache.limit ??= this.httpConfig.HTTP_DEFAULT_CACHE_LIMIT;
+    cache.exclude ??= { query: false };
 
-    if (params.cache.limit === undefined) {
-      params.cache.limit = this.httpConfig.HTTP_DEFAULT_CACHE_LIMIT;
-    }
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    cache.invalidate ??= async (config: any, req: HttpRequestParams): Promise<void> => {
+      const { exclude, store, uuid } = config;
+      const method = req.method.toLowerCase();
 
-    if (!params.cache.exclude) {
-      params.cache.exclude = { query: false };
-    }
+      if (exclude.methods.includes(method)) {
+        this.loggerService.debug(`[HttpService] Cache clear: ${uuid}`);
+        await store.removeItem(uuid);
+      }
 
-    if (!params.cache.invalidate && this.httpConfig.NODE_ENV === AppEnvironment.LOCAL) {
-      // eslint-disable-next-line @typescript-eslint/require-await
-      params.cache.invalidate = async (cacheConfig: any): Promise<void> => {
-        if (Object.keys(cacheConfig?.store?.store).includes(cacheConfig.uuid)) {
-          this.loggerService.debug(`[HttpService] Cache hit: ${cacheConfig.uuid}`);
-        }
-        else {
-          this.loggerService.debug(`[HttpService] Cache miss: ${cacheConfig.uuid}`);
-        }
-      };
-    }
+      const currentItem: { expires: number } = await store.getItem(uuid);
 
-    return setupCache(params.cache).adapter;
+      if (currentItem && currentItem.expires > Date.now()) {
+        this.loggerService.debug(`[HttpService] Cache hit: ${uuid}`);
+      }
+      else {
+        this.loggerService.debug(`[HttpService] Cache miss: ${uuid}`);
+      }
+    };
+
+    return setupCache(cache).adapter;
   }
 
   /**
