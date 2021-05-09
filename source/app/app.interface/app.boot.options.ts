@@ -1,4 +1,4 @@
-import { ModuleMetadata } from '@nestjs/common';
+import { HttpStatus, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 export interface AppBootOptions extends ModuleMetadata {
@@ -13,4 +13,5 @@ export interface AppBootOptions extends ModuleMetadata {
   timeout?: number;
   jsonLimit?: string;
   cors?: CorsOptions;
+  httpErrors?: HttpStatus[];
 }

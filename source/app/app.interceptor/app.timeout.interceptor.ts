@@ -21,7 +21,7 @@ export class AppTimeoutInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): any {
-    const msTimeout = this.appConfig.appTimeout;
+    const msTimeout = this.appConfig.bootOptions.timeout;
     if (!msTimeout) return next.handle();
 
     return next

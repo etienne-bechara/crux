@@ -80,7 +80,12 @@ void AppModule.bootServer({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
-  }
+  },
+
+  // Which HTTP exceptions should be logged as errors
+  httpErrors: [
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ],
 });
 ```
 

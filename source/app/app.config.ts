@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
 import { AppEnvironment } from './app.enum';
+import { AppBootOptions } from './app.interface';
+
 @Injectable()
 export class AppConfig {
 
@@ -14,7 +16,7 @@ export class AppConfig {
 
   @InjectSecret({ default: 8080 })
   @Transform((o) => Number.parseInt(o.value))
-  @IsNumber() @Min(1024) @Max(65535)
+  @IsNumber() @Min(1024) @Max(65_535)
   public readonly APP_PORT: number;
 
   @InjectSecret({ default: '' })
@@ -32,6 +34,10 @@ export class AppConfig {
     optionsSuccessStatus: 204,
   };
 
-  public appTimeout: number;
+  public readonly APP_DEFAULT_HTTP_ERRORS: HttpStatus[] = [
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ];
+
+  public bootOptions: AppBootOptions;
 
 }

@@ -133,14 +133,11 @@ export class AppFilter implements ExceptionFilter {
    * @param req
    */
   protected logException(appException: AppException, req: AppRequest): void {
-    const exception = appException.exception;
+    const { details, exception, message, errorCode } = appException;
+    const logData: Record<string, any> = { message, ...details };
+    const httpErrors = this.appConfig.bootOptions.httpErrors;
 
-    const logData: Record<string, any> = {
-      message: appException.message,
-      ...appException.details,
-    };
-
-    if (appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (httpErrors.includes(errorCode)) {
       const inboundRequest = {
         url: req.url.split('?')[0],
         params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined,

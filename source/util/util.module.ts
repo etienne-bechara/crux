@@ -42,11 +42,12 @@ export class UtilModule {
     const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
 
     const exportsArrays = normalizedFiles.map((file) => {
-      const exportsObject = require(`${cwd}/${file}`); // eslint-disable-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
+      const exportsObject = require(`${cwd}/${file}`);
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });
 
-    // eslint-disable-next-line unicorn/prefer-spread
+    // eslint-disable-next-line unicorn/prefer-spread, unicorn/prefer-array-flat
     return [ ].concat(...exportsArrays);
   }
 
