@@ -1,3 +1,18 @@
+# [2.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.4...v2.2.0) (2021-05-08)
+
+
+### Bug Fixes
+
+* allow httpservice to be extended ([fcd9cfb](https://github.com/etienne-bechara/nestjs-core/commit/fcd9cfb41939ba7cf3bbcf5e23ffa5da21a554de))
+* http interface ([ed50fd4](https://github.com/etienne-bechara/nestjs-core/commit/ed50fd4a856a1d2f4f9b4f214ead7d5b6e3e7c82))
+* return nestApp on boot ([e31f059](https://github.com/etienne-bechara/nestjs-core/commit/e31f059658173fd4c7a712d5806c16a33d1f16b7))
+
+
+### Features
+
+* add true timeout to retryOnException() ([90fac8a](https://github.com/etienne-bechara/nestjs-core/commit/90fac8aceaa3dff46456c09e4cfd18e23ff55933))
+* improve default cache configuration ([80b21ad](https://github.com/etienne-bechara/nestjs-core/commit/80b21ad7f5c0bc80ea7e8f69e15127615b95d0ec))
+
 ## [2.1.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.3...v2.1.4) (2021-04-30)
 
 
