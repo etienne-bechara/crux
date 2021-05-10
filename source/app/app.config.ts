@@ -23,6 +23,8 @@ export class AppConfig {
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
 
+  public readonly APP_BOOT_OPTIONS: AppBootOptions = { };
+
   public readonly APP_DEFAULT_TIMEOUT = 60 * 1000;
 
   public readonly APP_DEFAULT_JSON_LIMIT= '10MB';
@@ -37,7 +39,5 @@ export class AppConfig {
   public readonly APP_DEFAULT_HTTP_ERRORS: HttpStatus[] = [
     HttpStatus.INTERNAL_SERVER_ERROR,
   ];
-
-  public bootOptions: AppBootOptions;
 
 }

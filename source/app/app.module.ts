@@ -72,7 +72,10 @@ export class AppModule {
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
     loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
 
-    appConfig.bootOptions = options;
+    for (const key in options) {
+      appConfig.APP_BOOT_OPTIONS[key] = options[key];
+    }
+
     return nestApp;
   }
 
@@ -94,7 +97,11 @@ export class AppModule {
       controllers: options.controllers,
       providers: this.buildEntryProviders(options),
       imports: this.buildEntryModules(options, 'imports'),
-      exports: this.buildEntryModules(options, 'exports'),
+      exports: [
+        AppConfig,
+        ...options.providers,
+        ...this.buildEntryModules(options, 'exports'),
+      ],
     };
   }
 
