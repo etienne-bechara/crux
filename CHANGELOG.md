@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.0...v2.3.1) (2021-05-10)
+
+
+### Bug Fixes
+
+* boot options not injecting ([5124c56](https://github.com/etienne-bechara/nestjs-core/commit/5124c561b0b9a896a3fab22a58620e435c33911b))
+
 # [2.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.2.0...v2.3.0) (2021-05-09)
 
 
