@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.2.0...v2.3.0) (2021-05-09)
+
+
+### Features
+
+* allow choosing http exceptions to log as error ([c45efac](https://github.com/etienne-bechara/nestjs-core/commit/c45efac35b1de5737b9a623ac3c0f6ef714b2865))
+
 # [2.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.1.4...v2.2.0) (2021-05-08)
 
 
