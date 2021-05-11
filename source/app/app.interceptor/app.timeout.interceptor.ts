@@ -2,15 +2,10 @@ import { CallHandler, ExecutionContext, GatewayTimeoutException, Injectable, Nes
 import { throwError } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
-import { AppConfig } from '../app.config';
 import { AppModule } from '../app.module';
 
 @Injectable()
 export class AppTimeoutInterceptor implements NestInterceptor {
-
-  public constructor(
-    private readonly appConfig: AppConfig,
-  ) { }
 
   /**
    * Creates a true server side timer that ends any requests
