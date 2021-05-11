@@ -5,7 +5,6 @@ import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
 import { AppEnvironment } from './app.enum';
-import { AppBootOptions } from './app.interface';
 
 @Injectable()
 export class AppConfig {
@@ -22,8 +21,6 @@ export class AppConfig {
   @InjectSecret({ default: '' })
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
-
-  public readonly APP_BOOT_OPTIONS: AppBootOptions = { };
 
   public readonly APP_DEFAULT_TIMEOUT = 60 * 1000;
 

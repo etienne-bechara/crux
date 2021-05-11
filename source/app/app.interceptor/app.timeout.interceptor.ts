@@ -3,6 +3,7 @@ import { throwError } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
 import { AppConfig } from '../app.config';
+import { AppModule } from '../app.module';
 
 @Injectable()
 export class AppTimeoutInterceptor implements NestInterceptor {
@@ -21,7 +22,7 @@ export class AppTimeoutInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): any {
-    const msTimeout = this.appConfig.APP_BOOT_OPTIONS.timeout;
+    const msTimeout = AppModule.getBootOptions().timeout;
     if (!msTimeout) return next.handle();
 
     return next

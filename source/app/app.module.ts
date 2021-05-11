@@ -27,6 +27,15 @@ import { AppMiddleware } from './app.middleware';
 @Module({ })
 export class AppModule {
 
+  private static bootOptions: AppBootOptions;
+
+  /**
+   * Returns final boot options after applying default values.
+   */
+  public static getBootOptions(): AppBootOptions {
+    return this.bootOptions;
+  }
+
   /**
    * Applies a global middleware that acts on
    * request before anything else.
@@ -72,10 +81,7 @@ export class AppModule {
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
     loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
 
-    for (const key in options) {
-      appConfig.APP_BOOT_OPTIONS[key] = options[key];
-    }
-
+    this.bootOptions = options;
     return nestApp;
   }
 

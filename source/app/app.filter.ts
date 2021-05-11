@@ -6,6 +6,7 @@ import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppRequest, AppResponse } from './app.interface';
+import { AppModule } from './app.module';
 
 @Catch()
 export class AppFilter implements ExceptionFilter {
@@ -135,7 +136,7 @@ export class AppFilter implements ExceptionFilter {
   protected logException(appException: AppException, req: AppRequest): void {
     const { details, exception, message, errorCode } = appException;
     const logData: Record<string, any> = { message, ...details };
-    const httpErrors = this.appConfig.APP_BOOT_OPTIONS.httpErrors;
+    const httpErrors = AppModule.getBootOptions().httpErrors;
 
     if (httpErrors.includes(errorCode)) {
       const inboundRequest = {
