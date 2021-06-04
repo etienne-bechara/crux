@@ -1,3 +1,11 @@
+## [2.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.1...v2.3.2) (2021-05-11)
+
+
+### Bug Fixes
+
+* add static method to acquire boot options ([746fd24](https://github.com/etienne-bechara/nestjs-core/commit/746fd24f53a3d75b0df2e0d42354cd257aad92f2))
+* remove unnecessary injection ([e9194de](https://github.com/etienne-bechara/nestjs-core/commit/e9194de7fd44fea71880de9f1917a31f5099766b))
+
 ## [2.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.0...v2.3.1) (2021-05-10)
 
 
