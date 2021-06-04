@@ -44,7 +44,6 @@ export interface AppResponse<
   vary(field: string): this;
   app: any;
   append(field: string, value?: string[] | string): this;
-  req?: Request;
 }
 
 export interface CookieOptions {
