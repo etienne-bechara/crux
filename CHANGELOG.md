@@ -1,3 +1,11 @@
+## [2.3.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.2...v2.3.3) (2021-06-04)
+
+
+### Bug Fixes
+
+* add transform to validation pipe to prevent duplication ([e1697bb](https://github.com/etienne-bechara/nestjs-core/commit/e1697bb209a3016d9007e052d7d1d5866f96eb3f))
+* response interface ([eb42d03](https://github.com/etienne-bechara/nestjs-core/commit/eb42d03a2ecca1df1f5dcfabf97a4988341c1482))
+
 ## [2.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.1...v2.3.2) (2021-05-11)
 
 
