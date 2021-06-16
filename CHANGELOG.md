@@ -1,3 +1,10 @@
+## [2.3.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.3...v2.3.4) (2021-06-16)
+
+
+### Bug Fixes
+
+* allow slack http to be silent ([7f329f8](https://github.com/etienne-bechara/nestjs-core/commit/7f329f8a0af3dda4807177090976f1a84703287c))
+
 ## [2.3.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.2...v2.3.3) (2021-06-04)
 
 
