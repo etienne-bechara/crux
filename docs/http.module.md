@@ -84,6 +84,8 @@ import { HttpModule, HttpReturnType, HttpExceptionHandler } from '@bechara/nestj
   imports: [
     HttpModule.register({
       name: 'HttpModule',
+      manual: false,
+      silent: false,
       defaults: {
         returnType: HttpReturnType.FULL_RESPONSE,
         timeout: 15 * 1000,

@@ -13,16 +13,20 @@ import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions,
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  protected bases: HttpServiceBases = {};
-  protected defaults: HttpServiceDefaults= {};
+  protected bases: HttpServiceBases = { };
+  protected defaults: HttpServiceDefaults = { };
   protected instance: AxiosInstance;
 
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
-    protected readonly httpModuleOptions: HttpModuleOptions,
+    protected readonly httpModuleOptions: HttpModuleOptions = { },
     protected readonly httpConfig: HttpConfig,
     protected readonly loggerService: LoggerService,
   ) {
+    if (this.httpModuleOptions.silent) {
+      this.loggerService = undefined;
+    }
+
     if (!httpModuleOptions?.manual) {
       this.setup(httpModuleOptions);
     }
@@ -38,7 +42,7 @@ export class HttpService {
     this.setDefaultParams(params);
     this.setBaseParams(params);
 
-    this.loggerService.debug(`[HttpService] Creating instance for ${params.name || this.bases.url}...`);
+    this.loggerService?.debug(`[HttpService] Creating instance for ${params.name || this.bases.url}...`);
     this.instance = axios.create({
       adapter: this.buildAdapter(params),
       httpsAgent: this.buildHttpAgent(params),
@@ -170,17 +174,17 @@ export class HttpService {
       const method = req.method.toLowerCase();
 
       if (exclude.methods.includes(method)) {
-        this.loggerService.debug(`[HttpService] Cache clear: ${uuid}`);
+        this.loggerService?.debug(`[HttpService] Cache clear: ${uuid}`);
         await store.removeItem(uuid);
       }
 
       const currentItem: { expires: number } = await store.getItem(uuid);
 
       if (currentItem && currentItem.expires > Date.now()) {
-        this.loggerService.debug(`[HttpService] Cache hit: ${uuid}`);
+        this.loggerService?.debug(`[HttpService] Cache hit: ${uuid}`);
       }
       else {
-        this.loggerService.debug(`[HttpService] Cache miss: ${uuid}`);
+        this.loggerService?.debug(`[HttpService] Cache miss: ${uuid}`);
       }
     };
 
@@ -324,7 +328,7 @@ export class HttpService {
     let errorMsg: string;
     let res: AxiosResponse | any;
 
-    this.loggerService.debug('[HttpService] Executing external request...', finalParams);
+    this.loggerService?.debug('[HttpService] Executing external request...', finalParams);
 
     try {
       const axiosConfig: AxiosRequestConfig = {

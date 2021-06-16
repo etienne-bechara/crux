@@ -11,6 +11,7 @@ import { SlackService } from './slack.service';
       inject: [ SlackConfig ],
       useFactory: (slackConfig: SlackConfig) => ({
         name: 'SlackModule',
+        silent: true,
         bases: {
           url: slackConfig.SLACK_WEBHOOK,
         },
