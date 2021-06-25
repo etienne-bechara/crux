@@ -338,7 +338,9 @@ export class HttpService {
         params: finalParams.query,
         data: finalParams.body,
         cancelToken: cancelSource.token,
-        ...finalParams.extras,
+        maxRedirects: finalParams.maxRedirects,
+        responseType: finalParams.responseType,
+        auth: finalParams.basicAuth,
       };
 
       res = await Promise.race([
