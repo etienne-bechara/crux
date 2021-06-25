@@ -1,3 +1,10 @@
+## [2.3.5](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.4...v2.3.5) (2021-06-25)
+
+
+### Bug Fixes
+
+* **http:** restrict axios options ([5bb54a1](https://github.com/etienne-bechara/nestjs-core/commit/5bb54a1726d2ab94c89fa62396e724625dc69278))
+
 ## [2.3.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.3...v2.3.4) (2021-06-16)
 
 
