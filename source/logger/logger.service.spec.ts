@@ -23,12 +23,17 @@ TestModule.createSandbox({
           number: 123,
           headers: {
             authorization: 'Bearer eyj....s3h',
-            key: undefined,
+            empty: undefined,
           },
           auth: {
             nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
             user: 'admin',
             pass: '1234',
+          },
+          body: {
+            _key: 'hbuF&^%fdsa4tf',
+            clientSecret: 'MAF...S4D',
+            data: 123,
           },
           mfa: [
             {
@@ -54,6 +59,11 @@ TestModule.createSandbox({
             nonce: '[filtered]',
             user: 'admin',
             pass: '[filtered]',
+          },
+          body: {
+            _key: '[filtered]',
+            clientSecret: '[filtered]',
+            data: 123,
           },
           mfa: [
             {

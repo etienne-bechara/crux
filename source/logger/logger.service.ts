@@ -162,10 +162,12 @@ export class LoggerService {
     const clone = { ...object };
 
     for (const key in clone) {
+      const alphaKey = key.toLowerCase().replace(/[^a-z]+/g, '');
+
       if (clone[key] === undefined) {
         delete clone[key];
       }
-      else if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(key)) {
+      else if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(alphaKey)) {
         clone[key] = '[filtered]';
       }
       else if (typeof clone[key] === 'object') {

@@ -10,12 +10,16 @@ export class LoggerConfig {
   public readonly NODE_ENV: AppEnvironment;
 
   public readonly LOGGER_SENSITIVE_KEYS = [
-    'at_hash',
+    'athash',
     'aud',
     'authorization',
+    'clientkey',
+    'clientsecret',
+    'key',
     'nonce',
     'pass',
     'password',
+    'secret',
     'sub',
   ];
 
