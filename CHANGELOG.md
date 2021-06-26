@@ -1,3 +1,10 @@
+## [2.3.6](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.5...v2.3.6) (2021-06-25)
+
+
+### Bug Fixes
+
+* bump deps ([b1721dd](https://github.com/etienne-bechara/nestjs-core/commit/b1721dd6870531e2cf6c48dfde855181d667ea3a))
+
 ## [2.3.5](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.4...v2.3.5) (2021-06-25)
 
 
