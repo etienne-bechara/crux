@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
