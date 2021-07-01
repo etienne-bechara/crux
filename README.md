@@ -1,3 +1,7 @@
+⚠️ **Disclaimer**: This project is opinionated and intended for personal use.
+
+---
+
 # NestJS Core Components
 
 This package offers a wrapper around NestJS core components adding extra functionalities commonly found across back-end projects.
