@@ -1,3 +1,11 @@
+## [2.3.7](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.6...v2.3.7) (2021-06-26)
+
+
+### Bug Fixes
+
+* improve logger filtering ([cc2d155](https://github.com/etienne-bechara/nestjs-core/commit/cc2d155c2e58b292d6a4ff3d8275d25f3eaf0bf5))
+* lint ([6bc643a](https://github.com/etienne-bechara/nestjs-core/commit/6bc643a44c74f88612d69ac282bc8b0a2fa02127))
+
 ## [2.3.6](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.5...v2.3.6) (2021-06-25)
 
 
