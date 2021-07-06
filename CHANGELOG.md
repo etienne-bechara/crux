@@ -1,3 +1,10 @@
+## [2.3.8](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.7...v2.3.8) (2021-07-06)
+
+
+### Bug Fixes
+
+* standardize response ([68b4126](https://github.com/etienne-bechara/nestjs-core/commit/68b4126d2d8b3dc6b1b0fe6b5f919240b765593b))
+
 ## [2.3.7](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.6...v2.3.7) (2021-06-26)
 
 
