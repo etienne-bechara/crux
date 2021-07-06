@@ -5,7 +5,7 @@ import { LoggerService } from '../logger/logger.service';
 import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
-import { AppException, AppRequest, AppResponse } from './app.interface';
+import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequest, AppResponse } from './app.interface';
 import { AppModule } from './app.module';
 
 @Catch()
@@ -39,13 +39,13 @@ export class AppFilter implements ExceptionFilter {
       this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION
       && appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const filteredResponse = {
-      error: appException.errorCode,
+    const filteredResponse: AppExceptionResponse = {
+      code: appException.errorCode,
       message: productionError ? 'unexpected error' : appException.message,
       ...productionError ? { } : appException.details,
     };
 
-    const outboundResponse = appException.details.proxyResponse
+    const outboundResponse: AppExceptionResponse = appException.details.proxyResponse
       ? appException.details.upstreamResponse?.data
       : filteredResponse;
 
@@ -100,8 +100,8 @@ export class AppFilter implements ExceptionFilter {
    * Ensures that circular references are eliminated.
    * @param exception
    */
-  protected getDetails(exception: HttpException | Error): Record<string, any> {
-    let details: Record<string, any>;
+  protected getDetails(exception: HttpException | Error): AppExceptionDetails {
+    let details: AppExceptionDetails;
 
     if (exception instanceof HttpException) {
       details = exception.getResponse() as Record<string, any>;

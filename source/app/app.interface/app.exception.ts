@@ -4,7 +4,7 @@ export interface AppException {
   exception: HttpException | Error;
   errorCode: HttpStatus;
   message: string;
-  details: Record<string, any>;
+  details: AppExceptionDetails;
 }
 
 export interface AppExceptionDetails extends Record<string, any> {
@@ -12,4 +12,9 @@ export interface AppExceptionDetails extends Record<string, any> {
   upstreamResponse?: Record<string, any>;
   upstreamRequest?: Record<string, any>;
   constraints?: string[];
+}
+
+export interface AppExceptionResponse extends Record<string, any> {
+  code: number;
+  message: string;
 }
