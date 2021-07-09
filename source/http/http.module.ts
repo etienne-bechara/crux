@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { v4 } from 'uuid';
+import crypto from 'crypto';
 
 import { LoggerModule } from '../logger/logger.module';
 import { HttpConfig } from './http.config';
@@ -36,7 +36,7 @@ export class HttpModule {
       providers: [
         {
           provide: HttpInjectionToken.MODULE_ID,
-          useValue: v4(),
+          useValue: crypto.randomBytes(20).toString('hex'),
         },
         {
           provide: HttpInjectionToken.MODULE_OPTIONS,
@@ -58,7 +58,7 @@ export class HttpModule {
       providers: [
         {
           provide: HttpInjectionToken.MODULE_ID,
-          useValue: v4(),
+          useValue: crypto.randomBytes(20).toString('hex'),
         },
         {
           provide: HttpInjectionToken.MODULE_OPTIONS,
