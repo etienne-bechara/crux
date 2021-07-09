@@ -60,8 +60,8 @@ export class AppModule {
       logger: [ 'error', 'warn' ],
     });
 
-    const appConfig: AppConfig = nestApp.get('AppConfig');
-    const loggerService: LoggerService = nestApp.get('LoggerService');
+    const appConfig: AppConfig = nestApp.get(AppConfig);
+    const loggerService: LoggerService = nestApp.get(LoggerService);
 
     options.jsonLimit ??= appConfig.APP_DEFAULT_JSON_LIMIT;
     options.cors ??= appConfig.APP_DEFAULT_CORS_OPTIONS;

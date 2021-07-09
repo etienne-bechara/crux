@@ -1,4 +1,5 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { LoggerService } from '../../logger/logger.service';
@@ -16,7 +17,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
    * @param context
    * @param next
    */
-  public intercept(context: ExecutionContext, next: CallHandler): any {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req: AppRequest = context.switchToHttp().getRequest();
     const start = Date.now();
 
@@ -29,7 +30,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
         finalize(() => {
           const res: AppResponse = context.switchToHttp().getResponse();
           this.loggerService.http(`< ${reqTarget} | ${res.statusCode} | ${Date.now() - start} ms`);
-        }) as any,
+        }),
       );
   }
 

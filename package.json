@@ -34,9 +34,9 @@
     "test": "jest --verbose --forceExit --passWithNoTests --config .config/jest/jest.config.js"
   },
   "dependencies": {
-    "@nestjs/common": "7.6.18",
-    "@nestjs/core": "7.6.18",
-    "@nestjs/platform-express": "7.6.18",
+    "@nestjs/common": "8.0.0",
+    "@nestjs/core": "8.0.0",
+    "@nestjs/platform-express": "8.0.0",
     "@sentry/node": "6.8.0",
     "axios": "0.21.1",
     "axios-cache-adapter": "2.7.3",
@@ -56,12 +56,12 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@bechara/eslint-config-bechara-ts": "1.1.5",
+    "@bechara/eslint-config-bechara-ts": "1.2.0",
     "@commitlint/cli": "12.1.4",
     "@commitlint/config-conventional": "12.1.4",
-    "@nestjs/testing": "7.6.18",
-    "@types/jest": "26.0.23",
-    "@types/node": "16.0.0",
+    "@nestjs/testing": "8.0.0",
+    "@types/jest": "26.0.24",
+    "@types/node": "16.0.1",
     "eslint": "7.30.0",
     "husky": "7.0.1",
     "jest": "27.0.6",
