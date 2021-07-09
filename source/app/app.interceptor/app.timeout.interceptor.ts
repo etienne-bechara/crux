@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, GatewayTimeoutException, Injectable, NestInterceptor } from '@nestjs/common';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
 import { AppModule } from '../app.module';
@@ -16,7 +16,7 @@ export class AppTimeoutInterceptor implements NestInterceptor {
    * @param context
    * @param next
    */
-  public intercept(context: ExecutionContext, next: CallHandler): any {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const msTimeout = AppModule.getBootOptions().timeout;
     if (!msTimeout) return next.handle();
 
@@ -26,7 +26,7 @@ export class AppTimeoutInterceptor implements NestInterceptor {
         timeout({
           first: msTimeout,
           with: () => throwError(() => new GatewayTimeoutException('failed to fulfill request within timeout')),
-        }) as any,
+        }),
       );
   }
 

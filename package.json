@@ -34,9 +34,9 @@
     "test": "jest --verbose --forceExit --passWithNoTests --config .config/jest/jest.config.js"
   },
   "dependencies": {
-    "@nestjs/common": "8.0.1",
-    "@nestjs/core": "8.0.1",
-    "@nestjs/platform-express": "8.0.1",
+    "@nestjs/common": "7.6.18",
+    "@nestjs/core": "7.6.18",
+    "@nestjs/platform-express": "7.6.18",
     "@sentry/node": "6.8.0",
     "axios": "0.21.1",
     "body-parser": "1.19.0",
@@ -56,7 +56,7 @@
     "@bechara/eslint-config-bechara-ts": "1.2.0",
     "@commitlint/cli": "12.1.4",
     "@commitlint/config-conventional": "12.1.4",
-    "@nestjs/testing": "8.0.1",
+    "@nestjs/testing": "7.6.18",
     "@types/jest": "26.0.24",
     "@types/node": "16.3.0",
     "eslint": "7.30.0",
