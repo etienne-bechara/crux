@@ -1,5 +1,4 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import jwt from 'jsonwebtoken';
 
 import { UtilService } from '../util/util.service';
 import { AppRequest, AppResponse } from './app.interface';
@@ -20,7 +19,6 @@ export class AppMiddleware implements NestMiddleware {
    */
   public use(req: AppRequest, res: AppResponse, next: any): void {
     this.addRequestMetadata(req);
-    this.flattenJwtMetadata(req);
     next();
   }
 
@@ -33,26 +31,40 @@ export class AppMiddleware implements NestMiddleware {
     req.metadata = {
       clientIp: this.utilService.getClientIp(req),
       userAgent: req.headers ? req.headers['user-agent'] : null,
-      jwtPayload: req.headers?.authorization
-        ? jwt.decode(req.headers.authorization.replace('Bearer ', '')) || { }
-        : { },
+      jwtPayload: this.decodeJwt(req.headers?.authorization),
     };
   }
 
   /**
-   * Given a request with JWT payload already decoded,
-   * flatten its OIDC conformant metadata claims.
-   * @param req
+   * If authorization string contains a JWT decodes it and add to header.
+   * @param authorization
    */
-  private flattenJwtMetadata(req: AppRequest): void {
-    const jwtPayload = req?.metadata?.jwtPayload;
-    if (!jwtPayload) return;
+  private decodeJwt(authorization: string): Record<string, any> {
+    const payload = authorization?.split('.')?.[1];
+    if (!payload) return { };
 
-    const appMetadataKey = Object.keys(jwtPayload).find((k) => k.includes('/app_metadata'));
-    const userMetadataKey = Object.keys(jwtPayload).find((k) => k.includes('/user_metadata'));
+    try {
+      const decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
+      this.flattenJwtMetadata(decoded);
+      return decoded;
+    }
+    catch {
+      return { };
+    }
+  }
 
-    if (appMetadataKey) jwtPayload.app_metadata = jwtPayload[appMetadataKey];
-    if (userMetadataKey) jwtPayload.user_metadata = jwtPayload[userMetadataKey];
+  /**
+   * Given a decoded JWT payload, flatten its OIDC conformant metadata claims.
+   * @param payload
+   */
+  private flattenJwtMetadata(payload: Record<string, any>): void {
+    if (!payload) return;
+
+    const appMetadataKey = Object.keys(payload).find((k) => k.includes('/app_metadata'));
+    const userMetadataKey = Object.keys(payload).find((k) => k.includes('/user_metadata'));
+
+    if (appMetadataKey) payload.app_metadata = payload[appMetadataKey];
+    if (userMetadataKey) payload.user_metadata = payload[userMetadataKey];
   }
 
 }
