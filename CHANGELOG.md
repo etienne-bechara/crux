@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.4.0...v2.4.1) (2021-07-09)
+
+
+### Bug Fixes
+
+* remove cache adapter ([1279c05](https://github.com/etienne-bechara/nestjs-core/commit/1279c058259b3623f19319cc778f9f2a4da4914b))
+
 # [2.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.9...v2.4.0) (2021-07-09)
 
 
