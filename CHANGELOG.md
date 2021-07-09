@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.4.1...v2.5.0) (2021-07-09)
+
+
+### Features
+
+* add transform utilities decorators ([6165363](https://github.com/etienne-bechara/nestjs-core/commit/6165363118126849d06d5640e7ca5d55e5ab360a))
+
 ## [2.4.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.4.0...v2.4.1) (2021-07-09)
 
 
