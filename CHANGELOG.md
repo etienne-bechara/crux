@@ -1,3 +1,17 @@
+# [2.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.9...v2.4.0) (2021-07-09)
+
+
+### Bug Fixes
+
+* remove jwt dependency ([c499a15](https://github.com/etienne-bechara/nestjs-core/commit/c499a154be34be5bbb6d1ed61ebded3e94dad0a8))
+* remove uuid dep ([77f9c79](https://github.com/etienne-bechara/nestjs-core/commit/77f9c794d3761e5120d3e944030fe13121e89ab7))
+
+
+### Features
+
+* add overrides of all used deps ([9cc8661](https://github.com/etienne-bechara/nestjs-core/commit/9cc8661f7863bdee9b4a54e465938d602a9fcc02))
+* bump core ([a98d121](https://github.com/etienne-bechara/nestjs-core/commit/a98d12100adc66558dbf64b705244eb63ba33189))
+
 ## [2.3.9](https://github.com/etienne-bechara/nestjs-core/compare/v2.3.8...v2.3.9) (2021-07-06)
 
 
