@@ -1,12 +1,10 @@
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import axios, { AxiosAdapter, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { setupCache } from 'axios-cache-adapter';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Agent } from 'http';
 import https from 'https';
 import qs from 'qs';
 
 import { LoggerService } from '../logger/logger.service';
-import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpPredefinedHandler, HttpReturnType } from './http.enum';
 import { HttpCookie, HttpExceptionHandler, HttpHandlerParams, HttpModuleOptions, HttpRequestParams, HttpServiceBases, HttpServiceDefaults } from './http.interface';
 
@@ -20,7 +18,6 @@ export class HttpService {
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
     protected readonly httpModuleOptions: HttpModuleOptions = { },
-    protected readonly httpConfig: HttpConfig,
     protected readonly loggerService: LoggerService,
   ) {
     if (this.httpModuleOptions.silent) {
@@ -44,7 +41,6 @@ export class HttpService {
 
     this.loggerService?.debug(`[HttpService] Creating instance for ${params.name || this.bases.url}...`);
     this.instance = axios.create({
-      adapter: this.buildAdapter(params),
       httpsAgent: this.buildHttpAgent(params),
       timeout: this.defaults.timeout,
       validateStatus: () => true,
@@ -100,8 +96,8 @@ export class HttpService {
    * @param params
    */
   protected setDefaultParams(params: HttpModuleOptions): void {
-    if (!params.defaults) params.defaults = {};
-    const defaultTimeout = this.httpConfig.HTTP_DEFAULT_TIMEOUT;
+    if (!params.defaults) params.defaults = { };
+    const defaultTimeout = 60 * 1000;
 
     this.defaults.returnType = params.defaults.returnType || HttpReturnType.BODY_CONTENT;
     this.defaults.timeout = params.defaults.timeout || defaultTimeout;
@@ -151,44 +147,6 @@ export class HttpService {
         rejectUnauthorized: false,
       });
     }
-  }
-
-  /**
-   * Configures the request adapter which may have added cache properties.
-   * Alter original default properties to add maximum limit as well as
-   * remove query param restriction.
-   * @param params
-   */
-  protected buildAdapter(params: HttpModuleOptions): AxiosAdapter {
-    if (params.cache === true) params.cache = { };
-    const { cache } = params;
-    if (!cache) return;
-
-    cache.maxAge ??= this.httpConfig.HTTP_DEFAULT_CACHE_MAX_AGE;
-    cache.limit ??= this.httpConfig.HTTP_DEFAULT_CACHE_LIMIT;
-    cache.exclude ??= { query: false };
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    cache.invalidate ??= async (config: any, req: HttpRequestParams): Promise<void> => {
-      const { exclude, store, uuid } = config;
-      const method = req.method.toLowerCase();
-
-      if (exclude.methods.includes(method)) {
-        this.loggerService?.debug(`[HttpService] Cache clear: ${uuid}`);
-        await store.removeItem(uuid);
-      }
-
-      const currentItem: { expires: number } = await store.getItem(uuid);
-
-      if (currentItem && currentItem.expires > Date.now()) {
-        this.loggerService?.debug(`[HttpService] Cache hit: ${uuid}`);
-      }
-      else {
-        this.loggerService?.debug(`[HttpService] Cache miss: ${uuid}`);
-      }
-    };
-
-    return setupCache(cache).adapter;
   }
 
   /**

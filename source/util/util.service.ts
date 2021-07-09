@@ -8,6 +8,8 @@ import { LoggerService } from '../logger/logger.service';
 import { UtilAppStatus } from './util.interface';
 import { UtilRetryParams } from './util.interface/util.retry.params';
 
+let serverIp: string;
+
 @Injectable()
 export class UtilService {
 
@@ -105,6 +107,7 @@ export class UtilService {
 
   /**
    * Given a request object, extracts the client ip.
+   * Adds support for forwarded headers.
    * @param req
    */
   public getClientIp(req: AppRequest): string {
@@ -125,14 +128,17 @@ export class UtilService {
    * In case of error log an exception but do not throw.
    */
   public async getServerIp(): Promise<string> {
-    try {
-      const serverIp: string = await this.httpService.get('https://api64.ipify.org', { timeout: 5000 });
-      return serverIp;
+    if (!serverIp) {
+      try {
+        serverIp = await this.httpService.get('https://api64.ipify.org', { timeout: 2500 });
+      }
+      catch (e) {
+        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
+        return null;
+      }
     }
-    catch (e) {
-      this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-      return null;
-    }
+
+    return serverIp;
   }
 
   /**

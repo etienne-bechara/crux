@@ -1,5 +1,4 @@
 import { ModuleMetadata } from '@nestjs/common';
-import { IAxiosCacheAdapterOptions } from 'axios-cache-adapter';
 import https from 'https';
 
 import { HttpReturnType } from '../http.enum';
@@ -16,7 +15,6 @@ export interface HttpModuleOptions {
   silent?: boolean;
   agent?: HttpServiceAgent;
   bases?: HttpServiceBases;
-  cache?: IAxiosCacheAdapterOptions | boolean;
   defaults?: HttpServiceDefaults;
 }
 

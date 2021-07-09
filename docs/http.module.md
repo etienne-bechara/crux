@@ -107,29 +107,6 @@ import { HttpModule, HttpReturnType, HttpExceptionHandler } from '@bechara/nestj
           passphrase: 'password',
         },
       },
-      // You may use 'cache: true' to configure with default options
-      // See axios-cache-adapter for full documentation
-      cache: {
-        maxAge: 15 * 60 * 1000,
-        limit: 10000,
-        store: new Redis(),
-        key(req) => undefined,
-        invalidate(cfg, req) => { },
-        exclude: {
-          paths: /public/g,
-          query: false,
-          filter: Function,
-          methods: [ 'post', 'put' ],
-        },
-        clearOnStale: false,
-        clearOnError: false,
-        readOnError: false,
-        readHeaders: false,
-        ignoreCache: false,
-        debug: false,
-        excludeFromCache: false,
-      },
-    })
   ],
   controller: [ FooController ],
   providers: [ FooService ],

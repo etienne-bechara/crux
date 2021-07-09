@@ -9,7 +9,7 @@ import { UtilService } from './util.service';
 
 @Module({
   imports: [
-    HttpModule.register({ cache: true }),
+    HttpModule.register(),
     LoggerModule,
   ],
   controllers: [

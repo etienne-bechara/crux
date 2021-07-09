@@ -2,7 +2,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import crypto from 'crypto';
 
 import { LoggerModule } from '../logger/logger.module';
-import { HttpConfig } from './http.config';
 import { HttpInjectionToken } from './http.enum/http.injection.token';
 import { HttpAsyncModuleOptions, HttpModuleOptions } from './http.interface';
 import { HttpService } from './http.service';
@@ -12,7 +11,6 @@ import { HttpService } from './http.service';
     LoggerModule,
   ],
   providers: [
-    HttpConfig,
     HttpService,
     {
       provide: HttpInjectionToken.MODULE_OPTIONS,
