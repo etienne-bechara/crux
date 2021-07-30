@@ -7,7 +7,6 @@ export interface TestSandboxOptions {
   imports?: any[];
   controllers?: any[];
   providers?: any[];
-  exports?: any[];
   configs?: any[];
   descriptor: (testingBuilder: TestingModuleBuilder) => void;
 }
