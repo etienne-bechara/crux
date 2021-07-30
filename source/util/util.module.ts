@@ -2,14 +2,20 @@ import { Module } from '@nestjs/common';
 import fs from 'fs';
 import globby from 'globby';
 
+import { HttpModuleOptions } from '../http/http.interface';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { UtilController } from './util.controller';
 import { UtilService } from './util.service';
 
+const httpModuleOptions: HttpModuleOptions = {
+  responseType: 'text',
+  resolveBodyOnly: true,
+};
+
 @Module({
   imports: [
-    HttpModule.register(),
+    HttpModule.register(httpModuleOptions),
     LoggerModule,
   ],
   controllers: [

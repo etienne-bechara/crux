@@ -8,9 +8,9 @@ export interface AppException {
 }
 
 export interface AppExceptionDetails extends Record<string, any> {
-  proxyResponse?: boolean;
-  upstreamResponse?: Record<string, any>;
-  upstreamRequest?: Record<string, any>;
+  proxyException?: boolean;
+  externalResponse?: Record<string, any>;
+  externalRequest?: Record<string, any>;
   constraints?: string[];
 }
 

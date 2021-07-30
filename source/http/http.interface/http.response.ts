@@ -1,7 +1,3 @@
-import { AxiosResponse } from 'axios';
+import { Response } from 'got';
 
-import { HttpCookie } from './http.cookie';
-
-export interface HttpResponse extends AxiosResponse {
-  cookies: HttpCookie[];
-}
+export type HttpResponse<T> = Response<T>;

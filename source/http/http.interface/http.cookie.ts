@@ -1,7 +1,7 @@
 export interface HttpCookie {
   name: string;
-  content: string;
+  value: string;
   domain: string;
   path: string;
-  expires: string;
+  expires: Date;
 }

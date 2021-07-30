@@ -1,43 +1,16 @@
 import { ModuleMetadata } from '@nestjs/common';
-import https from 'https';
-
-import { HttpReturnType } from '../http.enum';
-import { HttpExceptionHandler } from './http.exception.handler';
+import { ExtendOptions } from 'got';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
   useFactory?: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
-export interface HttpModuleOptions {
+export interface HttpModuleOptions extends ExtendOptions {
+  /** Display name for logging. */
   name?: string;
-  manual?: boolean;
+  /** Disable logging of operations. */
   silent?: boolean;
-  agent?: HttpServiceAgent;
-  bases?: HttpServiceBases;
-  defaults?: HttpServiceDefaults;
-}
-
-export interface HttpServiceBases {
-  url?: string | (() => string);
-  headers?: Record<string, string>;
-  query?: Record<string, any>;
-  body?: Record<string, any>;
-}
-
-export interface HttpServiceDefaults {
-  returnType?: HttpReturnType;
-  timeout?: number;
-  validator?: (status: number) => boolean;
-  exceptionHandler?: HttpExceptionHandler;
-}
-
-export interface HttpServiceAgent {
-  custom?: https.Agent;
-  ignoreHttpErrors?: boolean;
-  ssl?: {
-    cert: string;
-    key: string;
-    passphrase?: string;
-  };
+  /** In case of an exception, will return to client the exact same code and body from upstream. */
+  proxyException?: boolean;
 }

@@ -45,8 +45,8 @@ export class AppFilter implements ExceptionFilter {
       ...productionError ? { } : appException.details,
     };
 
-    const outboundResponse: AppExceptionResponse = appException.details.proxyResponse
-      ? appException.details.upstreamResponse?.data
+    const outboundResponse: AppExceptionResponse = appException.details.proxyException
+      ? appException.details.externalResponse?.body
       : filteredResponse;
 
     res.setHeader('Content-Type', 'application/json');
@@ -79,7 +79,7 @@ export class AppFilter implements ExceptionFilter {
       const details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.upstreamResponse) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.externalResponse) {
         message = 'request validation failed';
       }
       else if (details?.message && typeof details.message === 'string') {
@@ -107,7 +107,7 @@ export class AppFilter implements ExceptionFilter {
       details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.upstreamResponse) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.externalResponse) {
         const constraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
@@ -139,7 +139,7 @@ export class AppFilter implements ExceptionFilter {
     const httpErrors = AppModule.getBootOptions().httpErrors;
 
     if (httpErrors.includes(errorCode)) {
-      const inboundRequest = {
+      const clientRequest = {
         url: req.url.split('?')[0],
         params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined,
         query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
@@ -148,7 +148,7 @@ export class AppFilter implements ExceptionFilter {
         metadata: req.metadata,
       };
 
-      logData.inboundRequest = inboundRequest;
+      logData.clientRequest = clientRequest;
       this.loggerService.error(exception, logData);
     }
     else {
