@@ -1,10 +1,10 @@
 # Http Module
 
-Work as a wrapper of Axios library and exposes methods to make http requests.
+Work as a wrapper of GOT library and exposes methods to make http requests.
 
 The scope of this module is transient, which means one new instance will be provided every time it is injected.
 
-In order to use it, you must register it in every module to which a provider will receive an instance of http service.
+In order to use it, you must register it in every module to which a provider will receive an injection of the http service.
 
 **Example**
 
@@ -46,25 +46,20 @@ In a real world scenario, you would like to be able to configure base params lik
 To be able to do this while acquiring secrets asynchronously, you may register the module as following:
 
 ```ts
-import { HttpModule } from '@bechara/nestjs-core';
+import { HttpAsyncModuleOptions, HttpModule } from '@bechara/nestjs-core';
+
+const httpModuleOptions: HttpAsyncModuleOptions = {
+  inject: [ FooConfig ],
+  useFactory: (fooConfig: FooConfig) => ({
+    prefixUrl: fooConfig.FOO_API_URL,
+    headers: { authorization: fooConfig.FOO_API_KEY },
+    timeout: 20 * 1000,
+  })
+};
 
 @Module({
   imports: [ 
-    HttpModule.registerAsync({
-      inject: [ FooConfig ],
-      useFactory: (fooConfig: FooConfig) => ({
-        bases: {
-          url: fooConfig.FOO_API_URL,
-          headers: { authorization: fooConfig.FOO_API_KEY },
-        },
-        defaults: {
-          timeout: 20 * 1000,
-        },
-        agent: {
-          ignoreHttpErrors: true,
-        }
-      })
-    })
+    HttpModule.registerAsync(httpModuleOptions),
   ],
   controller: [ FooController ],
   providers: [ FooConfig, FooService ],
@@ -75,43 +70,13 @@ export class FooModule { }
 
 ## Module Options
 
-The following options are available when registering the Http Module, everything is optional:
+The list of options are available at official [GOT documentation](https://github.com/sindresorhus/got/blob/main/documentation/2-options.md).
+
+They have been extended with the following optional configurations:
 
 ```ts
-import { HttpModule, HttpReturnType, HttpExceptionHandler } from '@bechara/nestjs-core';
-
-@Module({
-  imports: [
-    HttpModule.register({
-      name: 'HttpModule',
-      manual: false,
-      silent: false,
-      defaults: {
-        returnType: HttpReturnType.FULL_RESPONSE,
-        timeout: 15 * 1000,
-        validator: (status: number) => true,
-        exceptionHandler: HttpExceptionHandler.PROXY_HTTP_STATUS,
-      },
-      bases: {
-        url: 'https://foo.com',
-        headers: { },
-        query: { },
-        body: { },
-      },
-      agent: {
-        custom: new https.Agent({ }),
-        ignoreHttpErrors: true,
-        ssl: {
-          cert: 'base64string',
-          key: 'base64string',
-          passphrase: 'password',
-        },
-      },
-  ],
-  controller: [ FooController ],
-  providers: [ FooService ],
-})
-export class FooModule { }
+silent: boolean; // Disable logging of this instance events
+proxyException: boolean; // In case of an exception, respond client with the same external response body
 ```
 
 ---
