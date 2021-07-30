@@ -1,3 +1,16 @@
+# [2.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.5.1...v2.6.0) (2021-07-30)
+
+
+### Bug Fixes
+
+* direct cookie parsing ([a16fc24](https://github.com/etienne-bechara/nestjs-core/commit/a16fc2476348e20412506ea3a0e2100639eaea35))
+* improve test module ([7d3c286](https://github.com/etienne-bechara/nestjs-core/commit/7d3c2866f400d08dd6fd6c66a323e3f8a831f5f7))
+
+
+### Features
+
+* replace axios with got ([a24149b](https://github.com/etienne-bechara/nestjs-core/commit/a24149b66765720191812b8f689ceed4f3c8201e))
+
 ## [2.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.5.0...v2.5.1) (2021-07-09)
 
 
