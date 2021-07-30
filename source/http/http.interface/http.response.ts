@@ -1,3 +1,7 @@
 import { Response } from 'got';
 
-export type HttpResponse<T> = Response<T>;
+import { HttpCookie } from './http.cookie';
+
+export interface HttpResponse<T> extends Response<T> {
+  cookies: HttpCookie[];
+}

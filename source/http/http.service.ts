@@ -9,7 +9,7 @@ import { HttpCookie, HttpExceptionHandlerParams, HttpModuleOptions, HttpRequestP
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  private moduleOptions: HttpModuleOptions;
+  protected moduleOptions: HttpModuleOptions;
   protected instance: Got;
 
   public constructor(
@@ -72,7 +72,7 @@ export class HttpService {
    * Given http response headers, acquire its parsed cookies.
    * @param headers
    */
-  public parseCookies(headers: IncomingHttpHeaders): HttpCookie[] {
+  protected parseCookies(headers: IncomingHttpHeaders): HttpCookie[] {
     const setCookie = headers?.['set-cookie'];
     const cookies: HttpCookie[] = [ ];
     if (!setCookie) return cookies;
@@ -102,15 +102,16 @@ export class HttpService {
    * - Path variables replacement
    * - Improved exception logging containing response
    * - Response exception proxying to client.
+   * - Response cookie parsing.
    * @param url
    * @param params
    */
-  private async request<T>(url: string, params: HttpRequestParams): Promise<T> {
+  protected async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     this.loggerService?.debug('[HttpService] Executing external request...', params);
 
     const finalUrl = this.replacePathVariables(url, params);
     const isBodyOnly = this.moduleOptions.resolveBodyOnly || params.resolveBodyOnly;
-    let res: T;
+    let res: any;
 
     try {
       params.resolveBodyOnly = undefined;
@@ -120,6 +121,7 @@ export class HttpService {
       this.handleRequestException({ url, error, request: params });
     }
 
+    res.cookies = this.parseCookies(res.headers);
     return isBodyOnly ? res['body'] : res;
   }
 
@@ -131,7 +133,7 @@ export class HttpService {
    * exception with matching code.
    * @param params
    */
-  private handleRequestException(params: HttpExceptionHandlerParams): void {
+  protected handleRequestException(params: HttpExceptionHandlerParams): void {
     const { proxyException } = this.moduleOptions;
     const { url, request, error } = params;
     const { message, response } = error;

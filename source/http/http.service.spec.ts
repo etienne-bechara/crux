@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
 
 import { TestModule } from '../test';
+import { HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
 
@@ -148,15 +149,11 @@ TestModule.createSandbox({
     });
 
     describe('parseCookies', () => {
-      it('should parse a response cookie', () => {
-        const cookies = httpService.parseCookies({
-          // eslint-disable-next-line max-len
-          'set-cookie': [ '1P_JAR=2021-07-30-18; expires=Sun, 29-Aug-2021 18:37:24 GMT; path=/; domain=.google.com; Secure; SameSite=none' ],
-        });
-
-        expect(cookies[0]).toBeDefined();
-        expect(cookies[0].domain).toMatch(/google/g);
-        expect(cookies[0].expires).toBeInstanceOf(Date);
+      it('should parse cookies from response headers', async () => {
+        const res: HttpResponse<string> = await httpService.get('https://www.google.com');
+        expect(res.cookies[0]).toBeDefined();
+        expect(res.cookies[0].domain).toMatch(/google/g);
+        expect(res.cookies[0].expires).toBeInstanceOf(Date);
       });
     });
   },
