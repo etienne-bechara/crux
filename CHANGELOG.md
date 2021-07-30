@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.5.0...v2.5.1) (2021-07-09)
+
+
+### Bug Fixes
+
+* rollback to nestjs 7.x ([cebb077](https://github.com/etienne-bechara/nestjs-core/commit/cebb077a97b1c88759f514c3e9b7453d2c5a5815))
+
 # [2.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.4.1...v2.5.0) (2021-07-09)
 
 
