@@ -5,7 +5,7 @@ import { AppRequest } from '../app/app.interface';
 import { RequestHttpContext } from './request.interface';
 
 @Injectable({ scope: Scope.REQUEST })
-export class RequestService {
+export class RequestService<Metadata = Record<string, any>> {
 
   public constructor(
     @Inject(REQUEST)
@@ -42,28 +42,12 @@ export class RequestService {
   }
 
   /**
-   * Acquires all request metadata.
+   * Acquires request metadata which works as a mutable object
+   * for request specific custom data.
    */
-  public getMetadata(): Record<string, any> {
-    return this.request.raw.metadata || { };
-  }
-
-  /**
-   * Acquires request metadata key.
-   * @param key
-   */
-  public getMetadataKey<T>(key: string): T {
-    return this.request.raw.metadata[key];
-  }
-
-  /**
-   * Sets request metadata.
-   * @param key
-   * @param value
-   */
-  public setMetadataKey(key: string, value: any): void {
+  public getMetadata(): Metadata {
     this.request.raw.metadata ??= { };
-    this.request.raw.metadata[key] = value;
+    return this.request.raw.metadata;
   }
 
   /**
