@@ -3,7 +3,7 @@ import 'reflect-metadata';
 
 import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
-import { json } from 'body-parser';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 import { ConfigModule } from '../config/config.module';
 import { LoggerConfig } from '../logger/logger.config';
@@ -45,7 +45,8 @@ export class AppModule {
   }
 
   /**
-   * Starts Express server through Nest JS framework.
+   * Starts Fastify server through Nest JS framework.
+   *
    * Apply the following customizations according to config:
    * • Configure CORS
    * • Set JSON limit
@@ -55,30 +56,31 @@ export class AppModule {
   public static async bootServer(options: AppBootOptions = { }): Promise<INestApplication> {
     const entryModule = this.buildEntryModule(options);
 
-    const nestApp = await NestFactory.create(entryModule, {
+    const adapterOptions = options.adapterOptions || { trustProxy: true };
+    const httpAdapter = new FastifyAdapter(adapterOptions);
+
+    const nestApp = await NestFactory.create(entryModule, httpAdapter, {
       logger: [ 'error', 'warn' ],
     });
 
     const appConfig: AppConfig = nestApp.get(AppConfig);
     const loggerService: LoggerService = nestApp.get(LoggerService);
 
-    options.jsonLimit ??= appConfig.APP_DEFAULT_JSON_LIMIT;
+    options.port ??= appConfig.APP_PORT;
+    options.hostname ??= appConfig.APP_DEFAULT_HOSTNAME;
     options.cors ??= appConfig.APP_DEFAULT_CORS_OPTIONS;
     options.timeout ??= appConfig.APP_DEFAULT_TIMEOUT;
     options.httpErrors ??= appConfig.APP_DEFAULT_HTTP_ERRORS;
 
     nestApp.setGlobalPrefix(appConfig.APP_GLOBAL_PREFIX);
-    nestApp.use(json({ limit: options.jsonLimit }));
     nestApp.enableCors(options.cors);
 
-    const httpServerPort = appConfig.APP_PORT;
-    const httpServer = await nestApp.listen(httpServerPort);
-
-    const timeoutStr = options.timeout ? `set to ${(options.timeout / 1000).toString()}s` : 'disabled';
+    const httpServer = await nestApp.listen(options.port, options.hostname);
     httpServer.setTimeout(0);
 
+    const timeoutStr = options.timeout ? `set to ${(options.timeout / 1000).toString()}s` : 'disabled';
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
-    loggerService.notice(`[AppService] Server listening on port ${httpServerPort}`);
+    loggerService.notice(`[AppService] Server listening on port ${options.port}`);
 
     this.bootOptions = options;
     return nestApp;

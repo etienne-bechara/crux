@@ -21,15 +21,18 @@ export class AppLoggerInterceptor implements NestInterceptor {
     const req: AppRequest = context.switchToHttp().getRequest();
     const start = Date.now();
 
-    const reqTarget = `${req.method.padEnd(6, ' ')} ${req.originalUrl.split('?')[0]}`;
-    this.loggerService.http(`> ${reqTarget} | ${req.metadata.clientIp} | ${req.metadata.userAgent}`);
+    const methodPath = `${req.routerMethod.padEnd(6, ' ')} ${req.routerPath}`;
+    const ipAddress = req.raw.metadata.remoteIp || req.ips?.[req.ips.length - 1] || req.ip;
+    const userAgent = req.headers['user-agent'];
+
+    this.loggerService.http(`> ${methodPath} | ${ipAddress} | ${userAgent}`);
 
     return next
       .handle()
       .pipe(
         finalize(() => {
           const res: AppResponse = context.switchToHttp().getResponse();
-          this.loggerService.http(`< ${reqTarget} | ${res.statusCode} | ${Date.now() - start} ms`);
+          this.loggerService.http(`< ${methodPath} | ${res.statusCode} | ${Date.now() - start} ms`);
         }),
       );
   }

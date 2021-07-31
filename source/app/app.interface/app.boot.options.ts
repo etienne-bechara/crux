@@ -10,8 +10,10 @@ export interface AppBootOptions extends ModuleMetadata {
   disablePipes?: boolean;
   configs?: any[];
   modules?: any[];
-  timeout?: number;
-  jsonLimit?: string;
+  port?: number;
+  hostname?: string;
   cors?: CorsOptions;
+  timeout?: number;
   httpErrors?: HttpStatus[];
+  adapterOptions?: Record<string, any>;
 }

@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 import { UtilService } from '../util/util.service';
-import { AppRequest, AppResponse } from './app.interface';
+import { AppRawRequest, AppResponse } from './app.interface';
 
 @Injectable()
 export class AppMiddleware implements NestMiddleware {
@@ -17,21 +17,19 @@ export class AppMiddleware implements NestMiddleware {
    * @param res
    * @param next
    */
-  public use(req: AppRequest, res: AppResponse, next: any): void {
+  public use(req: AppRawRequest, res: AppResponse, next: any): void {
     this.addRequestMetadata(req);
     next();
   }
 
   /**
-   * Adds a metadata object on all request for easy access
-   * to user ip, agent and jwt payload.
+   * Add extra metadata to request objet.
    * @param req
    */
-  private addRequestMetadata(req: AppRequest): void {
+  private addRequestMetadata(req: AppRawRequest): void {
     req.metadata = {
-      clientIp: this.utilService.getClientIp(req),
-      userAgent: req.headers ? req.headers['user-agent'] : null,
       jwtPayload: this.decodeJwt(req.headers?.authorization),
+      remoteIp: this.parseForwardedIp(req),
     };
   }
 
@@ -65,6 +63,22 @@ export class AppMiddleware implements NestMiddleware {
 
     if (appMetadataKey) payload.app_metadata = payload[appMetadataKey];
     if (userMetadataKey) payload.user_metadata = payload[userMetadataKey];
+  }
+
+  /**
+   * Determines furthest remote ip based on forwarded header .
+   * @param req
+   */
+  private parseForwardedIp(req: AppRawRequest): string {
+    const forwardedIpRegex = /by.+?for=(.+?);/g;
+    const forwardedHeader = req.headers.forwarded;
+    let forwardedIp;
+
+    if (forwardedHeader) {
+      forwardedIp = forwardedIpRegex.exec(forwardedHeader);
+    }
+
+    return forwardedIp?.[1];
   }
 
 }

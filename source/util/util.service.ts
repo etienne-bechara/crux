@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import os from 'os';
-import requestIp from 'request-ip';
 
-import { AppRequest } from '../app/app.interface';
 import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { UtilAppStatus } from './util.interface';
@@ -103,24 +101,6 @@ export class UtilService {
 
     this.loggerService.debug(`${txtPrefix} finished successfully!`);
     return result;
-  }
-
-  /**
-   * Given a request object, extracts the client ip.
-   * Adds support for forwarded headers.
-   * @param req
-   */
-  public getClientIp(req: AppRequest): string {
-    const forwardedIpRegex = /by.+?for=(.+?);/g;
-    let forwardedIp;
-
-    if (req.headers.forwarded) {
-      forwardedIp = forwardedIpRegex.exec(req.headers.forwarded);
-    }
-
-    return forwardedIp
-      ? forwardedIp[1]
-      : requestIp.getClientIp(req);
   }
 
   /**

@@ -24,7 +24,7 @@ export class AppConfig {
 
   public readonly APP_DEFAULT_TIMEOUT = 60 * 1000;
 
-  public readonly APP_DEFAULT_JSON_LIMIT= '10MB';
+  public readonly APP_DEFAULT_HOSTNAME = '0.0.0.0';
 
   public readonly APP_DEFAULT_CORS_OPTIONS: CorsOptions = {
     origin: '*',

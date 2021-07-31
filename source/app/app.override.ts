@@ -9,7 +9,7 @@ import { LoggerService } from '../logger/logger.service';
 
 export * from '@nestjs/common';
 export * from '@nestjs/core';
-export * from '@nestjs/platform-express';
+export * from '@nestjs/platform-fastify';
 export * from 'class-transformer';
 export * from 'class-validator';
 export * from 'rxjs';

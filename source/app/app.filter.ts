@@ -49,9 +49,9 @@ export class AppFilter implements ExceptionFilter {
       ? appException.details.externalResponse?.body
       : filteredResponse;
 
-    res.setHeader('Content-Type', 'application/json');
-    res.statusCode = appException.errorCode;
-    res.end(JSON.stringify(outboundResponse));
+    res.code(appException.errorCode);
+    res.header('Content-Type', 'application/json');
+    res.send(outboundResponse);
   }
 
   /**
@@ -63,6 +63,9 @@ export class AppFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       errorCode = exception.getStatus();
+    }
+    else if (exception.message?.includes('body is too large')) {
+      errorCode = HttpStatus.PAYLOAD_TOO_LARGE;
     }
 
     return errorCode || HttpStatus.INTERNAL_SERVER_ERROR;
@@ -145,7 +148,7 @@ export class AppFilter implements ExceptionFilter {
         query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
         body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
         headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
-        metadata: req.metadata,
+        metadata: req.raw.metadata,
       };
 
       logData.clientRequest = clientRequest;

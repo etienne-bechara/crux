@@ -8,9 +8,6 @@ export class UtilController {
 
   public constructor(private readonly utilService: UtilService) { }
 
-  /**
-   * Returns basic stats about runtime.
-   */
   @Get('status')
   public async getUtilStatus(): Promise<UtilAppStatus> {
     return this.utilService.getAppStatus();

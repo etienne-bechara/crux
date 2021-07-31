@@ -97,21 +97,6 @@ TestModule.createSandbox({
       });
     });
 
-    describe('getClientIp', () => {
-      it('should extract a client ip', () => {
-        const mockReq = { headers: { 'x-client-ip': '123.45.67.8' } };
-        const clientIp = utilService.getClientIp(mockReq as any);
-        expect(clientIp).toBe('123.45.67.8');
-      });
-
-      it('should extract a forwarded client ip', () => {
-        const mockFwd = 'by=3.235.33.140;for=123.45.67.8;host=google.com;proto=https,for="3.235.33.140";proto=https';
-        const mockReq = { headers: { forwarded: mockFwd } };
-        const clientIp = utilService.getClientIp(mockReq as any);
-        expect(clientIp).toBe('123.45.67.8');
-      });
-    });
-
     describe('getServerIp', () => {
       it('should acquire public ip successfully', async () => {
         const serverIp = await utilService.getServerIp();
