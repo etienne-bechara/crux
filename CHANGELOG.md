@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.7.0...v2.7.1) (2021-07-31)
+
+
+### Bug Fixes
+
+* metadata interface ([06cb1a8](https://github.com/etienne-bechara/nestjs-core/commit/06cb1a8d4721cb2c22d9172af86b956301a6e8cd))
+
 # [2.7.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.4...v2.7.0) (2021-07-31)
 
 
