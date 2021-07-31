@@ -1,3 +1,10 @@
+## [2.6.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.3...v2.6.4) (2021-07-31)
+
+
+### Bug Fixes
+
+* add ignore exceptions and query merge ([06af3f8](https://github.com/etienne-bechara/nestjs-core/commit/06af3f81227a13c047fab1bb0deac2d32dbc0235))
+
 ## [2.6.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.2...v2.6.3) (2021-07-31)
 
 
