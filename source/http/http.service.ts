@@ -69,6 +69,21 @@ export class HttpService {
   }
 
   /**
+   * If any of the search params consists of an array, join it with commas.
+   * @param params
+   */
+  protected joinSearchParamsArray(params: HttpRequestParams): void {
+    const { searchParams } = params;
+    if (!searchParams || typeof searchParams !== 'object') return;
+
+    for (const key in searchParams) {
+      if (Array.isArray(searchParams[key])) {
+        searchParams[key] = searchParams[key].join(',');
+      }
+    }
+  }
+
+  /**
    * Given http response headers, acquire its parsed cookies.
    * @param headers
    */
@@ -100,6 +115,7 @@ export class HttpService {
   /**
    * Handles all requests, extending GOT functionality with:
    * - Path variables replacement
+   * - Search param array joining
    * - Improved exception logging containing response
    * - Response exception proxying to client.
    * - Response cookie parsing.
@@ -108,14 +124,16 @@ export class HttpService {
    */
   protected async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     this.loggerService?.debug('[HttpService] Executing external request...', params);
-
-    const finalUrl = this.replacePathVariables(url, params);
-    const isBodyOnly = this.moduleOptions.resolveBodyOnly || params.resolveBodyOnly;
     let res: any;
 
+    const isBodyOnly = this.moduleOptions.resolveBodyOnly || params.resolveBodyOnly;
+    params.resolveBodyOnly = undefined;
+
+    const finalUrl = this.replacePathVariables(url, params);
+    this.joinSearchParamsArray(params);
+
     try {
-      params.resolveBodyOnly = undefined;
-      res = await this.instance(finalUrl, params) as any;
+      res = await this.instance(finalUrl, params);
     }
     catch (error) {
       this.handleRequestException({ url, error, request: params });
