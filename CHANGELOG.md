@@ -1,3 +1,10 @@
+## [2.6.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.2...v2.6.3) (2021-07-31)
+
+
+### Bug Fixes
+
+* add custom query support ([bc355a8](https://github.com/etienne-bechara/nestjs-core/commit/bc355a892399856a322ccdcd2250375ba3d2092d))
+
 ## [2.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.1...v2.6.2) (2021-07-31)
 
 
