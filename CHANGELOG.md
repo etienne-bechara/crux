@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.0...v2.6.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* search params type ([9fb8cd9](https://github.com/etienne-bechara/nestjs-core/commit/9fb8cd951d709cdf9c78484a7e5fd49d7df3b923))
+
 # [2.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.5.1...v2.6.0) (2021-07-30)
 
 
