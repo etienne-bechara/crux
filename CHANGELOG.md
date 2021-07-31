@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.1...v2.6.2) (2021-07-31)
+
+
+### Bug Fixes
+
+* support search param array ([49e4b68](https://github.com/etienne-bechara/nestjs-core/commit/49e4b682e165db0f38e8d0acb4ce4ff284caa9ac))
+
 ## [2.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.0...v2.6.1) (2021-07-30)
 
 
