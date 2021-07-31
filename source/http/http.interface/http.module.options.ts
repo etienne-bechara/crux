@@ -11,6 +11,10 @@ export interface HttpModuleOptions extends ExtendOptions {
   name?: string;
   /** Disable logging of operations. */
   silent?: boolean;
+  /** In case of an exception, ignore it and return the response object. */
+  ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
-  proxyException?: boolean;
+  proxyExceptions?: boolean;
+  /** Overwrite search params adding the ability to provide array values. */
+  query?: Record<string, any>;
 }

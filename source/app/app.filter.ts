@@ -45,7 +45,7 @@ export class AppFilter implements ExceptionFilter {
       ...productionError ? { } : appException.details,
     };
 
-    const outboundResponse: AppExceptionResponse = appException.details.proxyException
+    const outboundResponse: AppExceptionResponse = appException.details.proxyExceptions
       ? appException.details.externalResponse?.body
       : filteredResponse;
 

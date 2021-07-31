@@ -75,16 +75,18 @@ export class HttpService {
    */
   protected buildSearchParams(params: HttpRequestParams): void {
     const { query } = params;
-    if (!query) return;
+
+    const mergedQuery = { ...this.moduleOptions.query, ...query };
+    if (Object.keys(mergedQuery).length === 0) return;
 
     const queryParams = { };
 
-    for (const key in query) {
-      if (Array.isArray(query[key])) {
-        queryParams[key] = query[key].join(',');
+    for (const key in mergedQuery) {
+      if (Array.isArray(mergedQuery[key])) {
+        queryParams[key] = mergedQuery[key].join(',');
       }
       else {
-        queryParams[key] = query[key];
+        queryParams[key] = mergedQuery[key];
       }
     }
 
@@ -134,7 +136,8 @@ export class HttpService {
     this.loggerService?.debug('[HttpService] Executing external request...', params);
     let res: any;
 
-    const isBodyOnly = params.resolveBodyOnly ?? this.moduleOptions.resolveBodyOnly;
+    const isIgnoreExceptions = params.ignoreExceptions ?? this.moduleOptions.ignoreExceptions;
+    const isResolveBodyOnly = params.resolveBodyOnly ?? this.moduleOptions.resolveBodyOnly;
     params.resolveBodyOnly = undefined;
 
     const finalUrl = this.replacePathVariables(url, params);
@@ -143,12 +146,17 @@ export class HttpService {
     try {
       res = await this.instance(finalUrl, params);
     }
-    catch (error) {
-      this.handleRequestException({ url, error, request: params });
+    catch (e) {
+      if (isIgnoreExceptions) {
+        res = e.response;
+      }
+      else {
+        this.handleRequestException({ url, error: e, request: params });
+      }
     }
 
     res.cookies = this.parseCookies(res.headers);
-    return isBodyOnly ? res['body'] : res;
+    return isResolveBodyOnly ? res.body : res;
   }
 
   /**
@@ -160,28 +168,30 @@ export class HttpService {
    * @param params
    */
   protected handleRequestException(params: HttpExceptionHandlerParams): void {
-    const { proxyException } = this.moduleOptions;
+    const { proxyExceptions } = this.moduleOptions;
     const { url, request, error } = params;
     const { message, response } = error;
     const { method } = request;
 
     const exceptionCode = /code (\d+)/g.exec(message);
 
-    const statusCode = proxyException && exceptionCode
+    const statusCode = proxyExceptions && exceptionCode
       ? Number(exceptionCode[1])
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    delete request.url;
+
     throw new HttpException({
       message: `${method} ${url} | ${message}`,
-      proxyException,
+      proxyExceptions,
       externalResponse: {
         status: response?.statusCode,
         headers: response?.headers,
         body: response?.body,
       },
       externalRequest: {
-        method,
         url,
+        method,
         ...request,
       },
     }, statusCode);

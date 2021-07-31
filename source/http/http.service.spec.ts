@@ -100,7 +100,7 @@ TestModule.createSandbox({
 
   imports: [
     HttpModule.register({
-      proxyException: true,
+      proxyExceptions: true,
       prefixUrl: 'https://jsonplaceholder.typicode.com',
       resolveBodyOnly: true,
       responseType: 'json',

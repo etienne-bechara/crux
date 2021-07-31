@@ -76,7 +76,7 @@ They have been extended with the following optional configurations:
 
 ```ts
 silent: boolean; // Disable logging of this instance events
-proxyException: boolean; // In case of an exception, respond client with the same external response body
+proxyExceptions: boolean; // In case of an exception, respond client with the same external response body
 ```
 
 ---
