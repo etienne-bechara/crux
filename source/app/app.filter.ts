@@ -2,10 +2,11 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from
 import { decycle } from 'cycle';
 
 import { LoggerService } from '../logger/logger.service';
+import { RequestService } from '../request/request.service';
 import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
-import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequest, AppResponse } from './app.interface';
+import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequest } from './app.interface';
 import { AppModule } from './app.module';
 
 @Catch()
@@ -23,8 +24,7 @@ export class AppFilter implements ExceptionFilter {
    * @param host
    */
   public catch(exception: HttpException | Error, host: ArgumentsHost): void {
-    const req: AppRequest = host.switchToHttp().getRequest();
-    const res: AppResponse = host.switchToHttp().getResponse();
+    const { req, res } = RequestService.getHttpContext(host);
 
     const appException: AppException = {
       exception,

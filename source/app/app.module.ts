@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
@@ -20,7 +20,6 @@ import { AppConfig } from './app.config';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppBootOptions } from './app.interface/app.boot.options';
-import { AppMiddleware } from './app.middleware';
 
 @Global()
 @Module({ })
@@ -33,15 +32,6 @@ export class AppModule {
    */
   public static getBootOptions(): AppBootOptions {
     return this.bootOptions;
-  }
-
-  /**
-   * Applies a global middleware that acts on
-   * request before anything else.
-   * @param consumer
-   */
-  public configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(AppMiddleware).forRoutes('*');
   }
 
   /**

@@ -30,13 +30,5 @@ export interface AppRequest {
  * Equivalent to http request before applying middlewares.
  */
 export interface AppRawRequest extends http.IncomingMessage {
-  metadata: AppRequestMetadata;
-}
-
-/**
- * Custom property for application managed metadata.
- */
-export interface AppRequestMetadata extends Record<string, any> {
-  jwtPayload: Record<string, any>;
-  remoteIp: string;
+  metadata: Record<string, any>;
 }

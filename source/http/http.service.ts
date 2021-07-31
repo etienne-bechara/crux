@@ -9,7 +9,6 @@ import { HttpCookie, HttpExceptionHandlerParams, HttpModuleOptions, HttpRequestP
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  protected moduleOptions: HttpModuleOptions;
   protected instance: Got;
 
   public constructor(
@@ -21,7 +20,6 @@ export class HttpService {
       this.loggerService = undefined;
     }
 
-    this.moduleOptions = httpModuleOptions;
     this.setup();
   }
 
@@ -29,9 +27,9 @@ export class HttpService {
    * Creates new HTTP instance based on GOT.
    */
   public setup(): void {
-    const { name, prefixUrl } = this.moduleOptions;
+    const { name, prefixUrl } = this.httpModuleOptions;
     this.loggerService?.debug(`[HttpService] Creating instance for ${name || prefixUrl}...`);
-    this.instance = got.extend(this.moduleOptions);
+    this.instance = got.extend(this.httpModuleOptions);
   }
 
   /**
@@ -76,7 +74,7 @@ export class HttpService {
   protected buildSearchParams(params: HttpRequestParams): void {
     const { query } = params;
 
-    const mergedQuery = { ...this.moduleOptions.query, ...query };
+    const mergedQuery = { ...this.httpModuleOptions.query, ...query };
     if (Object.keys(mergedQuery).length === 0) return;
 
     const queryParams = { };
@@ -136,8 +134,8 @@ export class HttpService {
     this.loggerService?.debug('[HttpService] Executing external request...', params);
     let res: any;
 
-    const isIgnoreExceptions = params.ignoreExceptions ?? this.moduleOptions.ignoreExceptions;
-    const isResolveBodyOnly = params.resolveBodyOnly ?? this.moduleOptions.resolveBodyOnly;
+    const isIgnoreExceptions = params.ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
+    const isResolveBodyOnly = params.resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
     params.resolveBodyOnly = undefined;
 
     const finalUrl = this.replacePathVariables(url, params);
@@ -168,7 +166,7 @@ export class HttpService {
    * @param params
    */
   protected handleRequestException(params: HttpExceptionHandlerParams): void {
-    const { proxyExceptions } = this.moduleOptions;
+    const { proxyExceptions } = this.httpModuleOptions;
     const { url, request, error } = params;
     const { message, response } = error;
     const { method } = request;
