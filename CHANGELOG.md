@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.4...v2.7.0) (2021-07-31)
+
+
+### Features
+
+* replace express with fastify ([1bcbd32](https://github.com/etienne-bechara/nestjs-core/commit/1bcbd32f41619debc6213228ceb720dbf0be185b))
+
 ## [2.6.4](https://github.com/etienne-bechara/nestjs-core/compare/v2.6.3...v2.6.4) (2021-07-31)
 
 
