@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.7.1...v2.8.0) (2021-07-31)
+
+
+### Features
+
+* add request toolbox and remove global middleware ([da468c0](https://github.com/etienne-bechara/nestjs-core/commit/da468c053f1daad87aca26572578bc77b661afb6))
+
 ## [2.7.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.7.0...v2.7.1) (2021-07-31)
 
 
