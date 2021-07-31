@@ -30,7 +30,7 @@ export interface AppRequest {
  * Equivalent to http request before applying middlewares.
  */
 export interface AppRawRequest extends http.IncomingMessage {
-  metadata: Record<string, any>;
+  metadata: AppRequestMetadata;
 }
 
 /**
