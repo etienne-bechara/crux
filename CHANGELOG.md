@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.0...v2.8.1) (2021-07-31)
+
+
+### Bug Fixes
+
+* req metada usage ([c060b57](https://github.com/etienne-bechara/nestjs-core/commit/c060b57d82f89f933dd513356e18721d4352563c))
+
 # [2.8.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.7.1...v2.8.0) (2021-07-31)
 
 
