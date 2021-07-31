@@ -69,18 +69,26 @@ export class HttpService {
   }
 
   /**
-   * If any of the search params consists of an array, join it with commas.
+   * If a query property is provided, overwrite the search params
+   * with a functionality of allowing array inside object values.
    * @param params
    */
-  protected joinSearchParamsArray(params: HttpRequestParams): void {
-    const { searchParams } = params;
-    if (!searchParams || typeof searchParams !== 'object') return;
+  protected buildSearchParams(params: HttpRequestParams): void {
+    const { query } = params;
+    if (!query) return;
 
-    for (const key in searchParams) {
-      if (Array.isArray(searchParams[key])) {
-        searchParams[key] = searchParams[key].join(',');
+    const queryParams = { };
+
+    for (const key in query) {
+      if (Array.isArray(query[key])) {
+        queryParams[key] = query[key].join(',');
+      }
+      else {
+        queryParams[key] = query[key];
       }
     }
+
+    params.searchParams = queryParams;
   }
 
   /**
@@ -126,11 +134,11 @@ export class HttpService {
     this.loggerService?.debug('[HttpService] Executing external request...', params);
     let res: any;
 
-    const isBodyOnly = this.moduleOptions.resolveBodyOnly || params.resolveBodyOnly;
+    const isBodyOnly = params.resolveBodyOnly ?? this.moduleOptions.resolveBodyOnly;
     params.resolveBodyOnly = undefined;
 
     const finalUrl = this.replacePathVariables(url, params);
-    this.joinSearchParamsArray(params);
+    this.buildSearchParams(params);
 
     try {
       res = await this.instance(finalUrl, params);
