@@ -1,3 +1,10 @@
+## [2.8.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.1...v2.8.2) (2021-08-01)
+
+
+### Bug Fixes
+
+* remove default adpter options ([e26b677](https://github.com/etienne-bechara/nestjs-core/commit/e26b6778763bdf7e217fafcfffabc1564ee105a9))
+
 ## [2.8.1](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.0...v2.8.1) (2021-07-31)
 
 
