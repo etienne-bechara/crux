@@ -27,7 +27,7 @@ export class SentryService implements LoggerTransport {
     if (!level && level !== 0) return;
 
     if (!dsn) {
-      setTimeout(() => this.loggerService.warning('[SentryService] Missing Sentry DSN'), 500);
+      setTimeout(() => this.loggerService.warning('[SentryService] Integration disabled (missing DSN)'), 500);
       return;
     }
 

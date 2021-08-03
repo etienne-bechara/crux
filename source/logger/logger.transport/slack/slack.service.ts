@@ -23,16 +23,16 @@ export class SlackService implements LoggerTransport {
    */
   private setupTransport(): void {
     const webhook = this.slackConfig.SLACK_WEBHOOK;
-    const channel = this.slackConfig.SLACK_CHANNEL;
     const level = this.getLevel();
     if (!level && level !== 0) return;
 
-    if (!webhook || !channel) {
-      setTimeout(() => this.loggerService.warning('[SlackService] Missing Slack channel or webhook'), 500);
+    if (!webhook) {
+      setTimeout(() => this.loggerService.warning('[SlackService] Integration disabled (missing webhook)'), 500);
       return;
     }
 
-    setTimeout(() => this.loggerService.notice(`[SlackService] Transport connected at #${channel}`), 500);
+    const webhookId = webhook.split('/')[webhook.split('/').length - 1];
+    setTimeout(() => this.loggerService.notice(`[SlackService] Transport connected at ${webhookId}`), 500);
     this.loggerService.registerTransport(this);
   }
 
@@ -92,7 +92,7 @@ export class SlackService implements LoggerTransport {
       await this.httpService.post('', {
         json: {
           channel: this.slackConfig.SLACK_CHANNEL,
-          username: this.slackConfig.SLACK_USERNAME || 'Notification Bot',
+          username: this.slackConfig.SLACK_USERNAME,
           icon_url: this.slackConfig.SLACK_ICON_URL,
           blocks: messageBlocks,
         },

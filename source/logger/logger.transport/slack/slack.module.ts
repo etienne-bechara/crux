@@ -12,9 +12,7 @@ import { SlackService } from './slack.service';
       useFactory: (slackConfig: SlackConfig) => ({
         name: 'SlackModule',
         silent: true,
-        bases: {
-          url: slackConfig.SLACK_WEBHOOK,
-        },
+        prefixUrl: slackConfig.SLACK_WEBHOOK,
       }),
     }),
     LoggerModule,
