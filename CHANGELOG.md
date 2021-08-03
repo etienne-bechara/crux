@@ -1,3 +1,21 @@
+# [3.0.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.1...v3.0.0) (2021-08-03)
+
+
+### Bug Fixes
+
+* remove chalk from dependencies ([c954dbb](https://github.com/etienne-bechara/nestjs-core/commit/c954dbb33de3b8f0fdb05beef9b47adad979d322))
+* remove default adpter options ([e26b677](https://github.com/etienne-bechara/nestjs-core/commit/e26b6778763bdf7e217fafcfffabc1564ee105a9))
+
+
+### Features
+
+* add support for singleton request service through local storage ([459bd2d](https://github.com/etienne-bechara/nestjs-core/commit/459bd2df630abc15e4b584e60e447e63dac92750))
+
+
+### BREAKING CHANGES
+
+* add support for singleton request service through local storage
+
 ## [2.8.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.1...v2.8.2) (2021-08-01)
 
 
