@@ -1,3 +1,10 @@
+## [2.8.3](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.2...v2.8.3) (2021-08-03)
+
+
+### Bug Fixes
+
+* remove chalk from dependencies ([c954dbb](https://github.com/etienne-bechara/nestjs-core/commit/c954dbb33de3b8f0fdb05beef9b47adad979d322))
+
 ## [2.8.2](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.1...v2.8.2) (2021-08-01)
 
 
