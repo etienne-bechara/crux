@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.0...v3.0.1) (2021-08-03)
+
+
+### Bug Fixes
+
+* slack integration ([ce778f8](https://github.com/etienne-bechara/nestjs-core/commit/ce778f8673a2a1ac660c697fb74d97529be3cb6c))
+
 # [3.0.0](https://github.com/etienne-bechara/nestjs-core/compare/v2.8.1...v3.0.0) (2021-08-03)
 
 
