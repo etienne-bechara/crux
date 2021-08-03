@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
-import chalk from 'chalk';
 
-import { AppEnvironment } from '../../../app/app.enum';
 import { LoggerLevel } from '../../logger.enum';
 import { LoggerParams, LoggerTransport } from '../../logger.interface';
 import { LoggerService } from '../../logger.service';
@@ -12,11 +10,22 @@ import { ConsoleStyle } from './console.interface';
 @Injectable()
 export class ConsoleService implements LoggerTransport {
 
+  private chalk: any;
+
   public constructor(
     protected readonly consoleConfig: ConsoleConfig,
     protected readonly loggerService: LoggerService,
   ) {
     this.loggerService.registerTransport(this);
+
+    // To enable colored log you must have chalk installed as devDependency
+    try {
+      // eslint-disable-next-line unicorn/prefer-module
+      this.chalk = require('chalk');
+    }
+    catch {
+      /* Ignore */
+    }
   }
 
   /**
@@ -32,23 +41,22 @@ export class ConsoleService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const env = this.consoleConfig.NODE_ENV;
-    const style = this.getStyle(params.level);
+    const sty = this.getStyle(params.level);
     const now = this.getLocalTime();
 
     // Colored
-    if (env === AppEnvironment.LOCAL && chalk) {
-      const msg = chalk`{grey ${now}} {${style.labelColor}  ${style.label} } {${style.messageColor} ${params.message}}`;
+    if (this.chalk) {
+      const msg = this.chalk`{grey ${now}} {${sty.labelColor}  ${sty.label} } {${sty.messageColor} ${params.message}}`;
       console.log(msg);
 
       if (params.error && params.level <= LoggerLevel.ERROR) {
-        console.log(chalk`{grey ${params.error.stack}}`);
+        console.log(this.chalk`{grey ${params.error.stack}}`);
       }
 
     // Standard
     }
     else {
-      const msg = `${now} ${style.label} ${params.message}`;
+      const msg = `${now} ${sty.label} ${params.message}`;
 
       if (params.level <= LoggerLevel.ERROR) {
         console.error(msg);
