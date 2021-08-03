@@ -1,4 +1,4 @@
-import { HttpStatus, ModuleMetadata } from '@nestjs/common';
+import { HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 export interface AppBootOptions extends ModuleMetadata {
@@ -16,4 +16,5 @@ export interface AppBootOptions extends ModuleMetadata {
   timeout?: number;
   httpErrors?: HttpStatus[];
   adapterOptions?: Record<string, any>;
+  beforeListen?: (app: INestApplication) => void | Promise<void>;
 }

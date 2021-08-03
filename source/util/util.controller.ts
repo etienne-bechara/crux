@@ -9,7 +9,7 @@ export class UtilController {
   public constructor(private readonly utilService: UtilService) { }
 
   @Get('status')
-  public async getUtilStatus(): Promise<UtilAppStatus> {
+  public getUtilStatus(): Promise<UtilAppStatus> {
     return this.utilService.getAppStatus();
   }
 
