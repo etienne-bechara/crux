@@ -1,53 +1,40 @@
-import { ArgumentsHost, ExecutionContext, Inject, Injectable, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 
-import { AppRequest } from '../app/app.interface';
-import { RequestHttpContext } from './request.interface';
+import { AppRequest, AppResponse } from '../app/app.interface';
+import { RequestStorage } from './request.storage';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class RequestService<Metadata = Record<string, any>> {
 
-  public constructor(
-    @Inject(REQUEST)
-    private readonly request: AppRequest,
-  ) { }
-
   /**
-   * Get http request components from context.
-   * @param context
+   * Returns local store for current context.
    */
-  public static getHttpContext(context: ArgumentsHost | ExecutionContext): RequestHttpContext {
-    return {
-      req: context.switchToHttp().getRequest(),
-      res: context.switchToHttp().getResponse(),
-      next: context.switchToHttp().getNext(),
-    };
-  }
-
-  /**
-   * Builds an instance of provider from context,
-   * without requiring dependency injection.
-   * @param context
-   */
-  public static getInstanceFromContext(context: ArgumentsHost | ExecutionContext): RequestService {
-    const request = context.switchToHttp().getRequest();
-    return new RequestService(request);
+  public getStore(): Map<string, any> {
+    return RequestStorage.getStore();
   }
 
   /**
    * Returns the inbound request.
    */
   public getRequest(): AppRequest {
-    return this.request;
+    return this.getStore().get('req');
   }
 
   /**
-   * Acquires request metadata which works as a mutable object
-   * for request specific custom data.
+   * Returns the inbound request.
+   */
+  public getResponse(): AppResponse {
+    return this.getStore().get('res');
+  }
+
+  /**
+   * Acquires request metadata which works as a typed mutable object per
+   * request, that is also included in logging in case of exceptions.
    */
   public getMetadata(): Metadata {
-    this.request.raw.metadata ??= { };
-    return this.request.raw.metadata;
+    const req = this.getRequest();
+    req.raw.metadata ??= { };
+    return req.raw.metadata;
   }
 
   /**

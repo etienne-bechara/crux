@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { decycle } from 'cycle';
 
 import { LoggerService } from '../logger/logger.service';
@@ -6,7 +6,7 @@ import { RequestService } from '../request/request.service';
 import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
-import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequest } from './app.interface';
+import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
 import { AppModule } from './app.module';
 
 @Catch()
@@ -15,16 +15,16 @@ export class AppFilter implements ExceptionFilter {
   public constructor(
     protected readonly appConfig: AppConfig,
     protected readonly loggerService: LoggerService,
+    protected readonly requestService: RequestService,
     protected readonly utilService: UtilService,
   ) { }
 
   /**
    * Intercepts all errors and standardize the output.
    * @param exception
-   * @param host
    */
-  public catch(exception: HttpException | Error, host: ArgumentsHost): void {
-    const { req, res } = RequestService.getHttpContext(host);
+  public catch(exception: HttpException | Error): void {
+    const res = this.requestService.getResponse();
 
     const appException: AppException = {
       exception,
@@ -33,7 +33,7 @@ export class AppFilter implements ExceptionFilter {
       details: this.getDetails(exception),
     };
 
-    this.logException(appException, req);
+    this.logException(appException);
 
     const productionError =
       this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION
@@ -128,18 +128,18 @@ export class AppFilter implements ExceptionFilter {
 
   /**
    * Logs the incident according to status:
-   * • Error level for INTERNAL_SERVER_ERROR
-   * • Info level for everything else.
+   * - Error level for INTERNAL_SERVER_ERROR
+   * - Info level for everything else.
    *
    * Always add request data removing sensitive
    * information.
    * @param appException
-   * @param req
    */
-  protected logException(appException: AppException, req: AppRequest): void {
+  protected logException(appException: AppException): void {
     const { details, exception, message, errorCode } = appException;
     const logData: Record<string, any> = { message, ...details };
     const httpErrors = AppModule.getBootOptions().httpErrors;
+    const req = this.requestService.getRequest();
 
     if (httpErrors.includes(errorCode)) {
       const clientRequest = {
@@ -148,7 +148,7 @@ export class AppFilter implements ExceptionFilter {
         query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
         body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
         headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
-        metadata: req.raw.metadata,
+        metadata: this.requestService.getMetadata(),
       };
 
       logData.clientRequest = clientRequest;

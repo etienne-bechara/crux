@@ -15,6 +15,8 @@ import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
 import { SlackConfig } from '../logger/logger.transport/slack/slack.config';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
+import { RequestModule } from '../request/request.module';
+import { RequestStorage } from '../request/request.storage';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
 import { AppFilter } from './app.filter';
@@ -35,12 +37,13 @@ export class AppModule {
   }
 
   /**
-   * Starts Fastify server through Nest JS framework.
+   * Starts Fastify http adapter through Nest JS framework.
    *
-   * Apply the following customizations according to config:
-   * • Configure CORS
-   * • Set JSON limit
-   * • Disable timeout (handled in custom interceptor).
+   * Apply the following customizations:
+   * - Create request scoped data based on async local storage
+   * - Configure CORS
+   * - Set JSON limit
+   * - Disable server based timeout (see app.timeout.interceptor).
    * @param options
    */
   public static async bootServer(options: AppBootOptions = { }): Promise<INestApplication> {
@@ -51,6 +54,17 @@ export class AppModule {
 
     const nestApp = await NestFactory.create(entryModule, httpAdapter, {
       logger: [ 'error', 'warn' ],
+    });
+
+    const fastify = nestApp.getHttpAdapter().getInstance();
+
+    fastify.addHook('preHandler', (req, res, next) => {
+      RequestStorage.run(new Map(), () => {
+        const store = RequestStorage.getStore();
+        store.set('req', req);
+        store.set('res', res);
+        next();
+      });
     });
 
     const appConfig: AppConfig = nestApp.get(AppConfig);
@@ -64,6 +78,10 @@ export class AppModule {
 
     nestApp.setGlobalPrefix(appConfig.APP_GLOBAL_PREFIX);
     nestApp.enableCors(options.cors);
+
+    if (options.beforeListen) {
+      await options.beforeListen(nestApp);
+    }
 
     const httpServer = await nestApp.listen(options.port, options.hostname);
     httpServer.setTimeout(0);
@@ -137,6 +155,7 @@ export class AppModule {
     const defaultModules: any[] = [
       ConsoleModule,
       LoggerModule,
+      RequestModule,
       SentryModule,
       SlackModule,
       UtilModule,
