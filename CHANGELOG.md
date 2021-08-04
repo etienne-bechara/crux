@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.1...v3.0.2) (2021-08-04)
+
+
+### Bug Fixes
+
+* improve config module definitions ([7e6dd3a](https://github.com/etienne-bechara/nestjs-core/commit/7e6dd3ab37e11a2c8f4dc7cc579b33b3aee046eb))
+
 ## [3.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.0...v3.0.1) (2021-08-03)
 
 
