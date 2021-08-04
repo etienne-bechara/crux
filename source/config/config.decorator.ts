@@ -12,25 +12,17 @@ import { ConfigService } from './config.service';
  * @param options
  */
 export function InjectSecret(options: ConfigInjectionOptions = { }): any {
-  return function (target: any, propertyKey: string): void {
-    const secretKey = options.key || propertyKey;
-    Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, secretKey, target, propertyKey);
+  const { key: baseKey, jsonParse, baseValue } = options;
 
-    ConfigService.setSecret({
-      key: secretKey,
-      value: null,
-      default: options.default,
-      json: options.json,
-    });
+  return function (target: any, propertyKey: string): void {
+    const key = baseKey || propertyKey;
+    Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, key, target, propertyKey);
+    ConfigService.setSecret({ key, baseValue, jsonParse });
 
     Object.defineProperty(target, propertyKey, {
-      get: () => ConfigService.getSecret(secretKey),
+      get: () => ConfigService.getSecret(key),
       set: (value) => {
-        ConfigService.setSecret({
-          key: secretKey,
-          value,
-          default: options.default,
-        });
+        ConfigService.setSecret({ key, value, baseValue });
       },
     });
   };

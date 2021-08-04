@@ -39,7 +39,7 @@ export class TestModule {
 
     if (configs) {
       imports.unshift(
-        ConfigModule.registerAsync({ configs }),
+        ConfigModule.register({ configs }),
       );
     }
 

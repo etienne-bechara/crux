@@ -13,12 +13,12 @@ export class AppConfig {
   @IsIn(Object.values(AppEnvironment))
   public readonly NODE_ENV: AppEnvironment;
 
-  @InjectSecret({ default: 8080 })
-  @Transform((o) => Number.parseInt(o.value))
+  @InjectSecret({ baseValue: '8080' })
+  @Transform((o) => Number(o.value))
   @IsNumber() @Min(1024) @Max(65_535)
   public readonly APP_PORT: number;
 
-  @InjectSecret({ default: '' })
+  @InjectSecret({ baseValue: '' })
   @IsString()
   public readonly APP_GLOBAL_PREFIX: string;
 

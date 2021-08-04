@@ -1,5 +1,5 @@
 export interface ConfigInjectionOptions {
   key?: string;
-  default?: any;
-  json?: boolean;
+  baseValue?: any;
+  jsonParse?: boolean;
 }

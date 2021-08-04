@@ -20,8 +20,8 @@ export class FooConfig {
   @InjectSecret({ key: 'foo_authorization' })
   FOO_API_KEY: string;
 
-  // Use 'default' to set a fallback value
-  @InjectSecret({ default: 15 })
+  // Use 'baseValue' to set a fallback value
+  @InjectSecret({ baseValue: 15 })
   FOO_API_MAX_CONCURRENCY: number;
 
 }
@@ -47,7 +47,7 @@ export class FooConfig {
   @IsString() @Length(36)
   FOO_API_KEY: string;
 
-  @InjectSecret({ default: '15' })
+  @InjectSecret({ baseValue: '15' })
   @Transform((v) => Number.parseInt(v))
   @IsNumber()
   FOO_API_MAX_CONCURRENCY: number;

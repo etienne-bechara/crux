@@ -15,7 +15,7 @@ export class SentryConfig extends LoggerConfig {
   public readonly SENTRY_DSN: string;
 
   @InjectSecret({
-    default: (nodeEnv) => {
+    baseValue: (nodeEnv) => {
       switch (nodeEnv) {
         case AppEnvironment.LOCAL: return null;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.ERROR;

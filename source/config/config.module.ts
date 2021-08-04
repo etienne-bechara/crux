@@ -8,14 +8,16 @@ import { ConfigService } from './config.service';
 export class ConfigModule {
 
   /**
-   * During initialization, asynchronously create a cache
-   * of all required secrets.
+   * During initialization, create a cache of all required secrets.
    * @param options
    */
-  public static async registerAsync(options: ConfigModuleOptions = { }): Promise<DynamicModule> {
-    if (!options.envPath) options.envPath = UtilModule.searchEnvFile();
-    await ConfigService.setupSecretEnvironment(options);
-    return { module: ConfigModule };
+  public static register(options: ConfigModuleOptions = { }): DynamicModule {
+    options.envPath ??= UtilModule.searchEnvFile();
+    ConfigService.setupSecretEnvironment(options);
+
+    return {
+      module: ConfigModule,
+    };
   }
 
 }

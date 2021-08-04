@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/no-process-exit */
 /* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/naming-convention */
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
@@ -22,9 +21,8 @@ export class ConfigService {
    * of config module in your application.
    * @param options
    */
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public static async setupSecretEnvironment(options: ConfigModuleOptions = { }): Promise<ValidationError[]> {
-    if (!options.configs) options.configs = [ ];
+  public static setupSecretEnvironment(options: ConfigModuleOptions = { }): ValidationError[] {
+    options.configs ??= [ ];
     this.loadInitialEnvironment(options);
     this.populateSecretCache();
     const errors = this.validateConfigs(options);
@@ -41,21 +39,23 @@ export class ConfigService {
     const secret = this.SECRET_CACHE.find((s) => s.key.toUpperCase() === key.toUpperCase());
     if (!secret) return;
 
-    if (secret.value && secret.json && typeof secret.value === 'string') {
+    const { value, baseValue, jsonParse } = secret;
+
+    if (value && jsonParse && typeof value === 'string') {
       try {
-        secret.value = JSON.parse(secret.value);
+        secret.value = JSON.parse(value);
       }
       catch {
         secret.value = 'invalid json string';
       }
     }
 
-    if (!secret.value && secret.default && typeof secret.default === 'function') {
+    if (!value && baseValue && typeof baseValue === 'function') {
       const nodeEnv = this.getSecret('NODE_ENV');
-      secret.default = secret.default(nodeEnv);
+      secret.baseValue = secret.baseValue(nodeEnv);
     }
 
-    return secret.value ?? secret.default;
+    return value ?? baseValue;
   }
 
   /**
@@ -63,15 +63,16 @@ export class ConfigService {
    * @param secret
    */
   public static setSecret(secret: ConfigSecretRecord = { }): void {
-    if (!secret.key) return;
+    const { key, value } = secret;
+    if (!key) return;
 
     const secretIndex = this.SECRET_CACHE.findIndex((record) => {
-      return record.key.toUpperCase() === secret.key.toUpperCase();
+      return record.key.toUpperCase() === key.toUpperCase();
     });
 
     if (secretIndex >= 0) {
       const currentSecret = this.SECRET_CACHE[secretIndex];
-      currentSecret.value = secret.value;
+      currentSecret.value = value;
     }
     else {
       this.SECRET_CACHE.push(secret);
@@ -87,11 +88,13 @@ export class ConfigService {
    * @param options
    */
   private static loadInitialEnvironment(options: ConfigModuleOptions = { }): void {
-    const envFile = dotenv.config({ path: options.envPath }).parsed || { };
+    const { configs, envPath: path } = options;
+
+    const envFile = dotenv.config({ path }).parsed || { };
     process.env = { ...process.env, ...envFile };
 
-    for (const ConfigClass of options.configs) {
-      new ConfigClass();
+    for (const configDefinition of configs) {
+      new configDefinition();
     }
   }
 
@@ -118,13 +121,17 @@ export class ConfigService {
    * @param options
    */
   private static validateConfigs(options: ConfigModuleOptions = { }): ValidationError[] {
+    const { allowValidationErrors, configs } = options;
     const validationErrors: ValidationError[] = [ ];
-
     const secretEnv: Record<string, any> = { };
-    for (const record of this.SECRET_CACHE) secretEnv[record.key] = record.value || record.default;
 
-    for (const ConfigClass of options.configs) {
-      const validationInstance: ValidationError[] = plainToClass(ConfigClass, secretEnv);
+    for (const record of this.SECRET_CACHE) {
+      secretEnv[record.key] = record.value || record.baseValue;
+    }
+
+    for (const configDefinition of configs) {
+      const validationInstance: ValidationError[] = plainToClass(configDefinition, secretEnv);
+
       const partialErrors = validateSync(validationInstance, {
         validationError: { target: false },
       });
@@ -137,7 +144,7 @@ export class ConfigService {
     const uniqueErrors = validationErrors.filter((v, i, a) => a.findIndex(t => t.property === v.property) === i);
 
     // On validation failure, exit in 100ms in order for errors to print
-    if (uniqueErrors.length > 0 && !options.allowValidationErrors) {
+    if (uniqueErrors.length > 0 && !allowValidationErrors) {
       console.error(...uniqueErrors);
       setTimeout(() => process.exit(1), 100);
     }

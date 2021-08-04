@@ -9,7 +9,7 @@ import { LoggerLevel } from '../../logger.enum';
 export class ConsoleConfig extends LoggerConfig {
 
   @InjectSecret({
-    default: (nodeEnv) => {
+    baseValue: (nodeEnv) => {
       switch (nodeEnv) {
         case AppEnvironment.LOCAL: return LoggerLevel.TRACE;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.NOTICE;

@@ -163,7 +163,7 @@ export class AppModule {
 
     if (type === 'imports') {
       preloadedModules.push(
-        ConfigModule.registerAsync({
+        ConfigModule.register({
           envPath: options.envPath,
           configs: this.buildEntryConfigs(options),
         }),

@@ -30,7 +30,7 @@ export class SlackConfig extends LoggerConfig {
   public readonly SLACK_ICON_URL: string;
 
   @InjectSecret({
-    default: (nodeEnv) => {
+    baseValue: (nodeEnv) => {
       switch (nodeEnv) {
         case AppEnvironment.LOCAL: return null;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.WARNING;
