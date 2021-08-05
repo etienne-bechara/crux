@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.2...v3.0.3) (2021-08-05)
+
+
+### Bug Fixes
+
+* http empty res and url logging ([8a58af7](https://github.com/etienne-bechara/nestjs-core/commit/8a58af79eaa82acc933ba225f5720ad18dc5cab1))
+
 ## [3.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.1...v3.0.2) (2021-08-04)
 
 
