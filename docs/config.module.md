@@ -48,7 +48,7 @@ export class FooConfig {
   FOO_API_KEY: string;
 
   @InjectSecret({ baseValue: '15' })
-  @Transform((v) => Number.parseInt(v))
+  @Transform((v) => Number(v))
   @IsNumber()
   FOO_API_MAX_CONCURRENCY: number;
 

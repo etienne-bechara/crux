@@ -222,7 +222,6 @@ export class AppModule {
       preloadedProviders.push({
         provide: APP_PIPE,
         useFactory: (): ValidationPipe => new ValidationPipe({
-          transform: true,
           whitelist: true,
           forbidNonWhitelisted: true,
         }),
