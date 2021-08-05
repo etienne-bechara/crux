@@ -131,7 +131,7 @@ export class HttpService {
    * @param params
    */
   protected async request<T>(url: string, params: HttpRequestParams): Promise<T> {
-    this.loggerService?.debug('[HttpService] Executing external request...', params);
+    this.loggerService?.debug('[HttpService] Executing external request...', { url, ...params });
     let res: any;
 
     const isIgnoreExceptions = params.ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
@@ -153,8 +153,11 @@ export class HttpService {
       }
     }
 
-    res.cookies = this.parseCookies(res.headers);
-    return isResolveBodyOnly ? res.body : res;
+    if (res) {
+      res.cookies = this.parseCookies(res.headers);
+    }
+
+    return isResolveBodyOnly ? res?.body : res;
   }
 
   /**
