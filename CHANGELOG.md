@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.3...v3.0.4) (2021-08-05)
+
+
+### Bug Fixes
+
+* remove auto-transform ([be11a65](https://github.com/etienne-bechara/nestjs-core/commit/be11a65237c5270e6b2e33ab66787cae9ba438db))
+
 ## [3.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.2...v3.0.3) (2021-08-05)
 
 
