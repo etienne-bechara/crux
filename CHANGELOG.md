@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.4...v3.1.0) (2021-08-06)
+
+
+### Features
+
+* add quick transform decorators ([1c79c09](https://github.com/etienne-bechara/nestjs-core/commit/1c79c09c62151fbb1cd791121386123a0e0216b4))
+
 ## [3.0.4](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.3...v3.0.4) (2021-08-05)
 
 
