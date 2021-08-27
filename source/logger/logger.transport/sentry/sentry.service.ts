@@ -37,7 +37,7 @@ export class SentryService implements LoggerTransport {
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
 
-    setTimeout(() => this.loggerService.notice(`[SentryService] Transport connected at ${dsn}`), 500);
+    setTimeout(() => this.loggerService.info(`[SentryService] Transport connected at ${dsn}`), 500);
     this.loggerService.registerTransport(this);
   }
 

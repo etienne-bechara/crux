@@ -32,7 +32,7 @@ export class SlackService implements LoggerTransport {
     }
 
     const webhookId = webhook.split('/')[webhook.split('/').length - 1];
-    setTimeout(() => this.loggerService.notice(`[SlackService] Transport connected at ${webhookId}`), 500);
+    setTimeout(() => this.loggerService.info(`[SlackService] Transport connected at ${webhookId}`), 500);
     this.loggerService.registerTransport(this);
   }
 

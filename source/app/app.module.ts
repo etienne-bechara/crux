@@ -88,7 +88,7 @@ export class AppModule {
 
     const timeoutStr = options.timeout ? `set to ${(options.timeout / 1000).toString()}s` : 'disabled';
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
-    loggerService.notice(`[AppService] Server listening on port ${options.port}`);
+    loggerService.info(`[AppService] Server listening on port ${options.port}`);
 
     this.bootOptions = options;
     return nestApp;
