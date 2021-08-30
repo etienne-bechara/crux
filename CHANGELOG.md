@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.0...v3.1.1) (2021-08-27)
+
+
+### Bug Fixes
+
+* lower server boot event log level ([a2891f0](https://github.com/etienne-bechara/nestjs-core/commit/a2891f089ffbf51aab92f84db166a80c28d31246))
+
 # [3.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.0.4...v3.1.0) (2021-08-06)
 
 
