@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.1...v3.1.2) (2021-08-30)
+
+
+### Bug Fixes
+
+* get client ip ([4241fb7](https://github.com/etienne-bechara/nestjs-core/commit/4241fb72ac694b9f98c084b786a12c5a24825a9a))
+
 ## [3.1.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.0...v3.1.1) (2021-08-27)
 
 
