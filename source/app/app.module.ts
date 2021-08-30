@@ -48,9 +48,12 @@ export class AppModule {
    */
   public static async bootServer(options: AppBootOptions = { }): Promise<INestApplication> {
     const entryModule = this.buildEntryModule(options);
-
     const adapterOptions = options.adapterOptions;
-    const httpAdapter = new FastifyAdapter(adapterOptions);
+
+    const httpAdapter = new FastifyAdapter({
+      trustProxy: true,
+      ...adapterOptions,
+    });
 
     const nestApp = await NestFactory.create(entryModule, httpAdapter, {
       logger: [ 'error', 'warn' ],

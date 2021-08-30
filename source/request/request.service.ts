@@ -42,8 +42,7 @@ export class RequestService<Metadata = Record<string, any>> {
    */
   public getClientIp(): string {
     const req = this.getRequest();
-    const forwardedIp = /by.+?for=(.+?);/g.exec(req.headers.forwarded);
-    return forwardedIp?.[1] || req.ips?.[req.ips.length - 1] || req.ip;
+    return req.ips?.[req.ips.length - 1] || req.ip;
   }
 
   /**
