@@ -1,3 +1,10 @@
+## [3.1.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.2...v3.1.3) (2021-09-13)
+
+
+### Bug Fixes
+
+* keep to string array default to only comma ([2dc2478](https://github.com/etienne-bechara/nestjs-core/commit/2dc2478b55cc3f7c64ff9e59c7ef8d778972587a))
+
 ## [3.1.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.1...v3.1.2) (2021-08-30)
 
 
