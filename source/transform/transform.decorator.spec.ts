@@ -34,8 +34,8 @@ class TransformDto {
   @ToString() public toString09: string;
   @ToStringArray() public toStringArray01: string[];
   @ToStringArray() public toStringArray02: string[];
-  @ToStringArray() public toStringArray03: string[];
-  @ToStringArray() public toStringArray04: string[];
+  @ToStringArray({ splitBy: [ ',', '|' ] }) public toStringArray03: string[];
+  @ToStringArray({ splitBy: [ ';' ] }) public toStringArray04: string[];
   @ToStringArray() public toStringArray05: string[];
   @ToStringArray() public toStringArray06: string[];
   @ToStringArray() public toStringArray07: string[];

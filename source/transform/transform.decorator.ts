@@ -95,11 +95,11 @@ export function ToString(options: TransformToStringOptions = { }): any {
 
 /**
  * Ensures target string or string array outputs as an array with unique entries.
- * Separators can be configured by `splitBy`, which defaults to `[ ',', ';', '|' ]`.
+ * Separators can be configured by `splitBy`, which defaults to comma.
  * @param options
  */
 export function ToStringArray(options: TransformToStringArrayOptions = { }): any {
-  options.splitBy ??= [ ',', ';', '|' ];
+  options.splitBy ??= [ ',' ];
 
   return applyDecorators(
     Transform((o) => {
