@@ -67,9 +67,14 @@ export class SlackService implements LoggerTransport {
 
     if (params.data) {
       const details = JSON.stringify(params.data || { }, null, 2);
+
+      const trimmedDetails = details.length > 2900
+        ? `${details.slice(0, 2900)}\n\n[...]`
+        : details;
+
       messageBlocks.push({
         type: 'section',
-        text: { type: 'mrkdwn', text: `*Details*\n\`\`\`\n${details}\n\`\`\`` },
+        text: { type: 'mrkdwn', text: `*Details*\n\`\`\`\n${trimmedDetails}\n\`\`\`` },
       });
     }
 
@@ -78,7 +83,9 @@ export class SlackService implements LoggerTransport {
       elements: [
         { type: 'mrkdwn', text: `Reported at ${new Date().toUTCString()}` },
       ],
-    }, { type: 'divider' });
+    }, {
+      type: 'divider',
+    });
 
     void this.publishSlackMessage(messageBlocks);
   }
