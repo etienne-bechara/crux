@@ -1,3 +1,11 @@
+# [3.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.4...v3.2.0) (2021-09-17)
+
+
+### Features
+
+* allow app compile without serving and refactor tests to use it ([e3f3a88](https://github.com/etienne-bechara/nestjs-core/commit/e3f3a881becd9ed7e0d19fdfc0ed0309743e85f6))
+* bump nest to v8 ([f8d374f](https://github.com/etienne-bechara/nestjs-core/commit/f8d374f3301f6aeeeda74d188a72cebddfc5f675))
+
 ## [3.1.4](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.3...v3.1.4) (2021-09-15)
 
 
