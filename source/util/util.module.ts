@@ -10,6 +10,7 @@ import { UtilService } from './util.service';
 @Module({
   imports: [
     HttpModule.register({
+      name: 'UtilModule',
       responseType: 'text',
       resolveBodyOnly: true,
     }),

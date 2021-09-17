@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, ValidationError } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
-import { TestModule } from '../test';
+import { AppModule } from '../app/app.module';
 import { InjectSecret } from './config.decorator';
 import { ConfigService } from './config.service';
 
@@ -28,47 +28,45 @@ class TestMockConfig {
 
 }
 
-TestModule.createSandbox({
-  name: 'ConfigService',
+describe('ConfigService', () => {
+  let validationErrors: ValidationError[];
 
-  descriptor: () => {
-    let validationErrors: ValidationError[];
+  beforeAll(async () => {
+    await AppModule.compile({ disableModuleScan: true, disableLogger: true });
 
-    beforeAll(() => {
-      validationErrors = ConfigService.setupSecretEnvironment({
-        configs: [ TestMockConfig ],
-        allowValidationErrors: true,
-      });
+    validationErrors = ConfigService.setupSecretEnvironment({
+      configs: [ TestMockConfig ],
+      allowValidationErrors: true,
+    });
+  });
+
+  describe('setupSecretEnvironment', () => {
+    it('should populate the secret cache', () => {
+      expect(validationErrors).toBeDefined();
+    });
+  });
+
+  describe('getSecret', () => {
+    it('should read an injected secret', () => {
+      const secretValue = ConfigService.getSecret('NODE_ENV');
+      expect(secretValue).toBeDefined();
     });
 
-    describe('setupSecretEnvironment', () => {
-      it('should populate the secret cache', () => {
-        expect(validationErrors).toBeDefined();
-      });
+    it('should return secret default if value is null', () => {
+      const secretValue = ConfigService.getSecret('TEST_SECRET_FALLBACK');
+      expect(secretValue).toBe('secret_default');
     });
 
-    describe('getSecret', () => {
-      it('should read an injected secret', () => {
-        const secretValue = ConfigService.getSecret('NODE_ENV');
-        expect(secretValue).toBeDefined();
-      });
-
-      it('should return secret default if value is null', () => {
-        const secretValue = ConfigService.getSecret('TEST_SECRET_FALLBACK');
-        expect(secretValue).toBe('secret_default');
-      });
-
-      it('should transform secret type', () => {
-        const secretValue = ConfigService.getSecret('TEST_SECRET_TRANSFORM');
-        expect(secretValue).toBe(100);
-      });
+    it('should transform secret type', () => {
+      const secretValue = ConfigService.getSecret('TEST_SECRET_TRANSFORM');
+      expect(secretValue).toBe(100);
     });
+  });
 
-    describe('validateConfigs', () => {
-      it('should flag a configuration error', () => {
-        expect(validationErrors.length).toBeGreaterThanOrEqual(1);
-        expect(validationErrors[0].property).toBe('TEST_SECRET_VALIDATION');
-      });
+  describe('validateConfigs', () => {
+    it('should flag a configuration error', () => {
+      expect(validationErrors.length).toBeGreaterThanOrEqual(1);
+      expect(validationErrors[0].property).toBe('TEST_SECRET_VALIDATION');
     });
-  },
+  });
 });

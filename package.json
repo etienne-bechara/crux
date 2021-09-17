@@ -27,7 +27,7 @@
   },
   "scripts": {
     "prepare": "husky install .config/husky",
-    "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./source/test/test.main.ts",
+    "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./test/main.ts",
     "build": "npx rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && npx ncp ./source ./dist/source && npx rimraf ./source/index.ts",
     "index": "npx rimraf ./source/index.ts && npx barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
@@ -52,7 +52,6 @@
     "@bechara/eslint-config-bechara-ts": "1.2.0",
     "@commitlint/cli": "13.1.0",
     "@commitlint/config-conventional": "13.1.0",
-    "@nestjs/testing": "8.0.6",
     "@types/jest": "27.0.1",
     "@types/node": "16.9.2",
     "chalk": "4.1.2",

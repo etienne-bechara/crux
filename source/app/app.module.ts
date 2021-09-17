@@ -8,7 +8,6 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { ConfigModule } from '../config/config.module';
 import { LoggerConfig } from '../logger/logger.config';
 import { LoggerModule } from '../logger/logger.module';
-import { LoggerService } from '../logger/logger.service';
 import { ConsoleConfig } from '../logger/logger.transport/console/console.config';
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
 import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
@@ -21,45 +20,66 @@ import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
-import { AppBootOptions } from './app.interface/app.boot.options';
+import { AppOptions } from './app.interface/app.options';
+import { LoggerService } from './app.override';
 
 @Global()
 @Module({ })
 export class AppModule {
 
-  private static bootOptions: AppBootOptions;
+  private static instance: INestApplication;
+  private static options: AppOptions;
 
   /**
-   * Returns final boot options after applying default values.
+   * Returns application instance.
    */
-  public static getBootOptions(): AppBootOptions {
-    return this.bootOptions;
+  public static getInstance(): INestApplication {
+    if (!this.instance) {
+      throw new Error('application instance not configured');
+    }
+
+    return this.instance;
   }
 
   /**
-   * Starts Fastify http adapter through Nest JS framework.
-   *
-   * Apply the following customizations:
-   * - Create request scoped data based on async local storage
-   * - Configure CORS
-   * - Set JSON limit
-   * - Disable server based timeout (see app.timeout.interceptor).
+   * Returns options which the application was built upon.
+   */
+  public static getOptions(): AppOptions {
+    this.getInstance();
+    return this.options;
+  }
+
+  /**
+   * Builds and configures an instance of Nest Application using Fastify
+   * and listen on desired port and hostname.
    * @param options
    */
-  public static async bootServer(options: AppBootOptions = { }): Promise<INestApplication> {
-    const entryModule = this.buildEntryModule(options);
-    const adapterOptions = options.adapterOptions;
+  public static async boot(options: AppOptions = { }): Promise<INestApplication> {
+    const app = await this.compile(options);
+    await this.listen();
+    return app;
+  }
+
+  /**
+   * Builds and configures an instance of Nest Application using Fastify
+   * and returns its reference without starting the adapter.
+   * @param options
+   */
+  public static async compile(options: AppOptions = { }): Promise<INestApplication> {
+    this.options = options;
+
+    const entryModule = this.buildEntryModule();
 
     const httpAdapter = new FastifyAdapter({
       trustProxy: true,
-      ...adapterOptions,
+      ...this.options.adapterOptions,
     });
 
-    const nestApp = await NestFactory.create(entryModule, httpAdapter, {
+    this.instance = await NestFactory.create(entryModule, httpAdapter, {
       logger: [ 'error', 'warn' ],
     });
 
-    const fastify = nestApp.getHttpAdapter().getInstance();
+    const fastify = this.instance.getHttpAdapter().getInstance();
 
     fastify.addHook('preHandler', (req, res, next) => {
       RequestStorage.run(new Map(), () => {
@@ -70,64 +90,67 @@ export class AppModule {
       });
     });
 
-    const appConfig: AppConfig = nestApp.get(AppConfig);
-    const loggerService: LoggerService = nestApp.get(LoggerService);
+    const appConfig: AppConfig = this.instance.get(AppConfig);
 
-    options.port ??= appConfig.APP_PORT;
-    options.hostname ??= appConfig.APP_DEFAULT_HOSTNAME;
-    options.cors ??= appConfig.APP_DEFAULT_CORS_OPTIONS;
-    options.timeout ??= appConfig.APP_DEFAULT_TIMEOUT;
-    options.httpErrors ??= appConfig.APP_DEFAULT_HTTP_ERRORS;
+    this.options.port ??= appConfig.APP_PORT;
+    this.options.hostname ??= appConfig.APP_HOSTNAME;
+    this.options.globalPrefix ??= appConfig.APP_GLOBAL_PREFIX;
+    this.options.timeout ??= appConfig.APP_TIMEOUT;
+    this.options.cors ??= appConfig.APP_CORS_OPTIONS;
+    this.options.httpErrors ??= appConfig.APP_FILTER_HTTP_ERRORS;
 
-    nestApp.setGlobalPrefix(appConfig.APP_GLOBAL_PREFIX);
-    nestApp.enableCors(options.cors);
+    this.instance.setGlobalPrefix(this.options.globalPrefix);
+    this.instance.enableCors(this.options.cors);
 
-    if (options.beforeListen) {
-      await options.beforeListen(nestApp);
-    }
+    return this.instance;
+  }
 
-    const httpServer = await nestApp.listen(options.port, options.hostname);
+  /**
+   * Acquire current instance and list on desired port and hostname,
+   * using and interceptor to manage configured timeout.
+   */
+  private static async listen(): Promise<void> {
+    const { port, hostname, timeout } = this.options;
+    const app = this.getInstance();
+    const loggerService = app.get(LoggerService);
+    const httpServer = await app.listen(port, hostname);
+    const timeoutStr = timeout ? `set to ${(timeout / 1000).toString()}s` : 'disabled';
+
     httpServer.setTimeout(0);
-
-    const timeoutStr = options.timeout ? `set to ${(options.timeout / 1000).toString()}s` : 'disabled';
     loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
-    loggerService.info(`[AppService] Server listening on port ${options.port}`);
-
-    this.bootOptions = options;
-    return nestApp;
+    loggerService.info(`[AppService] Server listening on port ${port}`);
   }
 
   /**
    * Given desired boot options, build the module that will act
    * as entry point for the cascade initialization.
-   * @param options
    */
-  private static buildEntryModule(options: AppBootOptions = { }): DynamicModule {
-    if (!options.configs) options.configs = [ ];
-    if (!options.modules) options.modules = [ ];
-    if (!options.controllers) options.controllers = [ ];
-    if (!options.providers) options.providers = [ ];
-    if (!options.imports) options.imports = [ ];
-    if (!options.exports) options.exports = [ ];
+  private static buildEntryModule(): DynamicModule {
+    this.options.configs ??= [ ];
+    this.options.controllers ??= [ ];
+    this.options.providers ??= [ ];
+    this.options.imports ??= [ ];
+    this.options.exports ??= [ ];
 
     return {
       module: AppModule,
-      controllers: options.controllers,
-      providers: this.buildEntryProviders(options),
-      imports: this.buildEntryModules(options, 'imports'),
+      controllers: this.options.controllers,
+      imports: this.buildEntryModules('imports'),
+      providers: this.buildEntryProviders(),
       exports: [
         AppConfig,
-        ...options.providers,
-        ...this.buildEntryModules(options, 'exports'),
+        ...this.options.providers,
+        ...this.buildEntryModules('exports'),
       ],
     };
   }
 
   /**
    * Merge default, project source and user provided configs.
-   * @param options
    */
-  private static buildEntryConfigs(options: AppBootOptions): any[] {
+  private static buildEntryConfigs(): any[] {
+    const { disableConfigScan, configs } = this.options;
+
     const preloadedConfigs = [
       AppConfig,
       LoggerConfig,
@@ -136,39 +159,41 @@ export class AppModule {
       SlackConfig,
     ];
 
-    if (!options.disableConfigScan) {
-      const sourceConfigs = UtilModule.globRequire([
-        's*rc*/**/*.config.{js,ts}',
-        '!**/*test*',
-      ]);
+    if (!disableConfigScan) {
+      const sourceConfigs = UtilModule.globRequire([ 's*rc*/**/*.config.{js,ts}' ]);
       preloadedConfigs.push(...sourceConfigs);
     }
 
-    return [ ...preloadedConfigs, ...options.configs ];
+    return [ ...preloadedConfigs, ...configs ];
   }
 
   /**
    * Merge defaults, project source and user provided modules.
-   * @param options
    * @param type
    */
-  private static buildEntryModules(options: AppBootOptions, type: 'imports' | 'exports'): any[] {
+  private static buildEntryModules(type: 'imports' | 'exports'): any[] {
+    const { envPath, disableModuleScan, disableLogger, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
 
     const defaultModules: any[] = [
-      ConsoleModule,
       LoggerModule,
       RequestModule,
-      SentryModule,
-      SlackModule,
       UtilModule,
     ];
+
+    if (!disableLogger) {
+      defaultModules.push(
+        ConsoleModule,
+        SentryModule,
+        SlackModule,
+      );
+    }
 
     if (type === 'imports') {
       preloadedModules.push(
         ConfigModule.register({
-          envPath: options.envPath,
-          configs: this.buildEntryConfigs(options),
+          envPath: envPath,
+          configs: this.buildEntryConfigs(),
         }),
         ...defaultModules,
       );
@@ -180,40 +205,37 @@ export class AppModule {
       );
     }
 
-    if (!options.disableModuleScan) {
-      const sourceModules = UtilModule.globRequire([
-        's*rc*/**/*.module.{js,ts}',
-        '!**/*test*',
-      ]).reverse();
+    if (!disableModuleScan) {
+      const sourceModules = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
       preloadedModules.push(...sourceModules);
     }
 
     if (type === 'imports') {
-      preloadedModules.push(...options.imports);
+      preloadedModules.push(...imports);
     }
     else {
-      preloadedModules.push(...options.exports);
+      preloadedModules.push(...exports);
     }
 
-    return [ ...preloadedModules, ...options.modules ];
+    return preloadedModules;
   }
 
   /**
    * Adds exception filter, serializer, logger, timeout
    * and validation pipe.
-   * @param options
    */
-  private static buildEntryProviders(options: AppBootOptions): any[] {
+  private static buildEntryProviders(): any[] {
+    const { disableFilters, disableInterceptors, disablePipes, providers } = this.options;
     const preloadedProviders: any[] = [ AppConfig ];
 
-    if (!options.disableFilters) {
+    if (!disableFilters) {
       preloadedProviders.push({
         provide: APP_FILTER,
         useClass: AppFilter,
       });
     }
 
-    if (!options.disableInterceptors) {
+    if (!disableInterceptors) {
       preloadedProviders.push(
         { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
         { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
@@ -221,7 +243,7 @@ export class AppModule {
       );
     }
 
-    if (!options.disablePipes) {
+    if (!disablePipes) {
       preloadedProviders.push({
         provide: APP_PIPE,
         useFactory: (): ValidationPipe => new ValidationPipe({
@@ -231,7 +253,7 @@ export class AppModule {
       });
     }
 
-    return [ ...preloadedProviders, ...options.providers ];
+    return [ ...preloadedProviders, ...providers ];
   }
 
 }

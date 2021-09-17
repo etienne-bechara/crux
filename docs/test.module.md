@@ -1,54 +1,42 @@
 # Test Module
 
-Before proceeding, we recommend reading the official [NestJS testing documentation](https://docs.nestjs.com/fundamentals/testing#testing).
-
 Since we are usually dealing with environment configurations, testing boilerplate may become extensive.
 
-With that in mind, you may optionally use the built-in `createSandbox()` method provided in the package.
+With that in mind, you may optionally use the built-in `compile()` method provided at `AppModule` to create an application instance without serving it.
 
 **Example**
 
 ```ts
-import { TestingModuleBuilder } from '@nestjs/testing';
-import { TestModule } from '@bechara/nestjs-core/dist/test';
+import { AppModule } from '@bechara/nestjs-core';
 
-TestModule.createSandbox({
-  name: 'FooService',
-  imports: [ FooModule ],
-  configs: [ FooConfig ],
+describe('FooService', () => {
+  let fooService: FooService;
 
-  descriptor: (testingBuilder: TestingModuleBuilder) => {
-    let fooService: FooService;
+  beforeAll(async () => {
+    const app = await AppModule.compile();
+    fooService = app.get(FooService);
+  });
 
-    beforeAll(async () => {
-      const testingModule = await testingBuilder.compile();
-      fooService = testingModule.get(FooService);
+  describe('readById', () => {
+    it('should read a foo entity', async () => {
+      const foo = fooService.readById(1);
+      expect(foo).toBe({ name: 'bob' });
     });
-
-    describe('readById', () => {
-      it('should read a foo entity', async () => {
-        const foo = fooService.readById(1);
-        expect(foo).toBe({ name: 'bob' });
-      });
-    });
-  },
-
+  });
 });
 ```
 
-Write your tests as you usually do but inside the `descriptor` property, which will always take a function that returns the Nest testing builder.
-
-The difference is that we also expose the `imports`, `controllers`, `providers` and `configs` properties which allows you to simulate the necessary injections.
+If you would like to customize what is compiled, you may user the any of the app booting options available at `boot()`. 
 
 You may run all your tests using:
 
-```
+```sh
 npm test
 ```
 
 Or a specific set by regex match:
 
-```
+```sh
 npm test -- foo
 ```
 

@@ -148,9 +148,6 @@ export class ConfigService {
       console.error(...uniqueErrors);
       setTimeout(() => process.exit(1), 100);
     }
-    else if (uniqueErrors.length > 0) {
-      console.warn(...uniqueErrors);
-    }
 
     return uniqueErrors;
   }

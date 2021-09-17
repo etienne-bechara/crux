@@ -138,7 +138,7 @@ export class AppFilter implements ExceptionFilter {
   protected logException(appException: AppException): void {
     const { details, exception, message, errorCode } = appException;
     const logData: Record<string, any> = { message, ...details };
-    const httpErrors = AppModule.getBootOptions().httpErrors;
+    const httpErrors = AppModule.getOptions().httpErrors;
     const req = this.requestService.getRequest();
 
     if (httpErrors.includes(errorCode)) {

@@ -7,7 +7,6 @@ specifiers:
   '@nestjs/common': 8.0.6
   '@nestjs/core': 8.0.6
   '@nestjs/platform-fastify': 8.0.6
-  '@nestjs/testing': 8.0.6
   '@sentry/node': 6.12.0
   '@types/jest': 27.0.1
   '@types/node': 16.9.2
@@ -48,7 +47,6 @@ devDependencies:
   '@bechara/eslint-config-bechara-ts': 1.2.0_typescript@4.4.3
   '@commitlint/cli': 13.1.0
   '@commitlint/config-conventional': 13.1.0
-  '@nestjs/testing': 8.0.6_67f7e5db8827badcb202b1d38f6b1aea
   '@types/jest': 27.0.1
   '@types/node': 16.9.2
   chalk: 4.1.2
@@ -910,25 +908,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
-
-  /@nestjs/testing/8.0.6_67f7e5db8827badcb202b1d38f6b1aea:
-    resolution: {integrity: sha512-HRXGM5RlGa+o+kxWI9DQCALndSvL3Remjg1cZVFp2w2s5eXRPpiFMo9puXtu9DSc4tz78xYcQGmEaeYNTB7gvg==}
-    peerDependencies:
-      '@nestjs/common': ^8.0.0
-      '@nestjs/core': ^8.0.0
-      '@nestjs/microservices': ^8.0.0
-      '@nestjs/platform-express': ^8.0.0
-    peerDependenciesMeta:
-      '@nestjs/microservices':
-        optional: true
-      '@nestjs/platform-express':
-        optional: true
-    dependencies:
-      optional: 0.1.4
-      '@nestjs/common': 8.0.6_7de7ece315067f012f2001b6a7f20971
-      '@nestjs/core': 8.0.6_e2399148d990aa1f9a4b6ba2ac7a5b74
-      tslib: 2.3.0
-    dev: true
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -4346,10 +4325,6 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /optional/0.1.4:
-    resolution: {integrity: sha512-gtvrrCfkE08wKcgXaVwQVgwEQ8vel2dc5DDBn9RLQZ3YtmtkBss6A2HY6BnJH4N/4Ku97Ri/SF8sNWE2225WJw==}
-    dev: true
-
   /optionator/0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
     engines: {node: '>= 0.8.0'}
@@ -5351,6 +5326,7 @@ packages:
 
   /tslib/2.3.0:
     resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
+    dev: false
 
   /tsutils/3.21.0_typescript@4.4.3:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}

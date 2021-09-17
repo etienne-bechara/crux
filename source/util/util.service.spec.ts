@@ -1,7 +1,4 @@
-import { TestingModuleBuilder } from '@nestjs/testing';
-
-import { TestModule } from '../test';
-import { UtilModule } from './util.module';
+import { AppModule } from '../app/app.module';
 import { UtilService } from './util.service';
 
 const mockFailure = (c): void => {
@@ -9,109 +6,104 @@ const mockFailure = (c): void => {
   throw new Error('error');
 };
 
-TestModule.createSandbox({
-  name: 'UtilService',
-  imports: [ UtilModule ],
+describe('UtilService', () => {
+  let utilService: UtilService;
 
-  descriptor: (testingBuilder: TestingModuleBuilder) => {
-    let utilService: UtilService;
+  beforeAll(async () => {
+    const app = await AppModule.compile({ disableModuleScan: true, disableLogger: true });
+    utilService = app.get(UtilService);
+  });
 
-    beforeAll(async () => {
-      const testingModule = await testingBuilder.compile();
-      utilService = testingModule.get(UtilService);
+  describe('sleep', () => {
+    it('should sleep code execution for 1000ms', async () => {
+      const sleepTime = 1000;
+      const start = Date.now();
+      await utilService.sleep(sleepTime);
+      const elapsed = Date.now() - start;
+      expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
+      expect(elapsed).toBeLessThan(sleepTime * 1.05);
+    });
+  });
+
+  describe('retryOnException', () => {
+    it('should retry a method for 5 times', async () => {
+      const counter = { quantity: 0 };
+      const retries = 5;
+
+      try {
+        await utilService.retryOnException({
+          method: () => mockFailure(counter),
+          retries,
+        });
+      }
+      catch { /* Handled by expect */ }
+
+      expect(counter.quantity).toBe(retries + 1);
     });
 
-    describe('sleep', () => {
-      it('should sleep code execution for 1000ms', async () => {
-        const sleepTime = 1000;
-        const start = Date.now();
-        await utilService.sleep(sleepTime);
-        const elapsed = Date.now() - start;
-        expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
-        expect(elapsed).toBeLessThan(sleepTime * 1.05);
-      });
+    it('should retry a method for 2 seconds', async () => {
+      const counter = { quantity: 0 };
+      const timeout = 2000;
+      const delay = 550;
+
+      try {
+        await utilService.retryOnException({
+          method: () => mockFailure(counter),
+          timeout,
+          delay,
+        });
+      }
+      catch { /* Handled by expect */ }
+
+      expect(counter.quantity).toBe(Math.ceil(timeout / delay) + 1);
     });
 
-    describe('retryOnException', () => {
-      it('should retry a method for 5 times', async () => {
-        const counter = { quantity: 0 };
-        const retries = 5;
+    it('should timeout a method after 1 second', async () => {
+      const start = Date.now();
+      const timeout = 1000;
 
-        try {
-          await utilService.retryOnException({
-            method: () => mockFailure(counter),
-            retries,
-          });
-        }
-        catch { /* Handled by expect */ }
+      try {
+        await utilService.retryOnException({
+          method: () => utilService.sleep(2000),
+          timeout,
+        });
+      }
+      catch { /* Handled by expect */ }
 
-        expect(counter.quantity).toBe(retries + 1);
-      });
-
-      it('should retry a method for 2 seconds', async () => {
-        const counter = { quantity: 0 };
-        const timeout = 2000;
-        const delay = 550;
-
-        try {
-          await utilService.retryOnException({
-            method: () => mockFailure(counter),
-            timeout,
-            delay,
-          });
-        }
-        catch { /* Handled by expect */ }
-
-        expect(counter.quantity).toBe(Math.ceil(timeout / delay) + 1);
-      });
-
-      it('should timeout a method after 1 second', async () => {
-        const start = Date.now();
-        const timeout = 1000;
-
-        try {
-          await utilService.retryOnException({
-            method: () => utilService.sleep(2000),
-            timeout,
-          });
-        }
-        catch { /* Handled by expect */ }
-
-        const elapsed = Date.now() - start;
-        expect(elapsed).toBeLessThan(timeout * 1.1);
-      });
-
-      it('should not retry a method', async () => {
-        const counter = { quantity: 0 };
-        const retries = 0;
-
-        try {
-          await utilService.retryOnException({
-            method: () => mockFailure(counter),
-            retries,
-          });
-        }
-        catch { /* Handled by expect */ }
-
-        expect(counter.quantity).toBe(1);
-      });
+      const elapsed = Date.now() - start;
+      expect(elapsed).toBeLessThan(timeout * 1.1);
     });
 
-    describe('getServerIp', () => {
-      it('should acquire public ip successfully', async () => {
-        const serverIp = await utilService.getServerIp();
-        expect(serverIp).toBeDefined();
-      });
-    });
+    it('should not retry a method', async () => {
+      const counter = { quantity: 0 };
+      const retries = 0;
 
-    describe('getAppStatus', () => {
-      it('should read application cpu, memory and network', async () => {
-        const appStatus = await utilService.getAppStatus();
-        expect(appStatus.system.uptime).toBeGreaterThan(0);
-        expect(appStatus.memory.total).toBeGreaterThan(0);
-        expect(appStatus.cpus.length).toBeGreaterThan(0);
-      });
-    });
-  },
+      try {
+        await utilService.retryOnException({
+          method: () => mockFailure(counter),
+          retries,
+        });
+      }
+      catch { /* Handled by expect */ }
 
+      expect(counter.quantity).toBe(1);
+    });
+  });
+
+  describe('getServerIp', () => {
+    it('should acquire public ip successfully', async () => {
+      const serverIp = await utilService.getServerIp();
+      expect(serverIp).toBeDefined();
+    });
+  });
+
+  describe('getAppStatus', () => {
+    it('should read application cpu, memory and network', async () => {
+      const appStatus = await utilService.getAppStatus();
+      expect(appStatus.system.uptime).toBeGreaterThan(0);
+      expect(appStatus.memory.total).toBeGreaterThan(0);
+      expect(appStatus.cpus.length).toBeGreaterThan(0);
+    });
+  });
 });
+
