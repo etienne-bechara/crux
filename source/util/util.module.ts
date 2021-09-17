@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
+import fg from 'fast-glob';
 import fs from 'fs';
-import globby from 'globby';
 
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
@@ -40,7 +40,7 @@ export class UtilModule {
     globPath = Array.isArray(globPath) ? globPath : [ globPath ];
     const cwd = root || process.cwd();
 
-    const matchingFiles = globby.sync(globPath, { cwd });
+    const matchingFiles = fg.sync(globPath, { cwd });
     const jsFiles = matchingFiles.filter((file) => file.match(/\.js$/g));
     const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
 
@@ -50,8 +50,7 @@ export class UtilModule {
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });
 
-    // eslint-disable-next-line unicorn/prefer-spread, unicorn/prefer-array-flat
-    return [ ].concat(...exportsArrays);
+    return exportsArrays.flat();
   }
 
   /**
