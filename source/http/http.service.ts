@@ -186,7 +186,7 @@ export class HttpService {
       message: `${method} ${url} | ${message}`,
       proxyExceptions,
       externalResponse: {
-        status: response?.statusCode,
+        statusCode: response?.statusCode,
         headers: response?.headers,
         body: response?.body,
       },
