@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.0...v3.2.1) (2021-09-22)
+
+
+### Bug Fixes
+
+* externalResponse to match got ([c629006](https://github.com/etienne-bechara/nestjs-core/commit/c629006c13e11b5fd98e1577bccfe2a9ed24ab15))
+
 # [3.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.1.4...v3.2.0) (2021-09-17)
 
 
