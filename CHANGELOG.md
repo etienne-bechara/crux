@@ -1,3 +1,12 @@
+## [3.2.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.1...v3.2.2) (2021-10-05)
+
+
+### Bug Fixes
+
+* allow instance to be provided on boot ([bffbcef](https://github.com/etienne-bechara/nestjs-core/commit/bffbcef9a704b71067f40c1eb91a45533892b8a0))
+* bump deps ([7e58418](https://github.com/etienne-bechara/nestjs-core/commit/7e584189781d947e92c1699d951c0881d7866ff1))
+* improve request metadata handling ([b64051d](https://github.com/etienne-bechara/nestjs-core/commit/b64051dd519ff016edacc46ac5687a74be5447e3))
+
 ## [3.2.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.0...v3.2.1) (2021-09-22)
 
 
