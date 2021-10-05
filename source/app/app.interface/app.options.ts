@@ -1,7 +1,8 @@
-import { HttpStatus, ModuleMetadata } from '@nestjs/common';
+import { HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 export interface AppOptions extends ModuleMetadata {
+  instance?: INestApplication;
   envPath?: string;
   disableModuleScan?: boolean;
   disableConfigScan?: boolean;

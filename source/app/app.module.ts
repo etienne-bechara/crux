@@ -51,19 +51,29 @@ export class AppModule {
   }
 
   /**
-   * Builds and configures an instance of Nest Application using Fastify
-   * and listen on desired port and hostname.
+   * Boots an instance of a Nest Application using Fastify, and listen
+   * on desired port and hostname.
+   *
+   * Skips the compile step if a pre-compiled `instance` is provided.
    * @param options
    */
   public static async boot(options: AppOptions = { }): Promise<INestApplication> {
-    const app = await this.compile(options);
+    const { instance } = options;
+
+    if (instance) {
+      this.instance = instance;
+    }
+    else {
+      await this.compile(options);
+    }
+
     await this.listen();
-    return app;
+    return this.instance;
   }
 
   /**
-   * Builds and configures an instance of Nest Application using Fastify
-   * and returns its reference without starting the adapter.
+   * Builds and configures an instance of a Nest Application, returning
+   * its reference without starting the adapter.
    * @param options
    */
   public static async compile(options: AppOptions = { }): Promise<INestApplication> {
