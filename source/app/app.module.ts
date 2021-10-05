@@ -14,6 +14,7 @@ import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
 import { SlackConfig } from '../logger/logger.transport/slack/slack.config';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
+import { RequestStorageKey } from '../request/request.enum';
 import { RequestModule } from '../request/request.module';
 import { RequestStorage } from '../request/request.storage';
 import { UtilModule } from '../util/util.module';
@@ -84,8 +85,8 @@ export class AppModule {
     fastify.addHook('preHandler', (req, res, next) => {
       RequestStorage.run(new Map(), () => {
         const store = RequestStorage.getStore();
-        store.set('req', req);
-        store.set('res', res);
+        store.set(RequestStorageKey.REQUEST, req);
+        store.set(RequestStorageKey.RESPONSE, res);
         next();
       });
     });

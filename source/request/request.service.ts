@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
+import { RequestStorageKey } from './request.enum';
 import { RequestStorage } from './request.storage';
 
 @Injectable()
@@ -17,24 +18,34 @@ export class RequestService<Metadata = Record<string, any>> {
    * Returns the inbound request.
    */
   public getRequest(): AppRequest {
-    return this.getStore().get('req');
+    return this.getStore().get(RequestStorageKey.REQUEST);
   }
 
   /**
    * Returns the inbound request.
    */
   public getResponse(): AppResponse {
-    return this.getStore().get('res');
+    return this.getStore().get(RequestStorageKey.RESPONSE);
   }
 
   /**
-   * Acquires request metadata which works as a typed mutable object per
-   * request, that is also included in logging in case of exceptions.
+   * Reads a metadata key bound to current request lifecycle.
+   * @param key
    */
-  public getMetadata(): Metadata {
-    const req = this.getRequest();
-    req.raw.metadata ??= { };
-    return req.raw.metadata;
+  public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
+    const metadata: Metadata = this.getStore().get(RequestStorageKey.METADATA) || { };
+    return metadata[key];
+  }
+
+  /**
+   * Create or update a metadata key bound to current request lifecycle.
+   * @param key
+   * @param value
+   */
+  public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
+    const metadata: Metadata = this.getStore().get(RequestStorageKey.METADATA) || { };
+    metadata[key] = value;
+    this.getStore().set(RequestStorageKey.METADATA, metadata);
   }
 
   /**

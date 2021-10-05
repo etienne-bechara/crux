@@ -2,6 +2,7 @@ import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/commo
 import { decycle } from 'cycle';
 
 import { LoggerService } from '../logger/logger.service';
+import { RequestStorageKey } from '../request/request.enum';
 import { RequestService } from '../request/request.service';
 import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
@@ -148,7 +149,7 @@ export class AppFilter implements ExceptionFilter {
         query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
         body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
         headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
-        metadata: this.requestService.getMetadata(),
+        metadata: this.requestService.getStore().get(RequestStorageKey.METADATA) || { },
       };
 
       logData.clientRequest = clientRequest;
