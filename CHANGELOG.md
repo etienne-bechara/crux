@@ -1,3 +1,15 @@
+# [3.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.2...v3.3.0) (2021-10-09)
+
+
+### Bug Fixes
+
+* rename request service to context service ([264fad7](https://github.com/etienne-bechara/nestjs-core/commit/264fad788bfbcaad609adae870ab6d5dca0bc16c))
+
+
+### Features
+
+* add encrypt and decrypt functionality to util ([b39846d](https://github.com/etienne-bechara/nestjs-core/commit/b39846da68ea2320a958121c96af297c543cdddd))
+
 ## [3.2.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.1...v3.2.2) (2021-10-05)
 
 
