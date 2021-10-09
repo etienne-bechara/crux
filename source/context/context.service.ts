@@ -1,31 +1,31 @@
 import { Injectable } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
-import { RequestStorageKey } from './request.enum';
-import { RequestStorage } from './request.storage';
+import { ContextStorageKey } from './context.enum';
+import { ContextStorage } from './context.storage';
 
 @Injectable()
-export class RequestService<Metadata = Record<string, any>> {
+export class ContextService<Metadata = Record<string, any>> {
 
   /**
    * Returns local store for current context.
    */
   public getStore(): Map<string, any> {
-    return RequestStorage.getStore();
+    return ContextStorage.getStore();
   }
 
   /**
    * Returns the inbound request.
    */
   public getRequest(): AppRequest {
-    return this.getStore().get(RequestStorageKey.REQUEST);
+    return this.getStore().get(ContextStorageKey.REQUEST);
   }
 
   /**
    * Returns the inbound request.
    */
   public getResponse(): AppResponse {
-    return this.getStore().get(RequestStorageKey.RESPONSE);
+    return this.getStore().get(ContextStorageKey.RESPONSE);
   }
 
   /**
@@ -33,7 +33,7 @@ export class RequestService<Metadata = Record<string, any>> {
    * @param key
    */
   public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
-    const metadata: Metadata = this.getStore().get(RequestStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore().get(ContextStorageKey.METADATA) || { };
     return metadata[key];
   }
 
@@ -43,9 +43,9 @@ export class RequestService<Metadata = Record<string, any>> {
    * @param value
    */
   public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
-    const metadata: Metadata = this.getStore().get(RequestStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore().get(ContextStorageKey.METADATA) || { };
     metadata[key] = value;
-    this.getStore().set(RequestStorageKey.METADATA, metadata);
+    this.getStore().set(ContextStorageKey.METADATA, metadata);
   }
 
   /**
@@ -57,19 +57,21 @@ export class RequestService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Decodes and returns authorization payload.
+   * Decodes and returns  bearer authorization payload.
    */
   public getJwtPayload(): Record<string, any> {
     const payload = this.getRequest().headers.authorization?.split('.')?.[1];
-    if (!payload) return { };
+    let decodedPayload: Record<string, any>;
+    if (!payload) return;
 
     try {
-      const decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
-      return decoded;
+      decodedPayload = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
     }
     catch {
-      return { };
+      /* Falls through, since payload is invalid it should return undefined */
     }
+
+    return decodedPayload;
   }
 
 }

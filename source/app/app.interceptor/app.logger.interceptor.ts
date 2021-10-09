@@ -2,15 +2,15 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+import { ContextService } from '../../context/context.service';
 import { LoggerService } from '../../logger/logger.service';
-import { RequestService } from '../../request/request.service';
 
 @Injectable()
 export class AppLoggerInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly loggerService: LoggerService,
-    private readonly requestService: RequestService,
+    private readonly contextService: ContextService,
   ) { }
 
   /**
@@ -19,11 +19,11 @@ export class AppLoggerInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const req = this.requestService.getRequest();
+    const req = this.contextService.getRequest();
     const start = Date.now();
 
     const methodPath = `${req.routerMethod.padEnd(6, ' ')} ${req.routerPath}`;
-    const ipAddress = this.requestService.getClientIp();
+    const ipAddress = this.contextService.getClientIp();
     const userAgent = req.headers['user-agent'];
     const logMessage = `${methodPath} | ${ipAddress} | ${userAgent}`;
 

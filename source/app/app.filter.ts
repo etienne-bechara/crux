@@ -1,9 +1,9 @@
 import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { decycle } from 'cycle';
 
+import { ContextStorageKey } from '../context/context.enum';
+import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
-import { RequestStorageKey } from '../request/request.enum';
-import { RequestService } from '../request/request.service';
 import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
@@ -16,7 +16,7 @@ export class AppFilter implements ExceptionFilter {
   public constructor(
     protected readonly appConfig: AppConfig,
     protected readonly loggerService: LoggerService,
-    protected readonly requestService: RequestService,
+    protected readonly contextService: ContextService,
     protected readonly utilService: UtilService,
   ) { }
 
@@ -25,7 +25,7 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   public catch(exception: HttpException | Error): void {
-    const res = this.requestService.getResponse();
+    const res = this.contextService.getResponse();
 
     const appException: AppException = {
       exception,
@@ -140,7 +140,7 @@ export class AppFilter implements ExceptionFilter {
     const { details, exception, message, errorCode } = appException;
     const logData: Record<string, any> = { message, ...details };
     const httpErrors = AppModule.getOptions().httpErrors;
-    const req = this.requestService.getRequest();
+    const req = this.contextService.getRequest();
 
     if (httpErrors.includes(errorCode)) {
       const clientRequest = {
@@ -149,7 +149,7 @@ export class AppFilter implements ExceptionFilter {
         query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
         body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
         headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
-        metadata: this.requestService.getStore().get(RequestStorageKey.METADATA) || { },
+        metadata: this.contextService.getStore().get(ContextStorageKey.METADATA) || { },
       };
 
       logData.clientRequest = clientRequest;

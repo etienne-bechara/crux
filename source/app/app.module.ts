@@ -6,6 +6,9 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 import { ConfigModule } from '../config/config.module';
+import { ContextStorageKey } from '../context/context.enum';
+import { ContextModule } from '../context/context.module';
+import { ContextStorage } from '../context/context.storage';
 import { LoggerConfig } from '../logger/logger.config';
 import { LoggerModule } from '../logger/logger.module';
 import { ConsoleConfig } from '../logger/logger.transport/console/console.config';
@@ -14,9 +17,6 @@ import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
 import { SlackConfig } from '../logger/logger.transport/slack/slack.config';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
-import { RequestStorageKey } from '../request/request.enum';
-import { RequestModule } from '../request/request.module';
-import { RequestStorage } from '../request/request.storage';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
 import { AppFilter } from './app.filter';
@@ -93,10 +93,10 @@ export class AppModule {
     const fastify = this.instance.getHttpAdapter().getInstance();
 
     fastify.addHook('preHandler', (req, res, next) => {
-      RequestStorage.run(new Map(), () => {
-        const store = RequestStorage.getStore();
-        store.set(RequestStorageKey.REQUEST, req);
-        store.set(RequestStorageKey.RESPONSE, res);
+      ContextStorage.run(new Map(), () => {
+        const store = ContextStorage.getStore();
+        store.set(ContextStorageKey.REQUEST, req);
+        store.set(ContextStorageKey.RESPONSE, res);
         next();
       });
     });
@@ -188,7 +188,7 @@ export class AppModule {
 
     const defaultModules: any[] = [
       LoggerModule,
-      RequestModule,
+      ContextModule,
       UtilModule,
     ];
 
