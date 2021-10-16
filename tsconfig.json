@@ -4,16 +4,12 @@
     "module": "commonjs",
     "lib": [ "es2020", "dom" ],
     "moduleResolution": "node",
-    "rootDir": "source",
     "outDir": "dist",
-    "sourceMap": true,
-    "sourceRoot": "../source",
     "declaration": true,
-    "removeComments": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "disableSourceOfProjectReferenceRedirect": true
   }
 }
