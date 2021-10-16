@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.0...v3.3.1) (2021-10-16)
+
+
+### Bug Fixes
+
+* remove source from packaging ([32c7b3f](https://github.com/etienne-bechara/nestjs-core/commit/32c7b3fc47e5275bf5621f0c03944e4c327cd5f3))
+
 # [3.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.2.2...v3.3.0) (2021-10-09)
 
 
