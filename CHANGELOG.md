@@ -1,3 +1,10 @@
+## [3.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.1...v3.3.2) (2021-11-12)
+
+
+### Bug Fixes
+
+* bump nestjs and sentry ([ac82760](https://github.com/etienne-bechara/nestjs-core/commit/ac82760fce2168c595ac14bae5158e973e35b984))
+
 ## [3.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.0...v3.3.1) (2021-10-16)
 
 
