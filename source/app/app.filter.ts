@@ -145,10 +145,10 @@ export class AppFilter implements ExceptionFilter {
     if (httpErrors.includes(errorCode)) {
       const clientRequest = {
         url: req.url.split('?')[0],
-        params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined,
-        query: req.query && Object.keys(req.query).length > 0 ? req.query : undefined,
-        body: req.body && Object.keys(req.body).length > 0 ? req.body : undefined,
-        headers: req.headers && Object.keys(req.headers).length > 0 ? req.headers : undefined,
+        params: this.validateObjectLength(req.params),
+        query: this.validateObjectLength(req.query),
+        body: this.validateObjectLength(req.body),
+        headers: this.validateObjectLength(req.headers),
         metadata: this.contextService.getStore().get(ContextStorageKey.METADATA) || { },
       };
 
@@ -158,6 +158,16 @@ export class AppFilter implements ExceptionFilter {
     else {
       this.loggerService.info(exception, logData);
     }
+  }
+
+  /**
+   * Ensures target object is valid and contain at least one key,
+   * if not return as `undefined`.
+   * @param obj
+   */
+  private validateObjectLength(obj: any): any {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return obj && Object.keys(obj).length > 0 ? obj : undefined;
   }
 
 }

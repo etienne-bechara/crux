@@ -1,7 +1,8 @@
 import { AppModule } from '../app/app.module';
 import { UtilService } from './util.service';
 
-const mockFailure = (c): void => {
+// eslint-disable-next-line @typescript-eslint/require-await
+const mockFailure = async (c): Promise<void> => {
   c.quantity++;
   throw new Error('error');
 };

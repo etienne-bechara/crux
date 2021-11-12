@@ -14,7 +14,7 @@ import { ConfigService } from './config.service';
 export function InjectSecret(options: ConfigInjectionOptions = { }): any {
   const { key: baseKey, jsonParse, baseValue } = options;
 
-  return function (target: any, propertyKey: string): void {
+  return function (target: unknown, propertyKey: string): void {
     const key = baseKey || propertyKey;
     Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, key, target, propertyKey);
     ConfigService.setSecret({ key, baseValue, jsonParse });

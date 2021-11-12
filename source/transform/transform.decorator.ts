@@ -38,7 +38,7 @@ export function ToDate(): any {
       if (value === undefined) return;
 
       try {
-        return new Date(value);
+        return new Date(value as string);
       }
       catch {
         return null;

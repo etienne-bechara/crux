@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-process-exit */
 /* eslint-disable no-console */
-import { plainToClass } from 'class-transformer';
+import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
 
@@ -130,7 +130,8 @@ export class ConfigService {
     }
 
     for (const configDefinition of configs) {
-      const validationInstance: ValidationError[] = plainToClass(configDefinition, secretEnv);
+      const configConstructor: ClassConstructor<ValidationError[]> = configDefinition;
+      const validationInstance: ValidationError[] = plainToClass(configConstructor, secretEnv);
 
       const partialErrors = validateSync(validationInstance, {
         validationError: { target: false },

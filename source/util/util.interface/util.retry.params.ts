@@ -1,5 +1,5 @@
-export interface UtilRetryParams {
-  method: () => any;
+export interface UtilRetryParams<T> {
+  method: () => Promise<T>;
   breakIf?: (e: any) => boolean;
   name?: string;
   retries?: number;

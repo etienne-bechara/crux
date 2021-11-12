@@ -162,7 +162,7 @@ export class AppModule {
   private static buildEntryConfigs(): any[] {
     const { disableConfigScan, configs } = this.options;
 
-    const preloadedConfigs = [
+    const preloadedConfigs: any[] = [
       AppConfig,
       LoggerConfig,
       ConsoleConfig,
@@ -171,7 +171,7 @@ export class AppModule {
     ];
 
     if (!disableConfigScan) {
-      const sourceConfigs = UtilModule.globRequire([ 's*rc*/**/*.config.{js,ts}' ]);
+      const sourceConfigs: unknown[] = UtilModule.globRequire([ 's*rc*/**/*.config.{js,ts}' ]);
       preloadedConfigs.push(...sourceConfigs);
     }
 
@@ -186,7 +186,7 @@ export class AppModule {
     const { envPath, disableModuleScan, disableLogger, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
 
-    const defaultModules: any[] = [
+    const defaultModules = [
       LoggerModule,
       ContextModule,
       UtilModule,
@@ -217,7 +217,7 @@ export class AppModule {
     }
 
     if (!disableModuleScan) {
-      const sourceModules = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
+      const sourceModules: unknown[] = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
       preloadedModules.push(...sourceModules);
     }
 

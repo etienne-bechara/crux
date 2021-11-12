@@ -154,7 +154,8 @@ export class HttpService {
     }
 
     if (res) {
-      res.cookies = this.parseCookies(res.headers);
+      const headers: IncomingHttpHeaders = res.headers;
+      res.cookies = this.parseCookies(headers);
     }
 
     return isResolveBodyOnly ? res?.body : res;
@@ -174,7 +175,8 @@ export class HttpService {
     const { message, response } = error;
     const { method } = request;
 
-    const exceptionCode = /code (\d+)/g.exec(message);
+    const errorMessage: string = message;
+    const exceptionCode = /code (\d+)/g.exec(errorMessage);
 
     const statusCode = proxyExceptions && exceptionCode
       ? Number(exceptionCode[1])

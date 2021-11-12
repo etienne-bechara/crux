@@ -105,7 +105,7 @@ export class SlackService implements LoggerTransport {
         },
       });
     }
-    catch (e) {
+    catch (e: unknown) {
       this.loggerService.warning('[SlackService] Failed to publish slack message', e, { messageBlocks });
     }
   }

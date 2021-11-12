@@ -51,7 +51,7 @@ export class UtilService {
    * @param params
    */
   // eslint-disable-next-line complexity
-  public async retryOnException<T>(params: UtilRetryParams): Promise<T> {
+  public async retryOnException<T>(params: UtilRetryParams<T>): Promise<T> {
     const txtName = `${params.name || 'retryOnException()'}`;
     const txtPrefix = `[UtilService] ${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
@@ -113,7 +113,7 @@ export class UtilService {
       try {
         serverIp = await this.httpService.get('https://api64.ipify.org', { timeout: 2500 });
       }
-      catch (e) {
+      catch (e: unknown) {
         this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
         return null;
       }

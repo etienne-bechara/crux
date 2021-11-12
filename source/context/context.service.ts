@@ -60,7 +60,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Decodes and returns  bearer authorization payload.
    */
   public getJwtPayload(): Record<string, any> {
-    const payload = this.getRequest().headers.authorization?.split('.')?.[1];
+    const payload: string = this.getRequest().headers.authorization?.split('.')?.[1];
     let decodedPayload: Record<string, any>;
     if (!payload) return;
 
