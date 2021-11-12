@@ -1,3 +1,11 @@
+## [3.3.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.2...v3.3.3) (2021-11-12)
+
+
+### Bug Fixes
+
+* lint fixes ([12d0f20](https://github.com/etienne-bechara/nestjs-core/commit/12d0f20631dac07d9108b5b6b42ffcf484912b53))
+* logger transport level validation ([a7903db](https://github.com/etienne-bechara/nestjs-core/commit/a7903db3689ea32c09f8030f0245443b0d61243d))
+
 ## [3.3.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.1...v3.3.2) (2021-11-12)
 
 
