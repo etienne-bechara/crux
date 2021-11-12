@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { IsNumber, IsOptional, Max, Min } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
+import { ToNumber } from '../../../transform/transform.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
 
@@ -18,6 +20,9 @@ export class ConsoleConfig extends LoggerConfig {
       }
     },
   })
+  @IsOptional()
+  @ToNumber()
+  @IsNumber() @Min(0) @Max(8)
   public readonly CONSOLE_LEVEL: LoggerLevel;
 
 }

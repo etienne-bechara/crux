@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
 
 import { InjectSecret } from '../config/config.decorator';
@@ -15,7 +14,7 @@ export class AppConfig {
   public readonly NODE_ENV: AppEnvironment;
 
   @InjectSecret({ baseValue: '8080' })
-  @Transform((o) => Number(o.value))
+  @ToNumber()
   @IsNumber() @Min(1024) @Max(65_535)
   public readonly APP_PORT: number;
 

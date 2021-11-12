@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IsOptional, Matches } from 'class-validator';
+import { IsNumber, IsOptional, Matches, Max, Min } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
+import { ToNumber } from '../../../transform/transform.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
 
@@ -24,6 +25,9 @@ export class SentryConfig extends LoggerConfig {
       }
     },
   })
+  @IsOptional()
+  @ToNumber()
+  @IsNumber() @Min(0) @Max(8)
   public readonly SENTRY_LEVEL: LoggerLevel;
 
 }

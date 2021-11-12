@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Max, Min } from 'class-validator';
 
 import { AppEnvironment } from '../../../app/app.enum';
 import { InjectSecret } from '../../../config/config.decorator';
+import { ToNumber } from '../../../transform/transform.decorator';
 import { LoggerConfig } from '../../logger.config';
 import { LoggerLevel } from '../../logger.enum';
 
@@ -39,6 +40,9 @@ export class SlackConfig extends LoggerConfig {
       }
     },
   })
+  @IsOptional()
+  @ToNumber()
+  @IsNumber() @Min(0) @Max(8)
   public readonly SLACK_LEVEL: LoggerLevel;
 
 }
