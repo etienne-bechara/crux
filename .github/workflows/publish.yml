@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+      - beta
+      - alpha
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,4 +41,4 @@ jobs:
       - name: Publish Package to NPM
         run: |
           npm i -g @semantic-release/changelog @semantic-release/git semantic-release
-          npx semantic-release
+          pnpx -y semantic-release

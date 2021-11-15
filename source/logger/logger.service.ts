@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { decycle } from 'cycle';
+import cycle from 'cycle';
 
 import { LoggerConfig } from './logger.config';
 import { LoggerLevel } from './logger.enum';
@@ -152,7 +152,7 @@ export class LoggerService {
    */
   public sanitize(object: any, decycled: boolean = false): any {
     if (typeof object !== 'object') return object;
-    if (!decycled) object = decycle(object);
+    if (!decycled) object = cycle.decycle(object);
 
     if (Array.isArray(object)) {
       const clone = [ ...object ];
