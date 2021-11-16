@@ -4,9 +4,11 @@ Work as a wrapper of GOT library and exposes methods to make http requests.
 
 The scope of this module is transient, which means one new instance will be provided every time it is injected.
 
-In order to use it, you must register it in every module to which a provider will receive an injection of the http service.
+---
 
-**Example**
+## Usage
+
+Register it in every module to which a provider will receive an injection of the http service.
 
 First at `foo.module.ts`:
 
@@ -68,6 +70,8 @@ const httpModuleOptions: HttpAsyncModuleOptions = {
 export class FooModule { }
 ```
 
+---
+
 ## Module Options
 
 The list of options are available at official [GOT documentation](https://github.com/sindresorhus/got/blob/main/documentation/2-options.md).
@@ -81,6 +85,4 @@ proxyExceptions: boolean; // In case of an exception, respond client with the sa
 
 ---
 
-[Next: Logger Module](logger.module.md)
-
-[Back to title](../README.md)
+[Back to title](../../README.md)

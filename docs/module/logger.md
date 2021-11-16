@@ -2,11 +2,11 @@
 
 Offers a logger service with predefined severity levels. When called, broadcasts the message to all connected transports and based on their own configuration decide whether or not to publish at it.
 
-## General Usage
+---
 
-Inject `LoggerService` at your provide and call any of its method based on severity.
+## Usage
 
-**Example** 
+Inject `LoggerService` at your provide and call any of its method based on severity:
 
 ```ts
 import { LoggerService } from '@bechara/nestjs-core';
@@ -37,6 +37,8 @@ export class FooService {
 }
 ```
 
+---
+
 ## Call Signatures
 
 The logging method expects the following typing:
@@ -60,6 +62,8 @@ this.loggerService.error(a: Error, b: Object, c: Object);
 this.loggerService.error(a: string, b: Error, c: Object, d: Object);
 // etc...
 ```
+
+---
 
 ## Transporters
 
@@ -100,6 +104,7 @@ SLACK_USERNAME | No | string | Notification Bot
 SLACK_ICON_URL | No | string | `undefined`
 SLACK_LEVEL | No | string | See [slack.config.ts](../source/logger/logger.transport/slack/slack.config.ts)
 
+---
 
 ## Severity Levels
 
@@ -121,6 +126,4 @@ Trace | Console | - | - | -
 
 ---
 
-[Next: Test Module](test.module.md)
-
-[Back to title](../README.md)
+[Back to title](../../README.md)

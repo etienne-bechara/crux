@@ -4,7 +4,11 @@ Serves the purpose of allowing asynchronous secret population, it works along wi
 
 Any property decorated with `@InjectSecret()` will have its value extracted from `process.env` and added to the class.
 
-**Example**
+---
+
+## Usage
+
+Create a `*.config.ts` file declaring you configuration class and decorate target properties with `@InjectSecret()`:
 
 ```ts
 import { InjectSecret } from '@bechara/nestjs-core';
@@ -28,8 +32,6 @@ export class FooConfig {
 ```
 
 The framework also allows decoration of properties using `class-validator` and `class-transformer` to enforce validation of the value before initialization:
-
-**Example**
 
 ```ts
 import { InjectSecret } from '@bechara/nestjs-core';
@@ -57,8 +59,6 @@ export class FooConfig {
 
 Finally, to use the secrets, you must add the configuration class to the array of providers of your module and inject it into your service:
 
-**Example**
-
 ```ts
 @Injectable()
 export class FooService {
@@ -73,8 +73,7 @@ export class FooService {
   }
 }
 ```
+
 ---
 
-[Next: Http Module](http.module.md)
-
-[Back to title](../README.md)
+[Back to title](../../README.md)

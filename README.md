@@ -6,16 +6,21 @@
 
 This package offers a wrapper around NestJS core components adding extra functionalities commonly found across back-end projects.
 
-**Documentation**
+### How to Use
 
-* [Installation](docs/installation.md)
-* [Usage](docs/installation.md)
-* [Application Module](docs/app.module.md)
-* [Configuration Module](docs/config.module.md)
-* [HTTP Module](docs/http.module.md)
-* [Logger Module](docs/logger.module.md)
-* [Test Module](docs/test.module.md)
+- [As Framework (New Projects)](docs/usage/framework.md)
+- [In Standalone (Existing Projects)](docs/usage/standalone.md)
 
----
+### Curated Modules
 
-[Next: Installation](docs/installation.md)
+- [Application (Fastify)](docs/module/app.md)
+- [Configuration](docs/module/config.md)
+- [Context (Request, Response and Metadata)](docs/module/context.md)
+- [HTTP (GOT)](docs/module/http.md)
+- [Logger (Console, Slack and Sentry)](docs/module/logger.md)
+- [Util (Status, Retry and Encryption)](docs/module/util.md)
+
+### Recipes
+
+- [Testing](docs/recipe/test.md)
+- [Swagger](docs/recipe/swagger.md)

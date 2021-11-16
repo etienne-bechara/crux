@@ -1,10 +1,14 @@
-# Test Module
+# Testing
 
 Since we are usually dealing with environment configurations, testing boilerplate may become extensive.
 
-With that in mind, you may optionally use the built-in `compile()` method provided at `AppModule` to create an application instance without serving it.
+With that in mind, you may use the built-in `compile()` method provided at `AppModule` to create an application instance without serving it.
 
-**Example**
+---
+
+## Usage
+
+Create your `*.service.spec.ts` file adding a `beforeAll()` hook to compile an application instance:
 
 ```ts
 import { AppModule } from '@bechara/nestjs-core';
@@ -26,20 +30,20 @@ describe('FooService', () => {
 });
 ```
 
-If you would like to customize what is compiled, you may user the any of the app booting options available at `boot()`. 
+If you would like to customize what is compiled, you may use the any of the app booting options available at `boot()`.
 
 You may run all your tests using:
 
 ```sh
-npm test
+pnpm test
 ```
 
 Or a specific set by regex match:
 
 ```sh
-npm test -- foo
+pnpm test -- foo
 ```
 
 ---
 
-[Back to title](../README.md)
+[Back to title](../../README.md)
