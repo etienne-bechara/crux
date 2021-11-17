@@ -1,3 +1,10 @@
+## [3.3.4](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.3...v3.3.4) (2021-11-15)
+
+
+### Bug Fixes
+
+* upgrade configs ([68a4749](https://github.com/etienne-bechara/nestjs-core/commit/68a4749ee0efc4452e39bac73c5a3961913e19c6))
+
 ## [3.3.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.2...v3.3.3) (2021-11-12)
 
 
