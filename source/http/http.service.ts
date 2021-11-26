@@ -130,7 +130,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  protected async request<T>(url: string, params: HttpRequestParams): Promise<T> {
+  public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     this.loggerService?.debug('[HttpService] Executing external request...', { url, ...params });
     let res: any;
 

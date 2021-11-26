@@ -106,7 +106,7 @@ export class ConfigService {
     for (const secret of this.SECRET_CACHE) {
       const processValue = process.env[secret.key] || process.env[secret.key.toUpperCase()];
 
-      if (processValue) {
+      if (processValue !== undefined && processValue !== null) {
         this.setSecret({
           key: secret.key,
           value: processValue,
