@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
+import { ContextJwtPayload } from './context.interface';
 import { ContextStorage } from './context.storage';
 
 @Injectable()
@@ -57,21 +58,43 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Decodes and returns  bearer authorization payload.
+   * Acquire authorization header and decode its payload if applicable.
    */
-  public getJwtPayload(): Record<string, any> {
-    const payload: string = this.getRequest().headers.authorization?.split('.')?.[1];
-    let decodedPayload: Record<string, any>;
+  public getJwtPayload(): ContextJwtPayload {
+    const token: string = this.getRequest().headers.authorization;
+    return this.decodeJwtPayload(token);
+  }
+
+  /**
+   * Decodes and returns target token payload.
+   * @param token
+   */
+  private decodeJwtPayload(token: string): ContextJwtPayload {
+    const payload: string = token?.split('.')?.[1];
     if (!payload) return;
 
+    let decoded: ContextJwtPayload;
+
     try {
-      decodedPayload = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
+      decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
     }
     catch {
       /* Falls through, since payload is invalid it should return undefined */
     }
 
-    return decodedPayload;
+    decoded.app_metadata ??= { };
+    decoded.user_metadata ??= { };
+
+    for (const key in decoded) {
+      if (key.includes('app_metadata')) {
+        decoded.app_metadata = { ...decoded.app_metadata, ...decoded[key] };
+      }
+      else if (key.includes('user_metadata')) {
+        decoded.user_metadata = { ...decoded.user_metadata, ...decoded[key] };
+      }
+    }
+
+    return decoded;
   }
 
 }
