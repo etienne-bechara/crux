@@ -1,3 +1,10 @@
+## [3.3.6](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.5...v3.3.6) (2021-11-29)
+
+
+### Bug Fixes
+
+* add jwt metadata flattening ([f2b0148](https://github.com/etienne-bechara/nestjs-core/commit/f2b01482b5e34d375586ce8c2924f32567ffe925))
+
 ## [3.3.5](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.4...v3.3.5) (2021-11-26)
 
 
