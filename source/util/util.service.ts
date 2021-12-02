@@ -205,6 +205,9 @@ export class UtilService {
     if (!key || key.length !== 32) {
       throw new InternalServerErrorException('decrypt key must be equal to 32 characters');
     }
+    else if (!hash) {
+      return null;
+    }
 
     if (hash.includes('.')) {
       [ iv, encrypted ] = hash.split('.');

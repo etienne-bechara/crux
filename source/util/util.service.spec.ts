@@ -141,6 +141,7 @@ describe('UtilService', () => {
       const scenario02 = '0123456789';
       const scenario03 = 'rDbLWk7Q6@FJPcCR9T5w^BNXt!&ezEjg';
 
+      expect(utilService.decrypt(null, key)).toBe(null);
       expect(utilService.decrypt(utilService.encrypt(scenario01, key), key)).toBe(scenario01);
       expect(utilService.decrypt(utilService.encryptWithoutIv(scenario02, key), key)).toBe(scenario02);
       expect(utilService.decrypt(utilService.encrypt(scenario03, key), key)).toBe(scenario03);
