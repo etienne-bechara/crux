@@ -1,3 +1,10 @@
+## [3.3.7](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.6...v3.3.7) (2021-12-02)
+
+
+### Bug Fixes
+
+* decrypt when no hash ([e9b4d4f](https://github.com/etienne-bechara/nestjs-core/commit/e9b4d4f68043316517a6b8fd4b4c81d65d3fa5e8))
+
 ## [3.3.6](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.5...v3.3.6) (2021-11-29)
 
 
