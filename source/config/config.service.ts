@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/no-process-exit */
-/* eslint-disable no-console */
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
@@ -14,6 +13,15 @@ import { ConfigModuleOptions } from './config.interface/config.module.options';
 export class ConfigService {
 
   private static readonly SECRET_CACHE: ConfigSecretRecord[] = [ ];
+  private static readonly CONFIG_DEFINITIONS: any[] = [ ];
+
+  /**
+   * Store provided class with config definition into the classes array.
+   * @param config
+   */
+  public static loadConfigDefinition(config: any): void {
+    this.CONFIG_DEFINITIONS.push(config);
+  }
 
   /**
    * Orchestrates initial secret acquisition and storage.
@@ -22,7 +30,6 @@ export class ConfigService {
    * @param options
    */
   public static setupSecretEnvironment(options: ConfigModuleOptions = { }): ValidationError[] {
-    options.configs ??= [ ];
     this.loadInitialEnvironment(options);
     this.populateSecretCache();
     const errors = this.validateConfigs(options);
@@ -88,12 +95,12 @@ export class ConfigService {
    * @param options
    */
   private static loadInitialEnvironment(options: ConfigModuleOptions = { }): void {
-    const { configs, envPath: path } = options;
+    const { envPath: path } = options;
 
     const envFile = dotenv.config({ path }).parsed || { };
     process.env = { ...process.env, ...envFile };
 
-    for (const configDefinition of configs) {
+    for (const configDefinition of this.CONFIG_DEFINITIONS) {
       new configDefinition();
     }
   }
@@ -121,7 +128,7 @@ export class ConfigService {
    * @param options
    */
   private static validateConfigs(options: ConfigModuleOptions = { }): ValidationError[] {
-    const { allowValidationErrors, configs } = options;
+    const { allowValidationErrors } = options;
     const validationErrors: ValidationError[] = [ ];
     const secretEnv: Record<string, any> = { };
 
@@ -129,7 +136,7 @@ export class ConfigService {
       secretEnv[record.key] = record.value || record.baseValue;
     }
 
-    for (const configDefinition of configs) {
+    for (const configDefinition of this.CONFIG_DEFINITIONS) {
       const configConstructor: ClassConstructor<ValidationError[]> = configDefinition;
       const validationInstance: ValidationError[] = plainToClass(configConstructor, secretEnv);
 
@@ -146,6 +153,7 @@ export class ConfigService {
 
     // On validation failure, exit in 100ms in order for errors to print
     if (uniqueErrors.length > 0 && !allowValidationErrors) {
+      // eslint-disable-next-line no-console
       console.error(...uniqueErrors);
       setTimeout(() => process.exit(1), 100);
     }

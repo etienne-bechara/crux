@@ -5,12 +5,10 @@ export interface AppOptions extends ModuleMetadata {
   instance?: INestApplication;
   envPath?: string;
   disableModuleScan?: boolean;
-  disableConfigScan?: boolean;
   disableFilters?: boolean;
   disableInterceptors?: boolean;
   disablePipes?: boolean;
   disableLogger?: boolean;
-  configs?: any[];
   port?: number;
   hostname?: string;
   globalPrefix?: string;

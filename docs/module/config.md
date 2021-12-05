@@ -2,18 +2,20 @@
 
 Serves the purpose of allowing asynchronous secret population, it works along with `*.config.ts` files that contains the definition of injectable class.
 
+Decorate a class with `@Config()` in order to mark it as a configuration definition. It will be available as a regular provider for NestJS injection.
+
 Any property decorated with `@InjectSecret()` will have its value extracted from `process.env` and added to the class.
 
 ---
 
 ## Usage
 
-Create a `*.config.ts` file declaring you configuration class and decorate target properties with `@InjectSecret()`:
+Create a `*.config.ts` file declaring you configuration class with `@Config()` and decorate target properties with `@InjectSecret()`:
 
 ```ts
-import { InjectSecret } from '@bechara/nestjs-core';
+import { Config, InjectSecret } from '@bechara/nestjs-core';
 
-@Injectable()
+@Config()
 export class FooConfig {
 
   @InjectSecret()
@@ -34,11 +36,11 @@ export class FooConfig {
 The framework also allows decoration of properties using `class-validator` and `class-transformer` to enforce validation of the value before initialization:
 
 ```ts
-import { InjectSecret } from '@bechara/nestjs-core';
+import { Config, InjectSecret } from '@bechara/nestjs-core';
 import { IsUrl, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-@Injectable()
+@Config()
 export class FooConfig {
 
   @InjectSecret()

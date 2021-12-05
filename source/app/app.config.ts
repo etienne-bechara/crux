@@ -1,12 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
 
-import { InjectSecret } from '../config/config.decorator';
+import { Config, InjectSecret } from '../config/config.decorator';
 import { ToNumber } from '../transform/transform.decorator';
 import { AppEnvironment } from './app.enum';
 
-@Injectable()
+@Config()
 export class AppConfig {
 
   @InjectSecret()

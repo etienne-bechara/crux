@@ -9,13 +9,9 @@ import { ConfigModule } from '../config/config.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
-import { LoggerConfig } from '../logger/logger.config';
 import { LoggerModule } from '../logger/logger.module';
-import { ConsoleConfig } from '../logger/logger.transport/console/console.config';
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
-import { SentryConfig } from '../logger/logger.transport/sentry/sentry.config';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
-import { SlackConfig } from '../logger/logger.transport/slack/slack.config';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
@@ -137,7 +133,6 @@ export class AppModule {
    * as entry point for the cascade initialization.
    */
   private static buildEntryModule(): DynamicModule {
-    this.options.configs ??= [ ];
     this.options.controllers ??= [ ];
     this.options.providers ??= [ ];
     this.options.imports ??= [ ];
@@ -154,28 +149,6 @@ export class AppModule {
         ...this.buildEntryModules('exports'),
       ],
     };
-  }
-
-  /**
-   * Merge default, project source and user provided configs.
-   */
-  private static buildEntryConfigs(): any[] {
-    const { disableConfigScan, configs } = this.options;
-
-    const preloadedConfigs: any[] = [
-      AppConfig,
-      LoggerConfig,
-      ConsoleConfig,
-      SentryConfig,
-      SlackConfig,
-    ];
-
-    if (!disableConfigScan) {
-      const sourceConfigs: unknown[] = UtilModule.globRequire([ 's*rc*/**/*.config.{js,ts}' ]);
-      preloadedConfigs.push(...sourceConfigs);
-    }
-
-    return [ ...preloadedConfigs, ...configs ];
   }
 
   /**
@@ -202,10 +175,7 @@ export class AppModule {
 
     if (type === 'imports') {
       preloadedModules.push(
-        ConfigModule.register({
-          envPath: envPath,
-          configs: this.buildEntryConfigs(),
-        }),
+        ConfigModule.register({ envPath }),
         ...defaultModules,
       );
     }

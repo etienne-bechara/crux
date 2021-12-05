@@ -1,7 +1,24 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { applyDecorators, Injectable } from '@nestjs/common';
+
 import { ConfigMetadataKey } from './config.enum';
 import { ConfigInjectionOptions } from './config.interface';
 import { ConfigService } from './config.service';
+
+/**
+ * Loads decorated class as a config.
+ */
+export function Config(): any {
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const loadTargetAsConfig = (target: unknown): void => {
+    ConfigService.loadConfigDefinition(target);
+  };
+
+  return applyDecorators(
+    Injectable(),
+    loadTargetAsConfig,
+  );
+}
 
 /**
  * Change the get behaviour of decorated property to return

@@ -49,9 +49,6 @@ void AppModule.boot({
   // Disables automatically importing *.module.ts files
   disableModuleScan: false,
 
-  // Disables automatically importing *.config.ts files
-  disableConfigScan: false,
-
   // Disables app.filter.ts
   disableFilters: false,
 
@@ -92,9 +89,6 @@ void AppModule.boot({
 
   // Further options to pass to underlying adapter (Fastify)
   adapterOptions: { },
-
-  // Configuration providers to import (see config module documentation)
-  configs: [ ],
 
   // Base options from NestJS modules
   imports: [ ],

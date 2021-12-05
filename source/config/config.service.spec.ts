@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, ValidationError } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
 import { AppModule } from '../app/app.module';
-import { InjectSecret } from './config.decorator';
+import { Config, InjectSecret } from './config.decorator';
 import { ConfigService } from './config.service';
 
+@Config()
 class TestMockConfig {
 
   @InjectSecret()
@@ -35,7 +37,6 @@ describe('ConfigService', () => {
     await AppModule.compile({ disableModuleScan: true, disableLogger: true });
 
     validationErrors = ConfigService.setupSecretEnvironment({
-      configs: [ TestMockConfig ],
       allowValidationErrors: true,
     });
   });

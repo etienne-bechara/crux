@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
 
 import { AppEnvironment } from '../app/app.enum';
-import { InjectSecret } from '../config/config.decorator';
+import { Config, InjectSecret } from '../config/config.decorator';
 
-@Injectable()
+@Config()
 export class LoggerConfig {
 
   @InjectSecret()
