@@ -3,7 +3,6 @@ import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, ValidationError } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
-import { AppModule } from '../app/app.module';
 import { Config, InjectSecret } from './config.decorator';
 import { ConfigService } from './config.service';
 
@@ -33,9 +32,7 @@ class TestMockConfig {
 describe('ConfigService', () => {
   let validationErrors: ValidationError[];
 
-  beforeAll(async () => {
-    await AppModule.compile({ disableModuleScan: true, disableLogger: true });
-
+  beforeAll(() => {
     validationErrors = ConfigService.setupSecretEnvironment({
       allowValidationErrors: true,
     });
