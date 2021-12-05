@@ -1,3 +1,17 @@
+# [3.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.7...v3.4.0) (2021-12-05)
+
+
+### Bug Fixes
+
+* bump deps ([0390c9a](https://github.com/etienne-bechara/nestjs-core/commit/0390c9aa3c9052870ea1eaf9178c087e3f197fb7))
+* config test ([23417e8](https://github.com/etienne-bechara/nestjs-core/commit/23417e8e3c145452c41639fec1b14ef02b5591dd))
+* increase test timeout ([d7d8872](https://github.com/etienne-bechara/nestjs-core/commit/d7d8872c13cf182a63e69f060897b0f03eb88b2f))
+
+
+### Features
+
+* add @Config() decorator ([9cd590d](https://github.com/etienne-bechara/nestjs-core/commit/9cd590d5115ef338c3a3e724d312b907d87d9536))
+
 ## [3.3.7](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.6...v3.3.7) (2021-12-02)
 
 
