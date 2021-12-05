@@ -31,7 +31,7 @@
     "build": "pnpx -y rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && pnpx -y rimraf ./source/index.ts",
     "index": "pnpx -y rimraf ./source/index.ts && pnpx -y barrelsby -q -e \\.spec\\.ts$ -e test -d ./source",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
-    "test": "jest --verbose --forceExit --passWithNoTests --config .config/jest/.jestrc.json"
+    "test": "jest --verbose --forceExit --passWithNoTests --testTimeout=30000 --config .config/jest/.jestrc.json"
   },
   "dependencies": {
     "@nestjs/common": "8.2.0",
