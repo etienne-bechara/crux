@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.0...v3.4.1) (2021-12-13)
+
+
+### Bug Fixes
+
+* require source module before configuration ([7037f0d](https://github.com/etienne-bechara/nestjs-core/commit/7037f0d9089471fd2e1d94305b76fff39cd2133c))
+
 # [3.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.3.7...v3.4.0) (2021-12-05)
 
 
