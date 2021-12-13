@@ -141,12 +141,12 @@ export class AppModule {
     return {
       module: AppModule,
       controllers: this.options.controllers,
-      imports: this.buildEntryModules('imports'),
+      imports: this.buildModules('imports'),
       providers: this.buildEntryProviders(),
       exports: [
         AppConfig,
         ...this.options.providers,
-        ...this.buildEntryModules('exports'),
+        ...this.buildModules('exports'),
       ],
     };
   }
@@ -155,9 +155,10 @@ export class AppModule {
    * Merge defaults, project source and user provided modules.
    * @param type
    */
-  private static buildEntryModules(type: 'imports' | 'exports'): any[] {
+  private static buildModules(type: 'imports' | 'exports'): any[] {
     const { envPath, disableModuleScan, disableLogger, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
+    let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
       LoggerModule,
@@ -173,29 +174,25 @@ export class AppModule {
       );
     }
 
+    if (!disableModuleScan) {
+      sourceModules = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
+    }
+
     if (type === 'imports') {
       preloadedModules.push(
         ConfigModule.register({ envPath }),
         ...defaultModules,
+        ...sourceModules,
+        ...imports,
       );
     }
     else {
       preloadedModules.push(
         ConfigModule,
         ...defaultModules,
+        ...sourceModules,
+        ...exports,
       );
-    }
-
-    if (!disableModuleScan) {
-      const sourceModules: unknown[] = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
-      preloadedModules.push(...sourceModules);
-    }
-
-    if (type === 'imports') {
-      preloadedModules.push(...imports);
-    }
-    else {
-      preloadedModules.push(...exports);
     }
 
     return preloadedModules;
