@@ -111,7 +111,7 @@ export class ConfigService {
    */
   private static populateSecretCache(): void {
     for (const secret of this.SECRET_CACHE) {
-      const processValue = process.env[secret.key] || process.env[secret.key.toUpperCase()];
+      const processValue = process.env[secret.key] ?? process.env[secret.key.toUpperCase()];
 
       if (processValue !== undefined && processValue !== null) {
         this.setSecret({
