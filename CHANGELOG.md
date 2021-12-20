@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.1...v3.4.2) (2021-12-20)
+
+
+### Bug Fixes
+
+* env coalesce ([413b820](https://github.com/etienne-bechara/nestjs-core/commit/413b8205ef4c9258b140c8f43484a2250cb11745))
+
 ## [3.4.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.0...v3.4.1) (2021-12-13)
 
 
