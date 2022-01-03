@@ -1,3 +1,5 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
+
 import { AppModule } from '../app/app.module';
 import { ContextService } from './context.service';
 
@@ -36,6 +38,20 @@ describe('ContextService', () => {
           'id': 456,
         },
       });
+    });
+
+    it('should throw an exception for invalid payload', () => {
+      const token = 'xxx.xxx.xxx';
+      let err: HttpException;
+
+      try {
+        contextService['decodeJwtPayload'](token);
+      }
+      catch (e) {
+        err = e;
+      }
+
+      expect(err.getStatus()).toBe(HttpStatus.UNAUTHORIZED);
     });
   });
 });

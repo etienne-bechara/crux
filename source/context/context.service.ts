@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -79,7 +79,7 @@ export class ContextService<Metadata = Record<string, any>> {
       decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
     }
     catch {
-      /* Falls through, since payload is invalid it should return undefined */
+      throw new UnauthorizedException('invalid jwt payload');
     }
 
     decoded.app_metadata ??= { };
