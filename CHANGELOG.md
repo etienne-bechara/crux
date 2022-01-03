@@ -1,3 +1,10 @@
+## [3.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.1...v3.5.2) (2022-01-03)
+
+
+### Bug Fixes
+
+* missing exports ([dc6ac74](https://github.com/etienne-bechara/nestjs-core/commit/dc6ac742ec04ad8b221e0624c17e4be4524adbda))
+
 ## [3.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.0...v3.5.1) (2022-01-03)
 
 
