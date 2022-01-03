@@ -1,3 +1,10 @@
+## [3.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.0...v3.5.1) (2022-01-03)
+
+
+### Bug Fixes
+
+* move util controller to app ([6843fe4](https://github.com/etienne-bechara/nestjs-core/commit/6843fe473d6b2698f68665ba79429c0fac87aa9b))
+
 # [3.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.2...v3.5.0) (2022-01-03)
 
 
