@@ -3,12 +3,14 @@ import { Controller, Get } from '@nestjs/common';
 import { UtilAppStatus } from './util.interface';
 import { UtilService } from './util.service';
 
-@Controller('util')
-export class UtilController {
+@Controller('status')
+export class UtilStatusController {
 
-  public constructor(private readonly utilService: UtilService) { }
+  public constructor(
+    private readonly utilService: UtilService,
+  ) { }
 
-  @Get('status')
+  @Get()
   public getUtilStatus(): Promise<UtilAppStatus> {
     return this.utilService.getAppStatus();
   }

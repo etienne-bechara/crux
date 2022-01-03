@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
-import { UtilController } from './util.controller';
+import { UtilStatusController } from './util.controller';
 import { UtilService } from './util.service';
 
 @Module({
@@ -17,7 +17,7 @@ import { UtilService } from './util.service';
     LoggerModule,
   ],
   controllers: [
-    UtilController,
+    UtilStatusController,
   ],
   providers: [
     UtilService,
