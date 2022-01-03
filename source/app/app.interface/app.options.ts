@@ -5,6 +5,7 @@ export interface AppOptions extends ModuleMetadata {
   instance?: INestApplication;
   envPath?: string;
   disableModuleScan?: boolean;
+  disableControllers?: boolean;
   disableFilters?: boolean;
   disableInterceptors?: boolean;
   disablePipes?: boolean;

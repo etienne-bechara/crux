@@ -4,7 +4,6 @@ import fs from 'fs';
 
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
-import { UtilStatusController } from './util.controller';
 import { UtilService } from './util.service';
 
 @Module({
@@ -15,9 +14,6 @@ import { UtilService } from './util.service';
       resolveBodyOnly: true,
     }),
     LoggerModule,
-  ],
-  controllers: [
-    UtilStatusController,
   ],
   providers: [
     UtilService,

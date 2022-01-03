@@ -49,11 +49,13 @@ void AppModule.boot({
   // Disables automatically importing *.module.ts files
   disableModuleScan: false,
 
+  // Disables app.controller.ts
+  disableControllers: false,
+
   // Disables app.filter.ts
   disableFilters: false,
 
-  // Disables ClassSerializer, app,logger.interceptor.ts
-  // and app.timeout.interceptor.ts
+  // Disables ClassSerializer, app.logger.interceptor.ts and app.timeout.interceptor.ts
   disableInterceptors: false,
 
   // Disables ValidationPipe

@@ -15,6 +15,7 @@ import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
 import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
+import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface/app.options';
@@ -140,8 +141,8 @@ export class AppModule {
 
     return {
       module: AppModule,
-      controllers: this.options.controllers,
       imports: this.buildModules('imports'),
+      controllers: this.buildEntryControllers(),
       providers: this.buildEntryProviders(),
       exports: [
         AppConfig,
@@ -196,6 +197,20 @@ export class AppModule {
     }
 
     return preloadedModules;
+  }
+
+  /**
+   * Adds app controller with machine status information.
+   */
+  private static buildEntryControllers(): any[] {
+    const { disableControllers, controllers } = this.options;
+    const preloadedControllers = [ ...controllers ];
+
+    if (!disableControllers) {
+      preloadedControllers.push(AppController);
+    }
+
+    return preloadedControllers;
   }
 
   /**
