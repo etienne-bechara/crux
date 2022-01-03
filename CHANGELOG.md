@@ -1,3 +1,17 @@
+# [3.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.2...v3.5.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* change /util/status to /status ([c124906](https://github.com/etienne-bechara/nestjs-core/commit/c124906765edc5822de76496bd1dd89ea6e294e3))
+* payload decoding when invalid ([72030d9](https://github.com/etienne-bechara/nestjs-core/commit/72030d954011b3ac36bef335fd8259b2840e8a39))
+* separate crypto from util ([160883b](https://github.com/etienne-bechara/nestjs-core/commit/160883b8701de9d460e838f38b6a3167360c3caf))
+
+
+### Features
+
+* add local storage with ttl service ([294a5a5](https://github.com/etienne-bechara/nestjs-core/commit/294a5a5c24fdac74b9c04cf81c4771362016d3f9))
+
 ## [3.4.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.4.1...v3.4.2) (2021-12-20)
 
 
