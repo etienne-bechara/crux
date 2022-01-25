@@ -40,6 +40,11 @@ export class AppConfig {
 
   public readonly APP_FILTER_HTTP_ERRORS: HttpStatus[] = [
     HttpStatus.INTERNAL_SERVER_ERROR,
+    HttpStatus.NOT_IMPLEMENTED,
+    HttpStatus.BAD_GATEWAY,
+    HttpStatus.SERVICE_UNAVAILABLE,
+    HttpStatus.GATEWAY_TIMEOUT,
+    HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ];
 
 }
