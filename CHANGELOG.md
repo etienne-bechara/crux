@@ -1,3 +1,11 @@
+## [3.5.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.2...v3.5.3) (2022-01-25)
+
+
+### Bug Fixes
+
+* add all 5xx errors at filter ([879803c](https://github.com/etienne-bechara/nestjs-core/commit/879803c1ee08d9de76b3e5aca3a093e7fadfcec9))
+* bump deps ([a9f033c](https://github.com/etienne-bechara/nestjs-core/commit/a9f033c680ebf50476fe4650956a5dd8e8475201))
+
 ## [3.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.1...v3.5.2) (2022-01-03)
 
 
