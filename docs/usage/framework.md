@@ -47,7 +47,7 @@ void AppModule.boot();
 pnpm dev
 ```
 
-You may validate its functionality by sending an HTTP request to `GET /util/status`.
+You may validate its functionality by sending an HTTP request to `GET /`.
 
 The response shall be an object containing your machine information:
 
