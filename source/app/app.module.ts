@@ -9,6 +9,7 @@ import { ConfigModule } from '../config/config.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
+import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
@@ -20,6 +21,7 @@ import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface/app.options';
 import { LoggerService } from './app.override';
+import { AppService } from './app.service';
 
 @Global()
 @Module({ })
@@ -142,10 +144,11 @@ export class AppModule {
     return {
       module: AppModule,
       imports: this.buildModules('imports'),
-      controllers: this.buildEntryControllers(),
-      providers: this.buildEntryProviders(),
+      controllers: this.buildControllers(),
+      providers: this.buildProviders(),
       exports: [
         AppConfig,
+        AppService,
         ...this.options.providers,
         ...this.buildModules('exports'),
       ],
@@ -165,6 +168,11 @@ export class AppModule {
       LoggerModule,
       ContextModule,
       UtilModule,
+      HttpModule.register({
+        name: 'AppModule',
+        responseType: 'json',
+        resolveBodyOnly: true,
+      }),
     ];
 
     if (!disableLogger) {
@@ -202,7 +210,7 @@ export class AppModule {
   /**
    * Adds app controller with machine status information.
    */
-  private static buildEntryControllers(): any[] {
+  private static buildControllers(): any[] {
     const { disableControllers, controllers } = this.options;
     const preloadedControllers = [ ...controllers ];
 
@@ -217,9 +225,13 @@ export class AppModule {
    * Adds exception filter, serializer, logger, timeout
    * and validation pipe.
    */
-  private static buildEntryProviders(): any[] {
+  private static buildProviders(): any[] {
     const { disableFilters, disableInterceptors, disablePipes, providers } = this.options;
-    const preloadedProviders: any[] = [ AppConfig ];
+
+    const preloadedProviders: any[] = [
+      AppConfig,
+      AppService,
+    ];
 
     if (!disableFilters) {
       preloadedProviders.push({

@@ -2,17 +2,11 @@ import { Module } from '@nestjs/common';
 import fg from 'fast-glob';
 import fs from 'fs';
 
-import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { UtilService } from './util.service';
 
 @Module({
   imports: [
-    HttpModule.register({
-      name: 'UtilModule',
-      responseType: 'text',
-      resolveBodyOnly: true,
-    }),
     LoggerModule,
   ],
   providers: [

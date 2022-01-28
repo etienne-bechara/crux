@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import os from 'os';
 
-import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
-import { UtilAppStatus } from './util.interface';
 import { UtilRetryParams } from './util.interface/util.retry.params';
-
-let serverIp: string;
 
 @Injectable()
 export class UtilService {
 
   public constructor(
-    private readonly httpService: HttpService,
     private readonly loggerService: LoggerService,
   ) { }
 
@@ -101,50 +95,6 @@ export class UtilService {
 
     this.loggerService.debug(`${txtPrefix} finished successfully!`);
     return result;
-  }
-
-  /**
-   * Returns current server ip and caches result for future use.
-   * In case of error log an exception but do not throw.
-   */
-  public async getServerIp(): Promise<string> {
-    if (!serverIp) {
-      try {
-        serverIp = await this.httpService.get('https://api64.ipify.org', { timeout: 2500 });
-      }
-      catch (e: unknown) {
-        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-        return null;
-      }
-    }
-
-    return serverIp;
-  }
-
-  /**
-   * Reads data regarding current runtime and network.
-   * Let network acquisition fail if unable to fetch ips.
-   */
-  public async getAppStatus(): Promise<UtilAppStatus> {
-    return {
-      system: {
-        version: os.version(),
-        type: os.type(),
-        release: os.release(),
-        architecture: os.arch(),
-        endianness: os.endianness(),
-        uptime: os.uptime(),
-      },
-      memory: {
-        total: os.totalmem(),
-        free: os.freemem(),
-      },
-      cpus: os.cpus(),
-      network: {
-        publicIp: await this.getServerIp(),
-        interfaces: os.networkInterfaces(),
-      },
-    };
   }
 
 }

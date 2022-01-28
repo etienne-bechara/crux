@@ -90,21 +90,5 @@ describe('UtilService', () => {
       expect(counter.quantity).toBe(1);
     });
   });
-
-  describe('getServerIp', () => {
-    it('should acquire public ip successfully', async () => {
-      const serverIp = await utilService.getServerIp();
-      expect(serverIp).toBeDefined();
-    });
-  });
-
-  describe('getAppStatus', () => {
-    it('should read application cpu, memory and network', async () => {
-      const appStatus = await utilService.getAppStatus();
-      expect(appStatus.system.uptime).toBeGreaterThan(0);
-      expect(appStatus.memory.total).toBeGreaterThan(0);
-      expect(appStatus.cpus.length).toBeGreaterThan(0);
-    });
-  });
 });
 

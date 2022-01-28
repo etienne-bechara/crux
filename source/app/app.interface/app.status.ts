@@ -1,6 +1,6 @@
 import os from 'os';
 
-export interface UtilAppStatus {
+export interface AppStatus {
   system: {
     version: string;
     type: string;
@@ -14,10 +14,10 @@ export interface UtilAppStatus {
     total: number;
     free: number;
   };
-  network: UtilAppNetwork;
+  network: AppNetwork;
 }
 
-export interface UtilAppNetwork {
+export interface AppNetwork {
   publicIp: string;
   interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>;
 }

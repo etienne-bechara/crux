@@ -177,6 +177,7 @@ describe('HttpService (Utilities)', () => {
   describe('parseCookies', () => {
     it('should parse cookies from response headers', async () => {
       const res: HttpResponse<string> = await httpService.get('https://www.google.com', {
+        responseType: 'text',
         resolveBodyOnly: false,
       });
 
