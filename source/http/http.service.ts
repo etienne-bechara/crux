@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 
 import { LoggerService } from '../logger/logger.service';
 import { HttpInjectionToken } from './http.enum';
-import { HttpCookie, HttpExceptionHandlerParams, HttpModuleOptions, HttpRequestParams } from './http.interface';
+import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpRequestParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -169,7 +169,7 @@ export class HttpService {
    * exception with matching code.
    * @param params
    */
-  protected handleRequestException(params: HttpExceptionHandlerParams): void {
+  protected handleRequestException(params: HttpExceptionParams): void {
     const { proxyExceptions } = this.httpModuleOptions;
     const { url, request, error } = params;
     const { message, response } = error;
