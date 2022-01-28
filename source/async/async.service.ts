@@ -26,7 +26,7 @@ export class AsyncService {
    * @param timeout
    */
   public async resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
-    this.loggerService.debug(`[UtilService] Resolving promise with ${timeout / 1000}s timeout...`);
+    this.loggerService.debug(`[AsyncService] Resolving promise with ${timeout / 1000}s timeout...`);
 
     const result = await Promise.race([
       promise,
@@ -37,6 +37,7 @@ export class AsyncService {
       throw new Error(`async resolution timed out after ${timeout / 1000}s`);
     }
 
+    this.loggerService.debug('[AsyncService] Promise resolved sucessfully within timeout');
     return result as T;
   }
 
@@ -48,6 +49,8 @@ export class AsyncService {
     const { data, limit, method } = params;
     const resolved: Promise<O>[] = [ ];
     const executing = [ ];
+
+    this.loggerService.debug(`[AsyncService] Resolving promises with ${limit} concurrency limit...`);
 
     for (const item of data) {
       // eslint-disable-next-line promise/prefer-await-to-then
@@ -65,7 +68,10 @@ export class AsyncService {
       }
     }
 
-    return Promise.all(resolved);
+    const allResolved = await Promise.all(resolved);
+
+    this.loggerService.debug(`[AsyncService] Promises resolved successfully with ${limit} concurrency limit`);
+    return allResolved;
   }
 
   /**
@@ -75,7 +81,7 @@ export class AsyncService {
   // eslint-disable-next-line complexity
   public async retryOnException<T>(params: AsyncRetryParams<T>): Promise<T> {
     const txtName = `${params.name || 'retryOnException()'}`;
-    const txtPrefix = `[UtilService] ${txtName}:`;
+    const txtPrefix = `[AsyncService] ${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
     const txtTimeout = params.timeout ? params.timeout / 1000 : '∞ ';
     const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout...`;

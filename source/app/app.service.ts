@@ -5,10 +5,10 @@ import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { AppStatus } from './app.interface';
 
-let serverIp: string;
-
 @Injectable()
 export class AppService {
+
+  private publicIp: string;
 
   public constructor(
     private readonly httpService: HttpService,
@@ -20,26 +20,30 @@ export class AppService {
    * In case of error log an exception but do not throw.
    */
   public async getPublicIp(): Promise<string> {
-    if (!serverIp) {
-      try {
-        serverIp = await this.httpService.get('https://api64.ipify.org', {
-          timeout: 2500,
-        });
-      }
-      catch (e: unknown) {
-        this.loggerService.warning('[UtilService] Failed to acquire server ip address', e);
-        return null;
-      }
+    if (!this.publicIp) {
+      this.publicIp = await this.httpService.get('https://api64.ipify.org', {
+        responseType: 'text',
+        timeout: 2500,
+      });
     }
 
-    return serverIp;
+    return this.publicIp;
   }
 
   /**
    * Reads data regarding current runtime and network.
-   * Let network acquisition fail if unable to fetch ips.
+   * Let network acquisition fail if unable to fetch public IP.
    */
   public async getStatus(): Promise<AppStatus> {
+    let publicIp: string;
+
+    try {
+      publicIp = await this.getPublicIp();
+    }
+    catch (e) {
+      this.loggerService.warning('[AppService] Failed to acquire public IP', e as Error);
+    }
+
     return {
       system: {
         version: os.version(),
@@ -55,7 +59,7 @@ export class AppService {
       },
       cpus: os.cpus(),
       network: {
-        publicIp: await this.getPublicIp(),
+        publicIp,
         interfaces: os.networkInterfaces(),
       },
     };
