@@ -33,11 +33,11 @@ async function bootstrap() {
 const app = await AppModule.compile();
 
 // Acquire providers
-const utilService = app.get(UtilService);
+const appService = app.get(AppService);
 const loggerService = app.get(LoggerService);
 
 // Use providers
-const appStatus = utilService.getAppStatus();
+const appStatus = appService.getStatus();
 loggerService.warn(appStatus);
 ```
 

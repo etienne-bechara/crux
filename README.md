@@ -18,7 +18,8 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Context (Request, Response and Metadata)](docs/module/context.md)
 - [HTTP (GOT)](docs/module/http.md)
 - [Logger (Console, Slack and Sentry)](docs/module/logger.md)
-- [Util (Status, Retry and Encryption)](docs/module/util.md)
+- [Async (Sleep, Exception Retry and Promise Limit)](source/async/async.service.ts)
+- [Crypto (Encrypt With or Without IV and Decrypt)](source/crypto/crypto.service.ts)
 
 ### Recipes
 
