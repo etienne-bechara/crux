@@ -1,3 +1,15 @@
+# [3.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.3...v3.6.0) (2022-01-28)
+
+
+### Bug Fixes
+
+* http interface name ([9aca925](https://github.com/etienne-bechara/nestjs-core/commit/9aca9252031edf24742ad78ce12ed4f9863f0ab9))
+
+
+### Features
+
+* add async resolveLimited ([cf3e071](https://github.com/etienne-bechara/nestjs-core/commit/cf3e07172f01a98ac8777b21aab14b1683ef2fe0))
+
 ## [3.5.3](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.2...v3.5.3) (2022-01-25)
 
 
