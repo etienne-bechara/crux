@@ -1,11 +1,17 @@
 import { AppModule } from '../app/app.module';
+import { CryptoModule } from './crypto.module';
 import { CryptoService } from './crypto.service';
 
 describe('CryptoService', () => {
   let cryptoService: CryptoService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableLogger: true });
+    const app = await AppModule.compile({
+      disableModuleScan: true,
+      disableLogger: true,
+      imports: [ CryptoModule ],
+    });
+
     cryptoService = app.get(CryptoService);
   });
 

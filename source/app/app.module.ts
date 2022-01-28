@@ -4,6 +4,8 @@ import 'reflect-metadata';
 import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
+import fg from 'fast-glob';
+import fs from 'fs';
 
 import { ConfigModule } from '../config/config.module';
 import { ContextStorageKey } from '../context/context.enum';
@@ -14,7 +16,6 @@ import { LoggerModule } from '../logger/logger.module';
 import { ConsoleModule } from '../logger/logger.transport/console/console.module';
 import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
 import { SlackModule } from '../logger/logger.transport/slack/slack.module';
-import { UtilModule } from '../util/util.module';
 import { AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
@@ -167,7 +168,6 @@ export class AppModule {
     const defaultModules = [
       LoggerModule,
       ContextModule,
-      UtilModule,
       HttpModule.register({
         name: 'AppModule',
         responseType: 'json',
@@ -184,7 +184,7 @@ export class AppModule {
     }
 
     if (!disableModuleScan) {
-      sourceModules = UtilModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
+      sourceModules = AppModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
     }
 
     if (type === 'imports') {
@@ -259,6 +259,53 @@ export class AppModule {
     }
 
     return [ ...preloadedProviders, ...providers ];
+  }
+
+  /**
+   * Given a glob path string, find all matching files
+   * and return an array of their exports.
+   *
+   * If there is a mix of sources and maps, keep only
+   * the JavaScript version.
+   * @param globPath
+   * @param root
+   */
+  public static globRequire(globPath: string | string[], root?: string): any[] {
+    globPath = Array.isArray(globPath) ? globPath : [ globPath ];
+    const cwd = root || process.cwd();
+
+    const matchingFiles = fg.sync(globPath, { cwd });
+    const jsFiles = matchingFiles.filter((file) => file.match(/\.js$/g));
+    const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
+
+    const exportsArrays = normalizedFiles.map((file) => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
+      const exportsObject: unknown = require(`${cwd}/${file}`);
+      return Object.keys(exportsObject).map((key) => exportsObject[key]);
+    });
+
+    return exportsArrays.flat();
+  }
+
+  /**
+   * Given current working directory, attempt to find
+   * an .env file up to the desired maximum depth.
+   * @param maxDepth
+   */
+  public static searchEnvFile(maxDepth: number = 5): string {
+    let testPath = process.cwd();
+    let testFile = `${testPath}/.env`;
+
+    for (let i = 0; i < maxDepth; i++) {
+      const pathExist = fs.existsSync(testPath);
+      const fileExist = fs.existsSync(testFile);
+
+      if (!pathExist) break;
+      if (fileExist) return testFile;
+
+      testPath = `${testPath}/..`;
+      testFile = testFile.replace(/\.env$/g, '../.env');
+    }
   }
 
 }

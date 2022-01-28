@@ -4,7 +4,6 @@ import cycle from 'cycle';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
-import { UtilService } from '../util/util.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
@@ -15,9 +14,8 @@ export class AppFilter implements ExceptionFilter {
 
   public constructor(
     protected readonly appConfig: AppConfig,
-    protected readonly loggerService: LoggerService,
     protected readonly contextService: ContextService,
-    protected readonly utilService: UtilService,
+    protected readonly loggerService: LoggerService,
   ) { }
 
   /**

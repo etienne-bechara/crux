@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
-import { UtilModule } from '../util/util.module';
+import { AppModule } from '../app/app.module';
 import { ConfigModuleOptions } from './config.interface';
 import { ConfigService } from './config.service';
 
@@ -12,7 +12,7 @@ export class ConfigModule {
    * @param options
    */
   public static register(options: ConfigModuleOptions = { }): DynamicModule {
-    options.envPath ??= UtilModule.searchEnvFile();
+    options.envPath ??= AppModule.searchEnvFile();
     ConfigService.setupSecretEnvironment(options);
 
     return {

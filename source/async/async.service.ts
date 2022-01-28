@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { LoggerService } from '../logger/logger.service';
-import { UtilRetryParams } from './util.interface/util.retry.params';
+import { AsyncRetryParams } from './async.interface/async.retry.params';
 
 @Injectable()
-export class UtilService {
+export class AsyncService {
 
   public constructor(
     private readonly loggerService: LoggerService,
@@ -44,7 +44,7 @@ export class UtilService {
    * @param params
    */
   // eslint-disable-next-line complexity
-  public async retryOnException<T>(params: UtilRetryParams<T>): Promise<T> {
+  public async retryOnException<T>(params: AsyncRetryParams<T>): Promise<T> {
     const txtName = `${params.name || 'retryOnException()'}`;
     const txtPrefix = `[UtilService] ${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';

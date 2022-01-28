@@ -1,4 +1,4 @@
-export interface UtilRetryParams<T> {
+export interface AsyncRetryParams<T> {
   method: () => Promise<T>;
   breakIf?: (e: any) => boolean;
   name?: string;

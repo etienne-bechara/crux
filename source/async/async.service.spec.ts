@@ -1,5 +1,6 @@
 import { AppModule } from '../app/app.module';
-import { UtilService } from './util.service';
+import { AsyncModule } from './async.module';
+import { AsyncService } from './async.service';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 const mockFailure = async (c): Promise<void> => {
@@ -7,19 +8,24 @@ const mockFailure = async (c): Promise<void> => {
   throw new Error('error');
 };
 
-describe('UtilService', () => {
-  let utilService: UtilService;
+describe('AsyncService', () => {
+  let asyncService: AsyncService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableModuleScan: true, disableLogger: true });
-    utilService = app.get(UtilService);
+    const app = await AppModule.compile({
+      disableModuleScan: true,
+      disableLogger: true,
+      imports: [ AsyncModule ],
+    });
+
+    asyncService = app.get(AsyncService);
   });
 
   describe('sleep', () => {
     it('should sleep code execution for 1000ms', async () => {
       const sleepTime = 1000;
       const start = Date.now();
-      await utilService.sleep(sleepTime);
+      await asyncService.sleep(sleepTime);
       const elapsed = Date.now() - start;
       expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
       expect(elapsed).toBeLessThan(sleepTime * 1.05);
@@ -32,7 +38,7 @@ describe('UtilService', () => {
       const retries = 5;
 
       try {
-        await utilService.retryOnException({
+        await asyncService.retryOnException({
           method: () => mockFailure(counter),
           retries,
         });
@@ -48,7 +54,7 @@ describe('UtilService', () => {
       const delay = 550;
 
       try {
-        await utilService.retryOnException({
+        await asyncService.retryOnException({
           method: () => mockFailure(counter),
           timeout,
           delay,
@@ -64,8 +70,8 @@ describe('UtilService', () => {
       const timeout = 1000;
 
       try {
-        await utilService.retryOnException({
-          method: () => utilService.sleep(2000),
+        await asyncService.retryOnException({
+          method: () => asyncService.sleep(2000),
           timeout,
         });
       }
@@ -80,7 +86,7 @@ describe('UtilService', () => {
       const retries = 0;
 
       try {
-        await utilService.retryOnException({
+        await asyncService.retryOnException({
           method: () => mockFailure(counter),
           retries,
         });
