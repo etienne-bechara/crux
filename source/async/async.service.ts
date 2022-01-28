@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { LoggerService } from '../logger/logger.service';
+import { AsyncResolveParams } from './async.interface/async.resolve.params';
 import { AsyncRetryParams } from './async.interface/async.retry.params';
 
 @Injectable()
@@ -12,10 +13,10 @@ export class AsyncService {
 
   /**
    * Asynchronously wait for desired amount of milliseconds.
-   * @param ms
+   * @param time
    */
-  public async sleep(ms: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, ms));
+  public async sleep(time: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, time));
   }
 
   /**
@@ -37,6 +38,34 @@ export class AsyncService {
     }
 
     return result as T;
+  }
+
+  /**
+   * Runs multiple promises limiting concurrency.
+   * @param params
+   */
+  public async resolveLimited<I, O>(params: AsyncResolveParams<I, O>): Promise<Awaited<O>[]> {
+    const { data, limit, method } = params;
+    const resolved: Promise<O>[] = [ ];
+    const executing = [ ];
+
+    for (const item of data) {
+      // eslint-disable-next-line promise/prefer-await-to-then
+      const p = Promise.resolve().then(() => method(item));
+      resolved.push(p);
+
+      if (limit <= data.length) {
+        // eslint-disable-next-line promise/prefer-await-to-then
+        const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+        executing.push(e);
+
+        if (executing.length >= limit) {
+          await Promise.race(executing);
+        }
+      }
+    }
+
+    return Promise.all(resolved);
   }
 
   /**

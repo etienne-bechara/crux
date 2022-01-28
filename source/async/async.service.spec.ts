@@ -32,6 +32,34 @@ describe('AsyncService', () => {
     });
   });
 
+  describe('resolveLimited', () => {
+    it('should restrict resolution if over limit', async () => {
+      const start = Date.now();
+
+      await asyncService.resolveLimited({
+        data: [ 100, 200, 300, 400 ],
+        method: (t) => asyncService.sleep(t),
+        limit: 1,
+      });
+
+      const elapsed = Date.now() - start;
+      expect(elapsed).toBeGreaterThan(900);
+    });
+
+    it('should resolve in parallel if within limit', async () => {
+      const start = Date.now();
+
+      await asyncService.resolveLimited({
+        data: [ 100, 200, 300, 400 ],
+        method: (t) => asyncService.sleep(t),
+        limit: 4,
+      });
+
+      const elapsed = Date.now() - start;
+      expect(elapsed).toBeLessThan(500);
+    });
+  });
+
   describe('retryOnException', () => {
     it('should retry a method for 5 times', async () => {
       const counter = { quantity: 0 };
