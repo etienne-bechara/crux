@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.0...v3.6.1) (2022-01-29)
+
+
+### Bug Fixes
+
+* public ip acquisition and log domain ([ea508fb](https://github.com/etienne-bechara/nestjs-core/commit/ea508fb2533a4f1fdfe8c942f2c0666af9b615e5))
+
 # [3.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.5.3...v3.6.0) (2022-01-28)
 
 
