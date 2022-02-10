@@ -25,30 +25,25 @@ export class AppFilter implements ExceptionFilter {
   public catch(exception: HttpException | Error): void {
     const res = this.contextService.getResponse();
 
-    const appException: AppException = {
-      exception,
-      errorCode: this.getErrorCode(exception),
-      message: this.getMessage(exception),
-      details: this.getDetails(exception),
-    };
+    const errorCode = this.getErrorCode(exception);
+    const message = this.getMessage(exception);
+    const details = this.getDetails(exception);
+    this.logException({ exception, errorCode, message, details });
 
-    this.logException(appException);
-
-    const productionError =
-      this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION
-      && appException.errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
+    const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
+    const isInternalError = errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
 
     const filteredResponse: AppExceptionResponse = {
-      code: appException.errorCode,
-      message: productionError ? 'unexpected error' : appException.message,
-      ...productionError ? { } : appException.details,
+      code: errorCode,
+      message: isProduction && isInternalError ? 'unexpected error' : message,
+      ...isProduction && isInternalError ? { } : details,
     };
 
-    const outboundResponse: AppExceptionResponse = appException.details.proxyExceptions
-      ? appException.details.externalResponse?.body
-      : filteredResponse;
+    const { proxyExceptions, externalResponse } = details;
+    const exceptionBody = externalResponse?.body;
+    const outboundResponse: AppExceptionResponse = proxyExceptions && exceptionBody ? exceptionBody : filteredResponse;
 
-    res.code(appException.errorCode);
+    res.code(errorCode);
     res.header('Content-Type', 'application/json');
     res.send(outboundResponse);
   }
