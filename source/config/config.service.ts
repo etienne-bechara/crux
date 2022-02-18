@@ -3,8 +3,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
 
-import { ConfigSecretRecord } from './config.interface';
-import { ConfigModuleOptions } from './config.interface/config.module.options';
+import { ConfigModuleOptions, ConfigSecretRecord } from './config.interface';
 
 /**
  * Fully static service to manage environment

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { LoggerService } from '../logger/logger.service';
-import { AsyncResolveParams } from './async.interface/async.resolve.params';
-import { AsyncRetryParams } from './async.interface/async.retry.params';
+import { AsyncResolveParams, AsyncRetryParams } from './async.interface';
 
 @Injectable()
 export class AsyncService {

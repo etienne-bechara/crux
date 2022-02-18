@@ -20,7 +20,7 @@ import { AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
-import { AppOptions } from './app.interface/app.options';
+import { AppOptions } from './app.interface';
 import { LoggerService } from './app.override';
 import { AppService } from './app.service';
 
