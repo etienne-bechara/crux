@@ -7,7 +7,7 @@ describe('CryptoService', () => {
 
   beforeAll(async () => {
     const app = await AppModule.compile({
-      disableModuleScan: true,
+      disableScan: true,
       disableLogger: true,
       imports: [ CryptoModule ],
     });

@@ -7,7 +7,7 @@ Upon start, it will serve an HTTP adapter based on [Fastify](https://www.fastify
 The following custom enhancers will be globally applied:
 
 - [app.interceptor.ts](../../source/app/app.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
-- [app.filter.ts](../../source/app/app.filter.ts) - Exception filter integrated witch logger service to standardize error outputs.
+- [app.filter.ts](../../source/app/app.filter.ts) - Exception filter integrated with logger service to standardize error outputs.
 
 Plus these techniques as officially documented:
 
@@ -46,22 +46,25 @@ void AppModule.boot({
   envPath: '.env',
 
   // Disables automatically importing *.module.ts files
-  disableModuleScan: false,
+  disableScan: false,
 
   // Disables app.controller.ts
-  disableControllers: false,
+  disableStatus: false,
 
   // Disables app.filter.ts
-  disableFilters: false,
+  disableFilter: false,
 
-  // Disables ClassSerializer and app.interceptor.ts
-  disableInterceptors: false,
+  // Disables ClassSerializer
+  disableSerializer: false,
 
   // Disables ValidationPipe
-  disablePipes: false,
+  disableValidator: false,
 
   // Disables all logging
   disableLogger: false,
+
+  // Disables metrics register
+  disableMetrics: false,
 
   // HTTP adapter port
   port: 8080,

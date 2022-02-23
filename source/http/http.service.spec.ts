@@ -61,7 +61,7 @@ describe('HttpService', () => {
 
   beforeAll(async () => {
     const app = await AppModule.compile({
-      disableModuleScan: true,
+      disableScan: true,
       disableLogger: true,
       imports: [ JsonModule ],
     });
@@ -142,7 +142,7 @@ describe('HttpService (Proxy)', () => {
 
   beforeAll(async () => {
     const app = await AppModule.compile({
-      disableModuleScan: true,
+      disableScan: true,
       disableLogger: true,
       imports: [ JsonProxyModule ],
     });
@@ -170,7 +170,7 @@ describe('HttpService (Utilities)', () => {
   let httpService: HttpService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableModuleScan: true, disableLogger: true });
+    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
     httpService = await app.resolve(HttpService);
   });
 

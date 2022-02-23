@@ -177,7 +177,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { envPath, disableModuleScan, disableLogger, imports, exports, disableMetrics } = this.options;
+    const { envPath, disableScan, disableLogger, disableMetrics, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
@@ -203,7 +203,7 @@ export class AppModule {
       defaultModules.push(MetricModule);
     }
 
-    if (!disableModuleScan) {
+    if (!disableScan) {
       sourceModules = AppModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
     }
 
@@ -231,10 +231,10 @@ export class AppModule {
    * Adds app controller with machine status information.
    */
   private static buildControllers(): any[] {
-    const { disableControllers, controllers } = this.options;
+    const { disableStatus, controllers } = this.options;
     const preloadedControllers = [ ...controllers ];
 
-    if (!disableControllers) {
+    if (!disableStatus) {
       preloadedControllers.push(AppController);
     }
 
@@ -246,28 +246,29 @@ export class AppModule {
    * and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilters, disableInterceptors, disablePipes, providers } = this.options;
+    const { disableFilter, disableSerializer, disableValidator, providers } = this.options;
 
     const preloadedProviders: any[] = [
+      { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
       AppConfig,
       AppService,
     ];
 
-    if (!disableFilters) {
+    if (!disableFilter) {
       preloadedProviders.push({
         provide: APP_FILTER,
         useClass: AppFilter,
       });
     }
 
-    if (!disableInterceptors) {
-      preloadedProviders.push(
-        { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
-        { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
-      );
+    if (!disableSerializer) {
+      preloadedProviders.push({
+        provide: APP_INTERCEPTOR,
+        useClass: ClassSerializerInterceptor,
+      });
     }
 
-    if (!disablePipes) {
+    if (!disableValidator) {
       preloadedProviders.push({
         provide: APP_PIPE,
         useFactory: (): ValidationPipe => new ValidationPipe({

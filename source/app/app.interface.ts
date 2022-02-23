@@ -6,11 +6,11 @@ import os from 'os';
 export interface AppOptions extends ModuleMetadata {
   instance?: INestApplication;
   envPath?: string;
-  disableModuleScan?: boolean;
-  disableControllers?: boolean;
-  disableFilters?: boolean;
-  disableInterceptors?: boolean;
-  disablePipes?: boolean;
+  disableScan?: boolean;
+  disableStatus?: boolean;
+  disableFilter?: boolean;
+  disableSerializer?: boolean;
+  disableValidator?: boolean;
   disableLogger?: boolean;
   disableMetrics?: boolean;
   port?: number;

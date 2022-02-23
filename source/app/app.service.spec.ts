@@ -5,7 +5,7 @@ describe('AppService', () => {
   let appService: AppService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableModuleScan: true, disableLogger: true });
+    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
     appService = app.get(AppService);
   });
 

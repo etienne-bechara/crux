@@ -6,7 +6,7 @@ describe('AppModule', () => {
 
   describe('boot', () => {
     it('should boot the application successfully', async () => {
-      const app = await AppModule.boot({ disableModuleScan: true, disableLogger: true });
+      const app = await AppModule.boot({ disableScan: true, disableLogger: true });
       expect(app).toBeDefined();
     });
   });
@@ -14,7 +14,7 @@ describe('AppModule', () => {
   describe('globRequire', () => {
     it('should require all modules from this project', () => {
       const modules = AppModule.globRequire('s*rc*/**/*.module.ts');
-      expect(modules.length).toBe(11);
+      expect(modules.length).toBe(12);
     });
   });
 });

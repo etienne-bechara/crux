@@ -18,9 +18,10 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Context (Request, Response and Metadata)](docs/module/context.md)
 - [HTTP (GOT)](docs/module/http.md)
 - [Logger (Console, Slack and Sentry)](docs/module/logger.md)
-- [Async (Sleep, Exception Retry and Promise Limit)](source/async/async.service.ts)
-- [Crypto (Encrypt With or Without IV and Decrypt)](source/crypto/crypto.service.ts)
-- [Storage (Memory Store with TTL)](source/storage/storage.service.ts)
+- [Metric (Prometheus)](source/metric/metric.service.ts) _pending detailed documentation_
+- [Async (Sleep, Exception Retry and Promise Limit)](source/async/async.service.ts) _pending detailed documentation_
+- [Crypto (Encrypt With or Without IV and Decrypt)](source/crypto/crypto.service.ts) _pending detailed documentation_
+- [Storage (Memory Store with TTL)](source/storage/storage.service.ts) _pending detailed documentation_
 
 ### Recipes
 
