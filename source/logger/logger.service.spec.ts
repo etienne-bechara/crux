@@ -50,7 +50,7 @@ describe('LoggerService', () => {
           authorization: '[filtered]',
         },
         auth: {
-          nonce: '[filtered]',
+          nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
           user: 'admin',
           pass: '[filtered]',
         },

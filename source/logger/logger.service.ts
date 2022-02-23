@@ -191,7 +191,7 @@ export class LoggerService {
       if (clone[key] === undefined) {
         delete clone[key];
       }
-      else if (sensitiveKeys.includes(alphaKey)) {
+      else if (typeof clone[key] !== 'object' && sensitiveKeys.includes(alphaKey)) {
         clone[key] = '[filtered]';
       }
       else if (typeof clone[key] === 'object') {
