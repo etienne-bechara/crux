@@ -1,13 +1,14 @@
-import { IsNumber, IsOptional, Matches, Max, Min } from 'class-validator';
+import { IsIn, IsOptional, Matches } from 'class-validator';
 
-import { AppEnvironment } from '../../../app/app.enum';
-import { Config, InjectSecret } from '../../../config/config.decorator';
-import { ToNumber } from '../../../transform/transform.decorator';
-import { LoggerConfig } from '../../logger.config';
-import { LoggerLevel } from '../../logger.enum';
+import { AppEnvironment } from '../app/app.enum';
+import { Config, InjectSecret } from '../config/config.decorator';
+import { LoggerLevel } from '../logger/logger.enum';
 
 @Config()
-export class SentryConfig extends LoggerConfig {
+export class SentryConfig {
+
+  @InjectSecret()
+  public readonly NODE_ENV: AppEnvironment;
 
   @InjectSecret()
   @IsOptional()
@@ -25,8 +26,7 @@ export class SentryConfig extends LoggerConfig {
     },
   })
   @IsOptional()
-  @ToNumber()
-  @IsNumber() @Min(0) @Max(8)
+  @IsIn(Object.values(LoggerLevel))
   public readonly SENTRY_LEVEL: LoggerLevel;
 
 }

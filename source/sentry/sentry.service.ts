@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 
-import { LoggerLevel } from '../../logger.enum';
-import { LoggerParams, LoggerTransport } from '../../logger.interface';
-import { LoggerService } from '../../logger.service';
+import { LoggerLevel } from '../logger/logger.enum';
+import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
+import { LoggerService } from '../logger/logger.service';
 import { SentryConfig } from './sentry.config';
 
 @Injectable()
@@ -24,11 +24,10 @@ export class SentryService implements LoggerTransport {
   private setupTransport(): void {
     const dsn = this.sentryConfig.SENTRY_DSN;
     const level = this.getLevel();
-    if (!level && level !== 0) return;
+    if (!level) return;
 
     if (!dsn) {
-      setTimeout(() => this.loggerService.warning('[SentryService] Integration disabled (missing DSN)'), 500);
-      return;
+      return this.loggerService.warning('Integration disabled due to missing DSN');
     }
 
     Sentry.init({
@@ -37,7 +36,7 @@ export class SentryService implements LoggerTransport {
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
 
-    setTimeout(() => this.loggerService.info(`[SentryService] Transport connected at ${dsn}`), 500);
+    setTimeout(() => this.loggerService.info(`Transport connected at ${dsn}`), 500);
     this.loggerService.registerTransport(this);
   }
 
@@ -54,17 +53,20 @@ export class SentryService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    if (params.message !== params.error.message) {
-      params.error.message = `${params.message}. ${params.error.message}`;
+    const { level, message, data, error: rawError } = params;
+    const error = rawError || new Error(message);
+
+    if (message !== error.message) {
+      error.message = `${message} | ${error.message}`;
     }
 
     Sentry.withScope((scope) => {
-      scope.setLevel(this.getSentrySeverity(params.level));
-      if (params.data?.unexpected) scope.setTag('unexpected', 'true');
+      scope.setLevel(this.getSentrySeverity(level));
+      if (data?.unexpected) scope.setTag('unexpected', 'true');
       scope.setExtras({
-        details: JSON.stringify(params.data || { }, null, 2),
+        details: JSON.stringify(data || { }, null, 2),
       });
-      Sentry.captureException(params.error);
+      Sentry.captureException(error);
     });
   }
 
@@ -75,7 +77,6 @@ export class SentryService implements LoggerTransport {
   public getSentrySeverity(level: LoggerLevel): Sentry.Severity {
     switch (level) {
       case LoggerLevel.FATAL: return Sentry.Severity.Fatal;
-      case LoggerLevel.CRITICAL: return Sentry.Severity.Critical;
       case LoggerLevel.ERROR: return Sentry.Severity.Error;
       case LoggerLevel.WARNING: return Sentry.Severity.Warning;
       case LoggerLevel.NOTICE: return Sentry.Severity.Info;

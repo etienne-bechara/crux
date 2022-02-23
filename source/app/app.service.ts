@@ -41,7 +41,7 @@ export class AppService {
       publicIp = await this.getPublicIp();
     }
     catch (e) {
-      this.loggerService.warning('[AppService] Failed to acquire public IP', e as Error);
+      this.loggerService.warning('Failed to acquire public IP', e as Error);
     }
 
     return {

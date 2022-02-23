@@ -25,7 +25,7 @@ export class AsyncService {
    * @param timeout
    */
   public async resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
-    this.loggerService.debug(`[AsyncService] Resolving promise with ${timeout / 1000}s timeout...`);
+    this.loggerService.debug(`Resolving promise with ${timeout / 1000}s timeout`);
 
     const result = await Promise.race([
       promise,
@@ -36,7 +36,7 @@ export class AsyncService {
       throw new Error(`async resolution timed out after ${timeout / 1000}s`);
     }
 
-    this.loggerService.debug('[AsyncService] Promise resolved sucessfully within timeout');
+    this.loggerService.debug('Promise resolved successfully within timeout');
     return result as T;
   }
 
@@ -49,7 +49,7 @@ export class AsyncService {
     const resolved: Promise<O>[] = [ ];
     const executing = [ ];
 
-    this.loggerService.debug(`[AsyncService] Resolving promises with ${limit} concurrency limit...`);
+    this.loggerService.debug(`Resolving promises with ${limit} concurrency limit`);
 
     for (const item of data) {
       // eslint-disable-next-line promise/prefer-await-to-then
@@ -69,7 +69,7 @@ export class AsyncService {
 
     const allResolved = await Promise.all(resolved);
 
-    this.loggerService.debug(`[AsyncService] Promises resolved successfully with ${limit} concurrency limit`);
+    this.loggerService.debug(`Promises resolved successfully with ${limit} concurrency limit`);
     return allResolved;
   }
 
@@ -80,10 +80,10 @@ export class AsyncService {
   // eslint-disable-next-line complexity
   public async retryOnException<T>(params: AsyncRetryParams<T>): Promise<T> {
     const txtName = `${params.name || 'retryOnException()'}`;
-    const txtPrefix = `[AsyncService] ${txtName}:`;
+    const txtPrefix = `${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
     const txtTimeout = params.timeout ? params.timeout / 1000 : '∞ ';
-    const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout...`;
+    const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout`;
     const startTime = Date.now();
     let tentative = 1;
     let result: T;
@@ -119,7 +119,7 @@ export class AsyncService {
         tentative++;
 
         const txtElapsed = `${elapsed / 1000}/${txtTimeout}`;
-        const msgRetry = `${txtPrefix} ${e.message} | Retry #${tentative}/${txtRetry}, elapsed ${txtElapsed}s...`;
+        const msgRetry = `${txtPrefix} ${e.message} | Retry #${tentative}/${txtRetry}, elapsed ${txtElapsed}s`;
 
         this.loggerService.debug(msgRetry);
 

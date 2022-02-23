@@ -3,7 +3,7 @@ import cycle from 'cycle';
 
 import { LoggerConfig } from './logger.config';
 import { LoggerLevel } from './logger.enum';
-import { LoggerParams, LoggerTransport } from './logger.interface';
+import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
 
 @Injectable()
 export class LoggerService {
@@ -21,9 +21,6 @@ export class LoggerService {
    * Adds an event listener to catch uncaught exceptions.
    */
   private setupLogger(): void {
-    const env = this.loggerConfig.NODE_ENV;
-    this.debug(`[LoggerService] Environment configured as ${env}`);
-
     process.on('uncaughtException', (err) => {
       this.error(err, { unexpected: true });
     });
@@ -38,7 +35,7 @@ export class LoggerService {
   public registerTransport(transport: LoggerTransport): void {
     const level = transport.getLevel();
 
-    if (level || level === 0) {
+    if (level) {
       this.transports.push(transport);
     }
   }
@@ -48,17 +45,19 @@ export class LoggerService {
    * the event to all registered transports with configured
    * severity equal or lower.
    * @param level
-   * @param message
-   * @param data
+   * @param args
    */
-  private log(level: LoggerLevel, message: string | Error, ...data: (Error | Record<string, any>)[]): void {
+  private log(level: LoggerLevel, ...args: LoggerArguments[]): void {
     const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
 
     const logMessage: LoggerParams = {
+      environment: this.loggerConfig.NODE_ENV,
+      timestamp: new Date().toISOString(),
       level,
-      message: this.getLogMessage(message),
-      error: this.getLogError(message, ...data),
-      data: this.getLogData(message, ...data),
+      filename: this.getFilename(),
+      message: this.getLogMessage(...args),
+      data: this.getLogData(...args),
+      error: this.getLogError(...args),
     };
 
     if (this.transports.length === 0) {
@@ -73,7 +72,9 @@ export class LoggerService {
       const transportLevel = transport.getLevel();
 
       for (const logRecord of logBatch) {
-        if (logRecord.level <= transportLevel) {
+        const isHigher = this.isHigherOrEqualSeverity(logRecord.level, transportLevel);
+
+        if (isHigher) {
           transport.log(logRecord);
         }
       }
@@ -81,67 +82,88 @@ export class LoggerService {
   }
 
   /**
-   * Given an event to log, extract it message.
-   * @param message
+   * Checks if `a` severity is equal or higher than `b`.
+   * @param a
+   * @param b
    */
-  private getLogMessage(message: string | Error): string {
-    return typeof message === 'string'
-      ? message
-      : message.message;
+  public isHigherOrEqualSeverity(a: LoggerLevel, b: LoggerLevel): boolean {
+    const severity = [
+      LoggerLevel.FATAL,
+      LoggerLevel.ERROR,
+      LoggerLevel.NOTICE,
+      LoggerLevel.WARNING,
+      LoggerLevel.INFO,
+      LoggerLevel.HTTP,
+      LoggerLevel.DEBUG,
+      LoggerLevel.TRACE,
+    ];
+
+    return severity.indexOf(a) <= severity.indexOf(b);
   }
 
   /**
-   * Given an event to log, extract its error or exception.
-   * If not available in provided argument, generate a new
-   * Error object and remove top stack levels.
-   * @param message
-   * @param data
+   * Acquires log caller filename.
    */
-  private getLogError(message: string | Error, ...data: (Error | Record<string, any>)[]): Error {
-    let error = message instanceof Error ? message : undefined;
+  private getFilename(): string {
+    const dummyError = new Error('getFilename()');
+    const matches = dummyError.stack.matchAll(/at .*[/\\](.+?)\.(?:js|ts):/g);
 
-    if (!error) {
-      for (const detail of data) {
-        if (detail instanceof Error) error = detail;
-      }
+    for (const match of matches) {
+      const filename = match[1];
 
-      if (!error) {
-        error = new Error(message as string);
-        error.stack = error.stack.split('\n').filter((e, i) => i < 1 || i > 3).join('\n');
+      if (filename !== 'logger.service') {
+        return filename;
       }
     }
 
-    return error;
+    return '';
+  }
+
+  /**
+   * Consider the log message the first instance of a lone string
+   * or of an object containing `message` property.
+   * @param args
+   */
+  private getLogMessage(...args: LoggerArguments[]): string {
+    for (const arg of args) {
+      if (typeof arg === 'string') {
+        return arg;
+      }
+      else if (arg?.message) {
+        return arg.message;
+      }
+    }
   }
 
   /**
    * Given an event to log, extract it details.
-   * @param message
-   * @param data
+   * @param args
    */
-  private getLogData(message: string | Error, ...data: (Error | Record<string, any>)[]): Record<string, any> {
-    if (message instanceof HttpException) {
-      data.push(message);
-    }
+  private getLogData(...args: LoggerArguments[]): Record<string, any> {
+    let data: Record<string, any> = { };
 
-    let dataObject = { };
-
-    for (const record of data) {
-      if (record instanceof HttpException) {
-        const details = record.getResponse();
-
-        if (details && typeof details === 'object') {
-          dataObject = { ...dataObject, ...details };
-        }
+    for (const arg of args) {
+      if (arg instanceof HttpException) {
+        const details = arg.getResponse();
+        const detailsObj = typeof details === 'string' ? { details } : details;
+        data = { ...data, ...detailsObj };
       }
-      else if (!(record instanceof Error)) {
-        dataObject = { ...dataObject, ...record };
+      else if (typeof arg === 'object') {
+        data = { ...data, ...arg };
       }
     }
 
-    return Object.keys(dataObject).length > 0
-      ? this.sanitize(dataObject)
+    return Object.keys(data).length > 0
+      ? this.sanitize(data)
       : undefined;
+  }
+
+  /**
+   * Acquire an error instance associated with log record.
+   * @param args
+   */
+  private getLogError(...args: LoggerArguments[]): Error {
+    return args.find((a) => a instanceof Error) as unknown as Error;
   }
 
   /**
@@ -179,86 +201,67 @@ export class LoggerService {
   }
 
   /**
-   * Logs a FATAL event and KILLS the application.
-   * @param message
-   * @param data
+   * Logs a FATAL event.
+   * @param args
    */
-  public fatal(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    this.log(LoggerLevel.FATAL, message, ...data);
-    // eslint-disable-next-line unicorn/no-process-exit
-    setTimeout(() => process.exit(1), 2000);
-  }
-
-  /**
-   * Logs a CRITICAL event.
-   * @param message
-   * @param data
-   */
-  public critical(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.CRITICAL, message, ...data);
+  public fatal(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.FATAL, ...args);
   }
 
   /**
    * Logs an ERROR event.
-   * @param message
-   * @param data
+   * @param args
    */
-  public error(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.ERROR, message, ...data);
+  public error(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.ERROR, ...args);
   }
 
   /**
-   * Logs a WARNING event.
-   * @param message
-   * @param data
+   * Logs a WARN event.
+   * @param args
    */
-  public warning(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.WARNING, message, ...data);
+  public warning(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.WARNING, ...args);
   }
 
   /**
-   * Logs a NOTICE event.
-   * @param message
-   * @param data
+   * Logs an NOTICE event.
+   * @param args
    */
-  public notice(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.NOTICE, message, ...data);
+  public notice(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.NOTICE, ...args);
   }
 
   /**
    * Logs an INFO event.
-   * @param message
-   * @param data
+   * @param args
    */
-  public info(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.INFO, message, ...data);
+  public info(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.INFO, ...args);
   }
 
   /**
    * Logs a HTTP event.
-   * @param message
-   * @param data
+   * @param args
    */
-  public http(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.HTTP, message, ...data);
+  public http(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.HTTP, ...args);
   }
 
   /**
    * Logs a DEBUG event.
-   * @param message
-   * @param data
+   * @param args
    */
-  public debug(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.DEBUG, message, ...data);
+  public debug(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.DEBUG, ...args);
   }
 
   /**
    * Logs a TRACE event.
-   * @param message
-   * @param data
+   * @param args
    */
-  public trace(message: string | Error, ...data: (Error | Record<string, any>)[]): void {
-    return this.log(LoggerLevel.TRACE, message, ...data);
+  public trace(...args: LoggerArguments[]): void {
+    return this.log(LoggerLevel.TRACE, ...args);
   }
 
 }

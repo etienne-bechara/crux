@@ -8,14 +8,14 @@ import fg from 'fast-glob';
 import fs from 'fs';
 
 import { ConfigModule } from '../config/config.module';
+import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
-import { ConsoleModule } from '../logger/logger.transport/console/console.module';
-import { SentryModule } from '../logger/logger.transport/sentry/sentry.module';
-import { SlackModule } from '../logger/logger.transport/slack/slack.module';
+import { SentryModule } from '../sentry/sentry.module';
+import { SlackModule } from '../slack/slack.module';
 import { AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
@@ -128,8 +128,8 @@ export class AppModule {
     const timeoutStr = timeout ? `set to ${(timeout / 1000).toString()}s` : 'disabled';
 
     httpServer.setTimeout(0);
-    loggerService.debug(`[AppService] Server timeout ${timeoutStr}`);
-    loggerService.info(`[AppService] Server listening on port ${port}`);
+    loggerService.debug(`Server timeout ${timeoutStr}`);
+    loggerService.info(`Server listening on port ${port}`);
   }
 
   /**

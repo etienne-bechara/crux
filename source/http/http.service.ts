@@ -28,7 +28,7 @@ export class HttpService {
    */
   public setup(): void {
     const { name, prefixUrl } = this.httpModuleOptions;
-    this.loggerService?.debug(`[HttpService] Creating instance for ${name || prefixUrl}...`);
+    this.loggerService?.debug(`Creating instance for ${name || prefixUrl}`);
     this.instance = got.extend(this.httpModuleOptions);
   }
 
@@ -131,7 +131,7 @@ export class HttpService {
    * @param params
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
-    this.loggerService?.debug('[HttpService] Executing external request...', { url, ...params });
+    this.loggerService?.debug('Executing external request', { url, ...params });
     let res: any;
 
     const isIgnoreExceptions = params.ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;

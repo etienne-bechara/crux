@@ -15,4 +15,9 @@ export class AppController {
     return this.appService.getStatus();
   }
 
+  @Get('status')
+  public getStatus(): Promise<AppStatus> {
+    return this.appService.getStatus();
+  }
+
 }

@@ -108,6 +108,7 @@ export class AppFilter implements ExceptionFilter {
         const constraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
+
         details = { constraints };
       }
       else if (details && typeof details === 'object') {
@@ -121,12 +122,8 @@ export class AppFilter implements ExceptionFilter {
   }
 
   /**
-   * Logs the incident according to status:
-   * - Error level for INTERNAL_SERVER_ERROR
-   * - Info level for everything else.
-   *
-   * Always add request data removing sensitive
-   * information.
+   * Logs the incident according to `httpErrors` application option
+   * Add request metadata removing sensitive information.
    * @param appException
    */
   protected logException(appException: AppException): void {

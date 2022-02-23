@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { HttpModule } from '../../../http/http.module';
-import { LoggerModule } from '../../logger.module';
+import { HttpModule } from '../http/http.module';
+import { LoggerModule } from '../logger/logger.module';
 import { SlackConfig } from './slack.config';
 import { SlackService } from './slack.service';
 
