@@ -20,6 +20,7 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Logger (Console, Slack and Sentry)](docs/module/logger.md)
 - [Async (Sleep, Exception Retry and Promise Limit)](source/async/async.service.ts)
 - [Crypto (Encrypt With or Without IV and Decrypt)](source/crypto/crypto.service.ts)
+- [Storage (Memory Store with TTL)](source/storage/storage.service.ts)
 
 ### Recipes
 

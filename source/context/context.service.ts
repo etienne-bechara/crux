@@ -19,14 +19,14 @@ export class ContextService<Metadata = Record<string, any>> {
    * Returns the inbound request.
    */
   public getRequest(): AppRequest {
-    return this.getStore().get(ContextStorageKey.REQUEST);
+    return this.getStore()?.get(ContextStorageKey.REQUEST);
   }
 
   /**
    * Returns the inbound request.
    */
   public getResponse(): AppResponse {
-    return this.getStore().get(ContextStorageKey.RESPONSE);
+    return this.getStore()?.get(ContextStorageKey.RESPONSE);
   }
 
   /**
@@ -34,7 +34,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    */
   public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
-    const metadata: Metadata = this.getStore().get(ContextStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     return metadata[key];
   }
 
@@ -44,7 +44,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param value
    */
   public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
-    const metadata: Metadata = this.getStore().get(ContextStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     metadata[key] = value;
     this.getStore().set(ContextStorageKey.METADATA, metadata);
   }
@@ -54,14 +54,14 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getClientIp(): string {
     const req = this.getRequest();
-    return req.ips?.[req.ips.length - 1] || req.ip;
+    return req?.ips?.[req.ips.length - 1] || req?.ip;
   }
 
   /**
    * Acquire authorization header and decode its payload if applicable.
    */
   public getJwtPayload(): ContextJwtPayload {
-    const token: string = this.getRequest().headers.authorization;
+    const token: string = this.getRequest()?.headers.authorization;
     return this.decodeJwtPayload(token);
   }
 

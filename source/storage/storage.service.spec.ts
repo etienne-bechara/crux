@@ -1,4 +1,5 @@
 import { AppModule } from '../app/app.module';
+import { StorageModule } from './storage.module';
 import { StorageService } from './storage.service';
 
 interface StorageTestKey {
@@ -19,7 +20,12 @@ describe('StorageService', () => {
   const ttl = 1000;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableLogger: true });
+    const app = await AppModule.compile({
+      disableModuleScan: true,
+      disableLogger: true,
+      imports: [ StorageModule ],
+    });
+
     storageService = app.get(StorageService);
   });
 
