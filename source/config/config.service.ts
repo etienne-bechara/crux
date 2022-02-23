@@ -29,9 +29,27 @@ export class ConfigService {
    * @param options
    */
   public static setupSecretEnvironment(options: ConfigModuleOptions = { }): ValidationError[] {
+    const { allowValidationErrors } = options;
+
     this.loadInitialEnvironment(options);
     this.populateSecretCache();
-    const errors = this.validateConfigs(options);
+
+    const errors = this.validateConfigs();
+
+    // If config validation failure is not allowed, print errors and quit application
+    if (errors.length > 0 && !allowValidationErrors) {
+      const timestamp = new Date().toISOString();
+      const strTimestamp = timestamp.replace('T', ' ').replace('Z', '');
+      const errorConstraints = errors.map(({ property, constraints }) => ({ property, constraints }));
+
+      const errorMessage = `${strTimestamp} | FATAL   | config.service       | Environment validation failed`
+        + `\n${JSON.stringify({ errors: errorConstraints }, null, 2)}`;
+
+      // eslint-disable-next-line no-console
+      console.error(errorMessage);
+      process.exit(1);
+    }
+
     return errors;
   }
 
@@ -124,10 +142,8 @@ export class ConfigService {
   /**
    * Validates provided config classes against current secret cache
    * using rules from class-validator and class-transformer.
-   * @param options
    */
-  private static validateConfigs(options: ConfigModuleOptions = { }): ValidationError[] {
-    const { allowValidationErrors } = options;
+  private static validateConfigs(): ValidationError[] {
     const validationErrors: ValidationError[] = [ ];
     const secretEnv: Record<string, any> = { };
 
@@ -149,14 +165,6 @@ export class ConfigService {
     }
 
     const uniqueErrors = validationErrors.filter((v, i, a) => a.findIndex(t => t.property === v.property) === i);
-
-    // On validation failure, exit in 100ms in order for errors to print
-    if (uniqueErrors.length > 0 && !allowValidationErrors) {
-      // eslint-disable-next-line no-console
-      console.error(...uniqueErrors);
-      setTimeout(() => process.exit(1), 100);
-    }
-
     return uniqueErrors;
   }
 

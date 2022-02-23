@@ -10,8 +10,6 @@ import { ConsoleConfig } from './console.config';
 @Injectable()
 export class ConsoleService implements LoggerTransport {
 
-  private chalk: any;
-
   public constructor(
     protected readonly consoleConfig: ConsoleConfig,
     protected readonly loggerService: LoggerService,
