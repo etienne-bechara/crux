@@ -1,3 +1,10 @@
+## [3.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.1...v3.6.2) (2022-02-10)
+
+
+### Bug Fixes
+
+* outbound response when timeout during proxy exceptions ([92a0079](https://github.com/etienne-bechara/nestjs-core/commit/92a00794f558c1d50c8c63f522bfc927eed1d6b9))
+
 ## [3.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.0...v3.6.1) (2022-01-29)
 
 
