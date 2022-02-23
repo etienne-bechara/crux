@@ -47,4 +47,15 @@ export class AppConfig {
     HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ];
 
+  public readonly APP_LOGGER_SENSITIVE_KEYS = [
+    'auth',
+    'authentication',
+    'authorization',
+    'clientkey',
+    'clientsecret',
+    'key',
+    'pass',
+    'password',
+  ];
+
 }

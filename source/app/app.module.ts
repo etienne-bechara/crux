@@ -109,6 +109,7 @@ export class AppModule {
     this.options.timeout ??= appConfig.APP_TIMEOUT;
     this.options.cors ??= appConfig.APP_CORS_OPTIONS;
     this.options.httpErrors ??= appConfig.APP_FILTER_HTTP_ERRORS;
+    this.options.sensitiveKeys ??= appConfig.APP_LOGGER_SENSITIVE_KEYS;
 
     this.instance.setGlobalPrefix(this.options.globalPrefix);
     this.instance.enableCors(this.options.cors);

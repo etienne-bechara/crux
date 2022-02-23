@@ -19,6 +19,7 @@ export interface AppOptions extends ModuleMetadata {
   cors?: CorsOptions;
   httpErrors?: HttpStatus[];
   adapterOptions?: Record<string, any>;
+  sensitiveKeys?: string[];
 }
 
 export interface AppStatus {

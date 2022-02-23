@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import cycle from 'cycle';
 
+import { AppModule } from '../app/app.module';
 import { LoggerConfig } from './logger.config';
 import { LoggerLevel } from './logger.enum';
 import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
@@ -173,6 +174,7 @@ export class LoggerService {
    * @param decycled
    */
   public sanitize(object: any, decycled: boolean = false): any {
+    const sensitiveKeys = AppModule.getOptions().sensitiveKeys;
     if (typeof object !== 'object') return object;
     if (!decycled) object = cycle.decycle(object);
 
@@ -189,7 +191,7 @@ export class LoggerService {
       if (clone[key] === undefined) {
         delete clone[key];
       }
-      else if (this.loggerConfig.LOGGER_SENSITIVE_KEYS.includes(alphaKey)) {
+      else if (sensitiveKeys.includes(alphaKey)) {
         clone[key] = '[filtered]';
       }
       else if (typeof clone[key] === 'object') {

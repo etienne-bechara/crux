@@ -41,10 +41,10 @@ export class FooService {
 
 ## Call Signatures
 
-The logging method expects the following typing:
+The logging method accepts multiples arguments of the following typing:
 
 ```ts
-log(level: LoggerLevel, message: string | Error, ...data: (Error | Record<string, any>)[]): void
+type LoggerArguments = string | Error | Record<string, any>;
 ```
 
 When calling any of the methods previously listed, the `level` param will be populated accordingly and remaining data passed in order.
@@ -54,12 +54,12 @@ Which means you may call them in any combination of:
 ```ts
 this.loggerService.error(a: string);
 this.loggerService.error(a: string, b: Error);
-this.loggerService.error(a: string, b: Object);
-this.loggerService.error(a: Error, b: Object);
-this.loggerService.error(a: string, b: Object, c: Object);
-this.loggerService.error(a: string, b: Error, c: Object);
-this.loggerService.error(a: Error, b: Object, c: Object);
-this.loggerService.error(a: string, b: Error, c: Object, d: Object);
+this.loggerService.error(a: string, b: Record<string, any>);
+this.loggerService.error(a: Error, b: Record<string, any>);
+this.loggerService.error(a: string, b: Record<string, any>, c: Record<string, any>);
+this.loggerService.error(a: string, b: Error, c: Record<string, any>);
+this.loggerService.error(a: Error, b: Record<string, any>, c: Record<string, any>);
+this.loggerService.error(a: string, b: Error, c: Record<string, any>, d: Record<string, any>);
 // etc...
 ```
 
@@ -77,7 +77,7 @@ Basic integration with terminal, level can be configured by environment.
 
 Variable | Mandatory | Type | Default
 :--- | :---: | :---: | :---
-CONSOLE_LEVEL | No | string | See [console.config.ts](../source/logger/logger.transport/console/console.config.ts)
+CONSOLE_LEVEL | No | string | See [console.config.ts](../../source/console/console.config.ts)
 
 
 ### Sentry
@@ -89,7 +89,7 @@ Keep in mind that this should be unique for every project.
 Variable | Mandatory | Type | Default
 :--- | :---: | :---: | :---
 SENTRY_DSN | Yes | string | `undefined`
-SENTRY_LEVEL | No | string | See [sentry.config.ts](../source/logger/logger.transport/sentry/sentry.config.ts)
+SENTRY_LEVEL | No | string | See [sentry.config.ts](../../source/logger/sentry/sentry.config.ts)
 
 
 ### Slack
@@ -102,7 +102,7 @@ SLACK_WEBHOOK | Yes | string | `undefined`
 SLACK_CHANNEL | Yes | string | `undefined`
 SLACK_USERNAME | No | string | Notification Bot
 SLACK_ICON_URL | No | string | `undefined`
-SLACK_LEVEL | No | string | See [slack.config.ts](../source/logger/logger.transport/slack/slack.config.ts)
+SLACK_LEVEL | No | string | See [slack.config.ts](../../source/slack/slack.config.ts)
 
 ---
 
@@ -110,15 +110,12 @@ SLACK_LEVEL | No | string | See [slack.config.ts](../source/logger/logger.transp
 
 The table below describes each available severity as well as the default configuration for deciding between publishing or not at one of the providers.
 
-The `Fatal` severity will kill the application after 2 seconds.
-
 Severity | Local | Development | Staging | Production
 :--- | :---: | :---: | :---: | :---:
 Fatal | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
-Critical | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
 Error | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
 Warning | Console | Console<br>Slack | Console<br>Slack | Console<br>Slack
-Notice | Console | Console | -  | -
+Notice | Console | - | -  | -
 Info | Console | - | - | -
 Http | Console | - | - | -
 Debug | Console | - | - | -

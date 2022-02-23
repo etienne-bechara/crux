@@ -6,8 +6,7 @@ Upon start, it will serve an HTTP adapter based on [Fastify](https://www.fastify
 
 The following custom enhancers will be globally applied:
 
-- [app.timeout.interceptor.ts](../../source/app/app.interceptor/app.timeout.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
-- [app.logger.interceptor.ts](../../source/app/app.interceptor/app.logger.interceptor.ts) - Logger interceptor to print debugging information.
+- [app.interceptor.ts](../../source/app/app.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
 - [app.filter.ts](../../source/app/app.filter.ts) - Exception filter integrated witch logger service to standardize error outputs.
 
 Plus these techniques as officially documented:
@@ -55,7 +54,7 @@ void AppModule.boot({
   // Disables app.filter.ts
   disableFilters: false,
 
-  // Disables ClassSerializer, app.logger.interceptor.ts and app.timeout.interceptor.ts
+  // Disables ClassSerializer and app.interceptor.ts
   disableInterceptors: false,
 
   // Disables ValidationPipe
@@ -67,7 +66,7 @@ void AppModule.boot({
   // HTTP adapter port
   port: 8080,
 
-  // HTTP adapter hostmanem
+  // HTTP adapter hostname
   hostname: '0.0.0.0',
 
   // Global path prefix
@@ -87,10 +86,27 @@ void AppModule.boot({
   // Which HTTP exceptions should be logged as errors
   httpErrors: [
     HttpStatus.INTERNAL_SERVER_ERROR,
+    HttpStatus.NOT_IMPLEMENTED,
+    HttpStatus.BAD_GATEWAY,
+    HttpStatus.SERVICE_UNAVAILABLE,
+    HttpStatus.GATEWAY_TIMEOUT,
+    HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ],
 
   // Further options to pass to underlying adapter (Fastify)
   adapterOptions: { },
+
+  // Object keys to be censored when logging
+  sensitiveKeys: [
+    'auth',
+    'authentication',
+    'authorization',
+    'clientkey',
+    'clientsecret',
+    'key',
+    'pass',
+    'password',
+  ],
 
   // Base options from NestJS modules
   imports: [ ],
