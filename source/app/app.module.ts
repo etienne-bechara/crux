@@ -14,12 +14,13 @@ import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
+import { MetricModule } from '../metric/metric.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
-import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
+import { AppInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
 import { LoggerService } from './app.override';
 import { AppService } from './app.service';
@@ -79,6 +80,17 @@ export class AppModule {
   public static async compile(options: AppOptions = { }): Promise<INestApplication> {
     this.options = options;
 
+    await this.buildInstance();
+    this.populateDefaultOptions();
+
+    return this.instance;
+  }
+
+  /**
+   * Creates NestJS instance and configures Fastify adapter
+   * adding a hook for async local storage support.
+   */
+  private static async buildInstance(): Promise<void> {
     const entryModule = this.buildEntryModule();
 
     const httpAdapter = new FastifyAdapter({
@@ -100,7 +112,12 @@ export class AppModule {
         next();
       });
     });
+  }
 
+  /**
+   * Merge provided options with application defaults.
+   */
+  private static populateDefaultOptions(): void {
     const appConfig: AppConfig = this.instance.get(AppConfig);
 
     this.options.port ??= appConfig.APP_PORT;
@@ -113,8 +130,6 @@ export class AppModule {
 
     this.instance.setGlobalPrefix(this.options.globalPrefix);
     this.instance.enableCors(this.options.cors);
-
-    return this.instance;
   }
 
   /**
@@ -162,7 +177,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { envPath, disableModuleScan, disableLogger, imports, exports } = this.options;
+    const { envPath, disableModuleScan, disableLogger, imports, exports, disableMetrics } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
@@ -182,6 +197,10 @@ export class AppModule {
         SentryModule,
         SlackModule,
       );
+    }
+
+    if (!disableMetrics) {
+      defaultModules.push(MetricModule);
     }
 
     if (!disableModuleScan) {
@@ -244,8 +263,7 @@ export class AppModule {
     if (!disableInterceptors) {
       preloadedProviders.push(
         { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
-        { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
-        { provide: APP_INTERCEPTOR, useClass: AppTimeoutInterceptor },
+        { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
       );
     }
 

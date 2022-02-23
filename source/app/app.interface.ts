@@ -12,6 +12,7 @@ export interface AppOptions extends ModuleMetadata {
   disableInterceptors?: boolean;
   disablePipes?: boolean;
   disableLogger?: boolean;
+  disableMetrics?: boolean;
   port?: number;
   hostname?: string;
   globalPrefix?: string;
