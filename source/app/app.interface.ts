@@ -112,8 +112,8 @@ export interface AppException {
 
 export interface AppExceptionDetails extends Record<string, any> {
   proxyExceptions?: boolean;
-  externalResponse?: Record<string, any>;
-  externalRequest?: Record<string, any>;
+  outboundResponse?: Record<string, any>;
+  outboundRequest?: Record<string, any>;
   constraints?: string[];
 }
 

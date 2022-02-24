@@ -187,12 +187,12 @@ export class HttpService {
     throw new HttpException({
       message: `${method} ${url} | ${message}`,
       proxyExceptions,
-      externalResponse: {
+      outboundResponse: {
         statusCode: response?.statusCode,
         headers: response?.headers,
         body: response?.body,
       },
-      externalRequest: {
+      outboundRequest: {
         url,
         method,
         ...request,

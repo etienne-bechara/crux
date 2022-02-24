@@ -65,7 +65,7 @@ export class AppFilter implements ExceptionFilter {
       const details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.externalResponse) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
         message = 'request validation failed';
       }
       else if (details?.message && typeof details.message === 'string') {
@@ -93,7 +93,7 @@ export class AppFilter implements ExceptionFilter {
       details = exception.getResponse() as Record<string, any>;
       const status = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.externalResponse) {
+      if (status === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
         const constraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
@@ -124,7 +124,7 @@ export class AppFilter implements ExceptionFilter {
     if (httpErrors.includes(statusCode)) {
       const reqMetadata = this.contextService.getStore()?.get(ContextStorageKey.METADATA);
 
-      const clientRequest = {
+      const inboundRequest = {
         url: req.url.split('?')[0],
         params: this.validateObjectLength(req.params),
         query: this.validateObjectLength(req.query),
@@ -133,7 +133,7 @@ export class AppFilter implements ExceptionFilter {
         metadata: this.validateObjectLength(reqMetadata),
       };
 
-      logData.clientRequest = clientRequest;
+      logData.inboundRequest = inboundRequest;
       this.loggerService.error(exception, logData);
     }
     else {
@@ -183,13 +183,16 @@ export class AppFilter implements ExceptionFilter {
       ...isProduction && isInternalError ? { } : details,
     };
 
-    const { proxyExceptions, externalResponse } = details;
-    const exceptionBody = externalResponse?.body;
-    const outboundResponse: AppExceptionResponse = proxyExceptions && exceptionBody ? exceptionBody : filteredResponse;
+    const { proxyExceptions, outboundResponse } = details;
+    const exceptionBody = outboundResponse?.body;
+
+    const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
+      ? exceptionBody
+      : filteredResponse;
 
     res.code(statusCode);
     res.header('Content-Type', 'application/json');
-    res.send(outboundResponse);
+    res.send(clientResponse);
   }
 
 }
