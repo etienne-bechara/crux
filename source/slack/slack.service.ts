@@ -141,7 +141,7 @@ export class SlackService implements LoggerTransport {
       case LoggerLevel.INFO: return 'ⓘ Info';
       case LoggerLevel.HTTP: return '🌐 Http';
       case LoggerLevel.DEBUG: return '🐞 Debug';
-      case LoggerLevel.TRACE: return '❔ Trace';
+      case LoggerLevel.TRACE: return '🐜 Trace';
     }
   }
 

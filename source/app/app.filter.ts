@@ -122,13 +122,15 @@ export class AppFilter implements ExceptionFilter {
     const req = this.contextService.getRequest();
 
     if (httpErrors.includes(statusCode)) {
+      const reqMetadata = this.contextService.getStore()?.get(ContextStorageKey.METADATA);
+
       const clientRequest = {
         url: req.url.split('?')[0],
         params: this.validateObjectLength(req.params),
         query: this.validateObjectLength(req.query),
         body: this.validateObjectLength(req.body),
         headers: this.validateObjectLength(req.headers),
-        metadata: this.contextService.getStore().get(ContextStorageKey.METADATA) || { },
+        metadata: this.validateObjectLength(reqMetadata),
       };
 
       logData.clientRequest = clientRequest;
