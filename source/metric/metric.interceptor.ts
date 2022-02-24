@@ -1,30 +1,32 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
 import { finalize, Observable } from 'rxjs';
 
 import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class MetricInterceptor implements NestInterceptor {
 
   public constructor(
-    private readonly loggerService: LoggerService,
     private readonly contextService: ContextService,
+    private readonly loggerService: LoggerService,
+    private readonly metricService: MetricService,
   ) { }
 
   /**
-   * Print request and response data at console for debugging purposes.
+   * Log metrics for successful inbound HTTP requests.
    * @param context
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = this.contextService.getRequest();
-    const start = Date.now();
+    const histogram = this.metricService.getHttpInboundHistogram();
 
-    const methodPath = `${req.routerMethod} ${req.routerPath}`;
+    const { time, routerMethod, routerPath, headers } = req;
     const ipAddress = this.contextService.getClientIp();
-    const userAgent = req.headers['user-agent'];
-    const logMessage = `${methodPath} ${ipAddress} ${userAgent}`;
+    const userAgent = headers['user-agent'];
+    const logMessage = `${routerMethod} ${routerPath} ${ipAddress} ${userAgent}`;
 
     this.loggerService.http(`> ${logMessage}`);
 
@@ -32,7 +34,11 @@ export class MetricInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         finalize(() => {
-          this.loggerService.http(`< ${logMessage} [${Date.now() - start} ms]`);
+          const status = HttpStatus.OK.toString();
+          const latency = Date.now() - time;
+
+          histogram.labels(routerMethod, routerPath, status).observe(latency);
+          this.loggerService.http(`< ${logMessage} [${latency} ms]`);
         }),
       );
   }

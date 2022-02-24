@@ -10,8 +10,8 @@ import { SentryConfig } from './sentry.config';
 export class SentryService implements LoggerTransport {
 
   public constructor(
-    protected readonly sentryConfig: SentryConfig,
-    protected readonly loggerService: LoggerService,
+    private readonly sentryConfig: SentryConfig,
+    private readonly loggerService: LoggerService,
   ) {
     this.setupTransport();
   }

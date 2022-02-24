@@ -11,8 +11,8 @@ import { ConsoleConfig } from './console.config';
 export class ConsoleService implements LoggerTransport {
 
   public constructor(
-    protected readonly consoleConfig: ConsoleConfig,
-    protected readonly loggerService: LoggerService,
+    private readonly consoleConfig: ConsoleConfig,
+    private readonly loggerService: LoggerService,
   ) {
     this.loggerService.registerTransport(this);
   }

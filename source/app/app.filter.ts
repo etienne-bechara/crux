@@ -4,6 +4,7 @@ import cycle from 'cycle';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
+import { MetricService } from '../metric/metric.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
@@ -13,9 +14,10 @@ import { AppModule } from './app.module';
 export class AppFilter implements ExceptionFilter {
 
   public constructor(
-    protected readonly appConfig: AppConfig,
-    protected readonly contextService: ContextService,
-    protected readonly loggerService: LoggerService,
+    private readonly appConfig: AppConfig,
+    private readonly contextService: ContextService,
+    private readonly loggerService: LoggerService,
+    private readonly metricService: MetricService,
   ) { }
 
   /**
@@ -23,36 +25,23 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   public catch(exception: HttpException | Error): void {
-    const res = this.contextService.getResponse();
-
-    const errorCode = this.getErrorCode(exception);
-    const message = this.getMessage(exception);
-    const details = this.getDetails(exception);
-    this.logException({ exception, errorCode, message, details });
-
-    const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
-    const isInternalError = errorCode === HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const filteredResponse: AppExceptionResponse = {
-      code: errorCode,
-      message: isProduction && isInternalError ? 'unexpected error' : message,
-      ...isProduction && isInternalError ? { } : details,
+    const appException: AppException = {
+      exception,
+      statusCode: this.getStatusCode(exception),
+      message: this.getMessage(exception),
+      details: this.getDetails(exception),
     };
 
-    const { proxyExceptions, externalResponse } = details;
-    const exceptionBody = externalResponse?.body;
-    const outboundResponse: AppExceptionResponse = proxyExceptions && exceptionBody ? exceptionBody : filteredResponse;
-
-    res.code(errorCode);
-    res.header('Content-Type', 'application/json');
-    res.send(outboundResponse);
+    this.logException(appException);
+    this.registerException(appException);
+    this.sendResponse(appException);
   }
 
   /**
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  protected getErrorCode(exception: HttpException | Error): HttpStatus {
+  private getStatusCode(exception: HttpException | Error): HttpStatus {
     let errorCode: HttpStatus;
 
     if (exception instanceof HttpException) {
@@ -69,7 +58,7 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, extracts a detailing message.
    * @param exception
    */
-  protected getMessage(exception: HttpException | Error): string {
+  private getMessage(exception: HttpException | Error): string {
     let message;
 
     if (exception instanceof HttpException) {
@@ -97,7 +86,7 @@ export class AppFilter implements ExceptionFilter {
    * Ensures that circular references are eliminated.
    * @param exception
    */
-  protected getDetails(exception: HttpException | Error): AppExceptionDetails {
+  private getDetails(exception: HttpException | Error): AppExceptionDetails {
     let details: AppExceptionDetails;
 
     if (exception instanceof HttpException) {
@@ -124,15 +113,15 @@ export class AppFilter implements ExceptionFilter {
   /**
    * Logs the incident according to `httpErrors` application option
    * Add request metadata removing sensitive information.
-   * @param appException
+   * @param params
    */
-  protected logException(appException: AppException): void {
-    const { details, exception, message, errorCode } = appException;
+  private logException(params: AppException): void {
+    const { details, exception, message, statusCode } = params;
     const logData: Record<string, any> = { message, ...details };
     const httpErrors = AppModule.getOptions().httpErrors;
     const req = this.contextService.getRequest();
 
-    if (httpErrors.includes(errorCode)) {
+    if (httpErrors.includes(statusCode)) {
       const clientRequest = {
         url: req.url.split('?')[0],
         params: this.validateObjectLength(req.params),
@@ -158,6 +147,47 @@ export class AppFilter implements ExceptionFilter {
   private validateObjectLength(obj: any): any {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return obj && Object.keys(obj).length > 0 ? obj : undefined;
+  }
+
+  /**
+   * Register exception metrics.
+   * @param params
+   */
+  private registerException(params: AppException): void {
+    const req = this.contextService.getRequest();
+    const histogram = this.metricService.getHttpInboundHistogram();
+
+    const { time, routerMethod, routerPath } = req;
+    const { statusCode } = params;
+
+    const latency = Date.now() - time;
+    histogram.labels(routerMethod, routerPath, statusCode.toString()).observe(latency);
+  }
+
+  /**
+   * Sends client response for given exception.
+   * @param params
+   */
+  private sendResponse(params: AppException): void {
+    const { details, message, statusCode } = params;
+    const res = this.contextService.getResponse();
+
+    const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
+    const isInternalError = statusCode === HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const filteredResponse: AppExceptionResponse = {
+      code: statusCode,
+      message: isProduction && isInternalError ? 'unexpected error' : message,
+      ...isProduction && isInternalError ? { } : details,
+    };
+
+    const { proxyExceptions, externalResponse } = details;
+    const exceptionBody = externalResponse?.body;
+    const outboundResponse: AppExceptionResponse = proxyExceptions && exceptionBody ? exceptionBody : filteredResponse;
+
+    res.code(statusCode);
+    res.header('Content-Type', 'application/json');
+    res.send(outboundResponse);
   }
 
 }

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
 import { HttpModule } from '../http/http.module';
-import { LoggerModule } from '../logger/logger.module';
 import { SlackConfig } from './slack.config';
 import { SlackService } from './slack.service';
 
@@ -15,7 +14,6 @@ import { SlackService } from './slack.service';
         prefixUrl: slackConfig.SLACK_WEBHOOK,
       }),
     }),
-    LoggerModule,
   ],
   providers: [
     SlackConfig,
@@ -23,6 +21,7 @@ import { SlackService } from './slack.service';
   ],
   exports: [
     SlackConfig,
+    SlackService,
   ],
 })
 export class SlackModule { }

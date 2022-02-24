@@ -9,12 +9,12 @@ import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpRequestParams }
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
-  protected instance: Got;
+  private instance: Got;
 
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
-    protected readonly httpModuleOptions: HttpModuleOptions = { },
-    protected readonly loggerService: LoggerService,
+    private readonly httpModuleOptions: HttpModuleOptions = { },
+    private readonly loggerService: LoggerService,
   ) {
     if (this.httpModuleOptions.silent) {
       this.loggerService = undefined;
@@ -45,7 +45,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  protected replacePathVariables(url: string, params: HttpRequestParams): string {
+  private replacePathVariables(url: string, params: HttpRequestParams): string {
     const { replacements } = params;
     let replacedUrl = url;
 
@@ -71,7 +71,7 @@ export class HttpService {
    * with a functionality of allowing array inside object values.
    * @param params
    */
-  protected buildSearchParams(params: HttpRequestParams): void {
+  private buildSearchParams(params: HttpRequestParams): void {
     const { query } = params;
 
     const mergedQuery = { ...this.httpModuleOptions.query, ...query };
@@ -95,7 +95,7 @@ export class HttpService {
    * Given http response headers, acquire its parsed cookies.
    * @param headers
    */
-  protected parseCookies(headers: IncomingHttpHeaders): HttpCookie[] {
+  private parseCookies(headers: IncomingHttpHeaders): HttpCookie[] {
     const setCookie = headers?.['set-cookie'];
     const cookies: HttpCookie[] = [ ];
     if (!setCookie) return cookies;
@@ -169,7 +169,7 @@ export class HttpService {
    * exception with matching code.
    * @param params
    */
-  protected handleRequestException(params: HttpExceptionParams): void {
+  private handleRequestException(params: HttpExceptionParams): void {
     const { proxyExceptions } = this.httpModuleOptions;
     const { url, request, error } = params;
     const { message, response } = error;

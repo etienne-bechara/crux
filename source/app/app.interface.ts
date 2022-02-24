@@ -50,6 +50,7 @@ export interface AppNetwork {
  * after going through the middlewares.
  */
 export interface AppRequest {
+  time: number;
   query: any;
   body: any;
   params: any;
@@ -104,7 +105,7 @@ export interface AppResponse {
 
 export interface AppException {
   exception: HttpException | Error;
-  errorCode: HttpStatus;
+  statusCode: HttpStatus;
   message: string;
   details: AppExceptionDetails;
 }

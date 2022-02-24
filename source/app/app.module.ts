@@ -105,6 +105,8 @@ export class AppModule {
     const fastify = this.instance.getHttpAdapter().getInstance();
 
     fastify.addHook('preHandler', (req, res, next) => {
+      req.time = Date.now();
+
       ContextStorage.run(new Map(), () => {
         const store = ContextStorage.getStore();
         store.set(ContextStorageKey.REQUEST, req);

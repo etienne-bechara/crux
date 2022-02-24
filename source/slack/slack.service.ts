@@ -11,9 +11,9 @@ import { SlackConfig } from './slack.config';
 export class SlackService implements LoggerTransport {
 
   public constructor(
-    protected readonly slackConfig: SlackConfig,
-    protected readonly loggerService: LoggerService,
-    protected readonly httpService: HttpService,
+    private readonly slackConfig: SlackConfig,
+    private readonly loggerService: LoggerService,
+    private readonly httpService: HttpService,
   ) {
     this.setupTransport();
   }
