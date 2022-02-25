@@ -1,7 +1,6 @@
 import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import cycle from 'cycle';
 
-import { ContextStorageKey } from '../context/context.enum';
 import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
 import { MetricService } from '../metric/metric.service';
@@ -119,18 +118,15 @@ export class AppFilter implements ExceptionFilter {
     const { details, exception, message, statusCode } = params;
     const logData: Record<string, any> = { message, ...details };
     const httpErrors = AppModule.getOptions().httpErrors;
-    const req = this.contextService.getRequest();
 
     if (httpErrors.includes(statusCode)) {
-      const reqMetadata = this.contextService.getStore()?.get(ContextStorageKey.METADATA);
-
       const inboundRequest = {
-        url: req.url.split('?')[0],
-        params: this.validateObjectLength(req.params),
-        query: this.validateObjectLength(req.query),
-        body: this.validateObjectLength(req.body),
-        headers: this.validateObjectLength(req.headers),
-        metadata: this.validateObjectLength(reqMetadata),
+        url: this.contextService.getRequestPath(),
+        params: this.contextService.getRequestParams(),
+        query: this.contextService.getRequestQuery(),
+        body: this.contextService.getRequestBody(),
+        headers: this.contextService.getRequestHeaders(),
+        metadata: this.contextService.getMetadata(),
       };
 
       logData.inboundRequest = inboundRequest;
@@ -139,16 +135,6 @@ export class AppFilter implements ExceptionFilter {
     else {
       this.loggerService.info(exception, logData);
     }
-  }
-
-  /**
-   * Ensures target object is valid and contain at least one key,
-   * if not return as `undefined`.
-   * @param obj
-   */
-  private validateObjectLength(obj: any): any {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return obj && Object.keys(obj).length > 0 ? obj : undefined;
   }
 
   /**
@@ -189,6 +175,8 @@ export class AppFilter implements ExceptionFilter {
     const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
       ? exceptionBody
       : filteredResponse;
+
+    this.loggerService.http(this.contextService.getRequestDescription(statusCode));
 
     res.code(statusCode);
     res.header('Content-Type', 'application/json');

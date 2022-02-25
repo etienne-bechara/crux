@@ -25,23 +25,23 @@ describe('ContextService', () => {
     });
   });
 
-  describe('getMetadata', () => {
+  describe('getMetadataKey', () => {
     it('should read metadata as undefined', () => {
-      const metadata = contextService.getMetadata('dummy');
+      const metadata = contextService.getMetadataKey('dummy');
       expect(metadata).toBeUndefined();
     });
   });
 
   describe('getClientIp', () => {
     it('should read client ip as undefined', () => {
-      const ip = contextService.getClientIp();
+      const ip = contextService.getRequestIp();
       expect(ip).toBeUndefined();
     });
   });
 
   describe('getJwtPayload', () => {
     it('should read jwt payload as undefined', () => {
-      const payload = contextService.getJwtPayload();
+      const payload = contextService.getRequestJwtPayload();
       expect(payload).toBeUndefined();
     });
   });

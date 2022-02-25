@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
+import crypto from 'crypto';
 import fg from 'fast-glob';
 import fs from 'fs';
 
@@ -95,6 +96,7 @@ export class AppModule {
 
     const httpAdapter = new FastifyAdapter({
       trustProxy: true,
+      genReqId: () => crypto.randomBytes(6).toString('hex'),
       ...this.options.adapterOptions,
     });
 

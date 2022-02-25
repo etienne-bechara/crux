@@ -31,7 +31,7 @@ export class SlackService implements LoggerTransport {
     }
 
     const webhookId = webhook.split('/')[webhook.split('/').length - 1];
-    setTimeout(() => this.loggerService.info(`Transport connected at ${webhookId}`), 500);
+    this.loggerService.info(`Transport connected at ${webhookId}`);
     this.loggerService.registerTransport(this);
   }
 
@@ -48,69 +48,48 @@ export class SlackService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { environment, level, filename, message, data, error } = params;
+    const { environment, level, filename, message, data } = params;
     if (data?.messageBlocks) return;
 
-    const messageBlocks = [
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `*${this.getSlackEnvironment(environment)}*`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `*${this.getSlackSeverity(level)}*`,
-          },
-          {
-            type: 'mrkdwn',
-            text: `[${filename}] ${message}`,
-          },
-        ],
-      },
-    ];
-
-    if (error) {
-      messageBlocks[0].elements.push({
-        type: 'mrkdwn',
-        text: `\`${error}\``,
-      });
-    }
+    let slackMsg = `*${this.getSlackEnvironment(environment)}*   `
+      + `*${this.getSlackSeverity(level)}*  `
+      + `[${filename}] ${message}`;
 
     if (data) {
-      const details = JSON.stringify(data || { }, null, 2);
+      const details = JSON.stringify(data);
 
-      const trimmedDetails = details.length > 2900
-        ? `${details.slice(0, 2900)}\n\n[...]`
+      const trimmedDetails = details.length + slackMsg.length >= 3000
+        ? `${details.slice(0, 2990 - slackMsg.length)}\n\n[...]`
         : details;
 
-      messageBlocks[0].elements.push({
-        type: 'mrkdwn',
-        text: `\`\`\`\n${trimmedDetails}\n\`\`\``,
-      });
+      slackMsg = `${slackMsg}  <https://codebeautify.org/jsonviewer?input=${trimmedDetails}|Details>`;
     }
 
-    void this.publishSlackMessage(messageBlocks);
+    void this.publishSlackMessage(slackMsg);
   }
 
   /**
    * Publishes a message formatted as Slack blocks.
-   * @param messageBlocks
+   * @param message
    */
-  public async publishSlackMessage(messageBlocks: any[]): Promise<void> {
+  public async publishSlackMessage(message: string): Promise<void> {
     try {
       await this.httpService.post('', {
         json: {
           channel: this.slackConfig.SLACK_CHANNEL,
           username: this.slackConfig.SLACK_USERNAME,
           icon_url: this.slackConfig.SLACK_ICON_URL,
-          blocks: messageBlocks,
+          blocks: [
+            {
+              type: 'context',
+              elements: [ { type: 'mrkdwn', text: message } ],
+            },
+          ],
         },
       });
     }
     catch (e) {
-      this.loggerService.warning('Failed to publish slack message', e as Error, { messageBlocks });
+      this.loggerService.warning('Failed to publish slack message', e as Error, { message });
     }
   }
 

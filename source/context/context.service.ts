@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -30,10 +30,19 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
+   * Reads all metadata bound to current request lifecycle,
+   * returning object should be immutable.
+   */
+  public getMetadata(): Metadata {
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA);
+    return this.validateObjectLength({ ...metadata }) as Metadata;
+  }
+
+  /**
    * Reads a metadata key bound to current request lifecycle.
    * @param key
    */
-  public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
+  public getMetadataKey<K extends keyof Metadata>(key: K): Metadata[K] {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     return metadata[key];
   }
@@ -43,24 +52,122 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    * @param value
    */
-  public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
+  public setMetadataKey<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     metadata[key] = value;
     this.getStore().set(ContextStorageKey.METADATA, metadata);
   }
 
   /**
-   * Returns true client IP.
+   * Acquire request id.
    */
-  public getClientIp(): string {
+  public getRequestId(): string {
     const req = this.getRequest();
-    return req?.ips?.[req.ips.length - 1] || req?.ip;
+    if (!req) return;
+
+    return req.id;
+  }
+
+  /**
+   * Acquire request method.
+   */
+  public getRequestMethod(): string {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return req.routerMethod;
+  }
+
+  /**
+   * Acquire request path, giving priority to not replaced version.
+   */
+  public getRequestPath(): string {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return req.routerPath;
+  }
+
+  /**
+   * Ensures target object is valid and contain at least one key,
+   * if not return as `undefined`.
+   * @param obj
+   */
+  private validateObjectLength(obj: Record<string, any>): Record<string, any> {
+    return obj && Object.keys(obj).length > 0 ? obj : undefined;
+  }
+
+  /**
+   * Acquire request path replacement params.
+   */
+  public getRequestParams(): Record<string, any> {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return this.validateObjectLength(req.params as Record<string, any>);
+  }
+
+  /**
+   * Acquire true client IP.
+   */
+  public getRequestQuery(): Record<string, any> {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return this.validateObjectLength(req.query as Record<string, any>);
+  }
+
+  /**
+   * Acquire true client IP.
+   */
+  public getRequestBody(): Record<string, any> {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return this.validateObjectLength(req.body as Record<string, any>);
+  }
+
+  /**
+   * Acquire request client IP.
+   */
+  public getRequestIp(): string {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return req.ips?.[req.ips.length - 1] || req.ip;
+  }
+
+  /**
+   * Acquire request headers.
+   */
+  public getRequestHeaders(): Record<string, any> {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return this.validateObjectLength(req.headers as Record<string, any>);
+  }
+
+  /**
+   * Acquire request client user agent.
+   */
+  public getRequestUserAgent(): string {
+    return this.getRequestHeaders()?.['user-agent'];
+  }
+
+  /**
+   * Acquire current request latency in milliseconds.
+   */
+  public getRequestLatency(): number {
+    const req = this.getRequest();
+    if (!req) return;
+
+    return Date.now() - req.time;
   }
 
   /**
    * Acquire authorization header and decode its payload if applicable.
    */
-  public getJwtPayload(): ContextJwtPayload {
+  public getRequestJwtPayload(): ContextJwtPayload {
     const token: string = this.getRequest()?.headers.authorization;
     return this.decodeJwtPayload(token);
   }
@@ -95,6 +202,19 @@ export class ContextService<Metadata = Record<string, any>> {
     }
 
     return decoded;
+  }
+
+  /**
+   * Builds a request description including id, method, path, ip and user agent.
+   * If `status` is provided consider as outbound and add latency details.
+   * @param status
+   */
+  public getRequestDescription(status?: HttpStatus): string {
+    const description = `${this.getRequestId()} | ${this.getRequestMethod()} ${this.getRequestPath()}`;
+
+    return status
+      ? `< ${description} | ${status} | ${this.getRequestLatency()} ms`
+      : `> ${description} | ${this.getRequestIp()} | ${this.getRequestUserAgent()}`;
   }
 
 }
