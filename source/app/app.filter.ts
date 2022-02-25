@@ -116,25 +116,23 @@ export class AppFilter implements ExceptionFilter {
    */
   private logException(params: AppException): void {
     const { details, exception, message, statusCode } = params;
-    const logData: Record<string, any> = { message, ...details };
     const httpErrors = AppModule.getOptions().httpErrors;
 
-    if (httpErrors.includes(statusCode)) {
-      const inboundRequest = {
-        url: this.contextService.getRequestPath(),
-        params: this.contextService.getRequestParams(),
-        query: this.contextService.getRequestQuery(),
-        body: this.contextService.getRequestBody(),
-        headers: this.contextService.getRequestHeaders(),
-        metadata: this.contextService.getMetadata(),
-      };
+    const inboundRequest = {
+      method: this.contextService.getRequestMethod(),
+      path: this.contextService.getRequestPath(),
+      params: this.contextService.getRequestParams(),
+      query: this.contextService.getRequestQuery(),
+      body: this.contextService.getRequestBody(),
+      headers: this.contextService.getRequestHeaders(),
+      metadata: this.contextService.getMetadata(),
+    };
 
-      logData.inboundRequest = inboundRequest;
-      this.loggerService.error(exception, logData);
-    }
-    else {
-      this.loggerService.info(exception, logData);
-    }
+    const data = { message, ...inboundRequest, ...details };
+
+    return httpErrors.includes(statusCode)
+      ? this.loggerService.error(exception, data)
+      : this.loggerService.info(exception, data);
   }
 
   /**
@@ -142,14 +140,14 @@ export class AppFilter implements ExceptionFilter {
    * @param params
    */
   private registerException(params: AppException): void {
-    const req = this.contextService.getRequest();
-    const histogram = this.metricService.getHttpInboundHistogram();
-
-    const { time, routerMethod, routerPath } = req;
     const { statusCode } = params;
 
-    const latency = Date.now() - time;
-    histogram.labels(routerMethod, routerPath, statusCode.toString()).observe(latency);
+    const histogram = this.metricService.getHttpInboundHistogram();
+    const latency = this.contextService.getRequestLatency();
+    const method = this.contextService.getRequestMethod();
+    const path = this.contextService.getRequestPath();
+
+    histogram.labels(method, path, statusCode.toString()).observe(latency);
   }
 
   /**
