@@ -29,13 +29,15 @@ export class ConsoleService implements LoggerTransport {
    * to LOCAL applies colorization based on severity.
    * @param params
    */
+  // eslint-disable-next-line complexity
   public log(params: LoggerParams): void {
-    const { environment, timestamp, level, filename, message, data, error } = params;
+    const { environment, timestamp, level, requestId, filename, message, data, error } = params;
     const isError = this.loggerService.isHigherOrEqualSeverity(level, LoggerLevel.ERROR);
 
     const strTimestamp = timestamp.replace('T', ' ').replace('Z', '');
     const strLevel = level.toUpperCase().padEnd(7, ' ');
     const strFilename = filename.padEnd(20, ' ');
+    const strRequestId = requestId || ' '.repeat(8);
 
     if (environment === AppEnvironment.LOCAL) {
       const gray = LoggerStyle.FG_BRIGHT_BLACK;
@@ -58,6 +60,7 @@ export class ConsoleService implements LoggerTransport {
       console[isError ? 'error' : 'log'](
         `${gray}${strTimestamp}${reset}${separator}`
         + `${levelColor}${strLevel}${reset}${separator}`
+        + `${levelColor}${strRequestId}${reset}${separator}`
         + `${levelColor}${strFilename}${reset}${separator}`
         + `${levelColor}${message}${reset}`
         + `${data ? `${gray}\n${JSON.stringify(data, null, 2)}${reset}` : ''}`,
@@ -69,6 +72,7 @@ export class ConsoleService implements LoggerTransport {
       console[isError ? 'error' : 'log'](
         `${strTimestamp}${separator}`
         + `${strLevel}${separator}`
+        + `${strRequestId}${separator}`
         + `${strFilename}${separator}`
         + `${message}`
         + `${data ? ` ${JSON.stringify(data)} ` : ''}`,

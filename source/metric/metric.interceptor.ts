@@ -28,7 +28,7 @@ export class MetricInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
-        mergeMap(async () => {
+        mergeMap(async (data) => {
           const latency = this.contextService.getRequestLatency();
           const method = this.contextService.getRequestMethod();
           const path = this.contextService.getRequestPath();
@@ -36,6 +36,8 @@ export class MetricInterceptor implements NestInterceptor {
 
           histogram.labels(method, path, status.toString()).observe(latency);
           this.loggerService.http(this.contextService.getRequestDescription(status));
+
+          return data;
         }),
       );
   }

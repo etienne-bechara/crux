@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import cycle from 'cycle';
 
 import { AppModule } from '../app/app.module';
+import { ContextService } from '../context/context.service';
 import { LoggerConfig } from './logger.config';
 import { LoggerLevel } from './logger.enum';
 import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
@@ -13,6 +14,7 @@ export class LoggerService {
   private pendingLogs: LoggerParams[] = [ ];
 
   public constructor(
+    private readonly contextService: ContextService,
     private readonly loggerConfig: LoggerConfig,
   ) {
     this.setupLogger();
@@ -55,6 +57,7 @@ export class LoggerService {
       environment: this.loggerConfig.NODE_ENV,
       timestamp: new Date().toISOString(),
       level,
+      requestId: this.contextService.getRequestId(),
       filename: this.getFilename(),
       message: this.getLogMessage(...args),
       data: this.getLogData(...args),

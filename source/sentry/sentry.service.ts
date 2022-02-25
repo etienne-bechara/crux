@@ -53,7 +53,7 @@ export class SentryService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { level, message, data, error: rawError } = params;
+    const { level, message, requestId, data, error: rawError } = params;
     const error = rawError || new Error(message);
 
     if (message !== error.message) {
@@ -62,10 +62,16 @@ export class SentryService implements LoggerTransport {
 
     Sentry.withScope((scope) => {
       scope.setLevel(this.getSentrySeverity(level));
-      if (data?.unexpected) scope.setTag('unexpected', 'true');
+
+      if (data?.unexpected) {
+        scope.setTag('unexpected', 'true');
+      }
+
       scope.setExtras({
+        requestId,
         details: JSON.stringify(data || { }, null, 2),
       });
+
       Sentry.captureException(error);
     });
   }

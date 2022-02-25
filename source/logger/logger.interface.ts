@@ -7,6 +7,7 @@ export interface LoggerParams {
   environment: AppEnvironment;
   timestamp: string;
   level: LoggerLevel;
+  requestId: string;
   filename: string;
   message: string;
   data: Record<string, any>;

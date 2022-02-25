@@ -96,7 +96,7 @@ export class AppModule {
 
     const httpAdapter = new FastifyAdapter({
       trustProxy: true,
-      genReqId: () => crypto.randomBytes(6).toString('hex'),
+      genReqId: () => crypto.randomBytes(6).toString('base64url'),
       ...this.options.adapterOptions,
     });
 
@@ -108,6 +108,7 @@ export class AppModule {
 
     fastify.addHook('preHandler', (req, res, next) => {
       req.time = Date.now();
+      res.header('request-id', req.id);
 
       ContextStorage.run(new Map(), () => {
         const store = ContextStorage.getStore();
