@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 
 import { MetricService } from './metric.service';
 
-@Controller('metric')
+@Controller('metrics')
 export class MetricController {
 
   public constructor(
@@ -10,7 +10,7 @@ export class MetricController {
   ) { }
 
   @Get()
-  public getMetric(): Promise<string> {
+  public getMetrics(): Promise<string> {
     return this.metricService.readMetrics();
   }
 

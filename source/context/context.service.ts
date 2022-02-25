@@ -75,17 +75,17 @@ export class ContextService<Metadata = Record<string, any>> {
     const req = this.getRequest();
     if (!req) return;
 
-    return req.routerMethod;
+    return req.method;
   }
 
   /**
-   * Acquire request path, giving priority to not replaced version.
+   * Acquire request path.
    */
   public getRequestPath(): string {
     const req = this.getRequest();
     if (!req) return;
 
-    return req.routerPath;
+    return req.routerPath || `/${req.params?.['*']}`;
   }
 
   /**
@@ -103,6 +103,10 @@ export class ContextService<Metadata = Record<string, any>> {
   public getRequestParams(): Record<string, any> {
     const req = this.getRequest();
     if (!req) return;
+
+    if (req.params) {
+      delete req.params['*'];
+    }
 
     return this.validateObjectLength(req.params as Record<string, any>);
   }
