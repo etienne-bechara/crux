@@ -28,7 +28,7 @@
   "scripts": {
     "prepare": "husky install .config/husky",
     "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./example/main.ts",
-    "dev:metric": "cd example && docker-compose up -d --force-recreate && pnpm dev",
+    "dev:metrics": "cd example && docker-compose up -d --force-recreate && pnpm dev",
     "build": "pnpx -y rimraf ./dist && pnpm run index && tsc -p tsconfig.build.json && pnpx -y rimraf ./source/index.ts",
     "index": "pnpx -y rimraf ./source/index.ts && pnpx -y barrelsby -q -e \\.spec\\.ts$ -d ./source",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",

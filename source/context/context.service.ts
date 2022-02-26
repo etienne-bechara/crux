@@ -85,7 +85,7 @@ export class ContextService<Metadata = Record<string, any>> {
     const req = this.getRequest();
     if (!req) return;
 
-    return req.routerPath || `/${req.params?.['*']}`;
+    return req.routerPath || req.url;
   }
 
   /**
