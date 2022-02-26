@@ -178,7 +178,7 @@ export class HttpService {
     const errorMessage: string = message;
     const exceptionCode = /code (\d+)/g.exec(errorMessage);
 
-    const statusCode = proxyExceptions && exceptionCode
+    const code = proxyExceptions && exceptionCode
       ? Number(exceptionCode[1])
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -188,7 +188,7 @@ export class HttpService {
       message: `${method} ${url} | ${message}`,
       proxyExceptions,
       outboundResponse: {
-        statusCode: response?.statusCode,
+        code: response?.statusCode,
         headers: response?.headers,
         body: response?.body,
       },
@@ -197,7 +197,7 @@ export class HttpService {
         method,
         ...request,
       },
-    }, statusCode);
+    }, code);
   }
 
   /**

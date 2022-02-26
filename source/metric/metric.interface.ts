@@ -1,1 +1,1 @@
-export type MetricHttpLabel = 'method' | 'path' | 'status';
+export type MetricHttpLabel = 'method' | 'path' | 'code';

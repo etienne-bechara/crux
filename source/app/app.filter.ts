@@ -26,7 +26,7 @@ export class AppFilter implements ExceptionFilter {
   public catch(exception: HttpException | Error): void {
     const appException: AppException = {
       exception,
-      statusCode: this.getStatusCode(exception),
+      code: this.getCode(exception),
       message: this.getMessage(exception),
       details: this.getDetails(exception),
     };
@@ -40,17 +40,17 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  private getStatusCode(exception: HttpException | Error): HttpStatus {
-    let errorCode: HttpStatus;
+  private getCode(exception: HttpException | Error): HttpStatus {
+    let code: HttpStatus;
 
     if (exception instanceof HttpException) {
-      errorCode = exception.getStatus();
+      code = exception.getStatus();
     }
     else if (exception.message?.includes('body is too large')) {
-      errorCode = HttpStatus.PAYLOAD_TOO_LARGE;
+      code = HttpStatus.PAYLOAD_TOO_LARGE;
     }
 
-    return errorCode || HttpStatus.INTERNAL_SERVER_ERROR;
+    return code || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   /**
@@ -62,9 +62,9 @@ export class AppFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const details = exception.getResponse() as Record<string, any>;
-      const status = exception.getStatus();
+      const code = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
+      if (code === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
         message = 'request validation failed';
       }
       else if (details?.message && typeof details.message === 'string') {
@@ -90,9 +90,9 @@ export class AppFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       details = exception.getResponse() as Record<string, any>;
-      const status = exception.getStatus();
+      const code = exception.getStatus();
 
-      if (status === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
+      if (code === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
         const constraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
@@ -115,7 +115,7 @@ export class AppFilter implements ExceptionFilter {
    * @param params
    */
   private logException(params: AppException): void {
-    const { details, exception, message, statusCode } = params;
+    const { details, exception, message, code } = params;
     const httpErrors = AppModule.getOptions().httpErrors;
 
     const inboundRequest = {
@@ -130,7 +130,7 @@ export class AppFilter implements ExceptionFilter {
 
     const data = { message, ...inboundRequest, ...details };
 
-    return httpErrors.includes(statusCode)
+    return httpErrors.includes(code)
       ? this.loggerService.error(exception, data)
       : this.loggerService.info(exception, data);
   }
@@ -140,14 +140,14 @@ export class AppFilter implements ExceptionFilter {
    * @param params
    */
   private registerException(params: AppException): void {
-    const { statusCode } = params;
+    const { code } = params;
 
     const histogram = this.metricService.getHttpInboundHistogram();
     const latency = this.contextService.getRequestLatency();
     const method = this.contextService.getRequestMethod();
     const path = this.contextService.getRequestPath();
 
-    histogram.labels(method, path, statusCode.toString()).observe(latency);
+    histogram.labels(method, path, code.toString()).observe(latency);
   }
 
   /**
@@ -155,14 +155,14 @@ export class AppFilter implements ExceptionFilter {
    * @param params
    */
   private sendResponse(params: AppException): void {
-    const { details, message, statusCode } = params;
+    const { details, message, code } = params;
     const res = this.contextService.getResponse();
 
     const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
-    const isInternalError = statusCode === HttpStatus.INTERNAL_SERVER_ERROR;
+    const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
 
     const filteredResponse: AppExceptionResponse = {
-      code: statusCode,
+      code: code,
       message: isProduction && isInternalError ? 'unexpected error' : message,
       ...isProduction && isInternalError ? { } : details,
     };
@@ -174,9 +174,9 @@ export class AppFilter implements ExceptionFilter {
       ? exceptionBody
       : filteredResponse;
 
-    this.loggerService.http(this.contextService.getRequestDescription(statusCode));
+    this.loggerService.http(this.contextService.getRequestDescription(code));
 
-    res.code(statusCode);
+    res.code(code);
     res.header('Content-Type', 'application/json');
     res.send(clientResponse);
   }

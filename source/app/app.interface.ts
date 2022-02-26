@@ -105,7 +105,7 @@ export interface AppResponse {
 
 export interface AppException {
   exception: HttpException | Error;
-  statusCode: HttpStatus;
+  code: HttpStatus;
   message: string;
   details: AppExceptionDetails;
 }

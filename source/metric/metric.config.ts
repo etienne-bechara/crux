@@ -6,7 +6,7 @@ export class MetricConfig {
   public readonly METRIC_HTTP_DEFAULT_LABELS = [
     'method',
     'path',
-    'status',
+    'code',
   ];
 
   public readonly METRIC_HTTP_DEFAULT_BUCKETS = [

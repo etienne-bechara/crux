@@ -32,10 +32,10 @@ export class MetricInterceptor implements NestInterceptor {
           const latency = this.contextService.getRequestLatency();
           const method = this.contextService.getRequestMethod();
           const path = this.contextService.getRequestPath();
-          const status = HttpStatus.OK;
+          const code = HttpStatus.OK;
 
-          histogram.labels(method, path, status.toString()).observe(latency);
-          this.loggerService.http(this.contextService.getRequestDescription(status));
+          histogram.labels(method, path, code.toString()).observe(latency);
+          this.loggerService.http(this.contextService.getRequestDescription(code));
 
           return data;
         }),

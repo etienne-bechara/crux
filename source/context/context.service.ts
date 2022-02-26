@@ -210,14 +210,14 @@ export class ContextService<Metadata = Record<string, any>> {
 
   /**
    * Builds a request description including method, path, ip and user agent.
-   * If `status` is provided consider as outbound and add latency details.
-   * @param status
+   * If `code` is provided consider as outbound and add latency details.
+   * @param code
    */
-  public getRequestDescription(status?: HttpStatus): string {
+  public getRequestDescription(code?: HttpStatus): string {
     const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
 
-    return status
-      ? `< ${description} | ${status} | ${this.getRequestLatency()} ms`
+    return code
+      ? `< ${description} | ${code} | ${this.getRequestLatency()} ms`
       : `> ${description} | ${this.getRequestIp()} | ${this.getRequestUserAgent()}`;
   }
 
