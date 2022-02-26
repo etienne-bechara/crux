@@ -1,3 +1,37 @@
+# [4.0.0-beta.1](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.2...v4.0.0-beta.1) (2022-02-26)
+
+
+### Bug Fixes
+
+* add sensitive keys as app options ([72de7f8](https://github.com/etienne-bechara/nestjs-core/commit/72de7f84e858ae4d61a87d979628935f0a2228d2))
+* config validation exit ([2d6142c](https://github.com/etienne-bechara/nestjs-core/commit/2d6142caed90c9b3158655ab4714168cba36014c))
+* context and storage services and tests ([39f8055](https://github.com/etienne-bechara/nestjs-core/commit/39f80551336e19c4e3d17ae0df828f638f27812e))
+* disableMetrics to work correctly ([654250e](https://github.com/etienne-bechara/nestjs-core/commit/654250e395794fb603235f54e14157d4f27781c0))
+* http inbound metrics ([04c7387](https://github.com/etienne-bechara/nestjs-core/commit/04c73872d2ffbd12ed55334b66b3cc4539fa5c8e))
+* http inbound metrics ([672ef3d](https://github.com/etienne-bechara/nestjs-core/commit/672ef3d638a145da70fc57de50c5140baec13a0c))
+* http messaging and slack style ([7c40a2e](https://github.com/etienne-bechara/nestjs-core/commit/7c40a2e1efd5fe246f72b795ad4b7d4fbb772b3a))
+* inbound/outbound nomenclature ([a3bbf88](https://github.com/etienne-bechara/nestjs-core/commit/a3bbf880be6d2cdc21237b9f9bbc2a4fa7d68423))
+* metadata printing ([6628eb5](https://github.com/etienne-bechara/nestjs-core/commit/6628eb5f56e4f4fa7d76121b792f22207983d403))
+* refactor logger transports ([d376d72](https://github.com/etienne-bechara/nestjs-core/commit/d376d72f211f2ee81b59ad38068cf893109add1f))
+* remove crypto ([7ad4065](https://github.com/etienne-bechara/nestjs-core/commit/7ad4065a4f31d5a25776300f4c162f1928051fc4))
+* rename status/statuCode to consistent code ([fdd0e70](https://github.com/etienne-bechara/nestjs-core/commit/fdd0e7039e8ac63631dd0f02dbd9ae09d2812729))
+* request path and metrics example ([32d9133](https://github.com/etienne-bechara/nestjs-core/commit/32d9133ae8dd5c7fa4e828834ea97955b1574e05))
+* sensitive keys replacing ([ef1b100](https://github.com/etienne-bechara/nestjs-core/commit/ef1b100896036c7fa36ad84400fe973da6e39cbb))
+
+
+### Features
+
+* add default metrics collector ([41eaa26](https://github.com/etienne-bechara/nestjs-core/commit/41eaa26cf400b698f34149e201659927f81237c5))
+* add inbound http histogram metric ([cf2e201](https://github.com/etienne-bechara/nestjs-core/commit/cf2e2013c6b1c4015d5071c798c797a2e079f90f))
+* add outbound http metrics ([b978e7c](https://github.com/etienne-bechara/nestjs-core/commit/b978e7cd6fd161385487d02cd21c3527bce39901))
+* add request id to logging and headers ([be09e4d](https://github.com/etienne-bechara/nestjs-core/commit/be09e4dbe5edc87251a71b64d58dc134c9a83f8a))
+* improve app modules options control ([680caf1](https://github.com/etienne-bechara/nestjs-core/commit/680caf1db1b47e31d59e07413aeba890e8166c62))
+
+
+### BREAKING CHANGES
+
+* improve app modules options control
+
 ## [3.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.1...v3.6.2) (2022-02-10)
 
 
