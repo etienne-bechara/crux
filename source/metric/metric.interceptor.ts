@@ -2,7 +2,6 @@ import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor 
 import { mergeMap, Observable } from 'rxjs';
 
 import { ContextService } from '../context/context.service';
-import { LoggerService } from '../logger/logger.service';
 import { MetricService } from './metric.service';
 
 @Injectable()
@@ -10,7 +9,6 @@ export class MetricInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly contextService: ContextService,
-    private readonly loggerService: LoggerService,
     private readonly metricService: MetricService,
   ) { }
 
@@ -22,20 +20,17 @@ export class MetricInterceptor implements NestInterceptor {
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const histogram = this.metricService.getHttpInboundHistogram();
 
-    this.loggerService.http(this.contextService.getRequestDescription());
-
     return next
       .handle()
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          const latency = this.contextService.getRequestLatency();
           const method = this.contextService.getRequestMethod();
           const path = this.contextService.getRequestPath();
           const code = HttpStatus.OK;
+          const latency = this.contextService.getRequestLatency();
 
           histogram.labels(method, path, code.toString()).observe(latency);
-          this.loggerService.http(this.contextService.getRequestDescription(code));
 
           return data;
         }),

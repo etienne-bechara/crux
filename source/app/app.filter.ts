@@ -142,7 +142,9 @@ export class AppFilter implements ExceptionFilter {
   private collectExceptionMetrics(params: AppException): void {
     const { code } = params;
 
-    const histogram = this.metricService.getHttpInboundHistogram();
+    const histogram = this.metricService?.getHttpInboundHistogram();
+    if (!histogram) return;
+
     const latency = this.contextService.getRequestLatency();
     const method = this.contextService.getRequestMethod();
     const path = this.contextService.getRequestPath();

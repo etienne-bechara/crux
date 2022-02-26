@@ -191,7 +191,10 @@ export class HttpService {
    */
   private collectOutboundMetrics(params: HttpMetricParams): void {
     const { start, method, host, path, code } = params;
-    const histogram = this.metricService.getHttpOutboundHistogram();
+
+    const histogram = this.metricService?.getHttpOutboundHistogram();
+    if (!histogram) return;
+
     const latency = Date.now() - start;
 
     histogram.labels(method || 'GET', host, path || '/', code).observe(latency);

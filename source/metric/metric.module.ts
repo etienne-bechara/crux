@@ -21,3 +21,15 @@ import { MetricService } from './metric.service';
   ],
 })
 export class MetricModule { }
+
+@Module({
+  providers: [
+    { provide: MetricConfig, useValue: null },
+    { provide: MetricService, useValue: null },
+  ],
+  exports: [
+    { provide: MetricConfig, useValue: null },
+    { provide: MetricService, useValue: null },
+  ],
+})
+export class MetricDisabledModule { }

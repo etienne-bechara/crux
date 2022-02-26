@@ -15,13 +15,13 @@ import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
-import { MetricModule } from '../metric/metric.module';
+import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
-import { AppInterceptor } from './app.interceptor';
+import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
 import { LoggerService } from './app.override';
 import { AppService } from './app.service';
@@ -207,6 +207,9 @@ export class AppModule {
     if (!disableMetrics) {
       defaultModules.push(MetricModule);
     }
+    else {
+      defaultModules.push(MetricDisabledModule);
+    }
 
     if (!disableScan) {
       sourceModules = AppModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
@@ -254,7 +257,8 @@ export class AppModule {
     const { disableFilter, disableSerializer, disableValidator, providers } = this.options;
 
     const preloadedProviders: any[] = [
-      { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
+      { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
+      { provide: APP_INTERCEPTOR, useClass: AppTimeoutInterceptor },
       AppConfig,
       AppService,
     ];
