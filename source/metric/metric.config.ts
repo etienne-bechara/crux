@@ -3,12 +3,6 @@ import { Config } from '../config/config.decorator';
 @Config()
 export class MetricConfig {
 
-  public readonly METRIC_HTTP_DEFAULT_LABELS = [
-    'method',
-    'path',
-    'code',
-  ];
-
   public readonly METRIC_HTTP_DEFAULT_BUCKETS = [
     100,
     200,

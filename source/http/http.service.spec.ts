@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Module } from '@nestjs/common';
 
 import { AppModule } from '../app/app.module';
+import { AppService } from '../app/app.service';
 import { HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
@@ -11,13 +12,6 @@ class JsonService {
   public constructor(
     private readonly httpService: HttpService,
   ) { }
-
-  /**
-   * Returns the underlying HttpService for testing.
-   */
-  public getHttpService(): HttpService {
-    return this.httpService;
-  }
 
 }
 
@@ -38,26 +32,9 @@ class JsonService {
 })
 class JsonModule { }
 
-@Module({
-  imports: [
-    HttpModule.register({
-      proxyExceptions: true,
-      prefixUrl: 'https://jsonplaceholder.typicode.com',
-      resolveBodyOnly: true,
-      responseType: 'json',
-    }),
-  ],
-  providers: [
-    JsonService,
-  ],
-  exports: [
-    JsonService,
-  ],
-})
-class JsonProxyModule { }
-
 describe('HttpService', () => {
-  let httpService: HttpService;
+  let appHttpService: HttpService;
+  let jsonHttpService: HttpService;
 
   beforeAll(async () => {
     const app = await AppModule.compile({
@@ -66,7 +43,8 @@ describe('HttpService', () => {
       imports: [ JsonModule ],
     });
 
-    httpService = app.get(JsonService).getHttpService();
+    appHttpService = app.get(AppService)['httpService'];
+    jsonHttpService = app.get(JsonService)['httpService'];
   });
 
   describe('get', () => {
@@ -77,7 +55,7 @@ describe('HttpService', () => {
         title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
       };
 
-      const data = await httpService.get('posts/:id', {
+      const data = await jsonHttpService.get('posts/:id', {
         replacements: { id: '1' },
       });
 
@@ -93,14 +71,14 @@ describe('HttpService', () => {
         userId: 1,
       };
 
-      const data = await httpService.post('posts', { json: mockPost });
+      const data = await jsonHttpService.post('posts', { json: mockPost });
       expect(data).toMatchObject(mockPost);
     });
   });
 
   describe('delete', () => {
     it('should remove a placeholder resource', async () => {
-      const data = await httpService.delete('posts/:postId', {
+      const data = await jsonHttpService.delete('posts/:postId', {
         replacements: { postId: '1' },
       });
 
@@ -113,7 +91,7 @@ describe('HttpService', () => {
       let errorMessage: string;
 
       try {
-        await httpService.get('posts', { timeout: 1 });
+        await jsonHttpService.get('posts', { timeout: 1 });
       }
       catch (e) {
         errorMessage = e.message;
@@ -126,7 +104,7 @@ describe('HttpService', () => {
       let errorStatus: number;
 
       try {
-        await httpService.get('404');
+        await jsonHttpService.get('404');
       }
       catch (e) {
         errorStatus = e.status;
@@ -135,27 +113,13 @@ describe('HttpService', () => {
       expect(errorStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     });
   });
-});
-
-describe('HttpService (Proxy)', () => {
-  let httpService: HttpService;
-
-  beforeAll(async () => {
-    const app = await AppModule.compile({
-      disableScan: true,
-      disableLogger: true,
-      imports: [ JsonProxyModule ],
-    });
-
-    httpService = app.get(JsonService).getHttpService();
-  });
 
   describe('request proxy', () => {
     it('should throw a not found exception', async () => {
       let errorStatus: number;
 
       try {
-        await httpService.get('404');
+        await jsonHttpService.get('404', { proxyExceptions: true });
       }
       catch (e) {
         errorStatus = e.status;
@@ -164,19 +128,10 @@ describe('HttpService (Proxy)', () => {
       expect(errorStatus).toEqual(HttpStatus.NOT_FOUND);
     });
   });
-});
-
-describe('HttpService (Utilities)', () => {
-  let httpService: HttpService;
-
-  beforeAll(async () => {
-    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
-    httpService = await app.resolve(HttpService);
-  });
 
   describe('parseCookies', () => {
     it('should parse cookies from response headers', async () => {
-      const res: HttpResponse<string> = await httpService.get('https://www.google.com', {
+      const res: HttpResponse<string> = await appHttpService.get('https://www.google.com', {
         responseType: 'text',
         resolveBodyOnly: false,
       });
@@ -187,4 +142,3 @@ describe('HttpService (Utilities)', () => {
     });
   });
 });
-

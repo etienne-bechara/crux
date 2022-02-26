@@ -32,7 +32,7 @@ export class AppFilter implements ExceptionFilter {
     };
 
     this.logException(appException);
-    this.registerException(appException);
+    this.collectExceptionMetrics(appException);
     this.sendResponse(appException);
   }
 
@@ -139,7 +139,7 @@ export class AppFilter implements ExceptionFilter {
    * Register exception metrics.
    * @param params
    */
-  private registerException(params: AppException): void {
+  private collectExceptionMetrics(params: AppException): void {
     const { code } = params;
 
     const histogram = this.metricService.getHttpInboundHistogram();

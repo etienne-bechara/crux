@@ -3,8 +3,9 @@ import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
 import { LoggerService } from '../logger/logger.service';
+import { MetricService } from '../metric/metric.service';
 import { HttpInjectionToken } from './http.enum';
-import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpRequestParams } from './http.interface';
+import { HttpCookie, HttpExceptionParams, HttpMetricParams, HttpModuleOptions, HttpRequestParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -15,6 +16,7 @@ export class HttpService {
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly loggerService: LoggerService,
+    private readonly metricService: MetricService,
   ) {
     if (this.httpModuleOptions.silent) {
       this.loggerService = undefined;
@@ -127,38 +129,72 @@ export class HttpService {
    * - Improved exception logging containing response
    * - Response exception proxying to client.
    * - Response cookie parsing.
+   *
+   * At the end of external request, regardless of status,
+   * register latency at outbound histogram.
    * @param url
    * @param params
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
-    this.loggerService?.debug('Executing external request', { url, ...params });
-    let res: any;
+    const { ignoreExceptions, resolveBodyOnly, method, prefixUrl } = params;
+    const rawHost: string = this.httpModuleOptions.prefixUrl as string || prefixUrl as string || url;
+    const host = rawHost?.replace(/^https?:\/\//, '').split('/')[0];
+    const isIgnoreExceptions = ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
+    const isResolveBodyOnly = resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
+    const finalUrl = this.replacePathVariables(url, params);
+    let response: any;
 
-    const isIgnoreExceptions = params.ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
-    const isResolveBodyOnly = params.resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
+    const metrics: HttpMetricParams = {
+      start: Date.now(),
+      method,
+      host,
+      path: url.includes('http')
+        ? url.replace(/^https?:\/\//, '').replace(host, '')
+        : `/${url}`,
+    };
+
+    this.buildSearchParams(params);
     params.resolveBodyOnly = undefined;
 
-    const finalUrl = this.replacePathVariables(url, params);
-    this.buildSearchParams(params);
-
     try {
-      res = await this.instance(finalUrl, params);
+      this.loggerService?.debug('Executing external request', { url, ...params });
+      response = await this.instance(finalUrl, params);
+
+      const code = response.statusCode;
+      this.collectOutboundMetrics({ ...metrics, code });
     }
     catch (e) {
+      if (e.response) {
+        const code = e.response.statusCode;
+        this.collectOutboundMetrics({ ...metrics, code });
+      }
+
       if (isIgnoreExceptions) {
-        res = e.response;
+        response = e.response;
       }
       else {
-        this.handleRequestException({ url, error: e, request: params });
+        this.handleRequestException({ ...metrics, error: e, request: params });
       }
     }
 
-    if (res) {
-      const headers: IncomingHttpHeaders = res.headers;
-      res.cookies = this.parseCookies(headers);
+    if (response) {
+      const headers: IncomingHttpHeaders = response.headers;
+      response.cookies = this.parseCookies(headers);
     }
 
-    return isResolveBodyOnly ? res?.body : res;
+    return isResolveBodyOnly ? response?.body : response;
+  }
+
+  /**
+   * Collect metrics for target outbound HTTP request.
+   * @param params
+   */
+  private collectOutboundMetrics(params: HttpMetricParams): void {
+    const { start, method, host, path, code } = params;
+    const histogram = this.metricService.getHttpOutboundHistogram();
+    const latency = Date.now() - start;
+
+    histogram.labels(method || 'GET', host, path || '/', code).observe(latency);
   }
 
   /**
@@ -170,22 +206,19 @@ export class HttpService {
    * @param params
    */
   private handleRequestException(params: HttpExceptionParams): void {
-    const { proxyExceptions } = this.httpModuleOptions;
-    const { url, request, error } = params;
+    const { method, host, path, request, error } = params;
     const { message, response } = error;
-    const { method } = request;
+    const { proxyExceptions } = request;
+    const isProxyExceptions = this.httpModuleOptions.proxyExceptions ?? proxyExceptions;
 
-    const errorMessage: string = message;
-    const exceptionCode = /code (\d+)/g.exec(errorMessage);
-
-    const code = proxyExceptions && exceptionCode
-      ? Number(exceptionCode[1])
+    const code = isProxyExceptions && response?.statusCode
+      ? Number(response?.statusCode)
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
     delete request.url;
 
     throw new HttpException({
-      message: `${method} ${url} | ${message}`,
+      message: `${method} ${path} | ${message}`,
       proxyExceptions,
       outboundResponse: {
         code: response?.statusCode,
@@ -193,8 +226,9 @@ export class HttpService {
         body: response?.body,
       },
       outboundRequest: {
-        url,
         method,
+        host,
+        path,
         ...request,
       },
     }, code);
