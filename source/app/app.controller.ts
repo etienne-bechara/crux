@@ -1,8 +1,10 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 import { AppStatus } from './app.interface';
 import { AppService } from './app.service';
 
+@ApiExcludeController()
 @Controller()
 export class AppController {
 

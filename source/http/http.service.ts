@@ -75,7 +75,6 @@ export class HttpService {
       response = await this.instance(finalUrl, params);
 
       const code = response.statusCode;
-      this.loggerService?.http(`<< ${method} ${host}${path} | ${code}`, logParams);
       this.collectOutboundMetrics({ ...metricParams, code });
     }
     catch (e) {
@@ -204,11 +203,12 @@ export class HttpService {
    */
   private collectOutboundMetrics(params: HttpMetricParams): void {
     const { start, method, host, path, code } = params;
+    const latency = Date.now() - start;
+
+    this.loggerService?.http(`<< ${method} ${host}${path} | ${code} | ${latency}ms`);
 
     const histogram = this.metricService?.getHttpOutboundHistogram();
     if (!histogram) return;
-
-    const latency = Date.now() - start;
 
     histogram.labels(method || 'GET', host, path, code).observe(latency);
   }

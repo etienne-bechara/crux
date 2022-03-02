@@ -2,6 +2,7 @@
 export * from '@nestjs/common';
 export * from '@nestjs/core';
 export * from '@nestjs/platform-fastify';
+export * from '@nestjs/swagger';
 export * from 'class-transformer';
 export * from 'class-validator';
 export * from 'prom-client';

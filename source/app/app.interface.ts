@@ -3,24 +3,47 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import http from 'http';
 import os from 'os';
 
+import { RedocAppOptions } from '../redoc/redoc.interface';
+
 export interface AppOptions extends ModuleMetadata {
+  /** Provide an already built instance to skip `.compile()` step. */
   instance?: INestApplication;
+  /** Environment variables file path. Default: `.env`. */
   envPath?: string;
+  /** Disables automatically importing `*.module.ts` files. */
   disableScan?: boolean;
+  /** Disables status endpoints `/` and `/status`. */
   disableStatus?: boolean;
+  /** Disables built-in exception filter `app.filter.ts`. */
   disableFilter?: boolean;
+  /** Disables serialization interceptor which applies `class-transformer` decorators. */
   disableSerializer?: boolean;
+  /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
+  /** Disables logger transports (Console, Sentry and Slack). */
   disableLogger?: boolean;
+  /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
+  /** Disables documentation generator and `docs` endpoint. */
+  disableDocumentation?: boolean;
+  /** Application port. Default: 8080. */
   port?: number;
+  /** Application hostname. Default: `0.0.0.0`. */
   hostname?: string;
+  /** Application global prefix path. */
   globalPrefix?: string;
+  /** Application request timeout in milliseconds. Default: 60000. */
   timeout?: number;
+  /** Application CORS response. */
   cors?: CorsOptions;
+  /** HTTP exceptions that should be logged as errors. Default: Array of all `5xx` status. */
   httpErrors?: HttpStatus[];
-  adapterOptions?: Record<string, any>;
+  /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
+  /** Extra underlying HTTP adapter options. */
+  fastify?: Record<string, any>;
+  /** Redoc rendered documentation page options. */
+  redoc?: RedocAppOptions;
 }
 
 export interface AppStatus {
