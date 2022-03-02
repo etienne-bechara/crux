@@ -20,6 +20,7 @@ import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { RedocModule } from '../redoc/redoc.module';
+import { RedocService } from '../redoc/redoc.service';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { AppConfig } from './app.config';
@@ -152,7 +153,8 @@ export class AppModule {
    * endpoint naming.
    */
   private static configureDocumentation(): void {
-    const defaultLogo = 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png';
+    const redocService: RedocService = this.instance.get(RedocService);
+    const { title, description, version, logo, tagGroups } = redocService.buildAppOptions();
 
     this.instance['setViewEngine']({
       engine: { handlebars },
@@ -160,7 +162,13 @@ export class AppModule {
       templates: path.join(__dirname, '..', 'redoc'),
     });
 
-    const document = SwaggerModule.createDocument(this.instance, new DocumentBuilder().build(), {
+    const builder = new DocumentBuilder()
+      .setTitle(title)
+      .setDescription(description)
+      .setVersion(version)
+      .build();
+
+    const document = SwaggerModule.createDocument(this.instance, builder, {
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const entityName = controllerKey.replace('Controller', '');
         const defaultId = `${controllerKey}_${methodKey}`;
@@ -183,7 +191,8 @@ export class AppModule {
       },
     });
 
-    document.info['x-logo'] = this.options.redoc?.logo ?? { url: defaultLogo };
+    document['x-tagGroups'] = tagGroups;
+    document.info['x-logo'] = logo;
 
     SwaggerModule.setup('openapi', this.instance, document);
   }

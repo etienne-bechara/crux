@@ -9,4 +9,6 @@ export interface RedocRenderOptions {
 
 export interface RedocAppOptions extends RedocOptions {
   openApiUrl?: string;
+  version?: string;
+  description?: string;
 }

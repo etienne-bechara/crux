@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppConfig } from '../app/app.config';
 import { AppModule } from '../app/app.module';
 import { RedocConfig } from './redoc.config';
 import { RedocAppOptions, RedocRenderOptions } from './redoc.interface';
@@ -9,7 +8,6 @@ import { RedocAppOptions, RedocRenderOptions } from './redoc.interface';
 export class RedocService {
 
   public constructor(
-    private readonly appConfig: AppConfig,
     private readonly redocConfig: RedocConfig,
   ) { }
 
@@ -21,7 +19,10 @@ export class RedocService {
   public buildRenderOptions(): RedocRenderOptions {
     const options = this.buildAppOptions();
     const { title, favicon, openApiUrl } = options;
+
     delete options.openApiUrl;
+    delete options.version;
+    delete options.description;
 
     return { title, favicon, openApiUrl, options: JSON.stringify(options) };
   }
@@ -29,7 +30,7 @@ export class RedocService {
   /**
    * Build Redoc options merging them with application provided.
    */
-  private buildAppOptions(): RedocAppOptions {
+  public buildAppOptions(): RedocAppOptions {
     const defaultOptions = this.redocConfig.REDOC_DEFAULT_OPTIONS;
     const { redoc: appOptions, port } = AppModule.getOptions() || { };
 
