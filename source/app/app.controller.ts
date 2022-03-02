@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { AppStatus } from './app.interface';
 import { AppService } from './app.service';
@@ -11,8 +11,9 @@ export class AppController {
   ) { }
 
   @Get()
-  public get(): Promise<AppStatus> {
-    return this.appService.getStatus();
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public get(): void {
+    return;
   }
 
   @Get('status')

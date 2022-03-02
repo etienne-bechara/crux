@@ -20,7 +20,14 @@ export class AppLoggerInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    this.loggerService.http(this.contextService.getRequestDescription());
+    this.loggerService.http(this.contextService.getRequestDescription(), {
+      method: this.contextService.getRequestMethod(),
+      path: this.contextService.getRequestPath(),
+      params: this.contextService.getRequestParams(),
+      query: this.contextService.getRequestQuery(),
+      body: this.contextService.getRequestBody(),
+      headers: this.contextService.getRequestHeaders(),
+    });
 
     return next
       .handle()

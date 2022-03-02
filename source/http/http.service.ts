@@ -42,6 +42,82 @@ export class HttpService {
   }
 
   /**
+   * Handles all requests, extending GOT functionality with:
+   * - Path variables replacement
+   * - Search param array joining
+   * - Improved exception logging containing response
+   * - Response exception proxying to client.
+   * - Response cookie parsing.
+   *
+   * At the end of external request, regardless of status,
+   * register latency at outbound histogram.
+   * @param url
+   * @param params
+   */
+  public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
+    const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, headers } = params;
+    const { host, path } = this.getHostPath(url, params);
+
+    const start = Date.now();
+    const metricParams: HttpMetricParams = { start, method, host, path };
+    const logParams = { method, host, path, replacements, query, body, headers };
+
+    const isIgnoreExceptions = ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
+    const isResolveBodyOnly = resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
+    const finalUrl = this.replacePathVariables(url, params);
+    let response: any;
+
+    this.buildSearchParams(params);
+    params.resolveBodyOnly = undefined;
+
+    try {
+      this.loggerService?.http(`>> ${method} ${host}${path}`, logParams);
+      response = await this.instance(finalUrl, params);
+
+      const code = response.statusCode;
+      this.loggerService?.http(`<< ${method} ${host}${path} | ${code}`, logParams);
+      this.collectOutboundMetrics({ ...metricParams, code });
+    }
+    catch (e) {
+      if (e.response) {
+        const code = e.response.statusCode;
+        this.collectOutboundMetrics({ ...metricParams, code });
+      }
+
+      if (isIgnoreExceptions) {
+        response = e.response;
+      }
+      else {
+        this.handleRequestException({ ...metricParams, error: e, request: params });
+      }
+    }
+
+    if (response) {
+      const headers: IncomingHttpHeaders = response.headers;
+      response.cookies = this.parseCookies(headers);
+    }
+
+    return isResolveBodyOnly ? response?.body : response;
+  }
+
+  /**
+   * Acquire pre replacement host and path given request params.
+   * @param url
+   * @param params
+   */
+  private getHostPath(url: string, params: HttpRequestParams): { host: string; path: string} {
+    const { prefixUrl } = params;
+
+    const rawHost: string = this.httpModuleOptions.prefixUrl as string || prefixUrl as string || url;
+    const host = rawHost?.replace(/^https?:\/\//, '').split('/')[0];
+
+    const rawPath = url.includes('http') ? url.replace(/^https?:\/\//, '').replace(host, '') : `/${url}`;
+    const path = rawPath || '/';
+
+    return { host, path };
+  }
+
+  /**
    * Given a request configuration, replace URL variables that matches
    * :param_name to its equivalent at replacements property.
    * @param url
@@ -123,69 +199,6 @@ export class HttpService {
   }
 
   /**
-   * Handles all requests, extending GOT functionality with:
-   * - Path variables replacement
-   * - Search param array joining
-   * - Improved exception logging containing response
-   * - Response exception proxying to client.
-   * - Response cookie parsing.
-   *
-   * At the end of external request, regardless of status,
-   * register latency at outbound histogram.
-   * @param url
-   * @param params
-   */
-  public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
-    const { ignoreExceptions, resolveBodyOnly, method, prefixUrl } = params;
-    const rawHost: string = this.httpModuleOptions.prefixUrl as string || prefixUrl as string || url;
-    const host = rawHost?.replace(/^https?:\/\//, '').split('/')[0];
-    const isIgnoreExceptions = ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
-    const isResolveBodyOnly = resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
-    const finalUrl = this.replacePathVariables(url, params);
-    let response: any;
-
-    const metrics: HttpMetricParams = {
-      start: Date.now(),
-      method,
-      host,
-      path: url.includes('http')
-        ? url.replace(/^https?:\/\//, '').replace(host, '')
-        : `/${url}`,
-    };
-
-    this.buildSearchParams(params);
-    params.resolveBodyOnly = undefined;
-
-    try {
-      this.loggerService?.debug('Executing external request', { url, ...params });
-      response = await this.instance(finalUrl, params);
-
-      const code = response.statusCode;
-      this.collectOutboundMetrics({ ...metrics, code });
-    }
-    catch (e) {
-      if (e.response) {
-        const code = e.response.statusCode;
-        this.collectOutboundMetrics({ ...metrics, code });
-      }
-
-      if (isIgnoreExceptions) {
-        response = e.response;
-      }
-      else {
-        this.handleRequestException({ ...metrics, error: e, request: params });
-      }
-    }
-
-    if (response) {
-      const headers: IncomingHttpHeaders = response.headers;
-      response.cookies = this.parseCookies(headers);
-    }
-
-    return isResolveBodyOnly ? response?.body : response;
-  }
-
-  /**
    * Collect metrics for target outbound HTTP request.
    * @param params
    */
@@ -197,7 +210,7 @@ export class HttpService {
 
     const latency = Date.now() - start;
 
-    histogram.labels(method || 'GET', host, path || '/', code).observe(latency);
+    histogram.labels(method || 'GET', host, path, code).observe(latency);
   }
 
   /**
