@@ -38,8 +38,7 @@ describe('HttpService', () => {
 
   beforeAll(async () => {
     const app = await AppModule.compile({
-      disableScan: true,
-      disableLogger: true,
+      disableAll: true,
       imports: [ JsonModule ],
     });
 

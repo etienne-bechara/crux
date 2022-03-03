@@ -11,7 +11,7 @@ describe('AsyncService', () => {
   let asyncService: AsyncService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
+    const app = await AppModule.compile({ disableAll: true });
     asyncService = app.get(AsyncService);
   });
 

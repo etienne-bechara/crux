@@ -96,6 +96,19 @@ export class AppModule {
     const fastify = { ...APP_DEFAULT_OPTIONS.fastify, ...options.fastify };
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options, redoc, fastify };
+
+    if (this.options.disableAll) {
+      this.options.disableDocumentation = true;
+      this.options.disableFilter = true;
+      this.options.disableLogger = true;
+      this.options.disableMetrics = true;
+      this.options.disableScan = true;
+      this.options.disableSerializer = true;
+      this.options.disableStatus = true;
+      this.options.disableUtilities = true;
+      this.options.disableValidator = true;
+    }
+
     ConfigService.setSecret({ key: 'APP_OPTIONS', value: this.options });
   }
 
@@ -289,13 +302,13 @@ export class AppModule {
    */
   private static buildControllers(): any[] {
     const { disableStatus, controllers } = this.options;
-    const preloadedControllers = [ ...controllers ];
+    const preloadedControllers = [ ];
 
     if (!disableStatus) {
       preloadedControllers.push(AppController);
     }
 
-    return preloadedControllers;
+    return [ ...preloadedControllers, ...controllers ];
   }
 
   /**
@@ -303,14 +316,26 @@ export class AppModule {
    * and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilter, disableSerializer, disableValidator, providers } = this.options;
+    const { disableFilter, disableSerializer, disableValidator, disableLogger, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
-      { provide: APP_INTERCEPTOR, useClass: AppLoggerInterceptor },
-      { provide: APP_INTERCEPTOR, useClass: AppTimeoutInterceptor },
       AppConfig,
       AppService,
     ];
+
+    if (timeout) {
+      preloadedProviders.push({
+        provide: APP_INTERCEPTOR,
+        useClass: AppTimeoutInterceptor,
+      });
+    }
+
+    if (!disableLogger) {
+      preloadedProviders.push({
+        provide: APP_INTERCEPTOR,
+        useClass: AppLoggerInterceptor,
+      });
+    }
 
     if (!disableFilter) {
       preloadedProviders.push({

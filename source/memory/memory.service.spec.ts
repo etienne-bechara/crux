@@ -19,7 +19,7 @@ describe('MemoryService', () => {
   const ttl = 2000;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
+    const app = await AppModule.compile({ disableAll: true });
     memoryService = app.get(MemoryService);
   });
 

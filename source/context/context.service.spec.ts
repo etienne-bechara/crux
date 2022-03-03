@@ -7,7 +7,7 @@ describe('ContextService', () => {
   let contextService: ContextService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
+    const app = await AppModule.compile({ disableAll: true });
     contextService = app.get(ContextService);
   });
 

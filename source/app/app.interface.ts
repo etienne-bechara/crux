@@ -11,6 +11,8 @@ export interface AppOptions extends ModuleMetadata {
   instance?: INestApplication;
   /** Environment variables file path. Default: `.env`. */
   envPath?: string;
+  /** Disables all custom implementations (which can also be individually disabled). */
+  disableAll?: boolean;
   /** Disables automatically importing `*.module.ts` files. */
   disableScan?: boolean;
   /** Disables status endpoints `/` and `/status`. */
@@ -27,6 +29,8 @@ export interface AppOptions extends ModuleMetadata {
   disableMetrics?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
   disableDocumentation?: boolean;
+  /** Disable `AsyncModule` and `MemoryModule` utilities. */
+  disableUtilities?: boolean;
   /** Application port. Default: 8080. */
   port?: number;
   /** Application hostname. Default: `0.0.0.0`. */
