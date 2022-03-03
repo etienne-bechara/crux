@@ -76,12 +76,7 @@ export class FooModule { }
 
 The list of options are available at official [GOT documentation](https://github.com/sindresorhus/got/blob/main/documentation/2-options.md).
 
-They have been extended with the following optional configurations:
-
-```ts
-silent: boolean; // Disable logging of this instance events
-proxyExceptions: boolean; // In case of an exception, respond client with the same external response body
-```
+They have been extended with [optional](../../source/http/http.interface.ts) configurations.
 
 ---
 

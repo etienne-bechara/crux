@@ -28,11 +28,11 @@ export class FooService {
   }
 
   public async getUserId() {
-    return this.contextService.getMetadata('userId');
+    return this.contextService.getMetadataKey('userId');
   }
 
   public async setUserId(userId: string) {
-    this.contextService.setMetadata('userId', userId);
+    this.contextService.setMetadataKey('userId', userId);
   }
 
 }
