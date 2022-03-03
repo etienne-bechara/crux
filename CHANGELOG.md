@@ -1,3 +1,11 @@
+## [4.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.0...v4.0.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* config circular deps ([497fd97](https://github.com/etienne-bechara/nestjs-core/commit/497fd97293d6d3ff6901947604a5b964e9792220))
+* typo ([c83ce68](https://github.com/etienne-bechara/nestjs-core/commit/c83ce680fd0b8ae348b8cac50c400f0306c1a724))
+
 # [4.0.0](https://github.com/etienne-bechara/nestjs-core/compare/v3.6.2...v4.0.0) (2022-03-03)
 
 
