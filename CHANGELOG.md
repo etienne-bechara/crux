@@ -1,3 +1,18 @@
+# [4.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.3...v4.1.0) (2022-03-03)
+
+
+### Bug Fixes
+
+* config interfaces ([631e547](https://github.com/etienne-bechara/nestjs-core/commit/631e5477864fc3bfb6fa0e925d0496fd0e2cf74d))
+* prevent slack exception loop ([0f8af1b](https://github.com/etienne-bechara/nestjs-core/commit/0f8af1bdd1f37f3aa19ad683359597295ac0cdd0))
+* rename storage as memory and do not overwrite TTLs ([caad056](https://github.com/etienne-bechara/nestjs-core/commit/caad056ad159fe4b6cf65fe3dff17c3cbb4149bb))
+
+
+### Features
+
+* add automatic documentation for controller and methods ([23e1bfa](https://github.com/etienne-bechara/nestjs-core/commit/23e1bfa8f8b5a81c7eef57d95c7638f51141c21f))
+* add basic class-validator override for auto documentation ([840bbf5](https://github.com/etienne-bechara/nestjs-core/commit/840bbf5fac30100ed86eab416dae96c67853fb7e))
+
 ## [4.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.2...v4.0.3) (2022-03-03)
 
 
