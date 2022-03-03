@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { HttpService } from '../../../source/http/http.service';
 import { PostCreateDto } from './post.dto';
-import { Post } from './post.interface';
+import { Post } from './post.entity';
 
 @Injectable()
 export class PostService {

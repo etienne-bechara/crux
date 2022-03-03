@@ -2,7 +2,7 @@ import { Body, Param } from '@nestjs/common';
 
 import { Controller, Delete, Get, Patch, Post as PostMethod, Put } from '../../../source/app/app.decorator';
 import { PostCreateDto, PostIdDto } from './post.dto';
-import { Post } from './post.interface';
+import { Post } from './post.entity';
 import { PostService } from './post.service';
 
 @Controller('post')

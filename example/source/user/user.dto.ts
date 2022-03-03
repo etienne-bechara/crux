@@ -1,6 +1,6 @@
 import { OmitType, PartialType, PickType } from '@nestjs/swagger';
 
-import { User } from './user.interface';
+import { User } from './user.entity';
 
 export class UserIdDto extends PickType(User, [ 'id' ]) { }
 

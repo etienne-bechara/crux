@@ -2,7 +2,7 @@ import { Body, Param } from '@nestjs/common';
 
 import { Controller, Delete, Get, Patch, Post, Put } from '../../../source/app/app.decorator';
 import { UserCreateDto, UserIdDto } from './user.dto';
-import { User } from './user.interface';
+import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
