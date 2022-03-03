@@ -29,17 +29,17 @@ export function Config(): any {
  * @param options
  */
 export function InjectSecret(options: ConfigInjectionOptions = { }): any {
-  const { key: baseKey, jsonParse, baseValue } = options;
+  const { key: baseKey, json, fallback } = options;
 
   return function (target: unknown, propertyKey: string): void {
     const key = baseKey || propertyKey;
     Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, key, target, propertyKey);
-    ConfigService.setSecret({ key, baseValue, jsonParse });
+    ConfigService.setSecret({ key, fallback, json });
 
     Object.defineProperty(target, propertyKey, {
       get: () => ConfigService.getSecret(key),
       set: (value) => {
-        ConfigService.setSecret({ key, value, baseValue });
+        ConfigService.setSecret({ key, value, fallback });
       },
     });
   };

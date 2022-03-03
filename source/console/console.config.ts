@@ -8,8 +8,8 @@ import { LoggerLevel } from '../logger/logger.enum';
 export class ConsoleConfig {
 
   @InjectSecret({
-    baseValue: (nodeEnv) => {
-      switch (nodeEnv) {
+    fallback: (environment) => {
+      switch (environment) {
         case AppEnvironment.LOCAL: return LoggerLevel.TRACE;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.WARNING;
         case AppEnvironment.STAGING: return LoggerLevel.WARNING;

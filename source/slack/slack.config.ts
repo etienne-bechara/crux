@@ -28,8 +28,8 @@ export class SlackConfig {
   public readonly SLACK_ICON_URL: string;
 
   @InjectSecret({
-    baseValue: (nodeEnv) => {
-      switch (nodeEnv) {
+    fallback: (environment) => {
+      switch (environment) {
         case AppEnvironment.LOCAL: return null;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.WARNING;
         case AppEnvironment.STAGING: return LoggerLevel.WARNING;

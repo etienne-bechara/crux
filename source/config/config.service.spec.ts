@@ -16,14 +16,14 @@ class TestMockConfig {
   @InjectSecret({ key: 'secret_unit_test_key' })
   public readonly TEST_SECRET_INJECTION: string;
 
-  @InjectSecret({ baseValue: 'secret_default' })
+  @InjectSecret({ fallback: 'secret_default' })
   public readonly TEST_SECRET_FALLBACK: string;
 
-  @InjectSecret({ baseValue: '100' })
+  @InjectSecret({ fallback: '100' })
   @IsNumber()
   public readonly TEST_SECRET_VALIDATION: number;
 
-  @InjectSecret({ baseValue: '100' })
+  @InjectSecret({ fallback: '100' })
   @Transform((o) => Number(o.value))
   public readonly TEST_SECRET_TRANSFORM: number;
 

@@ -63,9 +63,9 @@ export class ConfigService {
     const secret = this.SECRET_CACHE.find((s) => s.key.toUpperCase() === key.toUpperCase());
     if (!secret) return;
 
-    const { value, baseValue, jsonParse } = secret;
+    const { value, fallback, json } = secret;
 
-    if (value && jsonParse && typeof value === 'string') {
+    if (value && json && typeof value === 'string') {
       try {
         secret.value = JSON.parse(value);
       }
@@ -74,12 +74,14 @@ export class ConfigService {
       }
     }
 
-    if (!value && baseValue && typeof baseValue === 'function') {
-      const nodeEnv = this.getSecret('NODE_ENV');
-      secret.baseValue = secret.baseValue(nodeEnv);
+    if (!value && fallback && typeof fallback === 'function') {
+      const environment = this.getSecret('NODE_ENV');
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      secret.fallback = secret.fallback(environment);
     }
 
-    return value ?? baseValue;
+    return value ?? fallback;
   }
 
   /**
@@ -148,7 +150,7 @@ export class ConfigService {
     const secretEnv: Record<string, any> = { };
 
     for (const record of this.SECRET_CACHE) {
-      secretEnv[record.key] = record.value || record.baseValue;
+      secretEnv[record.key] = record.value || record.fallback;
     }
 
     for (const configDefinition of this.CONFIG_DEFINITIONS) {

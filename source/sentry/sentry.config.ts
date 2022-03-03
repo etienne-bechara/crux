@@ -13,8 +13,8 @@ export class SentryConfig {
   public readonly SENTRY_DSN: string;
 
   @InjectSecret({
-    baseValue: (nodeEnv) => {
-      switch (nodeEnv) {
+    fallback: (environment) => {
+      switch (environment) {
         case AppEnvironment.LOCAL: return null;
         case AppEnvironment.DEVELOPMENT: return LoggerLevel.ERROR;
         case AppEnvironment.STAGING: return LoggerLevel.ERROR;
