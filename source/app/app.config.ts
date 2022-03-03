@@ -1,53 +1,31 @@
 import { HttpStatus } from '@nestjs/common';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { IsIn, IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsIn } from 'class-validator';
+import crypto from 'crypto';
 
 import { Config, InjectSecret } from '../config/config.decorator';
-import { ToNumber } from '../transform/transform.decorator';
 import { AppEnvironment } from './app.enum';
+import { AppOptions } from './app.interface';
 
-@Config()
-export class AppConfig {
-
-  @InjectSecret()
-  @IsIn(Object.values(AppEnvironment))
-  public readonly NODE_ENV: AppEnvironment;
-
-  @InjectSecret({ baseValue: '8080' })
-  @ToNumber()
-  @IsNumber() @Min(1024) @Max(65_535)
-  public readonly APP_PORT: number;
-
-  @InjectSecret({ baseValue: '0.0.0.0' })
-  @IsString()
-  public readonly APP_HOSTNAME: string;
-
-  @InjectSecret({ baseValue: '' })
-  @IsString()
-  public readonly APP_GLOBAL_PREFIX: string;
-
-  @InjectSecret({ baseValue: '60000' })
-  @ToNumber()
-  @IsNumber()
-  public readonly APP_TIMEOUT: number;
-
-  public readonly APP_CORS_OPTIONS: CorsOptions = {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const APP_DEFAULT_OPTIONS: AppOptions = {
+  port: 8080,
+  hostname: '0.0.0.0',
+  timeout: 60_000,
+  cors: {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
-  };
-
-  public readonly APP_FILTER_HTTP_ERRORS: HttpStatus[] = [
+  },
+  httpErrors: [
     HttpStatus.INTERNAL_SERVER_ERROR,
     HttpStatus.NOT_IMPLEMENTED,
     HttpStatus.BAD_GATEWAY,
     HttpStatus.SERVICE_UNAVAILABLE,
     HttpStatus.GATEWAY_TIMEOUT,
     HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
-  ];
-
-  public readonly APP_LOGGER_SENSITIVE_KEYS = [
+  ],
+  sensitiveKeys: [
     'auth',
     'authentication',
     'authorization',
@@ -56,6 +34,21 @@ export class AppConfig {
     'key',
     'pass',
     'password',
-  ];
+  ],
+  fastify: {
+    trustProxy: true,
+    genReqId: () => crypto.randomBytes(6).toString('base64url'),
+  },
+};
+
+@Config()
+export class AppConfig {
+
+  @InjectSecret()
+  @IsIn(Object.values(AppEnvironment))
+  public readonly NODE_ENV: AppEnvironment;
+
+  @InjectSecret()
+  public readonly APP_OPTIONS: AppOptions;
 
 }

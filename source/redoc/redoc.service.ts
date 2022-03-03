@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppModule } from '../app/app.module';
+import { AppConfig } from '../app/app.config';
 import { RedocConfig } from './redoc.config';
 import { RedocAppOptions, RedocRenderOptions } from './redoc.interface';
 
@@ -8,6 +8,7 @@ import { RedocAppOptions, RedocRenderOptions } from './redoc.interface';
 export class RedocService {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly redocConfig: RedocConfig,
   ) { }
 
@@ -32,7 +33,7 @@ export class RedocService {
    */
   public buildAppOptions(): RedocAppOptions {
     const defaultOptions = this.redocConfig.REDOC_DEFAULT_OPTIONS;
-    const { redoc: appOptions, port } = AppModule.getOptions() || { };
+    const { redoc: appOptions, port } = this.appConfig.APP_OPTIONS || { };
 
     defaultOptions.openApiUrl = `http://127.0.0.1:${port}/openapi/json`;
 

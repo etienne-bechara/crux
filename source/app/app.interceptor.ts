@@ -4,7 +4,7 @@ import { mergeMap, timeout } from 'rxjs/operators';
 
 import { ContextService } from '../context/context.service';
 import { LoggerService } from '../logger/logger.service';
-import { AppModule } from './app.module';
+import { AppConfig } from './app.config';
 
 @Injectable()
 export class AppLoggerInterceptor implements NestInterceptor {
@@ -45,6 +45,10 @@ export class AppLoggerInterceptor implements NestInterceptor {
 @Injectable()
 export class AppTimeoutInterceptor implements NestInterceptor {
 
+  public constructor(
+    private readonly appConfig: AppConfig,
+  ) { }
+
   /**
    * Creates a true server side timer that ends any requests
    * if exceeding configured timeout.
@@ -55,7 +59,7 @@ export class AppTimeoutInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const msTimeout = AppModule.getOptions().timeout;
+    const { timeout: msTimeout } = this.appConfig.APP_OPTIONS;
     if (!msTimeout) return next.handle();
 
     return next

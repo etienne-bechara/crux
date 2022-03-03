@@ -5,13 +5,13 @@ import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Mo
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import crypto from 'crypto';
 import fg from 'fast-glob';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import path from 'path';
 
 import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
@@ -24,7 +24,7 @@ import { RedocModule } from '../redoc/redoc.module';
 import { RedocService } from '../redoc/redoc.service';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
-import { AppConfig } from './app.config';
+import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
@@ -47,14 +47,6 @@ export class AppModule {
     }
 
     return this.instance;
-  }
-
-  /**
-   * Returns options which the application was built upon.
-   */
-  public static getOptions(): AppOptions {
-    this.getInstance();
-    return this.options;
   }
 
   /**
@@ -84,13 +76,12 @@ export class AppModule {
    * @param options
    */
   public static async compile(options: AppOptions = { }): Promise<INestApplication> {
-    const { disableDocumentation } = options;
-    this.options = options;
+    this.options = { ...APP_DEFAULT_OPTIONS, ...options };
+    ConfigService.setSecret({ key: 'APP_OPTIONS', value: this.options });
 
     await this.configureAdapter();
-    this.configureDefaultOptions();
 
-    if (!disableDocumentation) {
+    if (!this.options.disableDocumentation) {
       this.configureDocumentation();
     }
 
@@ -102,21 +93,17 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
+    const { fastify, globalPrefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
-
-    const httpAdapter = new FastifyAdapter({
-      trustProxy: true,
-      genReqId: () => crypto.randomBytes(6).toString('base64url'),
-      ...this.options.fastify,
-    });
+    const httpAdapter = new FastifyAdapter(fastify);
 
     this.instance = await NestFactory.create(entryModule, httpAdapter, {
       logger: [ 'error', 'warn' ],
     });
 
-    const fastify = this.instance.getHttpAdapter().getInstance();
+    const fastifyInstance = this.instance.getHttpAdapter().getInstance();
 
-    fastify.addHook('preHandler', (req, res, next) => {
+    fastifyInstance.addHook('preHandler', (req, res, next) => {
       req.time = Date.now();
       res.header('request-id', req.id);
 
@@ -127,25 +114,9 @@ export class AppModule {
         next();
       });
     });
-  }
 
-  /**
-   * Merge provided options with application defaults.
-   */
-  private static configureDefaultOptions(): void {
-    const appConfig: AppConfig = this.instance.get(AppConfig);
-
-    this.options.port ??= appConfig.APP_PORT;
-    this.options.hostname ??= appConfig.APP_HOSTNAME;
-    this.options.globalPrefix ??= appConfig.APP_GLOBAL_PREFIX;
-    this.options.timeout ??= appConfig.APP_TIMEOUT;
-    this.options.cors ??= appConfig.APP_CORS_OPTIONS;
-    this.options.httpErrors ??= appConfig.APP_FILTER_HTTP_ERRORS;
-    this.options.sensitiveKeys ??= appConfig.APP_LOGGER_SENSITIVE_KEYS;
-    this.options.redoc ??= { };
-
-    this.instance.setGlobalPrefix(this.options.globalPrefix);
-    this.instance.enableCors(this.options.cors);
+    this.instance.setGlobalPrefix(globalPrefix);
+    this.instance.enableCors(cors);
   }
 
   /**
@@ -202,12 +173,14 @@ export class AppModule {
    */
   private static async listen(): Promise<void> {
     const { port, hostname, timeout } = this.options;
-    const app = this.getInstance();
-    const loggerService = app.get(LoggerService);
-    const httpServer = await app.listen(port, hostname);
     const timeoutStr = timeout ? `set to ${(timeout / 1000).toString()}s` : 'disabled';
 
+    const app = this.getInstance();
+    const loggerService = app.get(LoggerService);
+
+    const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
+
     loggerService.debug(`Server timeout ${timeoutStr}`);
     loggerService.info(`Server listening on port ${port}`);
   }

@@ -7,7 +7,6 @@ import { MetricService } from '../metric/metric.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
-import { AppModule } from './app.module';
 
 @Catch()
 export class AppFilter implements ExceptionFilter {
@@ -116,7 +115,7 @@ export class AppFilter implements ExceptionFilter {
    */
   private logException(params: AppException): void {
     const { details, exception, message, code } = params;
-    const httpErrors = AppModule.getOptions().httpErrors;
+    const { httpErrors } = this.appConfig.APP_OPTIONS;
 
     const inboundRequest = {
       method: this.contextService.getRequestMethod(),
