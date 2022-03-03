@@ -154,7 +154,7 @@ export class AppModule {
    */
   private static configureDocumentation(): void {
     const redocService: RedocService = this.instance.get(RedocService);
-    const { title, description, version, logo, tagGroups } = redocService.buildAppOptions();
+    const { title, description, version, logo, tagGroups, documentBuilder } = redocService.buildAppOptions();
 
     this.instance['setViewEngine']({
       engine: { handlebars },
@@ -162,13 +162,12 @@ export class AppModule {
       templates: path.join(__dirname, '..', 'redoc'),
     });
 
-    const builder = new DocumentBuilder()
+    const builder = documentBuilder || new DocumentBuilder()
       .setTitle(title)
       .setDescription(description)
-      .setVersion(version)
-      .build();
+      .setVersion(version);
 
-    const document = SwaggerModule.createDocument(this.instance, builder, {
+    const document = SwaggerModule.createDocument(this.instance, builder.build(), {
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const entityName = controllerKey.replace('Controller', '');
         const defaultId = `${controllerKey}_${methodKey}`;

@@ -19,15 +19,15 @@
 </head>
 
 <body>
-  <div id="redoc_container"></div>
-  <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"> </script>
-
+  <div id="redoc-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.55/bundles/redoc.standalone.min.js"> </script>
+  <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.0/dist/try.js"></script>
   <script>
-    Redoc.init(
-      '{{ openApiUrl }}',
-      JSON.parse('{{{ options }}}'),
-      document.getElementById('redoc_container')
-    );
+    initTry({
+      openApi: '{{ openApiUrl }}',
+      tryText: '▶',
+      redocOptions: JSON.parse('{{{ options }}}'),
+    })
   </script>
 </body>
 
