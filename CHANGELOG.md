@@ -1,3 +1,10 @@
+## [4.0.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.2...v4.0.3) (2022-03-03)
+
+
+### Bug Fixes
+
+* add handlebars to output ([a764e3a](https://github.com/etienne-bechara/nestjs-core/commit/a764e3acf94b006af00c46c64f6a55ac4f2784cd))
+
 ## [4.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.1...v4.0.2) (2022-03-03)
 
 
