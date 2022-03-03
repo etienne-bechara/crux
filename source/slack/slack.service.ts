@@ -10,6 +10,8 @@ import { SlackConfig } from './slack.config';
 @Injectable()
 export class SlackService implements LoggerTransport {
 
+  private exceptionMessage = 'Failed to publish slack message';
+
   public constructor(
     private readonly slackConfig: SlackConfig,
     private readonly loggerService: LoggerService,
@@ -49,7 +51,7 @@ export class SlackService implements LoggerTransport {
    */
   public log(params: LoggerParams): void {
     const { environment, level, requestId, filename, message, data } = params;
-    if (data?.messageBlocks) return;
+    if (data?.messageBlocks || message === this.exceptionMessage) return;
 
     const separator = '  |  ';
 
@@ -92,7 +94,7 @@ export class SlackService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning('Failed to publish slack message', e as Error, { message });
+      this.loggerService.warning(this.exceptionMessage, e as Error, { message });
     }
   }
 
