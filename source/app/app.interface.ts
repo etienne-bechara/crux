@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ApiResponseOptions } from '@nestjs/swagger';
 import http from 'http';
 import os from 'os';
 
@@ -143,4 +144,16 @@ export interface AppExceptionDetails extends Record<string, any> {
 export interface AppExceptionResponse extends Record<string, any> {
   code: number;
   message: string;
+}
+
+export interface AppControllerParams {
+  tags?: string[];
+  hidden?: boolean;
+}
+
+export interface AppMethodParams {
+  tags?: string[];
+  hidden?: boolean;
+  type?: any;
+  responses?: ApiResponseOptions[];
 }

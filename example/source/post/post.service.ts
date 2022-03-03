@@ -15,7 +15,7 @@ export class PostService {
    * Read all posts.
    */
   public readPosts(): Promise<Post[]> {
-    return this.httpService.get('users');
+    return this.httpService.get('posts');
   }
 
   /**
