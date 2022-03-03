@@ -18,6 +18,7 @@ import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
+import { LoggerService } from '../logger/logger.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { RedocModule } from '../redoc/redoc.module';
 import { RedocService } from '../redoc/redoc.service';
@@ -28,7 +29,6 @@ import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
-import { LoggerService } from './app.override';
 import { AppService } from './app.service';
 
 @Global()
@@ -88,7 +88,7 @@ export class AppModule {
     this.options = options;
 
     await this.configureAdapter();
-    this.configuraDefaultOptions();
+    this.configureDefaultOptions();
 
     if (!disableDocumentation) {
       this.configureDocumentation();
@@ -132,7 +132,7 @@ export class AppModule {
   /**
    * Merge provided options with application defaults.
    */
-  private static configuraDefaultOptions(): void {
+  private static configureDefaultOptions(): void {
     const appConfig: AppConfig = this.instance.get(AppConfig);
 
     this.options.port ??= appConfig.APP_PORT;
