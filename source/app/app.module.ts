@@ -10,6 +10,7 @@ import fs from 'fs';
 import handlebars from 'handlebars';
 import path from 'path';
 
+import { AsyncModule } from '../async/async.module';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
@@ -19,6 +20,7 @@ import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
+import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { RedocModule } from '../redoc/redoc.module';
 import { SentryModule } from '../sentry/sentry.module';
@@ -228,8 +230,10 @@ export class AppModule {
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
-      LoggerModule,
+      AsyncModule,
       ContextModule,
+      LoggerModule,
+      MemoryModule,
       HttpModule.register({
         name: 'AppModule',
         responseType: 'json',

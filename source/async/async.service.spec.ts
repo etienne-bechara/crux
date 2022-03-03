@@ -1,5 +1,4 @@
 import { AppModule } from '../app/app.module';
-import { AsyncModule } from './async.module';
 import { AsyncService } from './async.service';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -12,12 +11,7 @@ describe('AsyncService', () => {
   let asyncService: AsyncService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({
-      disableScan: true,
-      disableLogger: true,
-      imports: [ AsyncModule ],
-    });
-
+    const app = await AppModule.compile({ disableScan: true, disableLogger: true });
     asyncService = app.get(AsyncService);
   });
 

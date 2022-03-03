@@ -21,7 +21,7 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Metric - Prometheus](docs/module/metric.md)
 - [Documentation - Redoc and OpenAPI](docs/module/redoc.md)
 - [Async - Sleep, Exception Retry and Promise Limit](docs/module/async.md)
-- [Storage - Memory Store with TTL](docs/module/storage.md)
+- [Memory - Volatile Storage with TTL](docs/module/memory.md)
 
 ### Recipes
 

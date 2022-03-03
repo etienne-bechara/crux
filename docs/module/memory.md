@@ -1,4 +1,4 @@
-# Storage Module
+# Memory Module
 
 Allow setting and reading keys from memory with configurable TTL.
 
@@ -6,20 +6,20 @@ Allow setting and reading keys from memory with configurable TTL.
 
 ## Usage
 
-Import `StorageModule` at your application, followed by injecting `StorageService` at your target provider:
+Import `MemoryModule` at your application, followed by injecting `MemoryService` at your target provider:
 
 ```ts
-import { InternalServerErrorException, StorageService } from '@bechara/nestjs-core';
+import { InternalServerErrorException, MemoryService } from '@bechara/nestjs-core';
 
 @Injectable()
 export class FooService {
 
   public constructor(
-    private readonly storageService: StorageService,
+    private readonly memoryService: MemoryService,
   ) { }
 
   public getFoo(): unknown {
-    const foo = this.storageService.getKey('FOO');
+    const foo = this.memoryService.getKey('FOO');
 
     if (!foo) {
       throw new InternalServerErrorException('foo not available');
@@ -28,7 +28,7 @@ export class FooService {
 
   public setFoo(params: unknown): void {
     const ttl = 5 * 60 * 1000; // 5 minutes
-    this.storageService.setKey('FOO', params, { ttl });
+    this.memoryService.setKey('FOO', params, { ttl });
   }
 
 }
