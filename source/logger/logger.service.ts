@@ -3,7 +3,6 @@ import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
-import { LoggerConfig } from './logger.config';
 import { LoggerLevel } from './logger.enum';
 import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
 
@@ -16,7 +15,6 @@ export class LoggerService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
-    private readonly loggerConfig: LoggerConfig,
   ) {
     this.setupLogger();
   }
@@ -55,7 +53,7 @@ export class LoggerService {
     const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
 
     const logMessage: LoggerParams = {
-      environment: this.loggerConfig.NODE_ENV,
+      environment: this.appConfig.NODE_ENV,
       timestamp: new Date().toISOString(),
       level,
       requestId: this.contextService.getRequestId(),

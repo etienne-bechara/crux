@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 
+import { AppConfig } from '../app/app.config';
 import { LoggerLevel } from '../logger/logger.enum';
 import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
 import { LoggerService } from '../logger/logger.service';
@@ -10,6 +11,7 @@ import { SentryConfig } from './sentry.config';
 export class SentryService implements LoggerTransport {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly sentryConfig: SentryConfig,
     private readonly loggerService: LoggerService,
   ) {
@@ -32,7 +34,7 @@ export class SentryService implements LoggerTransport {
 
     Sentry.init({
       dsn,
-      environment: this.sentryConfig.NODE_ENV,
+      environment: this.appConfig.NODE_ENV,
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
 

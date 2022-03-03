@@ -8,9 +8,6 @@ import { LoggerLevel } from '../logger/logger.enum';
 export class SentryConfig {
 
   @InjectSecret()
-  public readonly NODE_ENV: AppEnvironment;
-
-  @InjectSecret()
   @IsOptional()
   @Matches('^http.+?sentry\\.io')
   public readonly SENTRY_DSN: string;

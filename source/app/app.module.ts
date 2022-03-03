@@ -21,7 +21,6 @@ import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { RedocModule } from '../redoc/redoc.module';
-import { RedocService } from '../redoc/redoc.service';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
@@ -76,9 +75,7 @@ export class AppModule {
    * @param options
    */
   public static async compile(options: AppOptions = { }): Promise<INestApplication> {
-    this.options = { ...APP_DEFAULT_OPTIONS, ...options };
-    ConfigService.setSecret({ key: 'APP_OPTIONS', value: this.options });
-
+    this.configureOptions(options);
     await this.configureAdapter();
 
     if (!this.options.disableDocumentation) {
@@ -86,6 +83,18 @@ export class AppModule {
     }
 
     return this.instance;
+  }
+
+  /**
+   * Merge compile options with default and persist them as configuration .
+   * @param options
+   */
+  private static configureOptions(options: AppOptions): void {
+    const redoc = { ...APP_DEFAULT_OPTIONS.redoc, ...options.redoc };
+    const fastify = { ...APP_DEFAULT_OPTIONS.fastify, ...options.fastify };
+
+    this.options = { ...APP_DEFAULT_OPTIONS, ...options, redoc, fastify };
+    ConfigService.setSecret({ key: 'APP_OPTIONS', value: this.options });
   }
 
   /**
@@ -124,8 +133,7 @@ export class AppModule {
    * endpoint naming.
    */
   private static configureDocumentation(): void {
-    const redocService: RedocService = this.instance.get(RedocService);
-    const { title, description, version, logo, tagGroups, documentBuilder } = redocService.buildAppOptions();
+    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.redoc;
 
     this.instance['setViewEngine']({
       engine: { handlebars },
