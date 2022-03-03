@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.1...v4.0.2) (2022-03-03)
+
+
+### Bug Fixes
+
+* remove unnecessary configs ([a24a3c2](https://github.com/etienne-bechara/nestjs-core/commit/a24a3c2eb513e146f028122952316f1bf78cbb95))
+
 ## [4.0.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.0...v4.0.1) (2022-03-03)
 
 
