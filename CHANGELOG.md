@@ -1,3 +1,10 @@
+## [4.2.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.0...v4.2.1) (2022-03-04)
+
+
+### Bug Fixes
+
+* improve consoe logging style ([9499ed9](https://github.com/etienne-bechara/nestjs-core/commit/9499ed9b7ee67955946c3cc42ca18e1221e8a86b))
+
 # [4.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.1.0...v4.2.0) (2022-03-04)
 
 
