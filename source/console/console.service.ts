@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
 
+import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
 import { LoggerLevel, LoggerStyle } from '../logger/logger.enum';
 import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
@@ -11,6 +12,7 @@ import { ConsoleConfig } from './console.config';
 export class ConsoleService implements LoggerTransport {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly consoleConfig: ConsoleConfig,
     private readonly loggerService: LoggerService,
   ) {
@@ -32,12 +34,14 @@ export class ConsoleService implements LoggerTransport {
   // eslint-disable-next-line complexity
   public log(params: LoggerParams): void {
     const { environment, timestamp, level, requestId, filename, message, data, error } = params;
+    const { prettyPrint } = this.appConfig.APP_OPTIONS;
     const isError = this.loggerService.isHigherOrEqualSeverity(level, LoggerLevel.ERROR);
 
     const strTimestamp = timestamp.replace('T', ' ').replace('Z', '');
     const strLevel = level.toUpperCase().padEnd(7, ' ');
     const strFilename = filename.padEnd(20, ' ');
     const strRequestId = requestId || ' '.repeat(8);
+    const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
 
     if (environment === AppEnvironment.LOCAL) {
       const gray = LoggerStyle.FG_BRIGHT_BLACK;
@@ -63,8 +67,13 @@ export class ConsoleService implements LoggerTransport {
         + `${levelColor}${strRequestId}${reset}${separator}`
         + `${levelColor}${strFilename}${reset}${separator}`
         + `${levelColor}${message}${reset}`
-        + `${data ? `${gray}\n${JSON.stringify(data, null, 2)}${reset}` : ''}`,
+        + `${data ? `${gray}\n${strData}${reset}` : ''}`,
       );
+
+      if (error) {
+        const { message, stack } = error;
+        console.error(`${levelColor}${message}${reset}${gray}\n${stack}${reset}`);
+      }
     }
     else {
       const separator = ' | ';
@@ -75,12 +84,12 @@ export class ConsoleService implements LoggerTransport {
         + `${strRequestId}${separator}`
         + `${strFilename}${separator}`
         + `${message}`
-        + `${data ? ` ${JSON.stringify(data)} ` : ''}`,
+        + `${data ? `\n${strData}` : ''}`,
       );
-    }
 
-    if (error) {
-      console.error(error);
+      if (error) {
+        console.error(error);
+      }
     }
   }
 
