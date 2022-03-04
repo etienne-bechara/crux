@@ -19,4 +19,34 @@ export { HttpModuleOptions } from '../http/http.interface';
 export { HttpModule } from '../http/http.module';
 export { HttpService } from '../http/http.service';
 export { LoggerService } from '../logger/logger.service';
-export { IsOptional, IsNumber, IsString } from '../validator/validator.decorator';
+
+export {
+  Contains,
+  Equals,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsDefined,
+  IsEmail,
+  IsEmpty,
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsISO8601,
+  IsNotEmpty,
+  IsNotIn,
+  IsNumber,
+  IsNumberString,
+  IsObject,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+  NotContains,
+  NotEquals,
+  ValidateNested,
+} from '../validator/validator.decorator';

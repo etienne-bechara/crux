@@ -1,82 +1,67 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsObject, Min, ValidateNested } from 'class-validator';
 
-import { ToNumber } from '../../../source/transform/transform.decorator';
-import { IsNumber, IsString } from '../../../source/validator/validator.decorator';
+import { Contains, IsBoolean, IsDate, IsIn, IsISO8601, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Length, Matches, Max, MaxLength, Min, MinLength, ValidateNested } from '../../../source/validator/validator.decorator';
 
-export class UserAddressGeo {
-
-  @IsString() @IsNotEmpty()
-  public lat: string;
-
-  @IsString() @IsNotEmpty()
-  public lng: string;
-
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  BANNED = 'BANNED',
+  PENDING = 'PENDING',
 }
 
 export class UserAddress {
 
-  @IsString() @IsNotEmpty()
+  @IsString() @Contains('Rua')
   public street: string;
 
-  @IsString() @IsNotEmpty()
-  public suite: string;
-
-  @IsString() @IsNotEmpty()
+  @IsString() @Length(10, 100)
   public city: string;
 
   @IsString() @IsNotEmpty()
-  public zipcode: string;
-
-  @ValidateNested()
-  @Type(() => UserAddressGeo)
-  @IsObject()
-  public geo: UserAddressGeo;
-
-}
-
-export class UserCompany {
+  public country: string;
 
   @IsString() @IsNotEmpty()
-  public name: string;
-
-  @IsString() @IsNotEmpty()
-  public catchPhrase: string;
-
-  @IsString() @IsNotEmpty()
-  public bs: string;
+  public zip: string;
 
 }
 
 export class User {
 
-  @ToNumber()
-  @IsNumber() @Min(1)
+  @IsNumber()
   public id: number;
 
-  @IsString() @IsNotEmpty()
+  @IsString() @MinLength(5) @MaxLength(50)
   public name: string;
 
-  @IsString() @IsNotEmpty()
-  public username: string;
+  @IsNumber() @Min(1) @Max(100)
+  public age: number;
 
-  @IsString() @IsNotEmpty()
-  public email: string;
+  @IsBoolean()
+  public alive: boolean;
+
+  @Matches(/(?:\d{3}\.){2}\d{3}-\d{2}\./)
+  public taxId: string;
+
+  @IsIn(Object.values(UserStatus))
+  public status: UserStatus;
+
+  @IsISO8601()
+  public birthdate: string;
+
+  @IsOptional()
+  @IsDate()
+  public created: Date;
+
+  @IsOptional()
+  @IsString({ each: true })
+  public tags: string[];
+
+  @IsOptional()
+  @IsNumber({ }, { each: true })
+  public lottery: number[];
 
   @ValidateNested()
   @Type(() => UserAddress)
   @IsObject()
   public address: UserAddress;
-
-  @IsString() @IsNotEmpty()
-  public phone: string;
-
-  @IsString() @IsNotEmpty()
-  public website: string;
-
-  @ValidateNested()
-  @Type(() => UserCompany)
-  @IsObject()
-  public company: UserCompany;
 
 }
