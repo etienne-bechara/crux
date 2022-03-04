@@ -67,7 +67,9 @@ export class SlackService implements LoggerTransport {
         ? `${details.slice(0, 2990 - slackMsg.length)}\n\n[...]`
         : details;
 
-      slackMsg = `${slackMsg}${separator}<https://codebeautify.org/jsonviewer?input=${trimmedDetails}|Details>`;
+      const beatifyUrl = encodeURI(`https://codebeautify.org/jsonviewer?input=${trimmedDetails}`);
+
+      slackMsg = `${slackMsg}${separator}<${beatifyUrl}|Details>`;
     }
 
     void this.publishSlackMessage(slackMsg);
