@@ -93,8 +93,8 @@ export class LoggerService {
     const severity = [
       LoggerLevel.FATAL,
       LoggerLevel.ERROR,
-      LoggerLevel.NOTICE,
       LoggerLevel.WARNING,
+      LoggerLevel.NOTICE,
       LoggerLevel.INFO,
       LoggerLevel.HTTP,
       LoggerLevel.DEBUG,

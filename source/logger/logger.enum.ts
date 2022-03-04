@@ -1,8 +1,8 @@
 export enum LoggerLevel {
   FATAL = 'fatal',
   ERROR = 'error',
-  NOTICE = 'notice',
   WARNING = 'warning',
+  NOTICE = 'notice',
   INFO = 'info',
   HTTP = 'http',
   DEBUG = 'debug',
