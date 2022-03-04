@@ -120,7 +120,7 @@ export class SlackService implements LoggerTransport {
    */
   public getSlackSeverity(level: LoggerLevel): string {
     switch (level) {
-      case LoggerLevel.FATAL: return '🔥 Fatal';
+      case LoggerLevel.FATAL: return '💀 Fatal';
       case LoggerLevel.ERROR: return '🚨 Error';
       case LoggerLevel.WARNING: return '⚠️ Warning';
       case LoggerLevel.NOTICE: return '✔️ Notice';
