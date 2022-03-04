@@ -1,3 +1,15 @@
+# [4.2.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.1.0...v4.2.0) (2022-03-04)
+
+
+### Bug Fixes
+
+* test circular deps ([284b20d](https://github.com/etienne-bechara/nestjs-core/commit/284b20d8e4ab669c56ab088e60dc1d4aaa54c6ea))
+
+
+### Features
+
+* add class-validator decorators integration with docs ([4be78dd](https://github.com/etienne-bechara/nestjs-core/commit/4be78dd0eb87c7639fc265cc6d376d672b9b1094))
+
 # [4.1.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.0.3...v4.1.0) (2022-03-03)
 
 
