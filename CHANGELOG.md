@@ -1,3 +1,10 @@
+## [4.2.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.2...v4.2.3) (2022-03-04)
+
+
+### Bug Fixes
+
+* slack URL encoding ([9bc6b58](https://github.com/etienne-bechara/nestjs-core/commit/9bc6b58413f3dc2f9ca1e4faab77af7fbbb7f02f))
+
 ## [4.2.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.1...v4.2.2) (2022-03-04)
 
 
