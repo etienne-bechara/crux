@@ -1,3 +1,10 @@
+## [4.2.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.3...v4.2.4) (2022-03-04)
+
+
+### Bug Fixes
+
+* slack fatal emoji ([77248b0](https://github.com/etienne-bechara/nestjs-core/commit/77248b06043bf9e51ece1a39b820ecabcea7c7f8))
+
 ## [4.2.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.2...v4.2.3) (2022-03-04)
 
 
