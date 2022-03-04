@@ -1,3 +1,10 @@
+## [4.2.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.1...v4.2.2) (2022-03-04)
+
+
+### Bug Fixes
+
+* logger severity order ([0ec5f6e](https://github.com/etienne-bechara/nestjs-core/commit/0ec5f6eab4107113b09b7392263f70fceff8b342))
+
 ## [4.2.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.0...v4.2.1) (2022-03-04)
 
 
