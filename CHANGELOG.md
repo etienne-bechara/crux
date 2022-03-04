@@ -1,3 +1,10 @@
+## [4.2.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.4...v4.2.5) (2022-03-04)
+
+
+### Bug Fixes
+
+* do not spread inbound request on exception log ([0d8ea14](https://github.com/etienne-bechara/nestjs-core/commit/0d8ea14545733a09e5f6d7066df90c2c81a2cb7a))
+
 ## [4.2.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.3...v4.2.4) (2022-03-04)
 
 
