@@ -127,7 +127,7 @@ export class AppFilter implements ExceptionFilter {
       metadata: this.contextService.getMetadata(),
     };
 
-    const data = { message, ...inboundRequest, ...details };
+    const data = { message, inboundRequest, ...details };
 
     return httpErrors.includes(code)
       ? this.loggerService.error(exception, data)

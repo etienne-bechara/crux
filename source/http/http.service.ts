@@ -236,16 +236,16 @@ export class HttpService {
     throw new HttpException({
       message: `${method} ${path} | ${message}`,
       proxyExceptions,
-      outboundResponse: {
-        code: response?.statusCode,
-        headers: response?.headers,
-        body: response?.body,
-      },
       outboundRequest: {
         method,
         host,
         path,
         ...request,
+      },
+      outboundResponse: {
+        code: response?.statusCode,
+        headers: response?.headers,
+        body: response?.body,
       },
     }, code);
   }
