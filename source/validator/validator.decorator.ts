@@ -23,6 +23,7 @@ import {
   IsObject as CvIsObject,
   IsOptional as CvIsOptional,
   IsString as CvIsString,
+  IsUUID as CvIsUUID,
   Length as CvLength,
   Matches as CvMatches,
   Max as CvMax,
@@ -31,6 +32,7 @@ import {
   MinLength as CvMinLength,
   NotContains as CvNotContains,
   NotEquals as CvNotEquals,
+  UUIDVersion,
   ValidateNested as CvValidateNested,
   ValidationOptions,
 } from 'class-validator';
@@ -430,7 +432,21 @@ export function IsObject(validationOptions?: ValidationOptions): PropertyDecorat
 // @IsSurrogatePair()	Checks if the string contains any surrogate pairs chars.
 // @IsUrl(options?: IsURLOptions)	Checks if the string is an url.
 // @IsMagnetURI()	Checks if the string is a magnet uri format.
-// @IsUUID(version?: "3"|"4"|"5"|"all")	Checks if the string is a UUID (version 3, 4, 5 or all ).
+
+/**
+ * Checks if the string is a UUID (version 3, 4 or 5). If given value is not a string, then it returns false.
+ * @param version
+ * @param validationOptions
+ */
+export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(String, validationOptions);
+
+  return applyDecorators(
+    CvIsUUID(version, validationOptions),
+    ApiProperty({ ...propertyOptions }),
+  );
+}
+
 // @IsFirebasePushId()	Checks if the string is a Firebase Push ID
 // @IsUppercase()	Checks if the string is uppercase.
 

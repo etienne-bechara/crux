@@ -40,6 +40,7 @@ export {
   IsObject,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   Matches,
   Max,
