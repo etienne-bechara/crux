@@ -1,3 +1,17 @@
+# [4.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.5...v4.3.0) (2022-03-08)
+
+
+### Bug Fixes
+
+* allow all params of ApiOperation to be configured on mehod decorators ([f8dbb1a](https://github.com/etienne-bechara/nestjs-core/commit/f8dbb1ace6dc1d7b5b855828d3f54c2b57da455d))
+* improve pattern descriptions ([9fc236b](https://github.com/etienne-bechara/nestjs-core/commit/9fc236b94d18f65cb860f57e9410528d386d68d2))
+
+
+### Features
+
+* add @IsUUID() override ([0d30f21](https://github.com/etienne-bechara/nestjs-core/commit/0d30f213de931b72f5ae42c0679438b1b31de2ea))
+* add OneOf() validator ([f29973b](https://github.com/etienne-bechara/nestjs-core/commit/f29973b45b52b6b26ec06fc39e0cc058a114290a))
+
 ## [4.2.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.4...v4.2.5) (2022-03-04)
 
 
