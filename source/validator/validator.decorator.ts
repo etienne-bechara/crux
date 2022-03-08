@@ -300,7 +300,7 @@ export function IsNumberString(options?: any, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsNumberString(options, validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty({ ...propertyOptions, pattern: ' - must be numeric' }),
   );
 }
 
@@ -317,7 +317,7 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `/${seed}/` }),
+    ApiProperty({ ...propertyOptions, pattern: ` - must contain '${seed}'` }),
   );
 }
 
@@ -332,7 +332,7 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 
   return applyDecorators(
     CvNotContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `/(?:(?!:${seed}).)*/` }),
+    ApiProperty({ ...propertyOptions, pattern: ` - must not contain '${seed}'` }),
   );
 }
 
@@ -362,7 +362,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'email' }),
+    ApiProperty({ ...propertyOptions, pattern: ' - must be an e-mail' }),
   );
 }
 
@@ -398,7 +398,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 
   return applyDecorators(
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'YYYY-MM-DD' }),
+    ApiProperty({ ...propertyOptions, pattern: ' - must obey ISO8601 [YYYY-MM-DD]' }),
   );
 }
 
@@ -443,7 +443,7 @@ export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty({ ...propertyOptions, pattern: ' - must be an UUID' }),
   );
 }
 
@@ -504,7 +504,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `/${regexPattern.source}/` }),
+    ApiProperty({ ...propertyOptions, pattern: ` - must match regex /${regexPattern.source}/` }),
   );
 }
 
