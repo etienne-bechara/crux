@@ -32,10 +32,74 @@ import {
   MinLength as CvMinLength,
   NotContains as CvNotContains,
   NotEquals as CvNotEquals,
+  registerDecorator,
   UUIDVersion,
+  ValidateIf,
   ValidateNested as CvValidateNested,
+  ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
+
+import { ValidatorStorage } from './validator.storage';
+
+// -- Custom validation decorators
+
+/**
+ * Ensures that exactly one property of target group is defined.
+ * @param group
+ * @param validationOptions
+ */
+export function OneOf(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
+  const key = `MUTUALLY_EXCLUSIVE_${group}`;
+  const propKeys: string[] = ValidatorStorage.get(key) || [ ];
+  const currentKeys = [ ...propKeys ];
+
+  return applyDecorators(
+    MutuallyExclusive(group, validationOptions),
+    currentKeys.length === 0
+      ? IsOptional()
+      : ValidateIf((o) => currentKeys.filter((k) => o[k] === undefined).length === currentKeys.length),
+  );
+}
+
+/**
+ * Checks if no more than one property of target group is defined.
+ * @param group
+ * @param validationOptions
+ */
+export function MutuallyExclusive(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  return function (object: Object, propertyName: string): any {
+    const key = `MUTUALLY_EXCLUSIVE_${group}`;
+    const mutuallyExclusiveProperties: string[] = ValidatorStorage.get(key) || [ ];
+
+    mutuallyExclusiveProperties.push(propertyName);
+    ValidatorStorage.set(key, mutuallyExclusiveProperties);
+
+    registerDecorator({
+      name: 'MutuallyExclusive',
+      target: object.constructor,
+      propertyName: propertyName,
+      constraints: [ group ],
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const propKeys: string[] = ValidatorStorage.get(key);
+          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
+          return propDefined === 1;
+        },
+        defaultMessage(args?: ValidationArguments) {
+          const propKeys: string[] = ValidatorStorage.get(key);
+          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
+
+          return propDefined === 0
+            ? `one of ${propKeys.join(', ')} must be defined`
+            : `properties ${propKeys.join(', ')} are mutually exclusive`;
+        },
+      },
+    });
+  };
+}
 
 // --- Common validation decorators
 

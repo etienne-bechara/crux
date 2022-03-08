@@ -92,11 +92,13 @@ export class AppFilter implements ExceptionFilter {
       const code = exception.getStatus();
 
       if (code === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
-        const constraints = Array.isArray(details.message)
+        const arrayConstraints = Array.isArray(details.message)
           ? details.message
           : [ details.message ];
 
-        details = { constraints };
+        const uniqueConstraints = [ ...new Set(arrayConstraints) ];
+
+        details = { constraints: uniqueConstraints };
       }
       else if (details && typeof details === 'object') {
         delete details.statusCode;
