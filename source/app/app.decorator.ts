@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable jsdoc/require-jsdoc */
 import { applyDecorators, Controller as NestController, Delete as NestDelete, Get as NestGet, Head as NestHead, HttpStatus, Options as NestOptions, Patch as NestPatch, Post as NestPost, Put as NestPut, RequestMethod } from '@nestjs/common';
-import { ApiExcludeController, ApiExcludeEndpoint, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AppControllerParams, AppMethodParams } from './app.interface';
 
@@ -50,7 +50,7 @@ export function Controller(prefix: string, params: AppControllerParams = { }): a
  * @param params
  */
 function buildMethodDecorators(method: RequestMethod, prefix: string, params: AppMethodParams): MethodDecorator[] {
-  const { tags, hidden, type, responses } = params;
+  const { tags, hidden, type } = params;
   const decorators = [ ];
   let defaultStatus: HttpStatus;
 
@@ -99,12 +99,10 @@ function buildMethodDecorators(method: RequestMethod, prefix: string, params: Ap
     decorators.push(ApiExcludeEndpoint());
   }
 
-  if (responses) {
-    decorators.push(...responses.map((r) => ApiResponse(r)));
-  }
-  else {
-    decorators.push(ApiResponse({ status: defaultStatus, type }));
-  }
+  decorators.push(
+    ApiOperation(params),
+    ApiResponse({ status: defaultStatus, type }),
+  );
 
   return decorators;
 }

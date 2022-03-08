@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { ApiResponseOptions } from '@nestjs/swagger';
+import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import http from 'http';
 import os from 'os';
 
@@ -157,9 +157,8 @@ export interface AppControllerParams {
   hidden?: boolean;
 }
 
-export interface AppMethodParams {
+export interface AppMethodParams extends Partial<OperationObject> {
   tags?: string[];
   hidden?: boolean;
   type?: any;
-  responses?: ApiResponseOptions[];
 }
