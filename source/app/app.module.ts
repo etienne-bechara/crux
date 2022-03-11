@@ -127,7 +127,7 @@ export class AppModule {
 
     const fastifyInstance = this.instance.getHttpAdapter().getInstance();
 
-    fastifyInstance.addHook('preHandler', (req, res, next) => {
+    fastifyInstance.addHook('onRequest', (req, res, next) => {
       req.time = Date.now();
       res.header('request-id', req.id);
 

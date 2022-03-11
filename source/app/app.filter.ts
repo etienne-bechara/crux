@@ -23,16 +23,21 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   public catch(exception: HttpException | Error): void {
-    const appException: AppException = {
-      exception,
-      code: this.getCode(exception),
-      message: this.getMessage(exception),
-      details: this.getDetails(exception),
-    };
+    try {
+      const appException: AppException = {
+        exception,
+        code: this.getCode(exception),
+        message: this.getMessage(exception),
+        details: this.getDetails(exception),
+      };
 
-    this.logException(appException);
-    this.collectExceptionMetrics(appException);
-    this.sendResponse(appException);
+      this.logException(appException);
+      this.collectExceptionMetrics(appException);
+      this.sendResponse(appException);
+    }
+    catch (e) {
+      this.loggerService.error('Failed to handle exception', e as Error);
+    }
   }
 
   /**
@@ -40,16 +45,9 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   private getCode(exception: HttpException | Error): HttpStatus {
-    let code: HttpStatus;
-
-    if (exception instanceof HttpException) {
-      code = exception.getStatus();
-    }
-    else if (exception.message?.includes('body is too large')) {
-      code = HttpStatus.PAYLOAD_TOO_LARGE;
-    }
-
-    return code || HttpStatus.INTERNAL_SERVER_ERROR;
+    return exception?.['getStatus']?.()
+      || exception?.['statusCode']
+      || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   /**
