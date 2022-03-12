@@ -1,3 +1,14 @@
+## [4.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.3.0...v4.3.1) (2022-03-12)
+
+
+### Bug Fixes
+
+* add details to slack message as link ([f11397f](https://github.com/etienne-bechara/nestjs-core/commit/f11397f976237b16576425367f1456aa5e0347a6))
+* add ValidateIf override ([16e95fe](https://github.com/etienne-bechara/nestjs-core/commit/16e95feb0080914a12e0203be9d9d48a541acd7c))
+* enable exception filter to handle fastify excpetions ([2132ce7](https://github.com/etienne-bechara/nestjs-core/commit/2132ce7bda214e80af439d2d22e448846e10a7c6))
+* rename logger filename to caller and add line ([7a21a25](https://github.com/etienne-bechara/nestjs-core/commit/7a21a2520e474f038dbf4b63d7a7653add37a0c2))
+* validator overwrites ([885c011](https://github.com/etienne-bechara/nestjs-core/commit/885c011ba05352b15da2b8fa8f8f4536fe29558c))
+
 # [4.3.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.2.5...v4.3.0) (2022-03-08)
 
 
