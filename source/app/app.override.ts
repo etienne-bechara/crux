@@ -49,5 +49,6 @@ export {
   MinLength,
   NotContains,
   NotEquals,
+  ValidateIf,
   ValidateNested,
 } from '../validator/validator.decorator';
