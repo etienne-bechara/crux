@@ -1,3 +1,17 @@
+# [4.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.3.1...v4.4.0) (2022-03-12)
+
+
+### Bug Fixes
+
+* allow metrics options to be configured ([9bc07c0](https://github.com/etienne-bechara/nestjs-core/commit/9bc07c06eaaec44002c475008a0af45640efc7df))
+* open api default description and version ([5112c52](https://github.com/etienne-bechara/nestjs-core/commit/5112c5289c002bedcae94889fb01ce04a64b7a2e))
+* rxjs version ([999a287](https://github.com/etienne-bechara/nestjs-core/commit/999a2877ea4c230038679524ec0f800c8f01decb))
+
+
+### Features
+
+* add metrics pushgateway support ([a7fa280](https://github.com/etienne-bechara/nestjs-core/commit/a7fa280a2f08491e832f77c2177c120c7066cda9))
+
 ## [4.3.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.3.0...v4.3.1) (2022-03-12)
 
 
