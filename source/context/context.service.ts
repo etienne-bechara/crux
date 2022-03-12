@@ -217,8 +217,8 @@ export class ContextService<Metadata = Record<string, any>> {
     const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
 
     return code
-      ? `< ${description} | ${code} | ${this.getRequestLatency()} ms`
-      : `> ${description} | ${this.getRequestIp()} | ${this.getRequestUserAgent()}`;
+      ? `⯇ ${description} | ${code} | ${this.getRequestLatency()} ms`
+      : `⯈ ${description} | ${this.getRequestIp()} | ${this.getRequestUserAgent()}`;
   }
 
 }

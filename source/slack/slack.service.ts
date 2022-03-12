@@ -53,6 +53,7 @@ export class SlackService implements LoggerTransport {
     const { environment, level, requestId, filename, message, data } = params;
     if (data?.messageBlocks || message === this.exceptionMessage) return;
 
+    const maxCharacters = 3000;
     const separator = '  |  ';
 
     let slackMsg = `*${this.getSlackEnvironment(environment)}*${separator}`
@@ -63,13 +64,12 @@ export class SlackService implements LoggerTransport {
     if (data) {
       const details = JSON.stringify(data);
 
-      const trimmedDetails = details.length + slackMsg.length >= 3000
-        ? `${details.slice(0, 2990 - slackMsg.length)}\n\n[...]`
+      const trimmedDetails = details.length + slackMsg.length >= maxCharacters
+        ? `${details.slice(0, maxCharacters - 100 - slackMsg.length)}\n\n[...]`
         : details;
 
       const beatifyUrl = encodeURI(`https://codebeautify.org/jsonviewer?input=${trimmedDetails}`);
-
-      slackMsg = `${slackMsg}${separator}<${beatifyUrl}|Details>`;
+      slackMsg = slackMsg.replace(message, `<${beatifyUrl}|${message}>`);
     }
 
     void this.publishSlackMessage(slackMsg);

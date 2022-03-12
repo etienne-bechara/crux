@@ -71,7 +71,7 @@ export class HttpService {
     params.resolveBodyOnly = undefined;
 
     try {
-      this.loggerService?.http(`>> ${method} ${host}${path}`, logParams);
+      this.loggerService?.http(`⯅ ${method} ${host}${path}`, logParams);
       response = await this.instance(finalUrl, params);
 
       const code = response.statusCode;
@@ -205,7 +205,7 @@ export class HttpService {
     const { start, method, host, path, code } = params;
     const latency = Date.now() - start;
 
-    this.loggerService?.http(`<< ${method} ${host}${path} | ${code} | ${latency}ms`);
+    this.loggerService?.http(`⯆ ${method} ${host}${path} | ${code} | ${latency}ms`);
 
     const histogram = this.metricService?.getHttpOutboundHistogram();
     if (!histogram) return;
