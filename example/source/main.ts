@@ -8,8 +8,10 @@ void AppModule.boot({
     PostModule,
     UserModule,
   ],
+  // Aggregating pushgateway example
   metrics: {
-    pushgatewayHost: 'http://127.0.0.1:9091',
+    job: 'metrics-demo',
     pushgatewayInterval: 5000,
+    pushgatewayReset: true,
   },
 });

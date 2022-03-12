@@ -1,4 +1,6 @@
 export interface MetricOptions {
+  /** Job name when registering metrics. */
+  job?: string;
   /** Prefix for default metrics. */
   defaultPrefix?: string;
   /** Labels for default metrics. */
@@ -9,8 +11,8 @@ export interface MetricOptions {
   httpBuckets?: number[];
   /** Address of gateway to push metrics. */
   pushgatewayHost?: string;
-  /** Job name when pushing data to gateway. */
-  pushgatewayJob?: string;
   /** Interval in milliseconds to push data to gateway. */
   pushgatewayInterval?: number;
+  /** Whether or not to reset instance metrics when pushing to gateway. */
+  pushgatewayReset?: boolean;
 }

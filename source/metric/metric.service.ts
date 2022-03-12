@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { collectDefaultMetrics, Histogram, Metric, Pushgateway, Registry } from 'prom-client';
+import got from 'got';
+import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
 import { AsyncService } from '../async/async.service';
@@ -26,8 +27,11 @@ export class MetricService {
    */
   private setupRegistry(): void {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { defaultPrefix, defaultLabels, defaultBuckets } = metrics;
+    const { job, defaultPrefix, defaultLabels, defaultBuckets } = metrics;
+    const environment = this.appConfig.NODE_ENV;
+
     this.register = new Registry();
+    this.register.setDefaultLabels({ job, environment });
 
     collectDefaultMetrics({
       register: this.register,
@@ -43,18 +47,24 @@ export class MetricService {
    */
   private async setupPushgateway(): Promise<void> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushgatewayHost, pushgatewayInterval, pushgatewayJob } = metrics;
+    const { job, pushgatewayHost, pushgatewayInterval, pushgatewayReset } = metrics;
     if (!pushgatewayHost) return;
-
-    const pushgateway = new Pushgateway(pushgatewayHost);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       await this.asyncService.sleep(pushgatewayInterval);
 
       try {
-        await pushgateway.pushAdd({ jobName: pushgatewayJob });
-        this.register.resetMetrics();
+        const metrics = await this.readMetrics();
+
+        if (pushgatewayReset) {
+          this.register.resetMetrics();
+        }
+
+        await got.post(`${pushgatewayHost}/metrics/${job}`, {
+          body: Buffer.from(metrics, 'utf-8'),
+        });
+
         this.loggerService.debug('Metrics successfully pushed to gateway');
       }
       catch (e) {
