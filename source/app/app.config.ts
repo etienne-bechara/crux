@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { HttpStatus } from '@nestjs/common';
 import { IsIn } from 'class-validator';
 import crypto from 'crypto';
@@ -42,15 +43,25 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   redoc: {
     openApiUrl: 'http://127.0.0.1:8080/openapi/json',
     title: 'OpenAPI UI',
+    version: '1.0.0',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
     logo: {
       url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png',
     },
-    description: 'This API documentation is automatically generated based on `@nestjs/swagger` decorators.\n\n'
-      + 'For further instructions on how to annotate your models and endpoints check '
-      + '[NestJS - OpenAPI Introduction](https://docs.nestjs.com/openapi/introduction).\n\n'
-      + 'To customize logo, title, description and other layout options, add the `redoc` property '
-      + 'during application initialization:\n\n```\nvoid AppModule.boot({\n  redoc: { }\n});\n```',
+    description: 'This API documentation is automatically generated based on `@nestjs/swagger` decorators.\n'
+      + '\n'
+      + 'For further instructions on how to annotate your models and endpoints check [NestJS - OpenAPI Introduction](https://docs.nestjs.com/openapi/introduction).\n'
+      + '\n'
+      + 'To customize logo, title, description and other layout options, configure the `redoc` property during application initialization:\n'
+      + '\n```ts\n'
+      + 'void AppModule.boot({\n'
+      + '  redoc: {\n'
+      + '    title: \'User API\',\n'
+      + '    description: \'Manipulate user related data.\',\n'
+      + '    // ...\n'
+      + '  }\n'
+      + '});\n'
+      + '```',
     theme: {
       logo: {
         gutter: '25px',
