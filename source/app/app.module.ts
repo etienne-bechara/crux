@@ -92,10 +92,16 @@ export class AppModule {
    * @param options
    */
   private static configureOptions(options: AppOptions): void {
-    const redoc = { ...APP_DEFAULT_OPTIONS.redoc, ...options.redoc };
-    const fastify = { ...APP_DEFAULT_OPTIONS.fastify, ...options.fastify };
+    const deepMergeProps: (keyof AppOptions)[] = [ 'fastify', 'metrics', 'redoc' ];
 
-    this.options = { ...APP_DEFAULT_OPTIONS, ...options, redoc, fastify };
+    this.options = { ...APP_DEFAULT_OPTIONS, ...options };
+
+    for (const key of deepMergeProps) {
+      const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
+      const providedData = options[key] as Record<string, any>;
+
+      this.options[key as string] = { ...defaultData, ...providedData };
+    }
 
     if (this.options.disableAll) {
       this.options.disableDocumentation = true;

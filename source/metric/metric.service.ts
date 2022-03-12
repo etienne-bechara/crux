@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client';
 
-import { MetricConfig } from './metric.config';
+import { AppConfig } from '../app/app.config';
 
 @Injectable()
 export class MetricService {
@@ -11,7 +11,7 @@ export class MetricService {
   private httpOutboundHistogram: Histogram<any>;
 
   public constructor(
-    private readonly metricConfig: MetricConfig,
+    private readonly appConfig: AppConfig,
   ) {
     this.setupRegistry();
   }
@@ -20,8 +20,16 @@ export class MetricService {
    * Create Prometheus metrics registry and built-in histograms.
    */
   private setupRegistry(): void {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { defaultPrefix, defaultLabels, defaultBuckets } = metrics;
     this.register = new Registry();
-    collectDefaultMetrics({ register: this.register });
+
+    collectDefaultMetrics({
+      register: this.register,
+      prefix: defaultPrefix,
+      labels: defaultLabels,
+      gcDurationBuckets: defaultBuckets,
+    });
   }
 
   /**
@@ -36,11 +44,14 @@ export class MetricService {
    */
   public getHttpInboundHistogram(): Histogram<'method' | 'path' | 'code'> {
     if (!this.httpInboundHistogram) {
+      const { metrics } = this.appConfig.APP_OPTIONS || { };
+      const { httpBuckets } = metrics;
+
       this.httpInboundHistogram = new Histogram({
         name: 'http_inbound_latency',
         help: 'Latency of inbound HTTP requests in milliseconds.',
         labelNames: [ 'method', 'path', 'code' ],
-        buckets: this.metricConfig.METRIC_HTTP_DEFAULT_BUCKETS,
+        buckets: httpBuckets,
       });
 
       this.registerMetric(this.httpInboundHistogram);
@@ -54,11 +65,14 @@ export class MetricService {
    */
   public getHttpOutboundHistogram(): Histogram<'method' | 'host' | 'path' | 'code'> {
     if (!this.httpOutboundHistogram) {
+      const { metrics } = this.appConfig.APP_OPTIONS || { };
+      const { httpBuckets } = metrics;
+
       this.httpOutboundHistogram = new Histogram({
         name: 'http_outbound_latency',
         help: 'Latency of outbound HTTP requests in milliseconds.',
         labelNames: [ 'method', 'host', 'path', 'code' ],
-        buckets: this.metricConfig.METRIC_HTTP_DEFAULT_BUCKETS,
+        buckets: httpBuckets,
       });
 
       this.registerMetric(this.httpOutboundHistogram);

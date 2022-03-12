@@ -40,6 +40,14 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     trustProxy: true,
     genReqId: () => crypto.randomBytes(6).toString('base64url'),
   },
+  metrics: {
+    httpBuckets: [
+      10, 20, 30, 50, 70,
+      100, 200, 300, 500, 700,
+      1000, 2000, 3000, 5000, 7000,
+      10_000, 20_000, 30_000, 50_000, 70_000,
+    ],
+  },
   redoc: {
     openApiUrl: 'http://127.0.0.1:8080/openapi/json',
     title: 'OpenAPI UI',

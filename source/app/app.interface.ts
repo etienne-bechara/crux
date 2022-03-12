@@ -4,6 +4,7 @@ import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.i
 import http from 'http';
 import os from 'os';
 
+import { MetricOptions } from '../metric/metric.interface';
 import { RedocAppOptions } from '../redoc/redoc.interface';
 
 export interface AppOptions extends ModuleMetadata {
@@ -49,6 +50,8 @@ export interface AppOptions extends ModuleMetadata {
   prettyPrint?: boolean;
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
+  /** Metrics configurations. */
+  metrics?: MetricOptions;
   /** Redoc rendered documentation page options. */
   redoc?: RedocAppOptions;
 }
