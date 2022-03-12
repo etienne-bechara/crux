@@ -50,7 +50,7 @@ export class SlackService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { environment, level, requestId, filename, message, data } = params;
+    const { environment, level, requestId, caller, message, data } = params;
     if (data?.messageBlocks || message === this.exceptionMessage) return;
 
     const maxCharacters = 3000;
@@ -59,7 +59,7 @@ export class SlackService implements LoggerTransport {
     let slackMsg = `*${this.getSlackEnvironment(environment)}*${separator}`
       + `*${this.getSlackSeverity(level)}*${separator}`
       + `${requestId ? `*${requestId}*${separator}` : ''}`
-      + `${filename}${separator}${message}`;
+      + `${caller}${separator}${message}`;
 
     if (data) {
       const details = JSON.stringify(data);

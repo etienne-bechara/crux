@@ -57,7 +57,7 @@ export class LoggerService {
       timestamp: new Date().toISOString(),
       level,
       requestId: this.contextService.getRequestId(),
-      filename: this.getFilename(),
+      caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
       data: this.getLogData(...args),
       error: this.getLogError(...args),
@@ -105,16 +105,17 @@ export class LoggerService {
   }
 
   /**
-   * Acquires log caller filename.
+   * Acquires log caller, which includes filename and line.
+   * @param args
    */
-  private getFilename(): string {
-    const dummyError = new Error('getFilename()');
-    const matches = dummyError.stack.matchAll(/at .*[/\\](.+?)\.(?:js|ts):/g);
+  private getCaller(...args: LoggerArguments[]): string {
+    const error = args.find((a) => a instanceof Error) as Error || new Error('-');
+    const matches = error.stack.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
 
     for (const match of matches) {
-      const filename = match[1];
+      const filename = match[1].replace(/\.(?:js|ts):/, ':');
 
-      if (filename !== 'logger.service') {
+      if (!filename.includes('logger.service')) {
         return filename;
       }
     }

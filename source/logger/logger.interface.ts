@@ -8,7 +8,7 @@ export interface LoggerParams {
   timestamp: string;
   level: LoggerLevel;
   requestId: string;
-  filename: string;
+  caller: string;
   message: string;
   data: Record<string, any>;
   error: Error;
