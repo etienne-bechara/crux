@@ -41,6 +41,8 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     genReqId: () => crypto.randomBytes(6).toString('base64url'),
   },
   metrics: {
+    pushgatewayInterval: 30_000,
+    pushgatewayJob: 'nodejs',
     httpBuckets: [
       10, 20, 30, 50, 70,
       100, 200, 300, 500, 700,

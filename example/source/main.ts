@@ -8,4 +8,8 @@ void AppModule.boot({
     PostModule,
     UserModule,
   ],
+  metrics: {
+    pushgatewayHost: 'http://127.0.0.1:9091',
+    pushgatewayInterval: 5000,
+  },
 });

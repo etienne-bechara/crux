@@ -7,4 +7,10 @@ export interface MetricOptions {
   defaultBuckets?: number[];
   /** Buckets for HTTP metrics histograms. */
   httpBuckets?: number[];
+  /** Address of gateway to push metrics. */
+  pushgatewayHost?: string;
+  /** Job name when pushing data to gateway. */
+  pushgatewayJob?: string;
+  /** Interval in milliseconds to push data to gateway. */
+  pushgatewayInterval?: number;
 }

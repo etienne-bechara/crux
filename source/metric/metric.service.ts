@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client';
+import { collectDefaultMetrics, Histogram, Metric, Pushgateway, Registry } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
+import { AsyncService } from '../async/async.service';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class MetricService {
@@ -12,8 +14,11 @@ export class MetricService {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly asyncService: AsyncService,
+    private readonly loggerService: LoggerService,
   ) {
     this.setupRegistry();
+    void this.setupPushgateway();
   }
 
   /**
@@ -30,6 +35,32 @@ export class MetricService {
       labels: defaultLabels,
       gcDurationBuckets: defaultBuckets,
     });
+  }
+
+  /**
+   * When a pushgateway host is provided, configures a
+   * permanent push job to it.
+   */
+  private async setupPushgateway(): Promise<void> {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { pushgatewayHost, pushgatewayInterval, pushgatewayJob } = metrics;
+    if (!pushgatewayHost) return;
+
+    const pushgateway = new Pushgateway(pushgatewayHost);
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      await this.asyncService.sleep(pushgatewayInterval);
+
+      try {
+        await pushgateway.pushAdd({ jobName: pushgatewayJob });
+        this.register.resetMetrics();
+        this.loggerService.debug('Metrics successfully pushed to gateway');
+      }
+      catch (e) {
+        this.loggerService.error('Failed to push to metrics to gateway', e as Error);
+      }
+    }
   }
 
   /**

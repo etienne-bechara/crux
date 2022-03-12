@@ -29,7 +29,7 @@ export class SlackService implements LoggerTransport {
     if (!level) return;
 
     if (!webhook) {
-      return this.loggerService.warning('Integration disabled due to missing webhook');
+      return this.loggerService.info('Integration disabled due to missing webhook');
     }
 
     const webhookId = webhook.split('/')[webhook.split('/').length - 1];

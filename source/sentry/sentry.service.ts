@@ -29,7 +29,7 @@ export class SentryService implements LoggerTransport {
     if (!level) return;
 
     if (!dsn) {
-      return this.loggerService.warning('Integration disabled due to missing DSN');
+      return this.loggerService.info('Integration disabled due to missing DSN');
     }
 
     Sentry.init({
