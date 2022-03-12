@@ -34,13 +34,26 @@ import {
   NotEquals as CvNotEquals,
   registerDecorator,
   UUIDVersion,
-  ValidateIf,
+  ValidateIf as CvValidateIf,
   ValidateNested as CvValidateNested,
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
 
 import { ValidatorStorage } from './validator.storage';
+
+/**
+ * Builds default ApiProperty options based on class-validator decorator.
+ * @param type
+ * @param validationOptions
+ */
+function getPropertyOptions(type: any, validationOptions: ValidationOptions): ApiPropertyOptions {
+  const { each } = validationOptions || { };
+
+  return {
+    type: each ? [ type ] : type,
+  };
+}
 
 // -- Custom validation decorators
 
@@ -104,16 +117,15 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
 // --- Common validation decorators
 
 /**
- * Builds default ApiProperty options based on class-validator decorator.
- * @param type
+ * Ignores the other validators on a property when the provided condition function returns false.
+ * @param condition
  * @param validationOptions
  */
-function getPropertyOptions(type: any, validationOptions: ValidationOptions): ApiPropertyOptions {
-  const { each } = validationOptions || { };
-
-  return {
-    type: each ? [ type ] : type,
-  };
+export function ValidateIf(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
+  return applyDecorators(
+    CvValidateIf(condition, validationOptions),
+    ApiProperty({ required: false }),
+  );
 }
 
 /**
@@ -364,7 +376,7 @@ export function IsNumberString(options?: any, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsNumberString(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ' - must be numeric' }),
+    ApiProperty({ ...propertyOptions, description: 'Must be numeric' }),
   );
 }
 
@@ -381,7 +393,7 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ` - must contain '${seed}'` }),
+    ApiProperty({ ...propertyOptions, description: `Must contain: \`${seed}\`` }),
   );
 }
 
@@ -396,7 +408,7 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 
   return applyDecorators(
     CvNotContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ` - must not contain '${seed}'` }),
+    ApiProperty({ ...propertyOptions, description: `Must not contain: \`${seed}\`` }),
   );
 }
 
@@ -426,7 +438,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ' - must be an e-mail' }),
+    ApiProperty({ ...propertyOptions, description: 'Must be an e-mail' }),
   );
 }
 
@@ -462,7 +474,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 
   return applyDecorators(
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ' - must obey ISO8601 [YYYY-MM-DD]' }),
+    ApiProperty({ ...propertyOptions, description: 'Must obey ISO8601: `YYYY-MM-DD`' }),
   );
 }
 
@@ -507,7 +519,7 @@ export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ' - must be an UUID' }),
+    ApiProperty({ ...propertyOptions, description: 'Must be an UUID' }),
   );
 }
 
@@ -568,7 +580,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: ` - must match regex /${regexPattern.source}/` }),
+    ApiProperty({ ...propertyOptions, description: `Must match regex: \`/${regexPattern.source}/\`` }),
   );
 }
 
