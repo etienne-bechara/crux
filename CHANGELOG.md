@@ -1,3 +1,10 @@
+## [4.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.1...v4.5.2) (2022-03-14)
+
+
+### Bug Fixes
+
+* metric gateway pushing ([9c677ed](https://github.com/etienne-bechara/nestjs-core/commit/9c677ed6f57e38506e3e737d6c19392f087b955d))
+
 ## [4.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.0...v4.5.1) (2022-03-14)
 
 
