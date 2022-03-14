@@ -1,3 +1,10 @@
+# [4.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.4.0...v4.5.0) (2022-03-12)
+
+
+### Features
+
+* improve gateway support by pushing default metrics ([aea8b25](https://github.com/etienne-bechara/nestjs-core/commit/aea8b2563dd3c77080baf6de2ac7a52e7c275e20))
+
 # [4.4.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.3.1...v4.4.0) (2022-03-12)
 
 
