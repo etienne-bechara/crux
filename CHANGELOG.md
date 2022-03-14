@@ -1,3 +1,11 @@
+## [4.5.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.5...v4.5.6) (2022-03-14)
+
+
+### Bug Fixes
+
+* do not alter console log timestamp ([8d268b2](https://github.com/etienne-bechara/nestjs-core/commit/8d268b2f1118ad51313b278c56262f48e269de9b))
+* improve metric pushgateway exception logging ([6996f56](https://github.com/etienne-bechara/nestjs-core/commit/6996f56bc2a831f4ff05ddb16869dfcdcb4ae5a3))
+
 ## [4.5.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.4...v4.5.5) (2022-03-14)
 
 
