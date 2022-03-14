@@ -60,15 +60,14 @@ export class MetricService {
       await this.asyncService.sleep(pushgatewayInterval);
 
       try {
-        const metrics = await this.readMetrics();
+        const currentMetrics = await this.readMetrics();
 
         if (pushgatewayReset) {
           this.register.resetMetrics();
         }
 
         await got.post(`${pushgatewayTarget}/metrics/job/${job}`, {
-          body: Buffer.from(metrics, 'utf-8'),
-          https: { rejectUnauthorized: false },
+          body: Buffer.from(currentMetrics, 'utf-8'),
           username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME || pushgatewayUsername,
           password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD || pushgatewayPassword,
           retry: 3,
