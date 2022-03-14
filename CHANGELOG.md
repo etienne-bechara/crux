@@ -1,3 +1,10 @@
+## [4.5.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.0...v4.5.1) (2022-03-14)
+
+
+### Bug Fixes
+
+* proxy exceptions ([d442484](https://github.com/etienne-bechara/nestjs-core/commit/d4424842abcb050ef741d64d226325d52d240fff))
+
 # [4.5.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.4.0...v4.5.0) (2022-03-12)
 
 
