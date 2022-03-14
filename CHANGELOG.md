@@ -1,3 +1,10 @@
+## [4.5.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.2...v4.5.3) (2022-03-14)
+
+
+### Bug Fixes
+
+* allow pushgateway basic auth ([f972010](https://github.com/etienne-bechara/nestjs-core/commit/f9720107ba935a6c6ab55cec67d5fde7a88ed211))
+
 ## [4.5.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.1...v4.5.2) (2022-03-14)
 
 
