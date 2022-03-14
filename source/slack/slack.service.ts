@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AppEnvironment } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
-import { LoggerLevel } from '../logger/logger.enum';
+import { LoggerSeverity } from '../logger/logger.enum';
 import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
 import { LoggerService } from '../logger/logger.service';
 import { SlackConfig } from './slack.config';
@@ -40,7 +40,7 @@ export class SlackService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerLevel {
+  public getLevel(): LoggerSeverity {
     return this.slackConfig.SLACK_LEVEL;
   }
 
@@ -50,14 +50,14 @@ export class SlackService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { environment, level, requestId, caller, message, data } = params;
+    const { environment, severity, requestId, caller, message, data } = params;
     if (data?.messageBlocks || message === this.exceptionMessage) return;
 
     const maxCharacters = 3000;
     const separator = '  |  ';
 
     let slackMsg = `*${this.getSlackEnvironment(environment)}*${separator}`
-      + `*${this.getSlackSeverity(level)}*${separator}`
+      + `*${this.getSlackSeverity(severity)}*${separator}`
       + `${requestId ? `*${requestId}*${separator}` : ''}`
       + `${caller}${separator}${message}`;
 
@@ -118,16 +118,16 @@ export class SlackService implements LoggerTransport {
    * Translates application log level into Slack severity label.
    * @param level
    */
-  public getSlackSeverity(level: LoggerLevel): string {
+  public getSlackSeverity(level: LoggerSeverity): string {
     switch (level) {
-      case LoggerLevel.FATAL: return '💀 Fatal';
-      case LoggerLevel.ERROR: return '🚨 Error';
-      case LoggerLevel.WARNING: return '⚠️ Warning';
-      case LoggerLevel.NOTICE: return '✔️ Notice';
-      case LoggerLevel.INFO: return 'ⓘ Info';
-      case LoggerLevel.HTTP: return '🌐 Http';
-      case LoggerLevel.DEBUG: return '🐞 Debug';
-      case LoggerLevel.TRACE: return '🐜 Trace';
+      case LoggerSeverity.FATAL: return '💀 Fatal';
+      case LoggerSeverity.ERROR: return '🚨 Error';
+      case LoggerSeverity.WARNING: return '⚠️ Warning';
+      case LoggerSeverity.NOTICE: return '✔️ Notice';
+      case LoggerSeverity.INFO: return 'ⓘ Info';
+      case LoggerSeverity.HTTP: return '🌐 Http';
+      case LoggerSeverity.DEBUG: return '🐞 Debug';
+      case LoggerSeverity.TRACE: return '🐜 Trace';
     }
   }
 

@@ -2,7 +2,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerLevel } from '../logger/logger.enum';
+import { LoggerSeverity } from '../logger/logger.enum';
 
 @Config()
 export class SlackConfig {
@@ -31,14 +31,14 @@ export class SlackConfig {
     fallback: (environment) => {
       switch (environment) {
         case AppEnvironment.LOCAL: return null;
-        case AppEnvironment.DEVELOPMENT: return LoggerLevel.WARNING;
-        case AppEnvironment.STAGING: return LoggerLevel.WARNING;
-        case AppEnvironment.PRODUCTION: return LoggerLevel.WARNING;
+        case AppEnvironment.DEVELOPMENT: return LoggerSeverity.WARNING;
+        case AppEnvironment.STAGING: return LoggerSeverity.WARNING;
+        case AppEnvironment.PRODUCTION: return LoggerSeverity.WARNING;
       }
     },
   })
   @IsOptional()
-  @IsIn(Object.values(LoggerLevel))
-  public readonly SLACK_LEVEL: LoggerLevel;
+  @IsIn(Object.values(LoggerSeverity))
+  public readonly SLACK_LEVEL: LoggerSeverity;
 
 }

@@ -1,4 +1,4 @@
-export enum LoggerLevel {
+export enum LoggerSeverity {
   FATAL = 'fatal',
   ERROR = 'error',
   WARNING = 'warning',

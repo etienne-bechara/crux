@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
-import { LoggerLevel, LoggerStyle } from '../logger/logger.enum';
+import { LoggerSeverity, LoggerStyle } from '../logger/logger.enum';
 import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
 import { LoggerService } from '../logger/logger.service';
 import { ConsoleConfig } from './console.config';
@@ -22,7 +22,7 @@ export class ConsoleService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerLevel {
+  public getLevel(): LoggerSeverity {
     return this.consoleConfig.CONSOLE_LEVEL;
   }
 
@@ -33,37 +33,36 @@ export class ConsoleService implements LoggerTransport {
    */
   // eslint-disable-next-line complexity
   public log(params: LoggerParams): void {
-    const { environment, timestamp, level, requestId, caller, message, data, error } = params;
+    const { environment, timestamp, severity, requestId, caller, message, data, error } = params;
     const { prettyPrint } = this.appConfig.APP_OPTIONS;
-    const isError = this.loggerService.isHigherOrEqualSeverity(level, LoggerLevel.ERROR);
-
-    const strTimestamp = timestamp;
-    const strLevel = level.toUpperCase().padEnd(7, ' ');
-    const strFilename = caller.padEnd(20, ' ');
-    const strRequestId = requestId || '-'.repeat(8);
-    const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
+    const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
 
     if (environment === AppEnvironment.LOCAL) {
+      const strSeverity = severity.toUpperCase().padEnd(7, ' ');
+      const strFilename = caller.padEnd(20, ' ');
+      const strRequestId = requestId || '-'.repeat(8);
+      const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
+
       const gray = LoggerStyle.FG_BRIGHT_BLACK;
       const reset = LoggerStyle.RESET;
       const separator = `${gray} | ${reset}`;
 
       let levelColor: LoggerStyle;
 
-      switch (level) {
-        case LoggerLevel.FATAL: levelColor = LoggerStyle.FG_MAGENTA; break;
-        case LoggerLevel.ERROR: levelColor = LoggerStyle.FG_RED; break;
-        case LoggerLevel.WARNING: levelColor = LoggerStyle.FG_YELLOW; break;
-        case LoggerLevel.NOTICE: levelColor = LoggerStyle.FG_GREEN; break;
-        case LoggerLevel.INFO: levelColor = LoggerStyle.FG_WHITE; break;
-        case LoggerLevel.HTTP: levelColor = LoggerStyle.FG_BLUE; break;
-        case LoggerLevel.DEBUG: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
-        case LoggerLevel.TRACE: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
+      switch (severity) {
+        case LoggerSeverity.FATAL: levelColor = LoggerStyle.FG_MAGENTA; break;
+        case LoggerSeverity.ERROR: levelColor = LoggerStyle.FG_RED; break;
+        case LoggerSeverity.WARNING: levelColor = LoggerStyle.FG_YELLOW; break;
+        case LoggerSeverity.NOTICE: levelColor = LoggerStyle.FG_GREEN; break;
+        case LoggerSeverity.INFO: levelColor = LoggerStyle.FG_WHITE; break;
+        case LoggerSeverity.HTTP: levelColor = LoggerStyle.FG_BLUE; break;
+        case LoggerSeverity.DEBUG: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
+        case LoggerSeverity.TRACE: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
       }
 
       console[isError ? 'error' : 'log'](
-        `${gray}${strTimestamp}${reset}${separator}`
-        + `${levelColor}${strLevel}${reset}${separator}`
+        `${gray}${timestamp}${reset}${separator}`
+        + `${levelColor}${strSeverity}${reset}${separator}`
         + `${levelColor}${strRequestId}${reset}${separator}`
         + `${levelColor}${strFilename}${reset}${separator}`
         + `${levelColor}${message}${reset}`
@@ -76,20 +75,7 @@ export class ConsoleService implements LoggerTransport {
       }
     }
     else {
-      const separator = ' | ';
-
-      console[isError ? 'error' : 'log'](
-        `${strTimestamp}${separator}`
-        + `${strLevel}${separator}`
-        + `${strRequestId}${separator}`
-        + `${strFilename}${separator}`
-        + `${message}`
-        + `${data ? `\n${strData}` : ''}`,
-      );
-
-      if (error) {
-        console.error(error);
-      }
+      console[isError ? 'error' : 'log'](JSON.stringify(params));
     }
   }
 

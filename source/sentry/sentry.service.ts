@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 
 import { AppConfig } from '../app/app.config';
-import { LoggerLevel } from '../logger/logger.enum';
+import { LoggerSeverity } from '../logger/logger.enum';
 import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
 import { LoggerService } from '../logger/logger.service';
 import { SentryConfig } from './sentry.config';
@@ -45,7 +45,7 @@ export class SentryService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerLevel {
+  public getLevel(): LoggerSeverity {
     return this.sentryConfig.SENTRY_LEVEL;
   }
 
@@ -55,7 +55,7 @@ export class SentryService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { level, message, requestId, data, error: rawError } = params;
+    const { severity, message, requestId, data, error: rawError } = params;
     const error = rawError || new Error(message);
 
     if (message !== error.message) {
@@ -63,7 +63,7 @@ export class SentryService implements LoggerTransport {
     }
 
     Sentry.withScope((scope) => {
-      scope.setLevel(this.getSentrySeverity(level));
+      scope.setLevel(this.getSentrySeverity(severity));
 
       if (data?.unexpected) {
         scope.setTag('unexpected', 'true');
@@ -82,16 +82,16 @@ export class SentryService implements LoggerTransport {
    * Translates application log level into sentry severity.
    * @param level
    */
-  public getSentrySeverity(level: LoggerLevel): Sentry.Severity {
+  public getSentrySeverity(level: LoggerSeverity): Sentry.Severity {
     switch (level) {
-      case LoggerLevel.FATAL: return Sentry.Severity.Fatal;
-      case LoggerLevel.ERROR: return Sentry.Severity.Error;
-      case LoggerLevel.WARNING: return Sentry.Severity.Warning;
-      case LoggerLevel.NOTICE: return Sentry.Severity.Info;
-      case LoggerLevel.INFO: return Sentry.Severity.Info;
-      case LoggerLevel.HTTP: return Sentry.Severity.Debug;
-      case LoggerLevel.DEBUG: return Sentry.Severity.Debug;
-      case LoggerLevel.TRACE: return Sentry.Severity.Debug;
+      case LoggerSeverity.FATAL: return Sentry.Severity.Fatal;
+      case LoggerSeverity.ERROR: return Sentry.Severity.Error;
+      case LoggerSeverity.WARNING: return Sentry.Severity.Warning;
+      case LoggerSeverity.NOTICE: return Sentry.Severity.Info;
+      case LoggerSeverity.INFO: return Sentry.Severity.Info;
+      case LoggerSeverity.HTTP: return Sentry.Severity.Debug;
+      case LoggerSeverity.DEBUG: return Sentry.Severity.Debug;
+      case LoggerSeverity.TRACE: return Sentry.Severity.Debug;
     }
   }
 

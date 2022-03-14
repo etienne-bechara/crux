@@ -2,7 +2,7 @@ import { IsIn, IsOptional, Matches } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerLevel } from '../logger/logger.enum';
+import { LoggerSeverity } from '../logger/logger.enum';
 
 @Config()
 export class SentryConfig {
@@ -16,14 +16,14 @@ export class SentryConfig {
     fallback: (environment) => {
       switch (environment) {
         case AppEnvironment.LOCAL: return null;
-        case AppEnvironment.DEVELOPMENT: return LoggerLevel.ERROR;
-        case AppEnvironment.STAGING: return LoggerLevel.ERROR;
-        case AppEnvironment.PRODUCTION: return LoggerLevel.ERROR;
+        case AppEnvironment.DEVELOPMENT: return LoggerSeverity.ERROR;
+        case AppEnvironment.STAGING: return LoggerSeverity.ERROR;
+        case AppEnvironment.PRODUCTION: return LoggerSeverity.ERROR;
       }
     },
   })
   @IsOptional()
-  @IsIn(Object.values(LoggerLevel))
-  public readonly SENTRY_LEVEL: LoggerLevel;
+  @IsIn(Object.values(LoggerSeverity))
+  public readonly SENTRY_LEVEL: LoggerSeverity;
 
 }

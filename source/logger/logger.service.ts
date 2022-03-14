@@ -3,7 +3,7 @@ import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
-import { LoggerLevel } from './logger.enum';
+import { LoggerSeverity } from './logger.enum';
 import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
 
 @Injectable()
@@ -46,16 +46,16 @@ export class LoggerService {
    * Isolates incoming message, error and data, and publishes
    * the event to all registered transports with configured
    * severity equal or lower.
-   * @param level
+   * @param severity
    * @param args
    */
-  private log(level: LoggerLevel, ...args: LoggerArguments[]): void {
+  private log(severity: LoggerSeverity, ...args: LoggerArguments[]): void {
     const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
 
     const logMessage: LoggerParams = {
       environment: this.appConfig.NODE_ENV,
       timestamp: new Date().toISOString(),
-      level,
+      severity,
       requestId: this.contextService.getRequestId(),
       caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
@@ -75,7 +75,7 @@ export class LoggerService {
       const transportLevel = transport.getLevel();
 
       for (const logRecord of logBatch) {
-        const isHigher = this.isHigherOrEqualSeverity(logRecord.level, transportLevel);
+        const isHigher = this.isHigherOrEqualSeverity(logRecord.severity, transportLevel);
 
         if (isHigher) {
           transport.log(logRecord);
@@ -89,16 +89,16 @@ export class LoggerService {
    * @param a
    * @param b
    */
-  public isHigherOrEqualSeverity(a: LoggerLevel, b: LoggerLevel): boolean {
+  public isHigherOrEqualSeverity(a: LoggerSeverity, b: LoggerSeverity): boolean {
     const severity = [
-      LoggerLevel.FATAL,
-      LoggerLevel.ERROR,
-      LoggerLevel.WARNING,
-      LoggerLevel.NOTICE,
-      LoggerLevel.INFO,
-      LoggerLevel.HTTP,
-      LoggerLevel.DEBUG,
-      LoggerLevel.TRACE,
+      LoggerSeverity.FATAL,
+      LoggerSeverity.ERROR,
+      LoggerSeverity.WARNING,
+      LoggerSeverity.NOTICE,
+      LoggerSeverity.INFO,
+      LoggerSeverity.HTTP,
+      LoggerSeverity.DEBUG,
+      LoggerSeverity.TRACE,
     ];
 
     return severity.indexOf(a) <= severity.indexOf(b);
@@ -210,7 +210,7 @@ export class LoggerService {
    * @param args
    */
   public fatal(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.FATAL, ...args);
+    return this.log(LoggerSeverity.FATAL, ...args);
   }
 
   /**
@@ -218,7 +218,7 @@ export class LoggerService {
    * @param args
    */
   public error(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.ERROR, ...args);
+    return this.log(LoggerSeverity.ERROR, ...args);
   }
 
   /**
@@ -226,7 +226,7 @@ export class LoggerService {
    * @param args
    */
   public warning(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.WARNING, ...args);
+    return this.log(LoggerSeverity.WARNING, ...args);
   }
 
   /**
@@ -234,7 +234,7 @@ export class LoggerService {
    * @param args
    */
   public notice(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.NOTICE, ...args);
+    return this.log(LoggerSeverity.NOTICE, ...args);
   }
 
   /**
@@ -242,7 +242,7 @@ export class LoggerService {
    * @param args
    */
   public info(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.INFO, ...args);
+    return this.log(LoggerSeverity.INFO, ...args);
   }
 
   /**
@@ -250,7 +250,7 @@ export class LoggerService {
    * @param args
    */
   public http(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.HTTP, ...args);
+    return this.log(LoggerSeverity.HTTP, ...args);
   }
 
   /**
@@ -258,7 +258,7 @@ export class LoggerService {
    * @param args
    */
   public debug(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.DEBUG, ...args);
+    return this.log(LoggerSeverity.DEBUG, ...args);
   }
 
   /**
@@ -266,7 +266,7 @@ export class LoggerService {
    * @param args
    */
   public trace(...args: LoggerArguments[]): void {
-    return this.log(LoggerLevel.TRACE, ...args);
+    return this.log(LoggerSeverity.TRACE, ...args);
   }
 
 }

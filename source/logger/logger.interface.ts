@@ -1,12 +1,12 @@
 import { AppEnvironment } from '../app/app.enum';
-import { LoggerLevel } from './logger.enum';
+import { LoggerSeverity } from './logger.enum';
 
 export type LoggerArguments = string | Error | Record<string, any>;
 
 export interface LoggerParams {
   environment: AppEnvironment;
   timestamp: string;
-  level: LoggerLevel;
+  severity: LoggerSeverity;
   requestId: string;
   caller: string;
   message: string;
@@ -15,6 +15,6 @@ export interface LoggerParams {
 }
 
 export interface LoggerTransport {
-  getLevel: () => LoggerLevel;
+  getLevel: () => LoggerSeverity;
   log: (params: LoggerParams) => void;
 }
