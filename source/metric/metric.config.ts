@@ -8,7 +8,7 @@ export class MetricConfig {
   @InjectSecret()
   @IsOptional()
   @IsUrl()
-  public readonly METRIC_PUSHGATEWAY_HOST: string;
+  public readonly METRIC_PUSHGATEWAY_URL: string;
 
   @InjectSecret()
   @IsOptional()

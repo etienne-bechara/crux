@@ -9,8 +9,8 @@ export interface MetricOptions {
   defaultBuckets?: number[];
   /** Buckets for HTTP metrics histograms. */
   httpBuckets?: number[];
-  /** Address of gateway to push metrics. */
-  pushgatewayHost?: string;
+  /** URL of gateway to push metrics. */
+  pushgatewayUrl?: string;
   /** Pushgateway basic auth username. */
   pushgatewayUsername?: string;
   /** Pushgateway basic auth password. */

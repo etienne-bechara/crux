@@ -50,10 +50,10 @@ export class MetricService {
   private async setupPushgateway(): Promise<void> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { job, pushgatewayInterval, pushgatewayReset } = metrics;
-    const { pushgatewayHost, pushgatewayUsername, pushgatewayPassword } = metrics;
+    const { pushgatewayUrl, pushgatewayUsername, pushgatewayPassword } = metrics;
 
-    const host = this.metricConfig.METRIC_PUSHGATEWAY_HOST || pushgatewayHost;
-    if (!host) return;
+    const pushgatewayTarget = this.metricConfig.METRIC_PUSHGATEWAY_URL || pushgatewayUrl;
+    if (!pushgatewayTarget) return;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -66,7 +66,7 @@ export class MetricService {
           this.register.resetMetrics();
         }
 
-        await got.post(`${host}/metrics/job/${job}`, {
+        await got.post(`${pushgatewayTarget}/metrics/job/${job}`, {
           body: Buffer.from(metrics, 'utf-8'),
           https: { rejectUnauthorized: false },
           username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME || pushgatewayUsername,
