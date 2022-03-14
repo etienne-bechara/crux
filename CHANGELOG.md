@@ -1,3 +1,10 @@
+## [4.5.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.3...v4.5.4) (2022-03-14)
+
+
+### Bug Fixes
+
+* user proper naming convention of URL/host ([4b0c3b8](https://github.com/etienne-bechara/nestjs-core/commit/4b0c3b8d5c4a86eaeb1b00a3d61f0087e732fcdf))
+
 ## [4.5.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.2...v4.5.3) (2022-03-14)
 
 
