@@ -66,6 +66,16 @@ export class MetricService {
           this.register.resetMetrics();
         }
 
+        // eslint-disable-next-line no-console
+        console.log({
+          env: {
+            pushgatewayUrl: this.metricConfig.METRIC_PUSHGATEWAY_URL,
+            pushgatewayUsername: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME,
+            pushgatewayPassword: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD,
+          },
+          options: metrics,
+        });
+
         await got.post(`${pushgatewayTarget}/metrics/job/${job}`, {
           body: Buffer.from(metrics, 'utf-8'),
           https: { rejectUnauthorized: false },
