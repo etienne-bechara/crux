@@ -1,3 +1,10 @@
+## [4.5.5-beta.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.4...v4.5.5-beta.1) (2022-03-14)
+
+
+### Bug Fixes
+
+* log metrics credentials ([70cf9bd](https://github.com/etienne-bechara/nestjs-core/commit/70cf9bd249392d26c1a84d999861333a4f942e3a))
+
 ## [4.5.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.3...v4.5.4) (2022-03-14)
 
 
