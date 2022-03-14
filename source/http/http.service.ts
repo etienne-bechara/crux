@@ -225,7 +225,7 @@ export class HttpService {
     const { method, host, path, request, error } = params;
     const { message, response } = error;
     const { proxyExceptions } = request;
-    const isProxyExceptions = this.httpModuleOptions.proxyExceptions ?? proxyExceptions;
+    const isProxyExceptions = proxyExceptions ?? this.httpModuleOptions.proxyExceptions;
 
     const code = isProxyExceptions && response?.statusCode
       ? Number(response?.statusCode)
@@ -235,7 +235,7 @@ export class HttpService {
 
     throw new HttpException({
       message: `${method} ${path} | ${message}`,
-      proxyExceptions,
+      proxyExceptions: isProxyExceptions,
       outboundRequest: {
         method,
         host,
