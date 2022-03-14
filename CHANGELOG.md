@@ -1,3 +1,10 @@
+## [4.5.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.4...v4.5.5) (2022-03-14)
+
+
+### Bug Fixes
+
+* metric variable shadowing ([989fdfd](https://github.com/etienne-bechara/nestjs-core/commit/989fdfd0a10a3946d1774e0f3536e436ad5ff0d4))
+
 ## [4.5.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.3...v4.5.4) (2022-03-14)
 
 
