@@ -5,6 +5,7 @@ import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client'
 import { AppConfig } from '../app/app.config';
 import { AsyncService } from '../async/async.service';
 import { LoggerService } from '../logger/logger.service';
+import { MetricConfig } from './metric.config';
 
 @Injectable()
 export class MetricService {
@@ -16,6 +17,7 @@ export class MetricService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly asyncService: AsyncService,
+    private readonly metricConfig: MetricConfig,
     private readonly loggerService: LoggerService,
   ) {
     this.setupRegistry();
@@ -47,8 +49,11 @@ export class MetricService {
    */
   private async setupPushgateway(): Promise<void> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { job, pushgatewayHost, pushgatewayInterval, pushgatewayReset } = metrics;
-    if (!pushgatewayHost) return;
+    const { job, pushgatewayInterval, pushgatewayReset } = metrics;
+    const { pushgatewayHost, pushgatewayUsername, pushgatewayPassword } = metrics;
+
+    const host = this.metricConfig.METRIC_PUSHGATEWAY_HOST || pushgatewayHost;
+    if (!host) return;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -61,12 +66,12 @@ export class MetricService {
           this.register.resetMetrics();
         }
 
-        await got.post(`${pushgatewayHost}/metrics/job/${job}`, {
+        await got.post(`${host}/metrics/job/${job}`, {
           body: Buffer.from(metrics, 'utf-8'),
+          https: { rejectUnauthorized: false },
+          username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME || pushgatewayUsername,
+          password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD || pushgatewayPassword,
           retry: 3,
-          https: {
-            rejectUnauthorized: false,
-          },
         });
 
         this.loggerService.debug('Metrics successfully pushed to gateway');

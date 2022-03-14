@@ -11,6 +11,10 @@ export interface MetricOptions {
   httpBuckets?: number[];
   /** Address of gateway to push metrics. */
   pushgatewayHost?: string;
+  /** Pushgateway basic auth username. */
+  pushgatewayUsername?: string;
+  /** Pushgateway basic auth password. */
+  pushgatewayPassword?: string;
   /** Interval in milliseconds to push data to gateway. */
   pushgatewayInterval?: number;
   /** Whether or not to reset instance metrics when pushing to gateway. */
