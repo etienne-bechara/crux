@@ -1,24 +1,16 @@
-import { Module } from '@nestjs/common';
-
-import { HttpModule } from '../../../source/http/http.module';
+import { Module } from '../../../source/app/app.override';
+import { ZipModule } from '../zip/zip.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 @Module({
   imports: [
-    HttpModule.register({
-      prefixUrl: 'https://jsonplaceholder.typicode.com',
-      resolveBodyOnly: true,
-      responseType: 'json',
-    }),
+    ZipModule,
   ],
   controllers: [
     UserController,
   ],
   providers: [
-    UserService,
-  ],
-  exports: [
     UserService,
   ],
 })

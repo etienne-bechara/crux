@@ -1,7 +1,5 @@
-import { Body, Param } from '@nestjs/common';
-
-import { Controller, Delete, Get, Patch, Post, Put } from '../../../source/app/app.decorator';
-import { UserCreateDto, UserIdDto } from './user.dto';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../source/app/app.override';
+import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -12,15 +10,14 @@ export class UserController {
     private readonly userService: UserService,
   ) { }
 
-  @Get({ type: [ User ] })
-  public getUser(): Promise<User[]> {
+  @Get({ type: UserCollection })
+  public getUser(): UserCollection {
     return this.userService.readUsers();
   }
 
   @Get(':id', { type: User })
-  public getUserById(@Param() params: UserIdDto): Promise<User> {
-    const { id } = params;
-    return this.userService.readUserById(id);
+  public getUserById(@Param() params: UserIdDto): User {
+    return this.userService.readUserById(params.id);
   }
 
   @Post({ type: User })
@@ -28,21 +25,15 @@ export class UserController {
     return this.userService.createUser(body);
   }
 
-  @Put({ type: User })
-  public putUser(@Body() body: User): Promise<User> {
-    return this.userService.replaceUser(body);
-  }
-
   @Patch(':id', { type: User })
-  public patchUserById(@Param() params: UserIdDto, @Body() body: UserCreateDto): Promise<User> {
-    const { id } = params;
-    return this.userService.updateUserById(id, body);
+  public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
+    return this.userService.updateUserById(params.id, body);
   }
 
   @Delete(':id')
-  public deleteUserById(@Param() params: UserIdDto): Promise<void> {
-    const { id } = params;
-    return this.userService.deleteUserById(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public deleteUserById(@Param() params: UserIdDto): void {
+    return this.userService.deleteUserById(params.id);
   }
 
 }
