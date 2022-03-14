@@ -60,7 +60,16 @@ export class HttpService {
 
     const start = Date.now();
     const metricParams: HttpMetricParams = { start, method, host, path };
-    const logParams = { method, host, path, replacements, query, body, headers };
+
+    const logParams = {
+      method,
+      host,
+      path,
+      replacements,
+      query,
+      body: Buffer.isBuffer(body) ? '<Buffer>' : body,
+      headers,
+    };
 
     const isIgnoreExceptions = ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
     const isResolveBodyOnly = resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
@@ -224,7 +233,7 @@ export class HttpService {
   private handleRequestException(params: HttpExceptionParams): void {
     const { method, host, path, request, error } = params;
     const { message, response } = error;
-    const { proxyExceptions } = request;
+    const { proxyExceptions, body } = request;
     const isProxyExceptions = proxyExceptions ?? this.httpModuleOptions.proxyExceptions;
 
     const code = isProxyExceptions && response?.statusCode
@@ -241,6 +250,7 @@ export class HttpService {
         host,
         path,
         ...request,
+        body: Buffer.isBuffer(body) ? '<Buffer>' : body,
       },
       outboundResponse: {
         code: response?.statusCode,

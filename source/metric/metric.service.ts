@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import got from 'got';
 import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
 import { AsyncService } from '../async/async.service';
+import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { MetricConfig } from './metric.config';
 
@@ -55,6 +55,13 @@ export class MetricService {
     const pushgatewayTarget = this.metricConfig.METRIC_PUSHGATEWAY_URL || pushgatewayUrl;
     if (!pushgatewayTarget) return;
 
+    const httpService = new HttpService({
+      name: 'MetricModule',
+      prefixUrl: pushgatewayTarget,
+      username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME ?? pushgatewayUsername,
+      password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD ?? pushgatewayPassword,
+    }, this.loggerService, null);
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
       await this.asyncService.sleep(pushgatewayInterval);
@@ -66,14 +73,10 @@ export class MetricService {
           this.register.resetMetrics();
         }
 
-        await got.post(`${pushgatewayTarget}/metrics/job/${job}`, {
+        await httpService.post('metrics/job/:job', {
+          replacements: { job },
           body: Buffer.from(currentMetrics, 'utf-8'),
-          username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME || pushgatewayUsername,
-          password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD || pushgatewayPassword,
-          retry: 3,
         });
-
-        this.loggerService.debug('Metrics successfully pushed to gateway');
       }
       catch (e) {
         this.loggerService.warning('Failed to push to metrics to gateway', e as Error);
