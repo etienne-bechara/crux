@@ -37,7 +37,7 @@ export class ConsoleService implements LoggerTransport {
     const { prettyPrint } = this.appConfig.APP_OPTIONS;
     const isError = this.loggerService.isHigherOrEqualSeverity(level, LoggerLevel.ERROR);
 
-    const strTimestamp = timestamp.replace('T', ' ').replace('Z', '');
+    const strTimestamp = timestamp;
     const strLevel = level.toUpperCase().padEnd(7, ' ');
     const strFilename = caller.padEnd(20, ' ');
     const strRequestId = requestId || '-'.repeat(8);
