@@ -1,3 +1,10 @@
+## [4.5.7](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.6...v4.5.7) (2022-03-14)
+
+
+### Bug Fixes
+
+* log in standardized json when env is not local ([7f0f136](https://github.com/etienne-bechara/nestjs-core/commit/7f0f136e5f970e55005e48d4e23acc72cf664121))
+
 ## [4.5.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.5...v4.5.6) (2022-03-14)
 
 
