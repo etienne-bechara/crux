@@ -1,5 +1,5 @@
 export interface MetricOptions {
-  /** Job name when registering metrics. */
+  /** Job name to label on every metric as well as pushing to gateway. */
   job?: string;
   /** Prefix for default metrics. */
   defaultPrefix?: string;

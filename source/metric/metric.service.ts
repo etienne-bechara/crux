@@ -61,14 +61,18 @@ export class MetricService {
           this.register.resetMetrics();
         }
 
-        await got.post(`${pushgatewayHost}/metrics/${job}`, {
+        await got.post(`${pushgatewayHost}/metrics/job/${job}`, {
           body: Buffer.from(metrics, 'utf-8'),
+          retry: 3,
+          https: {
+            rejectUnauthorized: false,
+          },
         });
 
         this.loggerService.debug('Metrics successfully pushed to gateway');
       }
       catch (e) {
-        this.loggerService.error('Failed to push to metrics to gateway', e as Error);
+        this.loggerService.warning('Failed to push to metrics to gateway', e as Error);
       }
     }
   }
