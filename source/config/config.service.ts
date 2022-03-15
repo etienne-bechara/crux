@@ -3,6 +3,8 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
 
+import { LoggerSeverity } from '../logger/logger.enum';
+import { LoggerParams } from '../logger/logger.interface';
 import { ConfigModuleOptions, ConfigSecretRecord } from './config.interface';
 
 /**
@@ -38,15 +40,18 @@ export class ConfigService {
 
     // If config validation failure is not allowed, print errors and quit application
     if (errors.length > 0 && !allowValidationErrors) {
-      const timestamp = new Date().toISOString();
-      const strTimestamp = timestamp.replace('T', ' ').replace('Z', '');
-      const errorConstraints = errors.map(({ property, constraints }) => ({ property, constraints }));
+      const validationErrors = errors.map(({ property, constraints }) => ({ property, constraints }));
 
-      const errorMessage = `${strTimestamp} | FATAL   | config.service       | Environment validation failed`
-        + `\n${JSON.stringify({ errors: errorConstraints }, null, 2)}`;
+      const logMessage: Partial<LoggerParams> = {
+        timestamp: new Date().toISOString(),
+        severity: LoggerSeverity.FATAL,
+        caller: 'config.service',
+        message: 'Environment validation failed',
+        data: { constraints: validationErrors },
+      };
 
       // eslint-disable-next-line no-console
-      console.error(errorMessage);
+      console.error(JSON.stringify(logMessage, null, 2));
       process.exit(1);
     }
 
