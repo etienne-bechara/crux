@@ -3,7 +3,7 @@ import os from 'os';
 
 import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
-import { AppStatus } from './app.interface';
+import { AppStatus } from './app.dto';
 
 @Injectable()
 export class AppService {

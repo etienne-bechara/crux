@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { collectDefaultMetrics, Histogram, Metric, Registry } from 'prom-client';
+import { collectDefaultMetrics, Histogram, Metric, metric, Registry } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
 import { AsyncService } from '../async/async.service';
@@ -133,11 +133,16 @@ export class MetricService {
     return this.httpOutboundHistogram;
   }
 
+  public readMetrics(): Promise<string>;
+  public readMetrics(json?: boolean): Promise<metric[]>;
   /**
    * Read metrics in standard Prometheus string format.
+   * @param json
    */
-  public readMetrics(): Promise<string> {
-    return this.register.metrics();
+  public readMetrics(json?: boolean): Promise<string | metric[]> {
+    return json
+      ? this.register.getMetricsAsJSON()
+      : this.register.metrics();
   }
 
   /**

@@ -10,22 +10,22 @@ export class UserController {
     private readonly userService: UserService,
   ) { }
 
-  @Get({ type: UserCollection })
+  @Get({ response: { type: UserCollection } })
   public getUser(): UserCollection {
     return this.userService.readUsers();
   }
 
-  @Get(':id', { type: User })
+  @Get(':id', { response: { type: User } })
   public getUserById(@Param() params: UserIdDto): User {
     return this.userService.readUserById(params.id);
   }
 
-  @Post({ type: User })
+  @Post({ response: { type: User } })
   public postUser(@Body() body: UserCreateDto): Promise<User> {
     return this.userService.createUser(body);
   }
 
-  @Patch(':id', { type: User })
+  @Patch(':id', { response: { type: User } })
   public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
     return this.userService.updateUserById(params.id, body);
   }

@@ -21,12 +21,14 @@ import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
 import { MemoryModule } from '../memory/memory.module';
+import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { RedocModule } from '../redoc/redoc.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
+import { AppMemory } from './app.enum';
 import { AppFilter } from './app.filter';
 import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
@@ -155,6 +157,7 @@ export class AppModule {
    */
   private static configureDocumentation(): void {
     const { title, description, version, logo, tagGroups, documentBuilder } = this.options.redoc;
+    const memoryService: MemoryService<AppMemory> = this.instance.get(MemoryService);
 
     this.instance['setViewEngine']({
       engine: { handlebars },
@@ -189,6 +192,8 @@ export class AppModule {
         return entityName ? operationId : defaultId;
       },
     });
+
+    memoryService.setKey('openApiSpecification', JSON.stringify(document));
 
     document['x-tagGroups'] = tagGroups;
     document.info['x-logo'] = logo;

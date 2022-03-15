@@ -5,3 +5,7 @@ export enum AppEnvironment {
   LOCAL = 'local',
   TEST = 'test',
 }
+
+export interface AppMemory {
+  openApiSpecification: string;
+}

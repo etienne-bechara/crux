@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import http from 'http';
-import os from 'os';
 
 import { MetricOptions } from '../metric/metric.interface';
 import { RedocAppOptions } from '../redoc/redoc.interface';
@@ -54,28 +54,6 @@ export interface AppOptions extends ModuleMetadata {
   metrics?: MetricOptions;
   /** Redoc rendered documentation page options. */
   redoc?: RedocAppOptions;
-}
-
-export interface AppStatus {
-  system: {
-    version: string;
-    type: string;
-    release: string;
-    architecture: string;
-    endianness: string;
-    uptime: number;
-  };
-  cpus: os.CpuInfo[];
-  memory: {
-    total: number;
-    free: number;
-  };
-  network: AppNetwork;
-}
-
-export interface AppNetwork {
-  publicIp: string;
-  interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>;
 }
 
 /**
@@ -163,5 +141,5 @@ export interface AppControllerParams {
 export interface AppMethodParams extends Partial<OperationObject> {
   tags?: string[];
   hidden?: boolean;
-  type?: any;
+  response?: ApiResponseOptions;
 }
