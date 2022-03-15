@@ -15,6 +15,6 @@ export interface LoggerParams {
 }
 
 export interface LoggerTransport {
-  getLevel: () => LoggerSeverity;
+  getSeverity: () => LoggerSeverity;
   log: (params: LoggerParams) => void;
 }

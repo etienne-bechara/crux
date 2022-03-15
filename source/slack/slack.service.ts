@@ -25,8 +25,8 @@ export class SlackService implements LoggerTransport {
    */
   private setupTransport(): void {
     const webhook = this.slackConfig.SLACK_WEBHOOK;
-    const level = this.getLevel();
-    if (!level) return;
+    const severity = this.getSeverity();
+    if (!severity) return;
 
     if (!webhook) {
       return this.loggerService.info('Integration disabled due to missing webhook');
@@ -40,8 +40,8 @@ export class SlackService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerSeverity {
-    return this.slackConfig.SLACK_LEVEL;
+  public getSeverity(): LoggerSeverity {
+    return this.slackConfig.SLACK_SEVERITY;
   }
 
   /**
@@ -116,10 +116,10 @@ export class SlackService implements LoggerTransport {
 
   /**
    * Translates application log level into Slack severity label.
-   * @param level
+   * @param severity
    */
-  public getSlackSeverity(level: LoggerSeverity): string {
-    switch (level) {
+  public getSlackSeverity(severity: LoggerSeverity): string {
+    switch (severity) {
       case LoggerSeverity.FATAL: return '💀 Fatal';
       case LoggerSeverity.ERROR: return '🚨 Error';
       case LoggerSeverity.WARNING: return '⚠️ Warning';

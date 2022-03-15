@@ -25,8 +25,8 @@ export class SentryService implements LoggerTransport {
    */
   private setupTransport(): void {
     const dsn = this.sentryConfig.SENTRY_DSN;
-    const level = this.getLevel();
-    if (!level) return;
+    const severity = this.getSeverity();
+    if (!severity) return;
 
     if (!dsn) {
       return this.loggerService.info('Integration disabled due to missing DSN');
@@ -45,8 +45,8 @@ export class SentryService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerSeverity {
-    return this.sentryConfig.SENTRY_LEVEL;
+  public getSeverity(): LoggerSeverity {
+    return this.sentryConfig.SENTRY_SEVERITY;
   }
 
   /**
@@ -80,10 +80,10 @@ export class SentryService implements LoggerTransport {
 
   /**
    * Translates application log level into sentry severity.
-   * @param level
+   * @param severity
    */
-  public getSentrySeverity(level: LoggerSeverity): Sentry.Severity {
-    switch (level) {
+  public getSentrySeverity(severity: LoggerSeverity): Sentry.Severity {
+    switch (severity) {
       case LoggerSeverity.FATAL: return Sentry.Severity.Fatal;
       case LoggerSeverity.ERROR: return Sentry.Severity.Error;
       case LoggerSeverity.WARNING: return Sentry.Severity.Warning;

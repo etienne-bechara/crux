@@ -39,6 +39,6 @@ export class SlackConfig {
   })
   @IsOptional()
   @IsIn(Object.values(LoggerSeverity))
-  public readonly SLACK_LEVEL: LoggerSeverity;
+  public readonly SLACK_SEVERITY: LoggerSeverity;
 
 }

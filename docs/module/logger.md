@@ -47,8 +47,6 @@ The logging method accepts multiples arguments of the following typing:
 type LoggerArguments = string | Error | Record<string, any>;
 ```
 
-When calling any of the methods previously listed, the `level` param will be populated accordingly and remaining data passed in order.
-
 Which means you may call them in any combination of:
 
 ```ts
@@ -77,7 +75,7 @@ Basic integration with terminal, level can be configured by environment.
 
 Variable | Mandatory | Type | Default
 :--- | :---: | :---: | :---
-CONSOLE_LEVEL | No | string | See [console.config.ts](../../source/console/console.config.ts)
+CONSOLE_SEVERITY | No | string | See [console.config.ts](../../source/console/console.config.ts)
 
 
 ### Sentry
@@ -89,7 +87,7 @@ Keep in mind that this should be unique for every project.
 Variable | Mandatory | Type | Default
 :--- | :---: | :---: | :---
 SENTRY_DSN | Yes | string | `undefined`
-SENTRY_LEVEL | No | string | See [sentry.config.ts](../../source/logger/sentry/sentry.config.ts)
+SENTRY_SEVERITY | No | string | See [sentry.config.ts](../../source/logger/sentry/sentry.config.ts)
 
 
 ### Slack
@@ -102,7 +100,7 @@ SLACK_WEBHOOK | Yes | string | `undefined`
 SLACK_CHANNEL | Yes | string | `undefined`
 SLACK_USERNAME | No | string | Notification Bot
 SLACK_ICON_URL | No | string | `undefined`
-SLACK_LEVEL | No | string | See [slack.config.ts](../../source/slack/slack.config.ts)
+SLACK_SEVERITY | No | string | See [slack.config.ts](../../source/slack/slack.config.ts)
 
 ---
 

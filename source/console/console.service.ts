@@ -22,8 +22,8 @@ export class ConsoleService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getLevel(): LoggerSeverity {
-    return this.consoleConfig.CONSOLE_LEVEL;
+  public getSeverity(): LoggerSeverity {
+    return this.consoleConfig.CONSOLE_SEVERITY;
   }
 
   /**
@@ -47,31 +47,31 @@ export class ConsoleService implements LoggerTransport {
       const reset = LoggerStyle.RESET;
       const separator = `${gray} | ${reset}`;
 
-      let levelColor: LoggerStyle;
+      let severityColor: LoggerStyle;
 
       switch (severity) {
-        case LoggerSeverity.FATAL: levelColor = LoggerStyle.FG_MAGENTA; break;
-        case LoggerSeverity.ERROR: levelColor = LoggerStyle.FG_RED; break;
-        case LoggerSeverity.WARNING: levelColor = LoggerStyle.FG_YELLOW; break;
-        case LoggerSeverity.NOTICE: levelColor = LoggerStyle.FG_GREEN; break;
-        case LoggerSeverity.INFO: levelColor = LoggerStyle.FG_WHITE; break;
-        case LoggerSeverity.HTTP: levelColor = LoggerStyle.FG_BLUE; break;
-        case LoggerSeverity.DEBUG: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
-        case LoggerSeverity.TRACE: levelColor = LoggerStyle.FG_BRIGHT_BLACK; break;
+        case LoggerSeverity.FATAL: severityColor = LoggerStyle.FG_MAGENTA; break;
+        case LoggerSeverity.ERROR: severityColor = LoggerStyle.FG_RED; break;
+        case LoggerSeverity.WARNING: severityColor = LoggerStyle.FG_YELLOW; break;
+        case LoggerSeverity.NOTICE: severityColor = LoggerStyle.FG_GREEN; break;
+        case LoggerSeverity.INFO: severityColor = LoggerStyle.FG_WHITE; break;
+        case LoggerSeverity.HTTP: severityColor = LoggerStyle.FG_BLUE; break;
+        case LoggerSeverity.DEBUG: severityColor = LoggerStyle.FG_BRIGHT_BLACK; break;
+        case LoggerSeverity.TRACE: severityColor = LoggerStyle.FG_BRIGHT_BLACK; break;
       }
 
       console[isError ? 'error' : 'log'](
         `${gray}${timestamp}${reset}${separator}`
-        + `${levelColor}${strSeverity}${reset}${separator}`
-        + `${levelColor}${strRequestId}${reset}${separator}`
-        + `${levelColor}${strFilename}${reset}${separator}`
-        + `${levelColor}${message}${reset}`
+        + `${severityColor}${strSeverity}${reset}${separator}`
+        + `${severityColor}${strRequestId}${reset}${separator}`
+        + `${severityColor}${strFilename}${reset}${separator}`
+        + `${severityColor}${message}${reset}`
         + `${data ? `${gray}\n${strData}${reset}` : ''}`,
       );
 
       if (error) {
         const { message, stack } = error;
-        console.error(`${levelColor}${message}${reset}${gray}\n${stack}${reset}`);
+        console.error(`${severityColor}${message}${reset}${gray}\n${stack}${reset}`);
       }
     }
     else {

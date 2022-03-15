@@ -19,6 +19,6 @@ export class ConsoleConfig {
   })
   @IsOptional()
   @IsIn(Object.values(LoggerSeverity))
-  public readonly CONSOLE_LEVEL: LoggerSeverity;
+  public readonly CONSOLE_SEVERITY: LoggerSeverity;
 
 }

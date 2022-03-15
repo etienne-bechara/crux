@@ -35,9 +35,9 @@ export class LoggerService {
    * @param transport
    */
   public registerTransport(transport: LoggerTransport): void {
-    const level = transport.getLevel();
+    const severity = transport.getSeverity();
 
-    if (level) {
+    if (severity) {
       this.transports.push(transport);
     }
   }
@@ -72,10 +72,10 @@ export class LoggerService {
     logBatch.push(logMessage);
 
     for (const transport of this.transports) {
-      const transportLevel = transport.getLevel();
+      const transportSeverity = transport.getSeverity();
 
       for (const logRecord of logBatch) {
-        const isHigher = this.isHigherOrEqualSeverity(logRecord.severity, transportLevel);
+        const isHigher = this.isHigherOrEqualSeverity(logRecord.severity, transportSeverity);
 
         if (isHigher) {
           transport.log(logRecord);

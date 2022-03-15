@@ -24,6 +24,6 @@ export class SentryConfig {
   })
   @IsOptional()
   @IsIn(Object.values(LoggerSeverity))
-  public readonly SENTRY_LEVEL: LoggerSeverity;
+  public readonly SENTRY_SEVERITY: LoggerSeverity;
 
 }
