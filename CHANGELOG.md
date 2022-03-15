@@ -1,3 +1,10 @@
+## [4.5.8](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.7...v4.5.8) (2022-03-15)
+
+
+### Bug Fixes
+
+* improve env validation error printing ([14752c1](https://github.com/etienne-bechara/nestjs-core/commit/14752c10eaaea8a18d5cc4a3fb445c38cda1eac3))
+
 ## [4.5.7](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.6...v4.5.7) (2022-03-14)
 
 
