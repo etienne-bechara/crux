@@ -29,7 +29,7 @@ export class RedocController {
 
   @Get('json', {
     operationId: 'Read OpenAPI Spec',
-    description: 'Downloads OpenAPI specification in JSON format, useful for importing at request clients.',
+    description: 'Generate OpenAPI specification in JSON format, useful for importing at request clients.',
     response: { type: RedocSpecification },
   })
   public getDocsJson(): RedocSpecification {

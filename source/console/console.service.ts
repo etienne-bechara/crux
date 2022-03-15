@@ -16,6 +16,16 @@ export class ConsoleService implements LoggerTransport {
     private readonly consoleConfig: ConsoleConfig,
     private readonly loggerService: LoggerService,
   ) {
+    this.setupTransport();
+  }
+
+  /**
+   * Do not register the transport if severity is not provided.
+   */
+  private setupTransport(): void {
+    const severity = this.getSeverity();
+    if (!severity) return;
+
     this.loggerService.registerTransport(this);
   }
 
