@@ -117,7 +117,7 @@ export class CsvService implements LoggerTransport {
       filenames.push(`${referenceDate.toISOString().split(':')[0]}.csv`);
     }
 
-    const fileBuffers = await Promise.all(filenames.map((f) => this.readLogByFilename(f)));
+    const fileBuffers = await Promise.all(filenames.reverse().map((f) => this.readLogByFilename(f)));
     const fileStrings = fileBuffers.filter((f) => f).map((f) => f.toString('utf-8'));
     const fileJoined = fileStrings.join('\n').replace(new RegExp(`\n${this.csvConfig.CSV_HEADER}\n`, 'g'), '');
 
