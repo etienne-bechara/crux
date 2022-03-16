@@ -27,12 +27,12 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ],
   sensitiveKeys: [
+    'apikey',
     'auth',
     'authentication',
     'authorization',
     'clientkey',
     'clientsecret',
-    'key',
     'pass',
     'password',
   ],

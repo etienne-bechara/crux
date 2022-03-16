@@ -13,21 +13,27 @@ describe('LoggerService', () => {
   describe('sanitize', () => {
     it('should delete sensitive keys from object', () => {
       const sensitiveObject = {
-        string: 'abc',
-        number: 123,
+        string: 'admin',
+        number: 1234,
+        empty: null,
+        undefined: undefined,
+        zero: 0,
+        username: 'admin',
+        password: 'admin',
         headers: {
           authorization: 'Bearer eyj....s3h',
-          empty: undefined,
+          'content-type': 'application/json',
         },
         auth: {
           nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
           user: 'admin',
-          pass: '1234',
+          pass: 'admin',
         },
         body: {
-          _key: 'hbuF&^%fdsa4tf',
-          clientSecret: 'MAF...S4D',
-          data: 123,
+          apiKey: 'hbuF&^%fdsa4tf',
+          nested: {
+            clientSecret: 'MAF...S4D',
+          },
         },
         mfa: [
           {
@@ -45,20 +51,22 @@ describe('LoggerService', () => {
       const censoredObject = loggerService.sanitize(sensitiveObject);
 
       expect(censoredObject).toMatchObject({
-        string: 'abc',
-        number: 123,
+        string: 'admin',
+        number: 1234,
+        empty: null,
+        zero: 0,
+        username: 'admin',
+        password: '[filtered]',
         headers: {
           authorization: '[filtered]',
+          'content-type': 'application/json',
         },
-        auth: {
-          nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
-          user: 'admin',
-          pass: '[filtered]',
-        },
+        auth: '[filtered]',
         body: {
-          _key: '[filtered]',
-          clientSecret: '[filtered]',
-          data: 123,
+          apiKey: '[filtered]',
+          nested: {
+            clientSecret: '[filtered]',
+          },
         },
         mfa: [
           {

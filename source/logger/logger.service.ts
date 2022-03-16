@@ -176,10 +176,17 @@ export class LoggerService {
    * @param object
    * @param decycled
    */
+  // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
     const { sensitiveKeys } = this.appConfig.APP_OPTIONS;
-    if (typeof object !== 'object') return object;
-    if (!decycled) object = cycle.decycle(object);
+
+    if (typeof object !== 'object') {
+      return object;
+    }
+
+    if (!decycled) {
+      object = cycle.decycle(object);
+    }
 
     if (Array.isArray(object)) {
       const clone = [ ...object ];
@@ -190,18 +197,25 @@ export class LoggerService {
 
     for (const key in clone) {
       const alphaKey = key.toLowerCase().replace(/[^a-z]+/g, '');
+      const isSensitive = sensitiveKeys.includes(alphaKey);
+      const isArray = Array.isArray(clone[key]);
+      const isObject = typeof clone[key] === 'object';
+      const hasZeroKey = isObject && clone[key] && (clone[key]['0'] || clone[key]['0'] === 0);
 
       if (clone[key] === undefined) {
         delete clone[key];
       }
-      else if (Array.isArray(clone[key]) || typeof clone[key] === 'object' && !clone[key]['0']) {
+      else if (clone[key] === null) {
+        continue;
+      }
+      else if (isSensitive) {
+        clone[key] = '[filtered]';
+      }
+      else if (isArray || isObject && !hasZeroKey) {
         clone[key] = this.sanitize(clone[key], true);
       }
-      else if (typeof clone[key] === 'object' && (clone[key]['0'] || clone[key]['0'] === 0)) {
+      else if (isObject && hasZeroKey) {
         clone[key] = '<Buffer>';
-      }
-      else if (typeof clone[key] !== 'object' && sensitiveKeys.includes(alphaKey)) {
-        clone[key] = '[filtered]';
       }
     }
 
