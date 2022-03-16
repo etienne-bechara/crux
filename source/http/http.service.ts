@@ -100,7 +100,7 @@ export class HttpService {
 
         const delay = rDelay(attempts);
 
-        const msg = `⯆ ${method} ${host}${path} failed, retrying in ${delay}ms (${attempts}/${rLimit})`;
+        const msg = `⯆ ${e.message} | Retrying in ${delay}ms (${attempts}/${rLimit})`;
         this.loggerService.debug(msg, e as Error);
 
         await new Promise((r) => setTimeout(r, delay));

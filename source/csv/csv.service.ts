@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fs from 'fs';
 
 import { LoggerSeverity } from '../logger/logger.enum';
@@ -108,6 +108,12 @@ export class CsvService implements LoggerTransport {
    * @param params
    */
   public async readLogs(params: CsvReadDto): Promise<Buffer> {
+    const severity = this.getSeverity();
+
+    if (!severity) {
+      throw new InternalServerErrorException('csv logs must be enabled through the CSV_SEVERITY environment variable');
+    }
+
     const { hours } = params;
     const readHours = hours || this.csvConfig.CSV_DEFAULT_READ_HOURS;
     const filenames: string[] = [ ];
