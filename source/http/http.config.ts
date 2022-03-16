@@ -26,4 +26,9 @@ export class HttpConfig {
     HttpStatus.GATEWAY_TIMEOUT,
   ];
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  public readonly HTTP_DEFAULT_RETRY_DELAY = (attempts: number): number => {
+    return attempts > 4 ? 16_000 : 2 ** (attempts - 1) * 1000;
+  };
+
 }

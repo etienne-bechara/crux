@@ -27,6 +27,8 @@ export interface HttpModuleOptions extends ExtendOptions {
   retryMethods?: HttpMethod[];
   /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
   retryCodes?: HttpStatus[];
+  /** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
+  retryDelay?: (attempts: number) => number;
 }
 
 export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
@@ -44,6 +46,8 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   retryLimit?: number;
   /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
   retryCodes?: number[];
+  /** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
+  retryDelay?: (attempts: number) => number;
 }
 
 export interface HttpResponse<T> extends Response<T> {

@@ -59,7 +59,7 @@ export class HttpService {
   // eslint-disable-next-line complexity
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, headers } = params;
-    const { retryLimit, retryCodes } = params;
+    const { retryLimit, retryCodes, retryDelay } = params;
     const { host, path } = this.getHostPath(url, params);
     const start = Date.now();
     let response: any;
@@ -76,6 +76,7 @@ export class HttpService {
     const rLimit = retryLimit ?? this.httpModuleOptions.retryLimit ?? this.httpConfig.HTTP_DEFAULT_RETRY_LIMIT;
     const rMethods = this.httpModuleOptions.retryMethods ?? this.httpConfig.HTTP_DEFAULT_RETRY_METHODS;
     const rCodes = retryCodes ?? this.httpModuleOptions.retryCodes ?? this.httpConfig.HTTP_DEFAULT_RETRY_CODES;
+    const rDelay = retryDelay ?? this.httpModuleOptions.retryDelay ?? this.httpConfig.HTTP_DEFAULT_RETRY_DELAY;
 
     // If `retryLimit` is provided at request params, it takes precedence of `retryMethods`
     const isRetryable = !!retryLimit || retryLimit === 0 || rMethods.includes(method as HttpMethod);
@@ -97,12 +98,12 @@ export class HttpService {
           throw e;
         }
 
-        const retryDelay = 2 ** (attempts - 1) * 1000;
+        const delay = rDelay(attempts);
 
-        const msg = `⯆ ${method} ${host}${path} failed, retrying in ${retryDelay}ms (${attemptsLeft} attempts left)`;
+        const msg = `⯆ ${method} ${host}${path} failed, retrying in ${delay}ms (${attempts}/${rLimit})`;
         this.loggerService.debug(msg, e as Error);
 
-        await new Promise((r) => setTimeout(r, retryDelay));
+        await new Promise((r) => setTimeout(r, delay));
       }
     }
 
