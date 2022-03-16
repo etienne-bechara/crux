@@ -39,6 +39,7 @@ describe('LoggerService', () => {
             password: undefined,
           },
         ],
+        data: Buffer.from('test data'),
       };
 
       const censoredObject = loggerService.sanitize(sensitiveObject);
@@ -66,6 +67,7 @@ describe('LoggerService', () => {
           },
           { },
         ],
+        data: '<Buffer>',
       });
     });
   });

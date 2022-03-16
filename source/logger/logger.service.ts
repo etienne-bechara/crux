@@ -194,14 +194,14 @@ export class LoggerService {
       if (clone[key] === undefined) {
         delete clone[key];
       }
-      else if (typeof clone[key] === 'object' && clone[key]['0'] || clone[key]['0'] === 0) {
+      else if (Array.isArray(clone[key]) || typeof clone[key] === 'object' && !clone[key]['0']) {
+        clone[key] = this.sanitize(clone[key], true);
+      }
+      else if (typeof clone[key] === 'object' && (clone[key]['0'] || clone[key]['0'] === 0)) {
         clone[key] = '<Buffer>';
       }
       else if (typeof clone[key] !== 'object' && sensitiveKeys.includes(alphaKey)) {
         clone[key] = '[filtered]';
-      }
-      else if (typeof clone[key] === 'object') {
-        clone[key] = this.sanitize(clone[key], true);
       }
     }
 
