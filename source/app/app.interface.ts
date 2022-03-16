@@ -26,6 +26,8 @@ export interface AppOptions extends ModuleMetadata {
   disableValidator?: boolean;
   /** Disables all logger transports (Console, CSV, Sentry and Slack). */
   disableLogger?: boolean;
+  /** Disables CSV logger transport. */
+  disableCsv?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
   /** Disables documentation generator and `docs` endpoint. */

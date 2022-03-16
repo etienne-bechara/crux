@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import fs from 'fs';
 
 import { LoggerSeverity } from '../logger/logger.enum';
@@ -24,13 +24,7 @@ export class CsvService implements LoggerTransport {
    * Sets up the logger transport, ensure log directory exists.
    */
   private setupTransport(): void {
-    const severity = this.getSeverity();
     const dir = this.csvConfig.CSV_DIRECTORY;
-
-    if (!severity) {
-      this.loggerService.info('Log streaming disable due to missing severity');
-      return;
-    }
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -38,6 +32,7 @@ export class CsvService implements LoggerTransport {
 
     this.setupStream();
     this.loggerService.info(`Log streaming started at ${this.currentFilename}`);
+    void this.removeExpiredLogs();
 
     this.loggerService.registerTransport(this);
   }
@@ -108,26 +103,30 @@ export class CsvService implements LoggerTransport {
    * @param params
    */
   public async readLogs(params: CsvReadDto): Promise<Buffer> {
-    const severity = this.getSeverity();
-
-    if (!severity) {
-      throw new InternalServerErrorException('csv logs must be enabled through the CSV_SEVERITY environment variable');
-    }
-
     const { hours } = params;
     const readHours = hours || this.csvConfig.CSV_DEFAULT_READ_HOURS;
-    const filenames: string[] = [ ];
 
-    for (let i = 0; i < readHours; i++) {
-      const referenceDate = new Date(new Date().setHours(new Date().getHours() - i));
-      filenames.push(`${referenceDate.toISOString().split(':')[0]}.csv`);
-    }
-
+    const filenames = this.buildLogFilenames(readHours);
     const fileBuffers = await Promise.all(filenames.reverse().map((f) => this.readLogByFilename(f)));
     const fileStrings = fileBuffers.filter((f) => f).map((f) => f.toString('utf-8'));
     const fileJoined = fileStrings.join('\n').replace(new RegExp(`\n${this.csvConfig.CSV_HEADER}\n`, 'g'), '');
 
     return Buffer.from(fileJoined, 'utf-8');
+  }
+
+  /**
+   * Build log filenames for target hours in the past.
+   * @param hours
+   */
+  private buildLogFilenames(hours: number): string[] {
+    const filenames: string[] = [ ];
+
+    for (let i = 0; i < hours; i++) {
+      const referenceDate = new Date(new Date().setHours(new Date().getHours() - i));
+      filenames.push(`${referenceDate.toISOString().split(':')[0]}.csv`);
+    }
+
+    return filenames;
   }
 
   /**
@@ -158,6 +157,31 @@ export class CsvService implements LoggerTransport {
   public getExpectedFilename(): string {
     const timestamp = new Date().toISOString();
     return `${timestamp.split(':')[0]}.csv`;
+  }
+
+  /**
+   * Create a monitor that remove logs older than target max age.
+   */
+  private async removeExpiredLogs(): Promise<void> {
+    const maxAge = this.csvConfig.CSV_MAX_AGE;
+    const dir = this.csvConfig.CSV_DIRECTORY;
+    const delay = 1 * 60 * 60 * 1000; // 1 hour
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        const existingFilenames: string[] = await new Promise((r) => fs.readdir(dir, (e, files) => r(files)));
+        const freshFilenames = this.buildLogFilenames(maxAge * 24);
+        const expiredFilenames = existingFilenames.filter((f) => !freshFilenames.includes(f));
+
+        await Promise.all(expiredFilenames.map((f) => new Promise((r) => fs.unlink(`${dir}/${f}`, r))));
+      }
+      catch (e) {
+        this.loggerService.warning('Failed to remove expired files', e as Error);
+      }
+
+      await new Promise((r) => setTimeout(r, delay));
+    }
   }
 
 }

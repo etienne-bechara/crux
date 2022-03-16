@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { collectDefaultMetrics, Histogram, Metric, metric, Registry } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
-import { AsyncService } from '../async/async.service';
 import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
@@ -17,7 +16,6 @@ export class MetricService {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly asyncService: AsyncService,
     private readonly httpConfig: HttpConfig,
     private readonly metricConfig: MetricConfig,
     private readonly loggerService: LoggerService,
@@ -66,7 +64,7 @@ export class MetricService {
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      await this.asyncService.sleep(pushgatewayInterval);
+      await new Promise((r) => setTimeout(r, pushgatewayInterval));
 
       try {
         const currentMetrics = await this.readMetrics();

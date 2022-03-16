@@ -249,7 +249,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogger, disableMetrics, disableDocumentation } = this.options;
+    const { disableScan, disableLogger, disableCsv, disableMetrics, disableDocumentation } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
@@ -269,9 +269,14 @@ export class AppModule {
     if (!disableLogger) {
       defaultModules.push(
         ConsoleModule,
-        CsvModule,
         SentryModule,
         SlackModule,
+      );
+    }
+
+    if (!disableLogger && !disableCsv) {
+      defaultModules.push(
+        CsvModule,
       );
     }
 
