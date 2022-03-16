@@ -1,3 +1,11 @@
+## [4.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.1...v4.6.2) (2022-03-16)
+
+
+### Bug Fixes
+
+* logger keys ([66067e8](https://github.com/etienne-bechara/nestjs-core/commit/66067e836cfc80ed70c10267b5d924a9bdbba46e))
+* logger sensitive keys logic and tests ([74bbc67](https://github.com/etienne-bechara/nestjs-core/commit/74bbc67fddc594a09454b8b4624edef258b79098))
+
 ## [4.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.0...v4.6.1) (2022-03-16)
 
 
