@@ -1,3 +1,10 @@
+## [4.6.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.2...v4.6.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* retry exception code acquisition ([3ff1ac3](https://github.com/etienne-bechara/nestjs-core/commit/3ff1ac3a03a933ac1de669d665ce1f0e79b86a6e))
+
 ## [4.6.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.1...v4.6.2) (2022-03-16)
 
 
