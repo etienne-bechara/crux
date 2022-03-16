@@ -78,7 +78,7 @@ export class HttpService {
     const rCodes = retryCodes ?? this.httpModuleOptions.retryCodes ?? this.httpConfig.HTTP_DEFAULT_RETRY_CODES;
     const rDelay = retryDelay ?? this.httpModuleOptions.retryDelay ?? this.httpConfig.HTTP_DEFAULT_RETRY_DELAY;
 
-    // If `retryLimit` is provided at request params, it takes precedence of `retryMethods`
+    // If `retryLimit` is provided at request params, it takes precedence over `retryMethods`
     const isRetryable = !!retryLimit || retryLimit === 0 || rMethods.includes(method as HttpMethod);
     let attemptsLeft = isRetryable ? rLimit + 1 : 1;
     let attempts = 0;
@@ -88,7 +88,7 @@ export class HttpService {
         response = await this.sendRequest(sendParams);
       }
       catch (e) {
-        const exceptionCode = e?.outboundResponse?.code;
+        const exceptionCode = e.response?.outboundResponse?.code;
         const isRetryableCode = !exceptionCode || rCodes.includes(exceptionCode as HttpStatus);
 
         attemptsLeft--;

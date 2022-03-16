@@ -111,9 +111,7 @@ describe('HttpService', () => {
 
       expect(errorStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     });
-  });
 
-  describe('request proxy', () => {
     it('should throw a not found exception', async () => {
       let errorStatus: number;
 
@@ -125,6 +123,39 @@ describe('HttpService', () => {
       }
 
       expect(errorStatus).toEqual(HttpStatus.NOT_FOUND);
+    });
+
+    it('should retry on exception', async () => {
+      const start = Date.now();
+      const retryTime = 1000 + 2000;
+
+      try {
+        await jsonHttpService.get('404', {
+          retryLimit: 2,
+          retryCodes: [ HttpStatus.NOT_FOUND ],
+        });
+      }
+      catch {
+        // Silent fail
+      }
+
+      expect(Date.now()).toBeGreaterThan(start + retryTime);
+    });
+
+    it('should not retry on exception', async () => {
+      const start = Date.now();
+      const retryTime = 1000 + 2000;
+
+      try {
+        await jsonHttpService.get('404', {
+          retryLimit: 2,
+        });
+      }
+      catch {
+        // Silent fail
+      }
+
+      expect(Date.now()).toBeLessThan(start + retryTime);
     });
   });
 
