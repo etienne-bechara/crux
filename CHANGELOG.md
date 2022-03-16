@@ -1,3 +1,18 @@
+# [4.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.8...v4.6.0) (2022-03-16)
+
+
+### Bug Fixes
+
+* default console severity ([325dd5a](https://github.com/etienne-bechara/nestjs-core/commit/325dd5a206e38af2e720012a8b402ea66e1ba722))
+* minor fixes ([14b7f4e](https://github.com/etienne-bechara/nestjs-core/commit/14b7f4e7ed4c26efd3db92e26990ad75ff41637b))
+* rename level to severity ([1f47ed6](https://github.com/etienne-bechara/nestjs-core/commit/1f47ed6878299a542535c496c92a64e1562616ae))
+
+
+### Features
+
+* add built-in controllers to docs ([a74d520](https://github.com/etienne-bechara/nestjs-core/commit/a74d5209469b79c569f5031bfd284afb27c31ef4))
+* add csv log transport ([c4dce44](https://github.com/etienne-bechara/nestjs-core/commit/c4dce449c8fc46c39f439719262c30721d7cbc87))
+
 ## [4.5.8](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.7...v4.5.8) (2022-03-15)
 
 
