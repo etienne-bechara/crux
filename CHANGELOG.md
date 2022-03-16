@@ -1,3 +1,15 @@
+## [4.6.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.0...v4.6.1) (2022-03-16)
+
+
+### Bug Fixes
+
+* add custom retry delay support ([a60d544](https://github.com/etienne-bechara/nestjs-core/commit/a60d544297208a67773685217d8f95324ad2993c))
+* add metrics when retrying http ([ab79919](https://github.com/etienne-bechara/nestjs-core/commit/ab79919811eb9b52a3d53ae52f8e09cc6b865421))
+* csv reverse prior to joining ([767f46e](https://github.com/etienne-bechara/nestjs-core/commit/767f46e3ef4ab6671f8bbc5cf6454e0017f2a4a9))
+* improve logs ([9fe9278](https://github.com/etienne-bechara/nestjs-core/commit/9fe92787f3e66a33aca11aeb531c360156a2ddde))
+* logger sensitive buffer criteria ([8aea16e](https://github.com/etienne-bechara/nestjs-core/commit/8aea16ea077072d6e8a199dc1584be5efa24eb8a))
+* remove buffer during log ([82cbdb3](https://github.com/etienne-bechara/nestjs-core/commit/82cbdb3d4c965f525ee971e7647eb79bad092e43))
+
 # [4.6.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.5.8...v4.6.0) (2022-03-16)
 
 
