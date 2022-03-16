@@ -10,10 +10,8 @@ export class ConsoleConfig {
   @InjectSecret({
     fallback: (environment) => {
       switch (environment) {
-        case AppEnvironment.LOCAL: return LoggerSeverity.TRACE;
-        case AppEnvironment.DEVELOPMENT: return LoggerSeverity.WARNING;
-        case AppEnvironment.STAGING: return LoggerSeverity.WARNING;
-        case AppEnvironment.PRODUCTION: return LoggerSeverity.WARNING;
+        case AppEnvironment.LOCAL:return LoggerSeverity.TRACE;
+        default: return LoggerSeverity.WARNING;
       }
     },
   })
