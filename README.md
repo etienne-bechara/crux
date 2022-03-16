@@ -17,7 +17,7 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Configuration](docs/module/config.md)
 - [Context - Request, Response and Metadata](docs/module/context.md)
 - [HTTP - GOT](docs/module/http.md)
-- [Logger - Console, Slack and Sentry](docs/module/logger.md)
+- [Logger - Console, CSV, Slack and Sentry](docs/module/logger.md)
 - [Metric - Prometheus](docs/module/metric.md)
 - [Documentation - Redoc and OpenAPI](docs/module/redoc.md)
 - [Async - Sleep, Exception Retry and Promise Limit](docs/module/async.md)

@@ -25,11 +25,10 @@ export class SentryService implements LoggerTransport {
    */
   private setupTransport(): void {
     const dsn = this.sentryConfig.SENTRY_DSN;
-    const severity = this.getSeverity();
-    if (!severity) return;
 
     if (!dsn) {
-      return this.loggerService.info('Integration disabled due to missing DSN');
+      this.loggerService.info('Log publishing disabled due to missing DSN');
+      return;
     }
 
     Sentry.init({

@@ -17,6 +17,7 @@ import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
+import { CsvModule } from '../csv/csv.module';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
@@ -268,6 +269,7 @@ export class AppModule {
     if (!disableLogger) {
       defaultModules.push(
         ConsoleModule,
+        CsvModule,
         SentryModule,
         SlackModule,
       );

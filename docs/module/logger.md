@@ -65,59 +65,55 @@ this.loggerService.error(a: string, b: Error, c: Record<string, any>, d: Record<
 
 ## Transporters
 
-This package offers 3 built-in transporters: Console, Sentry and Slack.
+This package offers 4 built-in transporters: Console, CSV, Sentry and Slack.
 
 Configuration will be acquired from environment according to the following variables.
 
 ### Console
 
-Basic integration with terminal, level can be configured by environment.
+Print messages at stdout, enabled by default.
 
-Variable | Mandatory | Type | Default
-:--- | :---: | :---: | :---
-CONSOLE_SEVERITY | No | string | See [console.config.ts](../../source/console/console.config.ts)
+Variable         | Required | Type   | Default
+:--------------- | :------: | :----: | :---
+CONSOLE_SEVERITY | No       | string | `trace` when `NODE_ENV=local`, `warning` otherwise
+
+
+### CSV
+
+Stream logs to `*.csv` files at local disk.
+
+To enable this integration configure any severity.
+
+Variable     | Required  | Type   | Default
+:----------- | :-------: | :----: | :---
+CSV_SEVERITY | Yes       | string |
 
 
 ### Sentry
 
-To enable this integration it is mandatory to create a project at Sentry platform and provide its `SENTRY_DSN`.
+Publish logs to [Sentry](https://sentry.io) platform.
 
-Keep in mind that this should be unique for every project.
+To enable this integration, create a project at Sentry and provide its `SENTRY_DSN`.
 
-Variable | Mandatory | Type | Default
-:--- | :---: | :---: | :---
-SENTRY_DSN | Yes | string | `undefined`
-SENTRY_SEVERITY | No | string | See [sentry.config.ts](../../source/logger/sentry/sentry.config.ts)
+Variable        | Required | Type   | Default
+:-------------- | :------: | :----: | :---
+SENTRY_DSN      | Yes      | string |
+SENTRY_SEVERITY | No       | string | `error`
 
 
 ### Slack
 
-To enable this integration it is mandatory to provide `SLACK_WEBHOOK` and `SLACK_CHANNEL`, you may also customize the username and icon when publishing the message.
+Publish logs to a [Slack](https://slack.com) channel through webhooks.
 
-Variable | Mandatory | Type | Default
-:--- | :---: | :---: | :---
-SLACK_WEBHOOK | Yes | string | `undefined`
-SLACK_CHANNEL | Yes | string | `undefined`
-SLACK_USERNAME | No | string | Notification Bot
-SLACK_ICON_URL | No | string | `undefined`
-SLACK_SEVERITY | No | string | See [slack.config.ts](../../source/slack/slack.config.ts)
+To enable this integration provide `SLACK_WEBHOOK` and `SLACK_CHANNEL`, you may also customize the username and icon when publishing the message.
 
----
-
-## Severity Levels
-
-The table below describes each available severity as well as the default configuration for deciding between publishing or not at one of the providers.
-
-Severity | Local | Development | Staging | Production
-:--- | :---: | :---: | :---: | :---:
-Fatal | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
-Error | Console | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack | Console<br>Sentry<br>Slack
-Warning | Console | Console<br>Slack | Console<br>Slack | Console<br>Slack
-Notice | Console | - | -  | -
-Info | Console | - | - | -
-Http | Console | - | - | -
-Debug | Console | - | - | -
-Trace | Console | - | - | -
+Variable       | Required | Type   | Default
+:------------- | :------: | :----: | :---
+SLACK_WEBHOOK  | Yes      | string |
+SLACK_CHANNEL  | Yes      | string |
+SLACK_USERNAME | No       | string |
+SLACK_ICON_URL | No       | string |
+SLACK_SEVERITY | No       | string | `warning`
 
 ---
 

@@ -10,8 +10,6 @@ import { SlackConfig } from './slack.config';
 @Injectable()
 export class SlackService implements LoggerTransport {
 
-  private exceptionMessage = 'Failed to publish slack message';
-
   public constructor(
     private readonly slackConfig: SlackConfig,
     private readonly loggerService: LoggerService,
@@ -25,11 +23,10 @@ export class SlackService implements LoggerTransport {
    */
   private setupTransport(): void {
     const webhook = this.slackConfig.SLACK_WEBHOOK;
-    const severity = this.getSeverity();
-    if (!severity) return;
 
     if (!webhook) {
-      return this.loggerService.info('Integration disabled due to missing webhook');
+      this.loggerService.info('Log publishing disabled due to missing webhook');
+      return;
     }
 
     const webhookId = webhook.split('/')[webhook.split('/').length - 1];
@@ -51,7 +48,7 @@ export class SlackService implements LoggerTransport {
    */
   public log(params: LoggerParams): void {
     const { environment, severity, requestId, caller, message, data } = params;
-    if (data?.messageBlocks || message === this.exceptionMessage) return;
+    if (data?.messageBlocks || message === this.slackConfig.SLACK_EXCEPTION_MESSAGE) return;
 
     const maxCharacters = 3000;
     const separator = '  |  ';
@@ -96,7 +93,7 @@ export class SlackService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning(this.exceptionMessage, e as Error, { message });
+      this.loggerService.warning(this.slackConfig.SLACK_EXCEPTION_MESSAGE, e as Error, { message });
     }
   }
 
