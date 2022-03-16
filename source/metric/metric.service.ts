@@ -3,6 +3,7 @@ import { collectDefaultMetrics, Histogram, Metric, metric, Registry } from 'prom
 
 import { AppConfig } from '../app/app.config';
 import { AsyncService } from '../async/async.service';
+import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LoggerService } from '../logger/logger.service';
 import { MetricConfig } from './metric.config';
@@ -17,6 +18,7 @@ export class MetricService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly asyncService: AsyncService,
+    private readonly httpConfig: HttpConfig,
     private readonly metricConfig: MetricConfig,
     private readonly loggerService: LoggerService,
   ) {
@@ -60,7 +62,7 @@ export class MetricService {
       prefixUrl: pushgatewayTarget,
       username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME ?? pushgatewayUsername,
       password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD ?? pushgatewayPassword,
-    }, this.loggerService, null);
+    }, this.httpConfig, this.loggerService, null);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -76,6 +78,7 @@ export class MetricService {
         await httpService.post('metrics/job/:job', {
           replacements: { job },
           body: Buffer.from(currentMetrics, 'utf-8'),
+          retryLimit: 3,
         });
       }
       catch (e) {

@@ -1,12 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import crypto from 'crypto';
 
+import { HttpConfig } from './http.config';
 import { HttpInjectionToken } from './http.enum';
 import { HttpAsyncModuleOptions, HttpModuleOptions } from './http.interface';
 import { HttpService } from './http.service';
 
 @Module({
   providers: [
+    HttpConfig,
     HttpService,
     {
       provide: HttpInjectionToken.MODULE_OPTIONS,
@@ -14,6 +16,7 @@ import { HttpService } from './http.service';
     },
   ],
   exports: [
+    HttpConfig,
     HttpService,
     HttpInjectionToken.MODULE_OPTIONS,
   ],

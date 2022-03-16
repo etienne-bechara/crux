@@ -1,5 +1,7 @@
-import { ModuleMetadata } from '@nestjs/common';
+import { HttpStatus, ModuleMetadata } from '@nestjs/common';
 import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
+
+import { HttpMethod } from './http.enum';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
@@ -17,6 +19,14 @@ export interface HttpModuleOptions extends ExtendOptions {
   proxyExceptions?: boolean;
   /** Overwrite search params adding the ability to provide array values. */
   query?: Record<string, any>;
+  /** @deprecated Use `retryLimit` and `retryCodes`. */
+  retry?: never;
+  /** Max amount of retries. Default: 2. */
+  retryLimit?: number;
+  /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
+  retryMethods?: HttpMethod[];
+  /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
+  retryCodes?: HttpStatus[];
 }
 
 export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
@@ -28,10 +38,16 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   replacements?: Record<string, string>;
   /** Overwrite search params adding the ability to provide array values. */
   query?: Record<string, any>;
+  /** @deprecated Use `retryLimit` and `retryCodes`. */
+  retry?: never;
+  /** Max amount of retries. Default: 2. */
+  retryLimit?: number;
+  /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
+  retryCodes?: number[];
 }
 
 export interface HttpResponse<T> extends Response<T> {
-  cookies: HttpCookie[];
+  cookies?: HttpCookie[];
 }
 
 export interface HttpCookie {
@@ -42,12 +58,21 @@ export interface HttpCookie {
   expires: Date;
 }
 
+export interface HttpRequestSendParams {
+  url: string;
+  request: HttpRequestParams;
+  metrics: HttpMetricParams;
+  logs: Record<string, any>;
+  ignoreExceptions: boolean;
+  resolveBodyOnly: boolean;
+}
+
 export interface HttpMetricParams {
   start: number;
   method: string;
   host: string;
   path: string;
-  code?: string;
+  code?: string | number;
 }
 
 export interface HttpExceptionParams extends HttpMetricParams {

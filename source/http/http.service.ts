@@ -4,8 +4,9 @@ import { IncomingHttpHeaders } from 'http';
 
 import { LoggerService } from '../logger/logger.service';
 import { MetricService } from '../metric/metric.service';
-import { HttpInjectionToken } from './http.enum';
-import { HttpCookie, HttpExceptionParams, HttpMetricParams, HttpModuleOptions, HttpRequestParams } from './http.interface';
+import { HttpConfig } from './http.config';
+import { HttpInjectionToken, HttpMethod } from './http.enum';
+import { HttpCookie, HttpExceptionParams, HttpMetricParams, HttpModuleOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -15,6 +16,7 @@ export class HttpService {
   public constructor(
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
+    private readonly httpConfig: HttpConfig,
     private readonly loggerService: LoggerService,
     private readonly metricService: MetricService,
   ) {
@@ -54,49 +56,53 @@ export class HttpService {
    * @param url
    * @param params
    */
+  // eslint-disable-next-line complexity
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, headers } = params;
+    const { retryLimit, retryCodes } = params;
     const { host, path } = this.getHostPath(url, params);
-
     const start = Date.now();
-    const metricParams: HttpMetricParams = { start, method, host, path };
-
-    const logParams = {
-      method,
-      host,
-      path,
-      replacements,
-      query,
-      body: Buffer.isBuffer(body) ? '<Buffer>' : body,
-      headers,
-    };
-
-    const isIgnoreExceptions = ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions;
-    const isResolveBodyOnly = resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly;
-    const finalUrl = this.replacePathVariables(url, params);
     let response: any;
 
-    this.buildSearchParams(params);
-    params.resolveBodyOnly = undefined;
+    const sendParams: HttpRequestSendParams = {
+      url: this.buildRequestUrl(url, params),
+      request: this.buildRequestParams(params),
+      metrics: { start, method, host, path },
+      logs: { method, host, path, replacements, query, body, headers },
+      ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
+      resolveBodyOnly: resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly,
+    };
 
-    try {
-      this.loggerService?.http(`⯅ ${method} ${host}${path}`, logParams);
-      response = await this.instance(finalUrl, params);
+    const rLimit = retryLimit ?? this.httpModuleOptions.retryLimit ?? this.httpConfig.HTTP_DEFAULT_RETRY_LIMIT;
+    const rMethods = this.httpModuleOptions.retryMethods ?? this.httpConfig.HTTP_DEFAULT_RETRY_METHODS;
+    const rCodes = retryCodes ?? this.httpModuleOptions.retryCodes ?? this.httpConfig.HTTP_DEFAULT_RETRY_CODES;
 
-      const code = response.statusCode;
-      this.collectOutboundMetrics({ ...metricParams, code });
-    }
-    catch (e) {
-      if (e.response) {
-        const code = e.response.statusCode;
-        this.collectOutboundMetrics({ ...metricParams, code });
+    // If `retryLimit` is provided at request params, it takes precedence of `retryMethods`
+    const isRetryable = !!retryLimit || retryLimit === 0 || rMethods.includes(method as HttpMethod);
+    let attemptsLeft = isRetryable ? rLimit + 1 : 1;
+    let attempts = 0;
+
+    while (!response && attemptsLeft > 0) {
+      try {
+        response = await this.sendRequest(sendParams);
       }
+      catch (e) {
+        const exceptionCode = e?.outboundResponse?.code;
+        const isRetryableCode = !exceptionCode || rCodes.includes(exceptionCode as HttpStatus);
 
-      if (isIgnoreExceptions) {
-        response = e.response;
-      }
-      else {
-        this.handleRequestException({ ...metricParams, error: e, request: params });
+        attemptsLeft--;
+        attempts++;
+
+        if (!attemptsLeft || !isRetryableCode) {
+          throw e;
+        }
+
+        const retryDelay = 2 ** (attempts - 1) * 1000;
+
+        const msg = `⯆ ${method} ${host}${path} failed, retrying in ${retryDelay}ms (${attemptsLeft} attempts left)`;
+        this.loggerService.debug(msg, e as Error);
+
+        await new Promise((r) => setTimeout(r, retryDelay));
       }
     }
 
@@ -105,7 +111,9 @@ export class HttpService {
       response.cookies = this.parseCookies(headers);
     }
 
-    return isResolveBodyOnly ? response?.body : response;
+    return sendParams.resolveBodyOnly
+      ? response?.body
+      : response;
   }
 
   /**
@@ -131,7 +139,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  private replacePathVariables(url: string, params: HttpRequestParams): string {
+  private buildRequestUrl(url: string, params: HttpRequestParams): string {
     const { replacements } = params;
     let replacedUrl = url;
 
@@ -153,28 +161,67 @@ export class HttpService {
   }
 
   /**
-   * If a query property is provided, overwrite the search params
-   * with a functionality of allowing array inside object values.
+   * Normalize request params by:
+   * - If a query property is provided, overwrite the search params
+   * with a functionality of allowing array inside object values
+   * - Set body only property as false we always want the full response.
    * @param params
    */
-  private buildSearchParams(params: HttpRequestParams): void {
+  private buildRequestParams(params: HttpRequestParams): HttpRequestParams {
     const { query } = params;
-
     const mergedQuery = { ...this.httpModuleOptions.query, ...query };
-    if (Object.keys(mergedQuery).length === 0) return;
 
-    const queryParams = { };
+    if (Object.keys(mergedQuery).length > 0) {
+      const queryParams = { };
 
-    for (const key in mergedQuery) {
-      if (Array.isArray(mergedQuery[key])) {
-        queryParams[key] = mergedQuery[key].join(',');
+      for (const key in mergedQuery) {
+        if (Array.isArray(mergedQuery[key])) {
+          queryParams[key] = mergedQuery[key].join(',');
+        }
+        else {
+          queryParams[key] = mergedQuery[key];
+        }
+      }
+
+      params.searchParams = queryParams;
+    }
+
+    params.resolveBodyOnly = false;
+
+    return params;
+  }
+
+  /**
+   * Executes a request ensuring log and metrics collection.
+   * @param params
+   */
+  private async sendRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
+    const { url, request, logs, metrics, ignoreExceptions } = params;
+    const { method, host, path } = logs;
+    let response: HttpResponse<T>;
+
+    try {
+      this.loggerService?.http(`⯅ ${method} ${host}${path}`, logs);
+      response = await this.instance(url, request) as HttpResponse<T>;
+
+      const code = response.statusCode;
+      this.collectOutboundMetrics({ ...metrics, code });
+    }
+    catch (e) {
+      if (e.response) {
+        const code = e.response.statusCode;
+        this.collectOutboundMetrics({ ...metrics, code });
+      }
+
+      if (ignoreExceptions) {
+        response = e.response;
       }
       else {
-        queryParams[key] = mergedQuery[key];
+        this.handleRequestException({ ...metrics, error: e, request });
       }
     }
 
-    params.searchParams = queryParams;
+    return response;
   }
 
   /**
@@ -219,7 +266,7 @@ export class HttpService {
     const histogram = this.metricService?.getHttpOutboundHistogram();
     if (!histogram) return;
 
-    histogram.labels(method || 'GET', host, path, code).observe(latency);
+    histogram.labels(method || 'GET', host, path, code.toString()).observe(latency);
   }
 
   /**
@@ -250,7 +297,7 @@ export class HttpService {
         host,
         path,
         ...request,
-        body: Buffer.isBuffer(body) ? '<Buffer>' : body,
+        body,
       },
       outboundResponse: {
         code: response?.statusCode,
@@ -266,7 +313,7 @@ export class HttpService {
    * @param params
    */
   public async get<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'GET' });
+    return this.request<T>(url, { ...params, method: HttpMethod.GET });
   }
 
   /**
@@ -275,7 +322,7 @@ export class HttpService {
    * @param params
    */
   public async head<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'HEAD' });
+    return this.request<T>(url, { ...params, method: HttpMethod.HEAD });
   }
 
   /**
@@ -284,7 +331,7 @@ export class HttpService {
    * @param params
    */
   public async post<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'POST' });
+    return this.request<T>(url, { ...params, method: HttpMethod.POST });
   }
 
   /**
@@ -293,7 +340,7 @@ export class HttpService {
    * @param params
    */
   public async put<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'PUT' });
+    return this.request<T>(url, { ...params, method: HttpMethod.PUT });
   }
 
   /**
@@ -302,7 +349,7 @@ export class HttpService {
    * @param params
    */
   public async delete<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'DELETE' });
+    return this.request<T>(url, { ...params, method: HttpMethod.DELETE });
   }
 
   /**
@@ -311,7 +358,7 @@ export class HttpService {
    * @param params
    */
   public async options<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'OPTIONS' });
+    return this.request<T>(url, { ...params, method: HttpMethod.OPTIONS });
   }
 
   /**
@@ -320,7 +367,7 @@ export class HttpService {
    * @param params
    */
   public async patch<T>(url: string, params: HttpRequestParams = { }): Promise<T> {
-    return this.request<T>(url, { ...params, method: 'PATCH' });
+    return this.request<T>(url, { ...params, method: HttpMethod.PATCH });
   }
 
 }
