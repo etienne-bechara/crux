@@ -1,3 +1,10 @@
+# [4.7.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.3...v4.7.0) (2022-03-16)
+
+
+### Features
+
+* add log removal by max age ([8a0e790](https://github.com/etienne-bechara/nestjs-core/commit/8a0e790772930fc43dd5ba6bf5161e3e0c0a2c52))
+
 ## [4.6.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.2...v4.6.3) (2022-03-16)
 
 
