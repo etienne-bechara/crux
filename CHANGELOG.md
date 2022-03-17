@@ -1,3 +1,15 @@
+# [4.8.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.7.0...v4.8.0) (2022-03-17)
+
+
+### Bug Fixes
+
+* allow produces through method decorators ([990f6ed](https://github.com/etienne-bechara/nestjs-core/commit/990f6eddfd08e616e7dd5c0e46bdee960d73c5e4))
+
+
+### Features
+
+* add filter by keyword csv ([bddae29](https://github.com/etienne-bechara/nestjs-core/commit/bddae292ca52297bcaafa84a90ba0cf21ad53789))
+
 # [4.7.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.6.3...v4.7.0) (2022-03-16)
 
 
