@@ -1,3 +1,11 @@
+## [4.8.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.0...v4.8.1) (2022-03-17)
+
+
+### Bug Fixes
+
+* log messages ([3032788](https://github.com/etienne-bechara/nestjs-core/commit/30327885cedde696046e01d10869ac3ee8b049e6))
+* prevent empty job when pushing to metrics gateway ([ed4da90](https://github.com/etienne-bechara/nestjs-core/commit/ed4da9003061d4ce4a4e5be3e3c9eea6ee0417af))
+
 # [4.8.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.7.0...v4.8.0) (2022-03-17)
 
 
