@@ -163,7 +163,7 @@ export class AppFilter implements ExceptionFilter {
     const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
 
     const filteredResponse: AppExceptionResponse = {
-      code: code,
+      code,
       message: isProduction && isInternalError ? 'unexpected error' : message,
       ...isProduction && isInternalError ? { } : details,
     };
@@ -175,7 +175,11 @@ export class AppFilter implements ExceptionFilter {
       ? exceptionBody
       : filteredResponse;
 
-    this.loggerService.http(this.contextService.getRequestDescription(code));
+    this.loggerService.http(this.contextService.getRequestDescription('out'), {
+      latency: this.contextService.getRequestLatency(),
+      code,
+      body: clientResponse,
+    });
 
     res.code(code);
     res.header('Content-Type', 'application/json');

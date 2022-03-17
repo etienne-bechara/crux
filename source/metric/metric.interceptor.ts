@@ -27,7 +27,7 @@ export class MetricInterceptor implements NestInterceptor {
         mergeMap(async (data) => {
           const method = this.contextService.getRequestMethod();
           const path = this.contextService.getRequestPath();
-          const code = HttpStatus.OK;
+          const code = this.contextService.getResponseCode() || HttpStatus.OK;
           const latency = this.contextService.getRequestLatency();
 
           histogram.labels(method, path, code.toString()).observe(latency);

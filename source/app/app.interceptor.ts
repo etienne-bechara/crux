@@ -20,9 +20,10 @@ export class AppLoggerInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    this.loggerService.http(this.contextService.getRequestDescription(), {
+    this.loggerService.http(this.contextService.getRequestDescription('in'), {
       method: this.contextService.getRequestMethod(),
       path: this.contextService.getRequestPath(),
+      clientIp: this.contextService.getRequestIp(),
       params: this.contextService.getRequestParams(),
       query: this.contextService.getRequestQuery(),
       body: this.contextService.getRequestBody(),
@@ -34,7 +35,12 @@ export class AppLoggerInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          this.loggerService.http(this.contextService.getRequestDescription(HttpStatus.OK));
+          this.loggerService.http(this.contextService.getRequestDescription('out'), {
+            latency: this.contextService.getRequestLatency(),
+            code: this.contextService.getResponseCode() || HttpStatus.OK,
+            body: data,
+          });
+
           return data;
         }),
       );

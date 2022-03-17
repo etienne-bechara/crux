@@ -76,7 +76,7 @@ export interface HttpMetricParams {
   method: string;
   host: string;
   path: string;
-  code?: string | number;
+  response?: HttpResponse<unknown>;
 }
 
 export interface HttpExceptionParams extends HttpMetricParams {

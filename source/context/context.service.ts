@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -211,14 +211,24 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Builds a request description including method, path, ip and user agent.
    * If `code` is provided consider as outbound and add latency details.
-   * @param code
+   * @param step
    */
-  public getRequestDescription(code?: HttpStatus): string {
+  public getRequestDescription(step: 'in' | 'out'): string {
     const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
 
-    return code
-      ? `⯇ ${description} | ${code} | ${this.getRequestLatency()} ms`
-      : `⯈ ${description} | ${this.getRequestIp()} | ${this.getRequestUserAgent()}`;
+    return step === 'in'
+      ? `⯈ ${description}`
+      : `⯇ ${description}`;
+  }
+
+  /**
+   * Acquire current response status code.
+   */
+  public getResponseCode(): number {
+    const res = this.getResponse();
+    if (!res) return;
+
+    return res.statusCode;
   }
 
 }

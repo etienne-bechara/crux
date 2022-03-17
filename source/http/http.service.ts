@@ -187,6 +187,7 @@ export class HttpService {
       params.searchParams = queryParams;
     }
 
+    params.method ??= HttpMethod.GET;
     params.resolveBodyOnly = false;
 
     return params;
@@ -205,14 +206,10 @@ export class HttpService {
       this.loggerService?.http(`⯅ ${method} ${host}${path}`, logs);
       response = await this.instance(url, request) as HttpResponse<T>;
 
-      const code = response.statusCode;
-      this.collectOutboundMetrics({ ...metrics, code });
+      this.collectOutboundMetrics({ ...metrics, response });
     }
     catch (e) {
-      if (e.response) {
-        const code = e.response.statusCode;
-        this.collectOutboundMetrics({ ...metrics, code });
-      }
+      this.collectOutboundMetrics({ ...metrics, response: e.response });
 
       if (ignoreExceptions) {
         response = e.response;
@@ -259,15 +256,18 @@ export class HttpService {
    * @param params
    */
   private collectOutboundMetrics(params: HttpMetricParams): void {
-    const { start, method, host, path, code } = params;
+    const { start, method, host, path, response } = params;
+    const { statusCode, body, headers } = response;
     const latency = Date.now() - start;
 
-    this.loggerService?.http(`⯆ ${method} ${host}${path} | ${code} | ${latency}ms`);
+    const code = statusCode?.toString?.() || '';
+    const logData = { latency, code, body: body || undefined, headers };
+    this.loggerService?.http(`⯆ ${method} ${host}${path}`, logData);
 
     const histogram = this.metricService?.getHttpOutboundHistogram();
     if (!histogram) return;
 
-    histogram.labels(method || 'GET', host, path, code.toString()).observe(latency);
+    histogram.labels(method, host, path, code).observe(latency);
   }
 
   /**
@@ -291,7 +291,7 @@ export class HttpService {
     delete request.url;
 
     throw new HttpException({
-      message: `${method} ${path} | ${message}`,
+      message: `⯅ ${method} ${host}${path} | ${message}`,
       proxyExceptions: isProxyExceptions,
       outboundRequest: {
         method,
