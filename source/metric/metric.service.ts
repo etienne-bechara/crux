@@ -74,7 +74,7 @@ export class MetricService {
         }
 
         await httpService.post('metrics/job/:job', {
-          replacements: { job },
+          replacements: { job: job || 'unknown' },
           body: Buffer.from(currentMetrics, 'utf-8'),
           retryLimit: 3,
         });
