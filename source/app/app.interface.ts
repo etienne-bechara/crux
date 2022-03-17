@@ -143,5 +143,6 @@ export interface AppControllerParams {
 export interface AppMethodParams extends Partial<OperationObject> {
   tags?: string[];
   hidden?: boolean;
+  produces?: string[];
   response?: ApiResponseOptions;
 }

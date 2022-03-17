@@ -18,6 +18,7 @@ export class CsvController {
   @Get({
     operationId: 'Read Logs',
     description: 'Download application logs in CSV format.',
+    produces: [ 'text/csv' ],
     response: { type: Buffer },
   })
   public getLogs(@Query() query: CsvReadDto): Promise<Buffer> {
