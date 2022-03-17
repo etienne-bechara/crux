@@ -65,7 +65,7 @@ this.loggerService.error(a: string, b: Error, c: Record<string, any>, d: Record<
 
 ## Transporters
 
-This package offers 4 built-in transporters: Console, CSV, Sentry and Slack.
+This package offers the following built-in transporters: Console, Sentry and Slack.
 
 Configuration will be acquired from environment according to the following variables.
 
@@ -76,17 +76,6 @@ Print messages at stdout, enabled by default.
 Variable         | Required | Type   | Default
 :--------------- | :------: | :----: | :---
 CONSOLE_SEVERITY | No       | string | `trace` when `NODE_ENV=local`, `warning` otherwise
-
-
-### CSV
-
-Stream logs to `*.csv` files at local disk.
-
-To enable this integration configure any severity.
-
-Variable     | Required  | Type   | Default
-:----------- | :-------: | :----: | :---
-CSV_SEVERITY | Yes       | string |
 
 
 ### Sentry
