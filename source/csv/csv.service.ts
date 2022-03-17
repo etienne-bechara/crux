@@ -31,7 +31,7 @@ export class CsvService implements LoggerTransport {
     }
 
     this.setupStream();
-    this.loggerService.info(`Log streaming started at ${this.currentFilename}`);
+    this.loggerService.info(`Transport streaming at ${this.currentFilename}`);
     void this.removeExpiredLogs();
 
     this.loggerService.registerTransport(this);

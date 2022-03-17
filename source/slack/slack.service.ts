@@ -25,7 +25,7 @@ export class SlackService implements LoggerTransport {
     const webhook = this.slackConfig.SLACK_WEBHOOK;
 
     if (!webhook) {
-      this.loggerService.info('Log publishing disabled due to missing webhook');
+      this.loggerService.info('Transport disabled due to missing webhook');
       return;
     }
 
