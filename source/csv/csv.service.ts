@@ -99,17 +99,22 @@ export class CsvService implements LoggerTransport {
   }
 
   /**
-   * Reads logs in CSV format considering target past hours.
+   * Reads logs in CSV format considering filter params.
    * @param params
    */
   public async readLogs(params: CsvReadDto): Promise<Buffer> {
-    const { hours } = params;
+    const { hours, keyword } = params;
     const readHours = hours || this.csvConfig.CSV_DEFAULT_READ_HOURS;
 
     const filenames = this.buildLogFilenames(readHours);
     const fileBuffers = await Promise.all(filenames.reverse().map((f) => this.readLogByFilename(f)));
     const fileStrings = fileBuffers.filter((f) => f).map((f) => f.toString('utf-8'));
-    const fileJoined = fileStrings.join('\n').replace(new RegExp(`\n${this.csvConfig.CSV_HEADER}\n`, 'g'), '');
+    let fileJoined = fileStrings.join('\n').replace(new RegExp(`\n${this.csvConfig.CSV_HEADER}\n`, 'g'), '');
+
+    if (keyword) {
+      fileJoined = fileJoined.split('\n').filter((r) => r.includes(keyword) && !r.includes('GET /logs')).join('\n');
+      fileJoined = `${this.csvConfig.CSV_HEADER}\n${fileJoined}`;
+    }
 
     return Buffer.from(fileJoined, 'utf-8');
   }
