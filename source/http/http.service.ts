@@ -100,7 +100,7 @@ export class HttpService {
 
         const delay = rDelay(attempts);
 
-        const msg = `⯆ ${e.message} | Retry #${attempts}/${rLimit}, starting in ${delay / 1000}s`;
+        const msg = `⯆ ${e.message} | Retry #${attempts}/${rLimit}, next in ${delay / 1000}s`;
         this.loggerService.debug(msg, e as Error);
 
         await new Promise((r) => setTimeout(r, delay));
@@ -209,10 +209,17 @@ export class HttpService {
       this.collectOutboundMetrics({ ...metrics, response });
     }
     catch (e) {
-      this.collectOutboundMetrics({ ...metrics, response: e.response });
+      const isTimeout = /timeout/i.test(e.message as string);
+
+      if (!isTimeout && !e.response) {
+        throw e;
+      }
+
+      const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
+      this.collectOutboundMetrics({ ...metrics, response: errorResponse });
 
       if (ignoreExceptions) {
-        response = e.response;
+        response = errorResponse;
       }
       else {
         this.handleRequestException({ ...metrics, error: e, request });
