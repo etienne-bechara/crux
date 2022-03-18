@@ -26,7 +26,8 @@ export class SlackConfig {
   @IsUrl()
   public readonly SLACK_ICON_URL: string;
 
-  @InjectSecret({ fallback: LoggerSeverity.WARNING })
+  @InjectSecret()
+  @IsOptional()
   @IsIn(Object.values(LoggerSeverity))
   public readonly SLACK_SEVERITY: LoggerSeverity;
 

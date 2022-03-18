@@ -45,7 +45,8 @@ export class SentryService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    return this.sentryConfig.SENTRY_SEVERITY;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    return this.sentryConfig.SENTRY_SEVERITY || logger.sentrySeverity;
   }
 
   /**

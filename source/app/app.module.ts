@@ -94,7 +94,7 @@ export class AppModule {
    * @param options
    */
   private static configureOptions(options: AppOptions): void {
-    const deepMergeProps: (keyof AppOptions)[] = [ 'fastify', 'metrics', 'redoc' ];
+    const deepMergeProps: (keyof AppOptions)[] = [ 'fastify', 'logger', 'metrics', 'redoc' ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
 

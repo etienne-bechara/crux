@@ -11,7 +11,8 @@ export class SentryConfig {
   @Matches('^http.+?sentry\\.io')
   public readonly SENTRY_DSN: string;
 
-  @InjectSecret({ fallback: LoggerSeverity.ERROR })
+  @InjectSecret()
+  @IsOptional()
   @IsIn(Object.values(LoggerSeverity))
   public readonly SENTRY_SEVERITY: LoggerSeverity;
 

@@ -4,6 +4,7 @@ import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
 import { Config, InjectSecret } from '../config/config.decorator';
+import { LoggerSeverity } from '../logger/logger.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
@@ -34,6 +35,8 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   },
   logger: {
     consoleMaxLength: 1000,
+    sentrySeverity: LoggerSeverity.ERROR,
+    slackSeverity: LoggerSeverity.WARNING,
     sensitiveKeys: [
       'apikey',
       'auth',

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
 import { LoggerSeverity } from '../logger/logger.enum';
@@ -11,6 +12,7 @@ import { SlackConfig } from './slack.config';
 export class SlackService implements LoggerTransport {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly slackConfig: SlackConfig,
     private readonly loggerService: LoggerService,
     private readonly httpService: HttpService,
@@ -38,7 +40,8 @@ export class SlackService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    return this.slackConfig.SLACK_SEVERITY;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    return this.slackConfig.SLACK_SEVERITY || logger.slackSeverity;
   }
 
   /**

@@ -23,7 +23,10 @@ export class ConsoleService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    return this.consoleConfig.CONSOLE_SEVERITY;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const environment = this.appConfig.NODE_ENV;
+    const envSeverity = environment === AppEnvironment.LOCAL ? LoggerSeverity.TRACE : LoggerSeverity.WARNING;
+    return this.consoleConfig.CONSOLE_SEVERITY || logger.consoleSeverity || envSeverity;
   }
 
   /**
