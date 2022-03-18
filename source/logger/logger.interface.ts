@@ -23,5 +23,7 @@ export interface LoggerOptions {
   /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
   /** Format JSON when printing log details at console. */
-  prettyPrint?: boolean;
+  consolePretty?: boolean;
+  /** Max length when stringifying details at console. */
+  consoleMaxLength?: number;
 }

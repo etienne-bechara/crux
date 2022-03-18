@@ -35,14 +35,18 @@ export class ConsoleService implements LoggerTransport {
   public log(params: LoggerParams): void {
     const { environment, timestamp, severity, requestId, caller, message, data, error } = params;
     const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { prettyPrint } = logger;
+    const { consolePretty, consoleMaxLength } = logger;
     const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
       const strFilename = caller.padEnd(20, ' ');
       const strRequestId = requestId || '-'.repeat(10);
-      const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
+      const strData = JSON.stringify(data, null, consolePretty ? 2 : null);
+
+      const slicedData = strData?.length > consoleMaxLength
+        ? `${strData.slice(0, consoleMaxLength - 6)} [...]`
+        : strData;
 
       const gray = LoggerStyle.FG_BRIGHT_BLACK;
       const reset = LoggerStyle.RESET;
@@ -67,7 +71,7 @@ export class ConsoleService implements LoggerTransport {
         + `${severityColor}${strRequestId}${reset}${separator}`
         + `${severityColor}${strFilename}${reset}${separator}`
         + `${severityColor}${message}${reset}`
-        + `${data ? `${gray}\n${strData}${reset}` : ''}`,
+        + `${data ? `${gray}\n${slicedData}${reset}` : ''}`,
       );
 
       if (error) {

@@ -33,6 +33,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     genReqId: () => crypto.randomBytes(7).toString('base64url'),
   },
   logger: {
+    consoleMaxLength: 1000,
     sensitiveKeys: [
       'apikey',
       'auth',
