@@ -178,7 +178,8 @@ export class LoggerService {
    */
   // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
-    const { sensitiveKeys } = this.appConfig.APP_OPTIONS;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const { sensitiveKeys } = logger;
 
     if (typeof object !== 'object') {
       return object;

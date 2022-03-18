@@ -27,7 +27,7 @@ export class SentryService implements LoggerTransport {
     const dsn = this.sentryConfig.SENTRY_DSN;
 
     if (!dsn) {
-      this.loggerService.info('Transport disabled due to missing DSN');
+      this.loggerService.info('Sentry transport disabled due to missing DSN');
       return;
     }
 
@@ -37,7 +37,7 @@ export class SentryService implements LoggerTransport {
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });
 
-    this.loggerService.info(`Transport connected at ${dsn}`);
+    this.loggerService.info(`Sentry transport connected at ${dsn}`);
     this.loggerService.registerTransport(this);
   }
 

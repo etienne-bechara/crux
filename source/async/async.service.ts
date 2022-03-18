@@ -127,7 +127,7 @@ export class AsyncService {
       }
     }
 
-    this.loggerService.debug(`${txtPrefix} finished successfully!`);
+    this.loggerService.debug(`${txtPrefix} finished successfully`);
     return result;
   }
 

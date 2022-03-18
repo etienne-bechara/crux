@@ -18,3 +18,10 @@ export interface LoggerTransport {
   getSeverity: () => LoggerSeverity;
   log: (params: LoggerParams) => void;
 }
+
+export interface LoggerOptions {
+  /** Sensitive keys to be removed during logging of objects. */
+  sensitiveKeys?: string[];
+  /** Format JSON when printing log details at console. */
+  prettyPrint?: boolean;
+}

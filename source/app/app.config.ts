@@ -9,6 +9,8 @@ import { AppOptions } from './app.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const APP_DEFAULT_OPTIONS: AppOptions = {
+  job: 'unknown',
+  instance: crypto.randomBytes(4).toString('base64url'),
   port: 8080,
   hostname: '0.0.0.0',
   timeout: 60_000,
@@ -26,22 +28,23 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     HttpStatus.GATEWAY_TIMEOUT,
     HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ],
-  sensitiveKeys: [
-    'apikey',
-    'auth',
-    'authentication',
-    'authorization',
-    'clientkey',
-    'clientsecret',
-    'pass',
-    'password',
-  ],
   fastify: {
     trustProxy: true,
-    genReqId: () => crypto.randomBytes(6).toString('base64url'),
+    genReqId: () => crypto.randomBytes(7).toString('base64url'),
+  },
+  logger: {
+    sensitiveKeys: [
+      'apikey',
+      'auth',
+      'authentication',
+      'authorization',
+      'clientkey',
+      'clientsecret',
+      'pass',
+      'password',
+    ],
   },
   metrics: {
-    job: 'unknown',
     pushgatewayInterval: 30_000,
     httpBuckets: [
       10, 20, 30, 50, 70,

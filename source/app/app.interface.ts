@@ -4,12 +4,17 @@ import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import http from 'http';
 
+import { LoggerOptions } from '../logger/logger.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { RedocAppOptions } from '../redoc/redoc.interface';
 
 export interface AppOptions extends ModuleMetadata {
   /** Provide an already built instance to skip `.compile()` step. */
-  instance?: INestApplication;
+  app?: INestApplication;
+  /** Job name for metrics and log collection. */
+  job?: string;
+  /** Instance ID for metrics and log collection. */
+  instance?: string;
   /** Environment variables file path. Default: `.env`. */
   envPath?: string;
   /** Disables all custom implementations (which can also be individually disabled). */
@@ -44,15 +49,13 @@ export interface AppOptions extends ModuleMetadata {
   cors?: CorsOptions;
   /** HTTP exceptions that should be logged as errors. Default: Array of all `5xx` status. */
   httpErrors?: HttpStatus[];
-  /** Sensitive keys to be removed during logging of objects. */
-  sensitiveKeys?: string[];
-  /** Format JSON when printing log details at console. */
-  prettyPrint?: boolean;
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
-  /** Metrics configurations. */
+  /** Logger configuration. */
+  logger?: LoggerOptions;
+  /** Metrics configuration. */
   metrics?: MetricOptions;
-  /** Redoc rendered documentation page options. */
+  /** Redoc configuration. */
   redoc?: RedocAppOptions;
 }
 

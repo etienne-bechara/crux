@@ -60,10 +60,10 @@ export class AppModule {
    * @param options
    */
   public static async boot(options: AppOptions = { }): Promise<INestApplication> {
-    const { instance } = options;
+    const { app } = options;
 
-    if (instance) {
-      this.instance = instance;
+    if (app) {
+      this.instance = app;
     }
     else {
       await this.compile(options);
@@ -206,7 +206,7 @@ export class AppModule {
    * using and interceptor to manage configured timeout.
    */
   private static async listen(): Promise<void> {
-    const { port, hostname, timeout } = this.options;
+    const { instance, port, hostname, timeout } = this.options;
     const timeoutStr = timeout ? `set to ${(timeout / 1000).toString()}s` : 'disabled';
 
     const app = this.getInstance();
@@ -215,8 +215,9 @@ export class AppModule {
     const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
 
-    loggerService.debug(`Server timeout ${timeoutStr}`);
-    loggerService.info(`Server listening on port ${port}`);
+    loggerService.debug(`Adapter timeout ${timeoutStr}`);
+    loggerService.debug(`Adapter listening on port ${port}`);
+    loggerService.info(`Instance ${instance}] booted successfully`);
   }
 
   /**

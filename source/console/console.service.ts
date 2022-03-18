@@ -34,13 +34,14 @@ export class ConsoleService implements LoggerTransport {
   // eslint-disable-next-line complexity
   public log(params: LoggerParams): void {
     const { environment, timestamp, severity, requestId, caller, message, data, error } = params;
-    const { prettyPrint } = this.appConfig.APP_OPTIONS;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const { prettyPrint } = logger;
     const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
       const strFilename = caller.padEnd(20, ' ');
-      const strRequestId = requestId || '-'.repeat(8);
+      const strRequestId = requestId || '-'.repeat(10);
       const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
 
       const gray = LoggerStyle.FG_BRIGHT_BLACK;

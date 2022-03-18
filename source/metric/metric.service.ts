@@ -28,8 +28,8 @@ export class MetricService {
    * Create Prometheus metrics registry and built-in histograms.
    */
   private setupRegistry(): void {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { job, defaultPrefix, defaultLabels, defaultBuckets } = metrics;
+    const { job, metrics } = this.appConfig.APP_OPTIONS || { };
+    const { defaultPrefix, defaultLabels, defaultBuckets } = metrics;
     const environment = this.appConfig.NODE_ENV;
 
     this.register = new Registry();
@@ -48,8 +48,8 @@ export class MetricService {
    * permanent push job to it.
    */
   private async setupPushgateway(): Promise<void> {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { job, pushgatewayInterval, pushgatewayReset } = metrics;
+    const { job, metrics } = this.appConfig.APP_OPTIONS || { };
+    const { pushgatewayInterval } = metrics;
     const { pushgatewayUrl, pushgatewayUsername, pushgatewayPassword } = metrics;
 
     const pushgatewayTarget = this.metricConfig.METRIC_PUSHGATEWAY_URL || pushgatewayUrl;
@@ -68,10 +68,6 @@ export class MetricService {
 
       try {
         const currentMetrics = await this.readMetrics();
-
-        if (pushgatewayReset) {
-          this.register.resetMetrics();
-        }
 
         await httpService.post('metrics/job/:job', {
           replacements: { job: job || 'unknown' },
