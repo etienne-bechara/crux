@@ -6,13 +6,9 @@ import { SlackService } from './slack.service';
 
 @Module({
   imports: [
-    HttpModule.registerAsync({
-      inject: [ SlackConfig ],
-      useFactory: (slackConfig: SlackConfig) => ({
-        name: 'SlackModule',
-        silent: true,
-        prefixUrl: slackConfig.SLACK_WEBHOOK,
-      }),
+    HttpModule.register({
+      name: 'SlackModule',
+      silent: true,
     }),
   ],
   providers: [
