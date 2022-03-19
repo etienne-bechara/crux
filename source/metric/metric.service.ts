@@ -17,8 +17,8 @@ export class MetricService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly httpConfig: HttpConfig,
-    private readonly metricConfig: MetricConfig,
     private readonly loggerService: LoggerService,
+    private readonly metricConfig: MetricConfig,
   ) {
     this.setupRegistry();
     void this.setupPushgateway();
@@ -75,7 +75,7 @@ export class MetricService {
             instance: instance || 'unknown',
           },
           body: Buffer.from(currentMetrics, 'utf-8'),
-          retryLimit: 3,
+          retryLimit: 2,
         });
       }
       catch (e) {
