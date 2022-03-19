@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
@@ -76,10 +77,17 @@ export class LokiService implements LoggerTransport {
     this.publishQueue = [ ];
 
     const streams = this.buildPushStream(logs);
+    const buffer = Buffer.from(JSON.stringify({ streams }));
 
     try {
+      const gzip: Buffer = await new Promise((res, rej) => zlib.gzip(buffer, (e, d) => e ? rej(e) : res(d)));
+
       await this.httpService.post('loki/api/v1/push', {
-        json: { streams },
+        headers: {
+          'content-type': 'application/json',
+          'content-encoding': 'gzip',
+        },
+        body: gzip,
         retryLimit: 2,
       });
     }
