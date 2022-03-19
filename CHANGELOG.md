@@ -1,3 +1,17 @@
+## [4.8.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.1...v4.8.2) (2022-03-18)
+
+
+### Bug Fixes
+
+* allow severity to be configurable on app options ([f7afa99](https://github.com/etienne-bechara/nestjs-core/commit/f7afa9928f418acf9b4b7173d4d175eff16667ee))
+* console max lenght and pushgateway instance ([4e3ee3d](https://github.com/etienne-bechara/nestjs-core/commit/4e3ee3d5f836580ba30b669c7b6e03f319f09ba2))
+* http timeout exception handling ([a0c7ef0](https://github.com/etienne-bechara/nestjs-core/commit/a0c7ef0d1440ac38a084d33aeffd045b74458540))
+* improve http logs ([7498c50](https://github.com/etienne-bechara/nestjs-core/commit/7498c50207887378d377653a09231fea5e6dc71f))
+* log improvements ([6a621fe](https://github.com/etienne-bechara/nestjs-core/commit/6a621fec9da322f03eee0d98ab43030f2c533a4e))
+* remove csv transport ([dae5eef](https://github.com/etienne-bechara/nestjs-core/commit/dae5eefde3f30616ea89e3e0834606ad5cdcf2b5))
+* require module test ([1081831](https://github.com/etienne-bechara/nestjs-core/commit/108183156ce93420db58df37776fc2dfd648d218))
+* swagger overrides ([6584c7f](https://github.com/etienne-bechara/nestjs-core/commit/6584c7f91561a0a41deef1a7f0ee42224d6c5d88))
+
 ## [4.8.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.0...v4.8.1) (2022-03-17)
 
 
