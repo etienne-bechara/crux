@@ -13,9 +13,9 @@ export class SlackService implements LoggerTransport {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly slackConfig: SlackConfig,
-    private readonly loggerService: LoggerService,
     private readonly httpService: HttpService,
+    private readonly loggerService: LoggerService,
+    private readonly slackConfig: SlackConfig,
   ) {
     this.setupTransport();
   }
@@ -24,7 +24,8 @@ export class SlackService implements LoggerTransport {
    * Checks if necessary variables are present and warn through console if not.
    */
   private setupTransport(): void {
-    const webhook = this.slackConfig.SLACK_WEBHOOK;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const webhook = this.slackConfig.SLACK_WEBHOOK || logger.slackWebhook;
 
     if (!webhook) {
       this.loggerService.info('Slack transport disabled due to missing webhook');
@@ -33,6 +34,7 @@ export class SlackService implements LoggerTransport {
 
     const webhookId = webhook.split('/')[webhook.split('/').length - 1];
     this.loggerService.info(`Slack transport connected at ${webhookId}`);
+
     this.loggerService.registerTransport(this);
   }
 
@@ -80,12 +82,15 @@ export class SlackService implements LoggerTransport {
    * @param message
    */
   public async publishSlackMessage(message: string): Promise<void> {
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const { slackWebhook, slackChannel, slackUsername, slackIconUrl } = logger;
+
     try {
-      await this.httpService.post('', {
+      await this.httpService.post(this.slackConfig.SLACK_WEBHOOK || slackWebhook, {
         json: {
-          channel: this.slackConfig.SLACK_CHANNEL,
-          username: this.slackConfig.SLACK_USERNAME,
-          icon_url: this.slackConfig.SLACK_ICON_URL,
+          channel: this.slackConfig.SLACK_CHANNEL || slackChannel,
+          username: this.slackConfig.SLACK_USERNAME || slackUsername,
+          icon_url: this.slackConfig.SLACK_ICON_URL || slackIconUrl,
           blocks: [
             {
               type: 'context',
