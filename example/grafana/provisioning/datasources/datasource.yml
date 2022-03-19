@@ -14,6 +14,6 @@ datasources:
     type: loki
     access: proxy
     orgId: 1
-    url: http://loki:3031
+    url: http://loki:3100
     basicAuth: false
     editable: true

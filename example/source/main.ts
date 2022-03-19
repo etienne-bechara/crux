@@ -9,6 +9,10 @@ void AppModule.boot({
     UserModule,
     ZipModule,
   ],
+  logger: {
+    lokiUrl: 'http://localhost:3100',
+    lokiBatchSize: 5,
+  },
   metrics: {
     pushgatewayUrl: 'http://127.0.0.1:9091',
     pushgatewayInterval: 5000,

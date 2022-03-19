@@ -20,6 +20,7 @@ import { ContextStorage } from '../context/context.storage';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
+import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
@@ -217,7 +218,7 @@ export class AppModule {
 
     loggerService.debug(`Adapter timeout ${timeoutStr}`);
     loggerService.debug(`Adapter listening on port ${port}`);
-    loggerService.info(`Instance ${instance}] booted successfully`);
+    loggerService.info(`Instance ${instance} booted successfully`);
   }
 
   /**
@@ -269,6 +270,7 @@ export class AppModule {
     if (!disableLogger) {
       defaultModules.push(
         ConsoleModule,
+        LokiModule,
         SentryModule,
         SlackModule,
       );

@@ -21,7 +21,7 @@ export interface LoggerTransport {
 
 export interface LoggerOptions {
   /**
-   * Severity to trigger publishing logs at console. Can be overridden by env `CONSOLE_SEVERITY`.
+   * Console severity to enable publishing logs. Can be overridden by env `CONSOLE_SEVERITY`.
    * Default: `trace` when local`, otherwise `warning`.
    */
   consoleSeverity?: LoggerSeverity;
@@ -29,11 +29,26 @@ export interface LoggerOptions {
   consolePretty?: boolean;
   /** Max length when stringifying details at console. */
   consoleMaxLength?: number;
-  /** Severity to trigger publishing logs at Sentry. Can be overridden by env `SENTRY_SEVERITY`. Default: `error`. */
+
+  /** Sentry severity to enable publishing logs. Can be overridden by env `SENTRY_SEVERITY`. Default: `error`. */
   sentrySeverity?: LoggerSeverity;
   /** Sentry DSN to publish logs. Can be overridden by env `SENTRY_DSN`. */
   sentryDsn?: string;
-  /** Severity to trigger publishing logs at Slack. Can be overridden by env `SLACK_SEVERITY`. Default: `warn`. */
+
+  /** Loki severity to enable publishing logs. Can be overridden by env `LOKI_SEVERITY`. Default: `debug`. */
+  lokiSeverity?: LoggerSeverity;
+  /** Loki API URL to publish logs. Can be overridden by env `LOKI_URL`. */
+  lokiUrl?: string;
+  /** Loki username to publish logs. Can be overridden by env `LOKI_USERNAME`. */
+  lokiUsername?: string;
+  /** Loki pasword to publish logs. Can be overridden by env `LOKI_PASSWORD`. */
+  lokiPassword?: string;
+  /** Loki API push interval in milliseconds. Default: 30000. */
+  lokiPushInterval?: number;
+  /** Loki batch size to trigger a push before interval is met. Default: 1000. */
+  lokiBatchSize?: number;
+
+  /** Slack severity to enable publishing logs. Can be overridden by env `SLACK_SEVERITY`. Default: `warn`. */
   slackSeverity?: LoggerSeverity;
   /** Slack webhook to publish logs. Can be overridden by env `SLACK_WEBHOOK`. */
   slackWebhook?: string;
@@ -43,6 +58,7 @@ export interface LoggerOptions {
   slackUsername?: string;
   /** Slack profile icon URL to publish logs. Can be overridden by env `SLACK_ICON_URL`. */
   slackIconUrl?: string;
+
   /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
 }

@@ -35,6 +35,9 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   },
   logger: {
     consoleMaxLength: 1000,
+    lokiSeverity: LoggerSeverity.DEBUG,
+    lokiPushInterval: 30_000,
+    lokiBatchSize: 1000,
     sentrySeverity: LoggerSeverity.ERROR,
     slackSeverity: LoggerSeverity.WARNING,
     sensitiveKeys: [
