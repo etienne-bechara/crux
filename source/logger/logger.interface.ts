@@ -1,10 +1,8 @@
-import { AppEnvironment } from '../app/app.enum';
 import { LoggerSeverity } from './logger.enum';
 
 export type LoggerArguments = string | Error | Record<string, any>;
 
 export interface LoggerParams {
-  environment: AppEnvironment;
   timestamp: string;
   severity: LoggerSeverity;
   requestId: string;
@@ -41,7 +39,7 @@ export interface LoggerOptions {
   lokiUrl?: string;
   /** Loki username to publish logs. Can be overridden by env `LOKI_USERNAME`. */
   lokiUsername?: string;
-  /** Loki pasword to publish logs. Can be overridden by env `LOKI_PASSWORD`. */
+  /** Loki password to publish logs. Can be overridden by env `LOKI_PASSWORD`. */
   lokiPassword?: string;
   /** Loki API push interval in milliseconds. Default: 30000. */
   lokiPushInterval?: number;

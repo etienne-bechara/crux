@@ -52,7 +52,8 @@ export class SlackService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
-    const { environment, severity, requestId, caller, message, data } = params;
+    const environment = this.appConfig.NODE_ENV;
+    const { severity, requestId, caller, message, data } = params;
     if (data?.messageBlocks || message === this.slackConfig.SLACK_EXCEPTION_MESSAGE) return;
 
     const maxCharacters = 3000;

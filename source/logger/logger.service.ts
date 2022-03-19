@@ -53,7 +53,6 @@ export class LoggerService {
     const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
 
     const logMessage: LoggerParams = {
-      environment: this.appConfig.NODE_ENV,
       timestamp: new Date().toISOString(),
       severity,
       requestId: this.contextService.getRequestId(),

@@ -36,7 +36,8 @@ export class ConsoleService implements LoggerTransport {
    */
   // eslint-disable-next-line complexity
   public log(params: LoggerParams): void {
-    const { environment, timestamp, severity, requestId, caller, message, data, error } = params;
+    const environment = this.appConfig.NODE_ENV;
+    const { timestamp, severity, requestId, caller, message, data, error } = params;
     const { logger } = this.appConfig.APP_OPTIONS || { };
     const { consolePretty, consoleMaxLength } = logger;
     const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
