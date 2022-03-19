@@ -13,7 +13,6 @@ import { LokiPushStream } from './loki.interface';
 export class LokiService implements LoggerTransport {
 
   private publishQueue: LoggerParams[] = [ ];
-  private publishLast: Date;
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -38,6 +37,8 @@ export class LokiService implements LoggerTransport {
 
     this.loggerService.info(`Loki transport connected at ${url}`);
     this.loggerService.registerTransport(this);
+
+    void this.setupPush();
   }
 
   /**
@@ -69,10 +70,27 @@ export class LokiService implements LoggerTransport {
   }
 
   /**
+   * Publish logs once at every configured interval.
+   */
+  private async setupPush(): Promise<void> {
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const { lokiPushInterval } = logger;
+    if (!lokiPushInterval) return;
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      await new Promise((r) => setTimeout(r, lokiPushInterval));
+      void this.publishCurrentQueue();
+    }
+  }
+
+  /**
    * Reads current queue and publish it as a batch at Loki API,
-   * split the streams by severity and label them accordingly.
+   * compress the payload as gzip in order to minimize body size.
    */
   private async publishCurrentQueue(): Promise<void> {
+    if (this.publishQueue.length === 0) return;
+
     const logs = [ ...this.publishQueue ];
     this.publishQueue = [ ];
 
@@ -97,7 +115,8 @@ export class LokiService implements LoggerTransport {
   }
 
   /**
-   * Given a set of logs, constructs the payload expected by Loki API.
+   * Given a set of logs, constructs the payload expected by Loki API,
+   * split the streams by severity and label them accordingly.
    * @param logs
    */
   private buildPushStream(logs: LoggerParams[]): LokiPushStream[] {
