@@ -32,7 +32,7 @@ export class HttpService {
    */
   public setup(): void {
     const { name, prefixUrl } = this.httpModuleOptions;
-    this.loggerService?.debug(`Creating instance for ${name || prefixUrl}`);
+    this.loggerService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
     this.instance = got.extend(this.httpModuleOptions);
   }
 

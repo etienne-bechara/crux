@@ -101,7 +101,7 @@ export class LokiService implements LoggerTransport {
       if (matchingLogs.length === 0) continue;
 
       pushStreams.push({
-        stream: { job, instance, environment, severity },
+        stream: { job, instance, environment, level: severity },
         values: this.buildPushStreamValues(matchingLogs),
       });
     }

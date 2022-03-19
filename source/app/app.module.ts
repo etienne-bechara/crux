@@ -216,8 +216,7 @@ export class AppModule {
     const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
 
-    loggerService.debug(`Adapter timeout ${timeoutStr}`);
-    loggerService.debug(`Adapter listening on port ${port}`);
+    loggerService.info(`Adapter listening on port ${port}, timeout ${timeoutStr}`);
     loggerService.info(`Instance ${instance} booted successfully`);
   }
 
