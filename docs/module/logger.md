@@ -65,7 +65,7 @@ this.loggerService.error(a: string, b: Error, c: Record<string, any>, d: Record<
 
 ## Transporters
 
-This package offers the following built-in transporters: Console, Sentry and Slack.
+This package offers the following built-in transporters: Console, Loki, Sentry and Slack.
 
 Configuration will be acquired from environment according to the following variables.
 
@@ -77,6 +77,18 @@ Variable         | Required | Type   | Default
 :--------------- | :------: | :----: | :---
 CONSOLE_SEVERITY | No       | string | `trace` when `NODE_ENV=local`, `warning` otherwise
 
+### Loki
+
+Publish logs to [Loki](https://grafana.com/oss/loki) by pushing through its API.
+
+To enable this integration provide `LOKI_URL`, you may also provide basic auth credentials.
+
+Variable      | Required | Type   | Default
+:------------ | :------: | :----: | :---
+LOKI_URL      | Yes      | string |
+LOKI_USERNAME | No       | string |
+LOKI_PASSWORD | No       | string |
+LOKI_SEVERITY | No       | string | `debug`
 
 ### Sentry
 

@@ -53,6 +53,7 @@ export class LokiService implements LoggerTransport {
    * @param params
    */
   public log(params: LoggerParams): void {
+    // TODO: push by interval
     const { message } = params;
     if (message === this.lokiConfig.LOKI_EXCEPTION_MESSAGE) return;
 
