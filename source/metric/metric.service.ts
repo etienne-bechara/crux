@@ -57,6 +57,7 @@ export class MetricService {
 
     const httpService = new HttpService({
       name: 'MetricModule',
+      silent: true,
       prefixUrl: pushgatewayTarget,
       username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME ?? pushgatewayUsername,
       password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD ?? pushgatewayPassword,

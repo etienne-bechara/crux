@@ -207,8 +207,7 @@ export class AppModule {
    * using and interceptor to manage configured timeout.
    */
   private static async listen(): Promise<void> {
-    const { instance, port, hostname, timeout } = this.options;
-    const timeoutStr = timeout ? `set to ${(timeout / 1000).toString()}s` : 'disabled';
+    const { instance, port, hostname } = this.options;
 
     const app = this.getInstance();
     const loggerService = app.get(LoggerService);
@@ -216,8 +215,7 @@ export class AppModule {
     const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
 
-    loggerService.info(`Adapter listening on port ${port}, timeout ${timeoutStr}`);
-    loggerService.info(`Instance ${instance} booted successfully`);
+    loggerService.info(`Instance ${instance} listening on port ${port}`);
   }
 
   /**

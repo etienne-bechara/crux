@@ -100,13 +100,26 @@ export class LokiService implements LoggerTransport {
       const matchingLogs = logs.filter((l) => l.severity === severity);
       if (matchingLogs.length === 0) continue;
 
+      const level = this.getLokiLevel(severity);
+
       pushStreams.push({
-        stream: { job, instance, environment, level: severity },
+        stream: { job, instance, environment, level },
         values: this.buildPushStreamValues(matchingLogs),
       });
     }
 
     return pushStreams;
+  }
+
+  /**
+   * Translates application severity into a standard recognized
+   * by Grafana Loki Explorer.
+   * @param severity
+   */
+  private getLokiLevel(severity: LoggerSeverity): string {
+    return severity === LoggerSeverity.HTTP
+      ? 'info'
+      : severity;
   }
 
   /**
@@ -121,32 +134,13 @@ export class LokiService implements LoggerTransport {
       const { timestamp, requestId, caller, message, data } = log;
       const unixNanoseconds = new Date(timestamp).getTime() * 10 ** 6;
 
-      const logRecord = [
-        this.buildLogField('requestId', requestId),
-        this.buildLogField('caller', caller),
-        this.buildLogField('message', message),
-        this.buildLogField('data', data),
-      ].filter((f) => f).join(' ');
-
       streamValues.push([
         unixNanoseconds.toString(),
-        logRecord,
+        JSON.stringify({ requestId, caller, message, data }),
       ]);
     }
 
     return streamValues;
-  }
-
-  /**
-   * Build a log field by normalizing the output.
-   * Replaces quotes to ensure escaping.
-   * @param key
-   * @param data
-   */
-  private buildLogField(key: string, data: any): string {
-    if (!key || data === undefined) return;
-    const strData = typeof data === 'string' ? data : JSON.stringify(data);
-    return `${key}="${strData.replace(/"/g, '\\"')}"`;
   }
 
 }
