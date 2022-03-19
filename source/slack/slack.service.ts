@@ -82,15 +82,9 @@ export class SlackService implements LoggerTransport {
    * @param message
    */
   public async publishSlackMessage(message: string): Promise<void> {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { slackWebhook, slackChannel, slackUsername, slackIconUrl } = logger;
-
     try {
-      await this.httpService.post(this.slackConfig.SLACK_WEBHOOK || slackWebhook, {
+      await this.httpService.post('', {
         json: {
-          channel: this.slackConfig.SLACK_CHANNEL || slackChannel,
-          username: this.slackConfig.SLACK_USERNAME || slackUsername,
-          icon_url: this.slackConfig.SLACK_ICON_URL || slackIconUrl,
           blocks: [
             {
               type: 'context',
