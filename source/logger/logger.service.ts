@@ -98,7 +98,7 @@ export class LoggerService {
     const matches = error.stack.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
 
     for (const match of matches) {
-      const filename = match[1].replace(/\.(?:js|ts):/, ':');
+      const filename = match[1];
 
       if (!filename.includes('logger.service')) {
         return filename;

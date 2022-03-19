@@ -43,7 +43,7 @@ export interface LoggerOptions {
   lokiPassword?: string;
   /** Loki API push interval in milliseconds. Default: 30000. */
   lokiPushInterval?: number;
-  /** Loki batch size to trigger a push before interval is met. Default: 1000. */
+  /** Loki maximum batch size, will trigger a premature push if necessary. Default: 1000. */
   lokiBatchSize?: number;
 
   /** Slack severity to enable publishing logs. Can be overridden by env `SLACK_SEVERITY`. Default: `warn`. */

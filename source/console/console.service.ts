@@ -44,7 +44,7 @@ export class ConsoleService implements LoggerTransport {
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
-      const strFilename = caller.padEnd(20, ' ');
+      const strFilename = caller.padEnd(25, ' ');
       const strRequestId = requestId || '-'.repeat(10);
       const strData = JSON.stringify(data, null, consolePretty ? 2 : null);
 
