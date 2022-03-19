@@ -38,7 +38,7 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   proxyExceptions?: boolean;
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string>;
-  /** Overwrite search params adding the ability to provide array values. */
+  /** Request search query, overrides `searchParams`. */
   query?: Record<string, any>;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
   retry?: never;

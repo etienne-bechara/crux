@@ -162,33 +162,29 @@ export class HttpService {
   }
 
   /**
-   * Normalize request params by:
-   * - If a query property is provided, overwrite the search params
-   * with a functionality of allowing array inside object values
-   * - Set body only property as false we always want the full response.
+   * Apply to request params:
+   * - Set `method` as GET if not provided
+   * - Set `resolveBodyOnly` as false as we always want the full response
+   * - Merge `query`, `json` and `form` with provided options at module.
    * @param params
    */
   private buildRequestParams(params: HttpRequestParams): HttpRequestParams {
-    const { query } = params;
-    const mergedQuery = { ...this.httpModuleOptions.query, ...query };
-
-    if (Object.keys(mergedQuery).length > 0) {
-      const queryParams = { };
-
-      for (const key in mergedQuery) {
-        if (Array.isArray(mergedQuery[key])) {
-          queryParams[key] = mergedQuery[key].join(',');
-        }
-        else {
-          queryParams[key] = mergedQuery[key];
-        }
-      }
-
-      params.searchParams = queryParams;
-    }
+    const { query, json, form } = params;
 
     params.method ??= HttpMethod.GET;
     params.resolveBodyOnly = false;
+
+    if (query || this.httpModuleOptions.query) {
+      params.searchParams = { ...this.httpModuleOptions.query, ...query };
+    }
+
+    if (json) {
+      params.json = { ...this.httpModuleOptions.json, ...json };
+    }
+
+    if (form) {
+      params.form = { ...this.httpModuleOptions.form, ...form };
+    }
 
     return params;
   }
