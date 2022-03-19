@@ -10,7 +10,6 @@ import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interfa
 export class LoggerService {
 
   private transports: LoggerTransport[] = [ ];
-  private pendingLogs: LoggerParams[] = [ ];
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -50,8 +49,6 @@ export class LoggerService {
    * @param args
    */
   private log(severity: LoggerSeverity, ...args: LoggerArguments[]): void {
-    const logBatch: LoggerParams[] = [ ...this.pendingLogs ];
-
     const logMessage: LoggerParams = {
       timestamp: new Date().toISOString(),
       severity,
@@ -62,23 +59,12 @@ export class LoggerService {
       error: this.getLogError(...args),
     };
 
-    if (this.transports.length === 0) {
-      this.pendingLogs.push(logMessage);
-      return;
-    }
-
-    this.pendingLogs = [ ];
-    logBatch.push(logMessage);
-
     for (const transport of this.transports) {
       const transportSeverity = transport.getSeverity();
+      const isHigher = this.isHigherOrEqualSeverity(severity, transportSeverity);
 
-      for (const logRecord of logBatch) {
-        const isHigher = this.isHigherOrEqualSeverity(logRecord.severity, transportSeverity);
-
-        if (isHigher) {
-          transport.log(logRecord);
-        }
+      if (isHigher) {
+        transport.log(logMessage);
       }
     }
   }

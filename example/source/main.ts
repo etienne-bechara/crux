@@ -11,7 +11,7 @@ void AppModule.boot({
   ],
   logger: {
     lokiUrl: 'http://localhost:3100',
-    lokiBatchSize: 5,
+    lokiBatchSize: 1,
   },
   metrics: {
     pushgatewayUrl: 'http://127.0.0.1:9091',
