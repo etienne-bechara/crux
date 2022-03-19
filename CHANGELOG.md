@@ -1,3 +1,10 @@
+## [4.9.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.9.0...v4.9.1) (2022-03-19)
+
+
+### Bug Fixes
+
+* http merging ([fb5be14](https://github.com/etienne-bechara/nestjs-core/commit/fb5be14ca87c9be8cea4530097695d5b96077de1))
+
 # [4.9.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.2...v4.9.0) (2022-03-19)
 
 
