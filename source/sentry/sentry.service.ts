@@ -12,8 +12,8 @@ export class SentryService implements LoggerTransport {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly sentryConfig: SentryConfig,
     private readonly loggerService: LoggerService,
+    private readonly sentryConfig: SentryConfig,
   ) {
     this.setupTransport();
   }
@@ -24,7 +24,8 @@ export class SentryService implements LoggerTransport {
    * are customizing it at logger service.
    */
   private setupTransport(): void {
-    const dsn = this.sentryConfig.SENTRY_DSN;
+    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const dsn = this.sentryConfig.SENTRY_DSN || logger.sentryDsn;
 
     if (!dsn) {
       this.loggerService.info('Sentry transport disabled due to missing DSN');
