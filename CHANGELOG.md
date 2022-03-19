@@ -1,3 +1,28 @@
+# [4.9.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.2...v4.9.0) (2022-03-19)
+
+
+### Bug Fixes
+
+* acquiring sentry DSN from options ([59db0c0](https://github.com/etienne-bechara/nestjs-core/commit/59db0c0bafdd5b0107a48c653f6fd77cb61027ca))
+* http module register on slack ([788837a](https://github.com/etienne-bechara/nestjs-core/commit/788837aee1845bbf6bd8389d9f003e8a6193737f))
+* keep file extension in caller ([6f12d2f](https://github.com/etienne-bechara/nestjs-core/commit/6f12d2ff95e03c7cc6a080cc1107d8b8a654477a))
+* log strings and loki label ([b6a303f](https://github.com/etienne-bechara/nestjs-core/commit/b6a303f1e2b0d8a9b63216e7fcfcc17ebd05de5b))
+* lower metric retry ([da4af37](https://github.com/etienne-bechara/nestjs-core/commit/da4af37c5ff8f5ec03ff718d2c225ecfbed6cb9c))
+* remove env from logger params ([13b999c](https://github.com/etienne-bechara/nestjs-core/commit/13b999cac4a3715b7b88ab72c7ca5b709f5cf179))
+* remove pending log buffer ([594ed62](https://github.com/etienne-bechara/nestjs-core/commit/594ed6231acef8b9f7fe21ba9542e0979f6b1075))
+* remove todo ([7489c8d](https://github.com/etienne-bechara/nestjs-core/commit/7489c8dfe1d5c055beca8109e3e734b264897feb))
+* send loki logs as JSON ([7b1897b](https://github.com/etienne-bechara/nestjs-core/commit/7b1897b1b80da85060b16cbd96656cfd7717e110))
+* setup coalesced http ([7c98e01](https://github.com/etienne-bechara/nestjs-core/commit/7c98e01a66429c48a1cec7d4d55eb5cbefb545b7))
+* slack options coalesce ([d865f44](https://github.com/etienne-bechara/nestjs-core/commit/d865f44fe67fcf35bbbf522ae781caf299657111))
+
+
+### Features
+
+* add loki gzip compression ([3ea6445](https://github.com/etienne-bechara/nestjs-core/commit/3ea64459145b6b31c6a1002a422ba2c82dcfbaea))
+* add Loki logger transport mvp ([4cb27ad](https://github.com/etienne-bechara/nestjs-core/commit/4cb27ad2a39598963af8f99db72e35da343c7b2d))
+* add loki push interval handler ([a93003f](https://github.com/etienne-bechara/nestjs-core/commit/a93003f056a8f90dcd4021f23e8d0a108ee5322f))
+* add random service to example for debuggin ([5de2c71](https://github.com/etienne-bechara/nestjs-core/commit/5de2c715610eda3dd9dd712d8af8ae4cde4ab56a))
+
 ## [4.8.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.8.1...v4.8.2) (2022-03-18)
 
 
