@@ -18,7 +18,7 @@ export interface HttpModuleOptions extends ExtendOptions {
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
   /** Request query params with array joining support, overrides `searchParams`. */
-  query?: Record<string, any>;
+  query?: Record<string, string | string[]>;
   /** Query separator when joining string arrays. Default ','. */
   querySeparator?: string;
   /** @deprecated Use `retryLimit` and `retryCodes`. */

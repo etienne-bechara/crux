@@ -180,12 +180,14 @@ export class HttpService {
       const mergedQuery = { ...this.httpModuleOptions.query, ...query };
 
       for (const key in mergedQuery) {
-        if (Array.isArray(mergedQuery[key])) {
-          mergedQuery[key] = mergedQuery[key].join(separator);
+        const testValue = mergedQuery[key];
+
+        if (Array.isArray(testValue)) {
+          mergedQuery[key] = testValue.join(separator);
         }
       }
 
-      params.searchParams = mergedQuery;
+      params.searchParams = mergedQuery as Record<string, string>;
     }
 
     if (json) {
