@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Module } from '@nestjs/common';
 
 import { AppModule } from '../app/app.module';
 import { AppService } from '../app/app.service';
-import { HttpResponse } from './http.interface';
+import { HttpRequestParams, HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
 
@@ -169,6 +169,28 @@ describe('HttpService', () => {
       expect(res.cookies[0]).toBeDefined();
       expect(res.cookies[0].domain).toMatch(/google/g);
       expect(res.cookies[0].expires).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('buildRequestParams', () => {
+    it('should join query string arrays into string', () => {
+      const params: HttpRequestParams = {
+        query: {
+          string: 'string',
+          stringArray: [ 'string', 'string' ],
+          test: [ 'test1', 'test2', 'test3' ],
+        },
+        querySeparator: '|',
+      };
+
+      const expectation = {
+        string: 'string',
+        stringArray: 'string|string',
+        test: 'test1|test2|test3',
+      };
+
+      const result = appHttpService['buildRequestParams'](params);
+      expect(result.searchParams).toStrictEqual(expectation);
     });
   });
 });

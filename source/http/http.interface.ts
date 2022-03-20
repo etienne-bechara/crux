@@ -17,8 +17,10 @@ export interface HttpModuleOptions extends ExtendOptions {
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
-  /** Overwrite search params adding the ability to provide array values. */
+  /** Request query params with array joining support, overrides `searchParams`. */
   query?: Record<string, any>;
+  /** Query separator when joining string arrays. Default ','. */
+  querySeparator?: string;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
   retry?: never;
   /** Max amount of retries. Default: 2. */
@@ -38,8 +40,10 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   proxyExceptions?: boolean;
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string>;
-  /** Request search query, overrides `searchParams`. */
-  query?: Record<string, any>;
+  /** Request query params with array joining support, overrides `searchParams`. */
+  query?: Record<string, string | string[]>;
+  /** Query separator when joining string arrays. Default ','. */
+  querySeparator?: string;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
   retry?: never;
   /** Max amount of retries. Default: 2. */

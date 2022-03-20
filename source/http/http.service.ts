@@ -165,17 +165,27 @@ export class HttpService {
    * Apply to request params:
    * - Set `method` as GET if not provided
    * - Set `resolveBodyOnly` as false as we always want the full response
-   * - Merge `query`, `json` and `form` with provided options at module.
+   * - Merge `query`, `json` and `form` with provided options at module
+   * - Convert query string arrays into strings joined with configured separator.
    * @param params
    */
   private buildRequestParams(params: HttpRequestParams): HttpRequestParams {
-    const { query, json, form } = params;
+    const { query, querySeparator, json, form } = params;
 
     params.method ??= HttpMethod.GET;
     params.resolveBodyOnly = false;
 
     if (query || this.httpModuleOptions.query) {
-      params.searchParams = { ...this.httpModuleOptions.query, ...query };
+      const separator = querySeparator ?? this.httpModuleOptions.querySeparator ?? ',';
+      const mergedQuery = { ...this.httpModuleOptions.query, ...query };
+
+      for (const key in mergedQuery) {
+        if (Array.isArray(mergedQuery[key])) {
+          mergedQuery[key] = mergedQuery[key].join(separator);
+        }
+      }
+
+      params.searchParams = mergedQuery;
     }
 
     if (json) {
