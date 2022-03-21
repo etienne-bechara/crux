@@ -1,4 +1,4 @@
-import { ApiProperty, IsNumber, Min, OmitType, PickType, Type, ValidateNested } from '../../../source/app/app.override';
+import { ApiProperty, IsNumber, Min, OmitType, PickType, SetType, ValidateNested } from '../../../source/app/app.override';
 import { User } from './user.entity';
 
 export class UserIdDto extends PickType(User, [ 'id' ]) { }
@@ -14,7 +14,7 @@ export class UserCollection {
 
   @ApiProperty({ type: [ User ] })
   @ValidateNested({ each: true })
-  @Type(() => User)
+  @SetType(() => User)
   public records: User[];
 
 }

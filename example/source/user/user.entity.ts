@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, Type, ValidateNested } from '../../../source/app/app.override';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, SetType, ValidateNested } from '../../../source/app/app.override';
 import { OneOf } from '../../../source/validator/validator.decorator';
 import { UserAddressState, UserGender, UserOneOf } from './user.enum';
 
@@ -77,7 +77,7 @@ export class User {
   public phone?: string;
 
   @ValidateNested()
-  @Type(() => UserAddress)
+  @SetType(() => UserAddress)
   @IsObject()
   public address: UserAddress;
 

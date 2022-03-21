@@ -5,7 +5,7 @@ import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.i
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
-import { DocumentOptions } from '../document/document.interface';
+import { DocOptions } from '../doc/doc.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { SentryOptions } from '../sentry/sentry.interface';
@@ -29,15 +29,13 @@ export interface AppOptions extends ModuleMetadata {
   /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
   /** Disables all logger transports (Console, Loki, Sentry and Slack). */
-  disableLogger?: boolean;
+  disableLogs?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
   /** Disables request tracer. */
-  disableTracer?: boolean;
+  disableTraces?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
   disableDocs?: boolean;
-  /** Disable `AsyncModule` and `MemoryModule` utilities. */
-  disableUtilities?: boolean;
   /** Job name for metrics and log collection. */
   job?: string;
   /** Instance ID for metrics and log collection. */
@@ -69,7 +67,7 @@ export interface AppOptions extends ModuleMetadata {
   /** Metrics configuration. */
   metrics?: MetricOptions;
   /** Auto generated API documentation options. */
-  docs?: DocumentOptions;
+  docs?: DocOptions;
 }
 
 /**

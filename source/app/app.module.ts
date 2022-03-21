@@ -16,7 +16,7 @@ import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
-import { DocumentModule } from '../document/document.module';
+import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
 import { LogModule } from '../log/log.module';
 import { LogService } from '../log/log.service';
@@ -118,12 +118,11 @@ export class AppModule {
     if (this.options.disableAll) {
       this.options.disableDocs = true;
       this.options.disableFilter = true;
-      this.options.disableLogger = true;
+      this.options.disableLogs = true;
       this.options.disableMetrics = true;
       this.options.disableScan = true;
       this.options.disableSerializer = true;
       this.options.disableStatus = true;
-      this.options.disableUtilities = true;
       this.options.disableValidator = true;
     }
 
@@ -172,7 +171,7 @@ export class AppModule {
     this.instance['setViewEngine']({
       engine: { handlebars },
       // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'document'),
+      templates: path.join(__dirname, '..', 'doc'),
     });
 
     const builder = documentBuilder || new DocumentBuilder()
@@ -256,7 +255,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogger, disableMetrics, disableTracer, disableDocs } = this.options;
+    const { disableScan, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
@@ -273,7 +272,7 @@ export class AppModule {
       }),
     ];
 
-    if (!disableLogger) {
+    if (!disableLogs) {
       defaultModules.push(
         ConsoleModule,
         LokiModule,
@@ -289,7 +288,7 @@ export class AppModule {
       defaultModules.push(MetricDisabledModule);
     }
 
-    if (!disableTracer) {
+    if (!disableTraces) {
       defaultModules.push(TraceModule);
     }
     else {
@@ -297,7 +296,7 @@ export class AppModule {
     }
 
     if (!disableDocs) {
-      defaultModules.push(DocumentModule);
+      defaultModules.push(DocModule);
     }
 
     if (!disableScan) {

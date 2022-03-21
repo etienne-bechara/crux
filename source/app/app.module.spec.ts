@@ -6,7 +6,7 @@ describe('AppModule', () => {
 
   describe('boot', () => {
     it('should boot the application successfully', async () => {
-      const app = await AppModule.boot({ disableScan: true, disableLogger: true });
+      const app = await AppModule.boot({ disableAll: true });
       expect(app).toBeDefined();
     });
   });

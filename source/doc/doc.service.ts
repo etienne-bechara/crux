@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
-import { DocumentOptions, DocumentRenderOptions } from './document.interface';
+import { DocOptions, DocRenderOptions } from './doc.interface';
 
 @Injectable()
-export class DocumentService {
+export class DocService {
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -15,9 +15,9 @@ export class DocumentService {
    * necessary data from template and stringify the
    * underlying component params.
    */
-  public buildRenderOptions(): DocumentRenderOptions {
+  public buildRenderOptions(): DocRenderOptions {
     const { docs } = this.appConfig.APP_OPTIONS;
-    const options: DocumentOptions = { ...docs };
+    const options: DocOptions = { ...docs };
     const { title, favicon, openApiUrl } = options;
 
     delete options.openApiUrl;
