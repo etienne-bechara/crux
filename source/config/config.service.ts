@@ -3,8 +3,8 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import dotenv from 'dotenv';
 
-import { LoggerSeverity } from '../logger/logger.enum';
-import { LoggerParams } from '../logger/logger.interface';
+import { LogSeverity } from '../log/log.enum';
+import { LogParams } from '../log/log.interface';
 import { ConfigModuleOptions, ConfigSecretRecord } from './config.interface';
 
 /**
@@ -42,9 +42,9 @@ export class ConfigService {
     if (errors.length > 0 && !allowValidationErrors) {
       const validationErrors = errors.map(({ property, constraints }) => ({ property, constraints }));
 
-      const logMessage: Partial<LoggerParams> = {
+      const logMessage: Partial<LogParams> = {
         timestamp: new Date().toISOString(),
-        severity: LoggerSeverity.FATAL,
+        severity: LogSeverity.FATAL,
         caller: 'config.service',
         message: 'Environment validation failed',
         data: { constraints: validationErrors },

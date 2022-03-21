@@ -6,7 +6,7 @@ import { BasicTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-tra
 import { AppConfig } from '../app/app.config';
 
 @Injectable()
-export class TracerService {
+export class TraceService {
 
   public constructor(
     private readonly appConfig: AppConfig,

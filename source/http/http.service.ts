@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorExcep
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpMethod } from './http.enum';
@@ -17,11 +17,11 @@ export class HttpService {
     @Inject(HttpInjectionToken.MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly httpConfig: HttpConfig,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly metricService: MetricService,
   ) {
     if (this.httpModuleOptions.silent) {
-      this.loggerService = undefined;
+      this.logService = undefined;
     }
 
     this.setup();
@@ -32,7 +32,7 @@ export class HttpService {
    */
   public setup(): void {
     const { name, prefixUrl } = this.httpModuleOptions;
-    this.loggerService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
+    this.logService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
     this.instance = got.extend(this.httpModuleOptions);
   }
 
@@ -101,7 +101,7 @@ export class HttpService {
         const delay = rDelay(attempts);
 
         const msg = `⯆ ${e.message} | Retry #${attempts}/${rLimit}, next in ${delay / 1000}s`;
-        this.loggerService?.debug(msg, e as Error);
+        this.logService?.debug(msg, e as Error);
 
         await new Promise((r) => setTimeout(r, delay));
       }
@@ -211,7 +211,7 @@ export class HttpService {
     let response: HttpResponse<T>;
 
     try {
-      this.loggerService?.http(`⯅ ${method} ${host}${path}`, logs);
+      this.logService?.http(`⯅ ${method} ${host}${path}`, logs);
       response = await this.instance(url, request) as HttpResponse<T>;
 
       this.collectOutboundMetrics({ ...metrics, response });
@@ -277,7 +277,7 @@ export class HttpService {
 
     const code = statusCode?.toString?.() || '';
     const logData = { latency, code, body: body || undefined, headers };
-    this.loggerService?.http(`⯆ ${method} ${host}${path}`, logData);
+    this.logService?.http(`⯆ ${method} ${host}${path}`, logData);
 
     const histogram = this.metricService?.getHttpOutboundHistogram();
     if (!histogram) return;

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { LoggerService } from '../logger/logger.service';
-import { AsyncResolveParams, AsyncRetryParams } from './async.interface';
+import { LogService } from '../log/log.service';
+import { PromiseResolveParams, PromiseRetryParams } from './promise.interface';
 
 @Injectable()
-export class AsyncService {
+export class PromiseService {
 
   public constructor(
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) { }
 
   /**
@@ -25,7 +25,7 @@ export class AsyncService {
    * @param timeout
    */
   public async resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
-    this.loggerService.debug(`Resolving promise with ${timeout / 1000}s timeout`);
+    this.logService.debug(`Resolving promise with ${timeout / 1000}s timeout`);
 
     const result = await Promise.race([
       promise,
@@ -33,10 +33,10 @@ export class AsyncService {
     ]);
 
     if (result === 'timed out') {
-      throw new Error(`async resolution timed out after ${timeout / 1000}s`);
+      throw new Error(`promise resolution timed out after ${timeout / 1000}s`);
     }
 
-    this.loggerService.debug('Promise resolved successfully within timeout');
+    this.logService.debug('Promise resolved successfully within timeout');
     return result as T;
   }
 
@@ -44,12 +44,12 @@ export class AsyncService {
    * Runs multiple promises limiting concurrency.
    * @param params
    */
-  public async resolveLimited<I, O>(params: AsyncResolveParams<I, O>): Promise<Awaited<O>[]> {
-    const { data, limit, method } = params;
+  public async resolveLimited<I, O>(params: PromiseResolveParams<I, O>): Promise<Awaited<O>[]> {
+    const { data, limit, promise: method } = params;
     const resolved: Promise<O>[] = [ ];
     const executing = [ ];
 
-    this.loggerService.debug(`Resolving promises with ${limit} concurrency limit`);
+    this.logService.debug(`Resolving promises with ${limit} concurrency limit`);
 
     for (const item of data) {
       // eslint-disable-next-line promise/prefer-await-to-then
@@ -69,7 +69,7 @@ export class AsyncService {
 
     const allResolved = await Promise.all(resolved);
 
-    this.loggerService.debug(`Promises resolved successfully with ${limit} concurrency limit`);
+    this.logService.debug(`Promises resolved successfully with ${limit} concurrency limit`);
     return allResolved;
   }
 
@@ -78,7 +78,7 @@ export class AsyncService {
    * @param params
    */
   // eslint-disable-next-line complexity
-  public async retryOnException<T>(params: AsyncRetryParams<T>): Promise<T> {
+  public async retryOnRejection<T>(params: PromiseRetryParams<T>): Promise<T> {
     const txtName = `${params.name || 'retryOnException()'}`;
     const txtPrefix = `${txtName}:`;
     const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
@@ -88,7 +88,7 @@ export class AsyncService {
     let tentative = 1;
     let result: T;
 
-    this.loggerService.debug(msgStart);
+    this.logService.debug(msgStart);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -96,8 +96,8 @@ export class AsyncService {
         const elapsed = Date.now() - startTime;
 
         result = params.timeout
-          ? await this.resolveOrTimeout(params.method(), params.timeout - elapsed)
-          : await params.method();
+          ? await this.resolveOrTimeout(params.promise(), params.timeout - elapsed)
+          : await params.promise();
 
         break;
       }
@@ -109,7 +109,7 @@ export class AsyncService {
           || params.timeout && elapsed > params.timeout
           || params.breakIf?.(e)
         ) {
-          if (e?.message?.startsWith('async resolution timed out')) {
+          if (e?.message?.startsWith('promise resolution timed out')) {
             e.message = `${txtName} timed out after ${params.timeout / 1000}s`;
           }
 
@@ -121,13 +121,13 @@ export class AsyncService {
         const txtElapsed = `${elapsed / 1000}/${txtTimeout}`;
         const msgRetry = `${txtPrefix} ${e.message} | Retry #${tentative}/${txtRetry}, elapsed ${txtElapsed}s`;
 
-        this.loggerService.debug(msgRetry);
+        this.logService.debug(msgRetry);
 
         await this.sleep(params.delay || 0);
       }
     }
 
-    this.loggerService.debug(`${txtPrefix} finished successfully`);
+    this.logService.debug(`${txtPrefix} finished successfully`);
     return result;
   }
 

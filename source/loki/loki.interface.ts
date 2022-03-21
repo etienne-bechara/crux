@@ -1,8 +1,8 @@
-import { LoggerSeverity } from '../logger/logger.enum';
+import { LogSeverity } from '../log/log.enum';
 
 export interface LokiOptions {
   /** Loki severity to enable publishing logs. Can be overridden by env `LOKI_SEVERITY`. Default: `debug`. */
-  severity?: LoggerSeverity;
+  severity?: LogSeverity;
   /** Loki API URL to publish logs. Can be overridden by env `LOKI_URL`. */
   url?: string;
   /** Loki username to publish logs. Can be overridden by env `LOKI_USERNAME`. */

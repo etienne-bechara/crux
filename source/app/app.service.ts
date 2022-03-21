@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import os from 'os';
 
 import { HttpService } from '../http/http.service';
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { AppStatus } from './app.dto';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AppService {
 
   public constructor(
     private readonly httpService: HttpService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) { }
 
   /**
@@ -41,7 +41,7 @@ export class AppService {
       publicIp = await this.getPublicIp();
     }
     catch (e) {
-      this.loggerService.warning('Failed to acquire public IP', e as Error);
+      this.logService.warning('Failed to acquire public IP', e as Error);
     }
 
     return {

@@ -2,7 +2,7 @@ import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/commo
 import cycle from 'cycle';
 
 import { ContextService } from '../context/context.service';
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
@@ -14,7 +14,7 @@ export class AppFilter implements ExceptionFilter {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly metricService: MetricService,
   ) { }
 
@@ -36,7 +36,7 @@ export class AppFilter implements ExceptionFilter {
       this.sendResponse(appException);
     }
     catch (e) {
-      this.loggerService.error('Failed to handle exception', e as Error);
+      this.logService.error('Failed to handle exception', e as Error);
     }
   }
 
@@ -130,8 +130,8 @@ export class AppFilter implements ExceptionFilter {
     const data = { message, inboundRequest, ...details };
 
     return httpErrors.includes(code)
-      ? this.loggerService.error(exception, data)
-      : this.loggerService.info(exception, data);
+      ? this.logService.error(exception, data)
+      : this.logService.info(exception, data);
   }
 
   /**
@@ -175,7 +175,7 @@ export class AppFilter implements ExceptionFilter {
       ? exceptionBody
       : filteredResponse;
 
-    this.loggerService.http(this.contextService.getRequestDescription('out'), {
+    this.logService.http(this.contextService.getRequestDescription('out'), {
       latency: this.contextService.getRequestLatency(),
       code,
       body: clientResponse,

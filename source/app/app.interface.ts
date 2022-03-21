@@ -5,7 +5,7 @@ import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.i
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
-import { DocsOptions } from '../docs/docs.interface';
+import { DocumentOptions } from '../document/document.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { SentryOptions } from '../sentry/sentry.interface';
@@ -69,7 +69,7 @@ export interface AppOptions extends ModuleMetadata {
   /** Metrics configuration. */
   metrics?: MetricOptions;
   /** Auto generated API documentation options. */
-  docs?: DocsOptions;
+  docs?: DocumentOptions;
 }
 
 /**

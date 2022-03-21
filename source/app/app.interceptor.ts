@@ -3,7 +3,7 @@ import { Observable, throwError } from 'rxjs';
 import { mergeMap, timeout } from 'rxjs/operators';
 
 import { ContextService } from '../context/context.service';
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { AppConfig } from './app.config';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly contextService: ContextService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) { }
 
   /**
@@ -20,7 +20,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    this.loggerService.http(this.contextService.getRequestDescription('in'), {
+    this.logService.http(this.contextService.getRequestDescription('in'), {
       method: this.contextService.getRequestMethod(),
       path: this.contextService.getRequestPath(),
       clientIp: this.contextService.getRequestIp(),
@@ -35,7 +35,7 @@ export class AppLoggerInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          this.loggerService.http(this.contextService.getRequestDescription('out'), {
+          this.logService.http(this.contextService.getRequestDescription('out'), {
             latency: this.contextService.getRequestLatency(),
             code: this.contextService.getResponseCode() || HttpStatus.OK,
             body: data,

@@ -1,21 +1,21 @@
 import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
-import { Config, InjectSecret } from '../config/config.decorator';
+import { Config, InjectConfig } from '../config/config.decorator';
 
 @Config()
 export class MetricConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsUrl()
   public readonly METRIC_PUSHGATEWAY_URL: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
   public readonly METRIC_PUSHGATEWAY_USERNAME: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
   public readonly METRIC_PUSHGATEWAY_PASSWORD: string;

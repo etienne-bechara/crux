@@ -1,35 +1,35 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
-import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerSeverity } from '../logger/logger.enum';
+import { Config, InjectConfig } from '../config/config.decorator';
+import { LogSeverity } from '../log/log.enum';
 
 @Config()
 export class SlackConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsUrl()
   public readonly SLACK_WEBHOOK: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
   public readonly SLACK_CHANNEL: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
   public readonly SLACK_USERNAME: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
   @IsUrl()
   public readonly SLACK_ICON_URL: string;
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
-  @IsIn(Object.values(LoggerSeverity))
-  public readonly SLACK_SEVERITY: LoggerSeverity;
+  @IsIn(Object.values(LogSeverity))
+  public readonly SLACK_SEVERITY: LogSeverity;
 
   public readonly SLACK_EXCEPTION_MESSAGE = 'Failed to publish Slack message';
 

@@ -3,8 +3,8 @@ import { HttpStatus } from '@nestjs/common';
 import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
-import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerSeverity } from '../logger/logger.enum';
+import { Config, InjectConfig } from '../config/config.decorator';
+import { LogSeverity } from '../log/log.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
@@ -47,15 +47,15 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     maxLength: 1000,
   },
   loki: {
-    severity: LoggerSeverity.DEBUG,
+    severity: LogSeverity.DEBUG,
     pushInterval: 20_000,
     batchSize: 1000,
   },
   slack: {
-    severity: LoggerSeverity.WARNING,
+    severity: LogSeverity.WARNING,
   },
   sentry: {
-    severity: LoggerSeverity.ERROR,
+    severity: LogSeverity.ERROR,
   },
   metrics: {
     pushgatewayInterval: 20_000,
@@ -105,11 +105,11 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
 @Config()
 export class AppConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsIn(Object.values(AppEnvironment))
   public readonly NODE_ENV: AppEnvironment;
 
-  @InjectSecret()
+  @InjectConfig()
   public readonly APP_OPTIONS: AppOptions;
 
 }

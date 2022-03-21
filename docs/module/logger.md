@@ -6,32 +6,32 @@ Offers a logger service with predefined severity levels. When called, broadcasts
 
 ## Usage
 
-Inject `LoggerService` at your provide and call any of its method based on severity:
+Inject `LogService` at your provide and call any of its method based on severity:
 
 ```ts
-import { LoggerService } from '@bechara/nestjs-core';
+import { LogService } from '@bechara/nestjs-core';
 
 @Injectable()
 export class FooService {
 
   public constructor(
     private readonly fooRepository: Repository<FooEntity>,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) { }
 
   public async readFooById(id: number) {
     let foo: FooEntity;
-    this.loggerService.debug(`Reading foo with id ${id}`);
+    this.logService.debug(`Reading foo with id ${id}`);
 
     try {
       foo = await this.FooRepository.readById(id);
     }
     catch (e) {
-      this.loggerService.error(`Failed to read foo`, e, id);
+      this.logService.error(`Failed to read foo`, e, id);
       throw new InternalServerErrorException();
     }
 
-    this.loggerService.notice(`Successfully read foo with id ${id}`);
+    this.logService.notice(`Successfully read foo with id ${id}`);
     return foo;
   }
 }
@@ -50,14 +50,14 @@ type LoggerArguments = string | Error | Record<string, any>;
 Which means you may call them in any combination of:
 
 ```ts
-this.loggerService.error(a: string);
-this.loggerService.error(a: string, b: Error);
-this.loggerService.error(a: string, b: Record<string, any>);
-this.loggerService.error(a: Error, b: Record<string, any>);
-this.loggerService.error(a: string, b: Record<string, any>, c: Record<string, any>);
-this.loggerService.error(a: string, b: Error, c: Record<string, any>);
-this.loggerService.error(a: Error, b: Record<string, any>, c: Record<string, any>);
-this.loggerService.error(a: string, b: Error, c: Record<string, any>, d: Record<string, any>);
+this.logService.error(a: string);
+this.logService.error(a: string, b: Error);
+this.logService.error(a: string, b: Record<string, any>);
+this.logService.error(a: Error, b: Record<string, any>);
+this.logService.error(a: string, b: Record<string, any>, c: Record<string, any>);
+this.logService.error(a: string, b: Error, c: Record<string, any>);
+this.logService.error(a: Error, b: Record<string, any>, c: Record<string, any>);
+this.logService.error(a: string, b: Error, c: Record<string, any>, d: Record<string, any>);
 // etc...
 ```
 

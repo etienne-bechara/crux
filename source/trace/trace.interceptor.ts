@@ -2,14 +2,14 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { mergeMap, Observable } from 'rxjs';
 
 import { ContextService } from '../context/context.service';
-import { TracerService } from './tracer.service';
+import { TraceService } from './trace.service';
 
 @Injectable()
-export class TracerInterceptor implements NestInterceptor {
+export class TraceInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly contextService: ContextService,
-    private readonly tracerService: TracerService,
+    private readonly tracerService: TraceService,
   ) { }
 
   /**

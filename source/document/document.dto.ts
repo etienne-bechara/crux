@@ -1,6 +1,6 @@
 import { IsObject, IsString } from '../validator/validator.decorator';
 
-export class DocsSpecification {
+export class DocumentSpecification {
 
   @IsString()
   public openapi: string;

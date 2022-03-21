@@ -3,31 +3,31 @@ import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
-import { LoggerSeverity, LoggerStyle } from '../logger/logger.enum';
-import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
-import { LoggerService } from '../logger/logger.service';
+import { LogSeverity, LogStyle } from '../log/log.enum';
+import { LogParams, LogTransport } from '../log/log.interface';
+import { LogService } from '../log/log.service';
 import { ConsoleConfig } from './console.config';
 
 @Injectable()
-export class ConsoleService implements LoggerTransport {
+export class ConsoleService implements LogTransport {
 
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly consoleConfig: ConsoleConfig,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) {
-    this.loggerService.registerTransport(this);
+    this.logService.registerTransport(this);
   }
 
   /**
    * Returns minimum level for logging this transport.
    */
-  public getSeverity(): LoggerSeverity {
+  public getSeverity(): LogSeverity {
     const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
     const { severity } = consoleOptions;
 
     const environment = this.appConfig.NODE_ENV;
-    const envSeverity = environment === AppEnvironment.LOCAL ? LoggerSeverity.TRACE : LoggerSeverity.WARNING;
+    const envSeverity = environment === AppEnvironment.LOCAL ? LogSeverity.TRACE : LogSeverity.WARNING;
 
     return this.consoleConfig.CONSOLE_SEVERITY || severity || envSeverity;
   }
@@ -38,12 +38,12 @@ export class ConsoleService implements LoggerTransport {
    * @param params
    */
   // eslint-disable-next-line complexity
-  public log(params: LoggerParams): void {
+  public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { timestamp, severity, requestId, caller, message, data, error } = params;
     const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
     const { prettyPrint, maxLength, hideDetails } = consoleOptions;
-    const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
+    const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
@@ -58,21 +58,21 @@ export class ConsoleService implements LoggerTransport {
         ? `${strData.slice(0, maxLength - 6)} [...]`
         : strData;
 
-      const gray = LoggerStyle.FG_BRIGHT_BLACK;
-      const reset = LoggerStyle.RESET;
+      const gray = LogStyle.FG_BRIGHT_BLACK;
+      const reset = LogStyle.RESET;
       const separator = `${gray} | ${reset}`;
 
-      let severityColor: LoggerStyle;
+      let severityColor: LogStyle;
 
       switch (severity) {
-        case LoggerSeverity.FATAL: severityColor = LoggerStyle.FG_MAGENTA; break;
-        case LoggerSeverity.ERROR: severityColor = LoggerStyle.FG_RED; break;
-        case LoggerSeverity.WARNING: severityColor = LoggerStyle.FG_YELLOW; break;
-        case LoggerSeverity.NOTICE: severityColor = LoggerStyle.FG_GREEN; break;
-        case LoggerSeverity.INFO: severityColor = LoggerStyle.FG_WHITE; break;
-        case LoggerSeverity.HTTP: severityColor = LoggerStyle.FG_BLUE; break;
-        case LoggerSeverity.DEBUG: severityColor = LoggerStyle.FG_BRIGHT_BLACK; break;
-        case LoggerSeverity.TRACE: severityColor = LoggerStyle.FG_BRIGHT_BLACK; break;
+        case LogSeverity.FATAL: severityColor = LogStyle.FG_MAGENTA; break;
+        case LogSeverity.ERROR: severityColor = LogStyle.FG_RED; break;
+        case LogSeverity.WARNING: severityColor = LogStyle.FG_YELLOW; break;
+        case LogSeverity.NOTICE: severityColor = LogStyle.FG_GREEN; break;
+        case LogSeverity.INFO: severityColor = LogStyle.FG_WHITE; break;
+        case LogSeverity.HTTP: severityColor = LogStyle.FG_BLUE; break;
+        case LogSeverity.DEBUG: severityColor = LogStyle.FG_BRIGHT_BLACK; break;
+        case LogSeverity.TRACE: severityColor = LogStyle.FG_BRIGHT_BLACK; break;
       }
 
       console[isError ? 'error' : 'log'](

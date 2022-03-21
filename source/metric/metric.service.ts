@@ -4,7 +4,7 @@ import { collectDefaultMetrics, Histogram, Metric, metric, Registry } from 'prom
 import { AppConfig } from '../app/app.config';
 import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class MetricService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly httpConfig: HttpConfig,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly metricConfig: MetricConfig,
   ) {
     this.setupRegistry();
@@ -61,7 +61,7 @@ export class MetricService {
       prefixUrl: pushgatewayTarget,
       username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME ?? pushgatewayUsername,
       password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD ?? pushgatewayPassword,
-    }, this.httpConfig, this.loggerService, null);
+    }, this.httpConfig, this.logService, null);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -80,7 +80,7 @@ export class MetricService {
         });
       }
       catch (e) {
-        this.loggerService.warning('Failed to push to metrics to gateway', e as Error);
+        this.logService.warning('Failed to push to metrics to gateway', e as Error);
       }
     }
   }

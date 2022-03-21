@@ -10,24 +10,24 @@ import fs from 'fs';
 import handlebars from 'handlebars';
 import path from 'path';
 
-import { AsyncModule } from '../async/async.module';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
-import { DocsModule } from '../docs/docs.module';
+import { DocumentModule } from '../document/document.module';
 import { HttpModule } from '../http/http.module';
-import { LoggerModule } from '../logger/logger.module';
-import { LoggerService } from '../logger/logger.service';
+import { LogModule } from '../log/log.module';
+import { LogService } from '../log/log.service';
 import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
+import { PromiseModule } from '../promise/promise.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
-import { TracerDisabledModule, TracerModule } from '../tracer/tracer.module';
+import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppMemory } from './app.enum';
@@ -172,7 +172,7 @@ export class AppModule {
     this.instance['setViewEngine']({
       engine: { handlebars },
       // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'docs'),
+      templates: path.join(__dirname, '..', 'document'),
     });
 
     const builder = documentBuilder || new DocumentBuilder()
@@ -219,12 +219,12 @@ export class AppModule {
     const { instance, port, hostname } = this.options;
 
     const app = this.getInstance();
-    const loggerService = app.get(LoggerService);
+    const logService = app.get(LogService);
 
     const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
 
-    loggerService.info(`Instance ${instance} listening on port ${port}`);
+    logService.info(`Instance ${instance} listening on port ${port}`);
   }
 
   /**
@@ -262,9 +262,9 @@ export class AppModule {
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
-      AsyncModule,
+      PromiseModule,
       ContextModule,
-      LoggerModule,
+      LogModule,
       MemoryModule,
       HttpModule.register({
         name: 'AppModule',
@@ -290,14 +290,14 @@ export class AppModule {
     }
 
     if (!disableTracer) {
-      defaultModules.push(TracerModule);
+      defaultModules.push(TraceModule);
     }
     else {
       defaultModules.push(TracerDisabledModule);
     }
 
     if (!disableDocs) {
-      defaultModules.push(DocsModule);
+      defaultModules.push(DocumentModule);
     }
 
     if (!disableScan) {

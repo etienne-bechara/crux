@@ -3,21 +3,21 @@ import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
-import { LoggerSeverity } from '../logger/logger.enum';
-import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
-import { LoggerService } from '../logger/logger.service';
+import { LogSeverity } from '../log/log.enum';
+import { LogParams, LogTransport } from '../log/log.interface';
+import { LogService } from '../log/log.service';
 import { LokiConfig } from './loki.config';
 import { LokiPushStream } from './loki.interface';
 
 @Injectable()
-export class LokiService implements LoggerTransport {
+export class LokiService implements LogTransport {
 
-  private publishQueue: LoggerParams[] = [ ];
+  private publishQueue: LogParams[] = [ ];
 
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly httpService: HttpService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly lokiConfig: LokiConfig,
   ) {
     this.setupTransport();
@@ -32,12 +32,12 @@ export class LokiService implements LoggerTransport {
     const lokiUrl = this.lokiConfig.LOKI_URL || url;
 
     if (!lokiUrl) {
-      this.loggerService.info('Loki transport disabled due to missing url');
+      this.logService.info('Loki transport disabled due to missing url');
       return;
     }
 
-    this.loggerService.info(`Loki transport connected at ${lokiUrl}`);
-    this.loggerService.registerTransport(this);
+    this.logService.info(`Loki transport connected at ${lokiUrl}`);
+    this.logService.registerTransport(this);
 
     void this.setupPush();
   }
@@ -45,7 +45,7 @@ export class LokiService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getSeverity(): LoggerSeverity {
+  public getSeverity(): LogSeverity {
     const { loki } = this.appConfig.APP_OPTIONS || { };
     const { severity } = loki;
     return this.lokiConfig.LOKI_SEVERITY || severity;
@@ -56,7 +56,7 @@ export class LokiService implements LoggerTransport {
    * interval or if target batch size is met.
    * @param params
    */
-  public log(params: LoggerParams): void {
+  public log(params: LogParams): void {
     const { message } = params;
     if (message === this.lokiConfig.LOKI_EXCEPTION_MESSAGE) return;
 
@@ -111,7 +111,7 @@ export class LokiService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning(this.lokiConfig.LOKI_EXCEPTION_MESSAGE, e as Error);
+      this.logService.warning(this.lokiConfig.LOKI_EXCEPTION_MESSAGE, e as Error);
     }
   }
 
@@ -120,12 +120,12 @@ export class LokiService implements LoggerTransport {
    * split the streams by severity and label them accordingly.
    * @param logs
    */
-  private buildPushStream(logs: LoggerParams[]): LokiPushStream[] {
+  private buildPushStream(logs: LogParams[]): LokiPushStream[] {
     const { job, instance } = this.appConfig.APP_OPTIONS;
     const pushStreams: LokiPushStream[] = [ ];
     const environment = this.appConfig.NODE_ENV;
 
-    for (const severity of Object.values(LoggerSeverity)) {
+    for (const severity of Object.values(LogSeverity)) {
       const matchingLogs = logs.filter((l) => l.severity === severity);
       if (matchingLogs.length === 0) continue;
 
@@ -145,8 +145,8 @@ export class LokiService implements LoggerTransport {
    * by Grafana Loki Explorer.
    * @param severity
    */
-  private getLokiLevel(severity: LoggerSeverity): string {
-    return severity === LoggerSeverity.HTTP
+  private getLokiLevel(severity: LogSeverity): string {
+    return severity === LogSeverity.HTTP
       ? 'info'
       : severity;
   }
@@ -156,7 +156,7 @@ export class LokiService implements LoggerTransport {
    * [ '<unix epoch in nanoseconds>', '<log line>' ].
    * @param logs
    */
-  private buildPushStreamValues(logs: LoggerParams[]): string[][] {
+  private buildPushStreamValues(logs: LogParams[]): string[][] {
     const streamValues: string[][] = [ ];
 
     for (const log of logs) {

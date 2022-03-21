@@ -1,14 +1,14 @@
 import { IsIn, IsOptional } from 'class-validator';
 
-import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerSeverity } from '../logger/logger.enum';
+import { Config, InjectConfig } from '../config/config.decorator';
+import { LogSeverity } from '../log/log.enum';
 
 @Config()
 export class ConsoleConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsOptional()
-  @IsIn(Object.values(LoggerSeverity))
-  public readonly CONSOLE_SEVERITY: LoggerSeverity;
+  @IsIn(Object.values(LogSeverity))
+  public readonly CONSOLE_SEVERITY: LogSeverity;
 
 }

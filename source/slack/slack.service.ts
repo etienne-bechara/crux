@@ -3,18 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
-import { LoggerSeverity } from '../logger/logger.enum';
-import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
-import { LoggerService } from '../logger/logger.service';
+import { LogSeverity } from '../log/log.enum';
+import { LogParams, LogTransport } from '../log/log.interface';
+import { LogService } from '../log/log.service';
 import { SlackConfig } from './slack.config';
 
 @Injectable()
-export class SlackService implements LoggerTransport {
+export class SlackService implements LogTransport {
 
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly httpService: HttpService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly slackConfig: SlackConfig,
   ) {
     this.setupTransport();
@@ -29,20 +29,20 @@ export class SlackService implements LoggerTransport {
     const slackWebhook = this.slackConfig.SLACK_WEBHOOK || webhook;
 
     if (!slackWebhook) {
-      this.loggerService.info('Slack transport disabled due to missing webhook');
+      this.logService.info('Slack transport disabled due to missing webhook');
       return;
     }
 
     const webhookId = slackWebhook.split('/')[slackWebhook.split('/').length - 1];
-    this.loggerService.info(`Slack transport connected at ${webhookId}`);
+    this.logService.info(`Slack transport connected at ${webhookId}`);
 
-    this.loggerService.registerTransport(this);
+    this.logService.registerTransport(this);
   }
 
   /**
    * Returns minimum level for logging this transport.
    */
-  public getSeverity(): LoggerSeverity {
+  public getSeverity(): LogSeverity {
     const { slack } = this.appConfig.APP_OPTIONS || { };
     const { severity } = slack;
     return this.slackConfig.SLACK_SEVERITY || severity;
@@ -53,7 +53,7 @@ export class SlackService implements LoggerTransport {
    * In case of failure it may lead to infinite loop, so check recursion.
    * @param params
    */
-  public log(params: LoggerParams): void {
+  public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { severity, requestId, caller, message, data } = params;
     if (data?.messageBlocks || message === this.slackConfig.SLACK_EXCEPTION_MESSAGE) return;
@@ -100,7 +100,7 @@ export class SlackService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning(this.slackConfig.SLACK_EXCEPTION_MESSAGE, e as Error, { message });
+      this.logService.warning(this.slackConfig.SLACK_EXCEPTION_MESSAGE, e as Error, { message });
     }
   }
 
@@ -122,16 +122,16 @@ export class SlackService implements LoggerTransport {
    * Translates application log level into Slack severity label.
    * @param severity
    */
-  public getSlackSeverity(severity: LoggerSeverity): string {
+  public getSlackSeverity(severity: LogSeverity): string {
     switch (severity) {
-      case LoggerSeverity.FATAL: return '💀 Fatal';
-      case LoggerSeverity.ERROR: return '🚨 Error';
-      case LoggerSeverity.WARNING: return '⚠️ Warning';
-      case LoggerSeverity.NOTICE: return '✔️ Notice';
-      case LoggerSeverity.INFO: return 'ⓘ Info';
-      case LoggerSeverity.HTTP: return '🌐 Http';
-      case LoggerSeverity.DEBUG: return '🐞 Debug';
-      case LoggerSeverity.TRACE: return '🐜 Trace';
+      case LogSeverity.FATAL: return '💀 Fatal';
+      case LogSeverity.ERROR: return '🚨 Error';
+      case LogSeverity.WARNING: return '⚠️ Warning';
+      case LogSeverity.NOTICE: return '✔️ Notice';
+      case LogSeverity.INFO: return 'ⓘ Info';
+      case LogSeverity.HTTP: return '🌐 Http';
+      case LogSeverity.DEBUG: return '🐞 Debug';
+      case LogSeverity.TRACE: return '🐜 Trace';
     }
   }
 

@@ -21,7 +21,7 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [Logger - Console, Loki, Slack and Sentry](docs/module/logger.md)
 - [Metric - Prometheus](docs/module/metric.md)
 - [Docs - Redoc and OpenAPI](docs/module/docs.md)
-- [Async - Sleep, Exception Retry and Promise Limit](docs/module/async.md)
+- [Promise - Sleep, Exception Retry and Limit](docs/module/async.md)
 - [Memory - Volatile Storage with TTL](docs/module/memory.md)
 
 ### Recipes
