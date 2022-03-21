@@ -33,20 +33,6 @@ services:
     volumes:
       - ./loki:/etc/loki
 
-  # Tempo - 
-  tempo:
-    image: grafana/tempo
-    container_name: tempo
-    ports:
-      - 14268:14268
-      - 3200:3200
-    networks:
-      - monitoring
-    command:
-      - --config.file=/etc/tempo/tempo.yaml
-    volumes:
-      - ./tempo:/etc/tempo
-
   # Prometheus - Metrics scraping and timeseries database
   prometheus:
     image: prom/prometheus
@@ -66,3 +52,17 @@ services:
       - 9091:9091
     networks:
       - monitoring
+
+  # Tempo - Distributed tracing back-end with object storage
+  tempo:
+    image: grafana/tempo
+    container_name: tempo
+    ports:
+      - 55681:55681
+      - 3200:3200
+    networks:
+      - monitoring
+    command:
+      - --config.file=/etc/tempo/tempo.yaml
+    volumes:
+      - ./tempo:/etc/tempo

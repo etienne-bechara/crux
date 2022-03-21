@@ -27,6 +27,7 @@ import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
+import { TracerDisabledModule, TracerModule } from '../tracer/tracer.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppMemory } from './app.enum';
@@ -255,7 +256,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogger, disableMetrics, disableDocs } = this.options;
+    const { disableScan, disableLogger, disableMetrics, disableTracer, disableDocs } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
@@ -286,6 +287,13 @@ export class AppModule {
     }
     else {
       defaultModules.push(MetricDisabledModule);
+    }
+
+    if (!disableTracer) {
+      defaultModules.push(TracerModule);
+    }
+    else {
+      defaultModules.push(TracerDisabledModule);
     }
 
     if (!disableDocs) {
