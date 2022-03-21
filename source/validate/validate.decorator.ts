@@ -40,7 +40,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
-import { ValidateStorage } from './validate.storage';
+const ValidateStorage: Map<string, any> = new Map();
 
 /**
  * Builds default ApiProperty options based on class-validator decorator.

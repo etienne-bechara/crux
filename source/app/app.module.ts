@@ -30,6 +30,7 @@ import { SlackModule } from '../slack/slack.module';
 import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
+import { TagStorage } from './app.decorator';
 import { AppMemory } from './app.enum';
 import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
@@ -179,6 +180,7 @@ export class AppModule {
       .setDescription(description)
       .setVersion(version);
 
+    // Standardize operation ID names
     const document = SwaggerModule.createDocument(this.instance, builder.build(), {
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const entityName = controllerKey.replace('Controller', '');
@@ -202,9 +204,26 @@ export class AppModule {
       },
     });
 
+    // Standardize tag grouping
+    const appTagGroups = [
+      ...tagGroups || [ ],
+      { name: 'Application', tags: [ 'Docs', 'Metrics', 'Status' ] },
+    ];
+
+    const appTags = new Set(appTagGroups.flatMap((t) => t.tags));
+    const ungroupedTags = TagStorage.filter((t) => !appTags.has(t));
+
+    if (ungroupedTags.length > 0) {
+      appTagGroups.push({ name: 'API', tags: ungroupedTags });
+    }
+
+    appTagGroups.sort((a, b) => a.name > b.name ? 1 : -1);
+    for (const t of appTagGroups) t.tags.sort();
+
+    // Saves specification to memory
     memoryService.setKey('openApiSpecification', JSON.stringify(document));
 
-    document['x-tagGroups'] = tagGroups;
+    document['x-tagGroups'] = appTagGroups;
     document.info['x-logo'] = logo;
 
     SwaggerModule.setup('openapi', this.instance, document);
