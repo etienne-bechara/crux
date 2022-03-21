@@ -1,4 +1,4 @@
-# Logger Module
+# Log Module
 
 Offers a logger service with predefined severity levels. When called, broadcasts the message to all connected transports and based on their own configuration decide whether or not to publish at it.
 
