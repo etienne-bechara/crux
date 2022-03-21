@@ -47,9 +47,12 @@ export class ConsoleService implements LoggerTransport {
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
-      const strFilename = caller.padEnd(25, ' ');
-      const strRequestId = requestId || '-'.repeat(10);
+      const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
       const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
+
+      const strFilename = caller.length > 25
+        ? `${caller.slice(0, 11)}...${caller.slice(-11)}`
+        : caller.padEnd(25, ' ');
 
       const slicedData = strData?.length > maxLength
         ? `${strData.slice(0, maxLength - 6)} [...]`

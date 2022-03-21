@@ -11,7 +11,7 @@ import { AppOptions } from './app.interface';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const APP_DEFAULT_OPTIONS: AppOptions = {
   job: 'unknown',
-  instance: crypto.randomBytes(4).toString('base64url'),
+  instance: crypto.randomBytes(8).toString('hex'),
   port: 8080,
   hostname: '0.0.0.0',
   timeout: 60_000,
@@ -31,7 +31,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   ],
   fastify: {
     trustProxy: true,
-    genReqId: () => crypto.randomBytes(7).toString('hex'),
+    genReqId: () => crypto.randomBytes(16).toString('hex'),
   },
   sensitiveKeys: [
     'apikey',
