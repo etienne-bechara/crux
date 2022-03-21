@@ -16,7 +16,7 @@ void AppModule.boot({
     pushInterval: 5000,
   },
   metrics: {
-    pushgatewayUrl: 'http://127.0.0.1:9091',
-    pushgatewayInterval: 5000,
+    url: 'http://127.0.0.1:9091',
+    pushInterval: 5000,
   },
 });

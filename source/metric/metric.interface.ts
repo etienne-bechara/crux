@@ -8,11 +8,11 @@ export interface MetricOptions {
   /** Buckets for HTTP metrics histograms. */
   httpBuckets?: number[];
   /** URL of gateway to push metrics. */
-  pushgatewayUrl?: string;
+  url?: string;
   /** Pushgateway basic auth username. */
-  pushgatewayUsername?: string;
+  username?: string;
   /** Pushgateway basic auth password. */
-  pushgatewayPassword?: string;
+  password?: string;
   /** Interval in milliseconds to push data to gateway. */
-  pushgatewayInterval?: number;
+  pushInterval?: number;
 }

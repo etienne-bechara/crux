@@ -58,7 +58,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     severity: LogSeverity.ERROR,
   },
   metrics: {
-    pushgatewayInterval: 20_000,
+    pushInterval: 20_000,
     httpBuckets: [
       10, 20, 30, 50, 70,
       100, 200, 300, 500, 700,

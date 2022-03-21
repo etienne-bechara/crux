@@ -8,16 +8,16 @@ export class MetricConfig {
   @InjectConfig()
   @IsOptional()
   @IsUrl()
-  public readonly METRIC_PUSHGATEWAY_URL: string;
+  public readonly METRIC_URL: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
-  public readonly METRIC_PUSHGATEWAY_USERNAME: string;
+  public readonly METRIC_USERNAME: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString() @IsNotEmpty()
-  public readonly METRIC_PUSHGATEWAY_PASSWORD: string;
+  public readonly METRIC_PASSWORD: string;
 
 }

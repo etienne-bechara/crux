@@ -49,18 +49,18 @@ export class MetricService {
    */
   private async setupPushgateway(): Promise<void> {
     const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushgatewayInterval } = metrics;
-    const { pushgatewayUrl, pushgatewayUsername, pushgatewayPassword } = metrics;
+    const { pushInterval: pushgatewayInterval } = metrics;
+    const { url, username, password } = metrics;
 
-    const pushgatewayTarget = this.metricConfig.METRIC_PUSHGATEWAY_URL || pushgatewayUrl;
-    if (!pushgatewayTarget) return;
+    const pushgatewayUrl = this.metricConfig.METRIC_URL || url;
+    if (!pushgatewayUrl) return;
 
     const httpService = new HttpService({
       name: 'MetricModule',
       silent: true,
-      prefixUrl: pushgatewayTarget,
-      username: this.metricConfig.METRIC_PUSHGATEWAY_USERNAME ?? pushgatewayUsername,
-      password: this.metricConfig.METRIC_PUSHGATEWAY_PASSWORD ?? pushgatewayPassword,
+      prefixUrl: pushgatewayUrl,
+      username: this.metricConfig.METRIC_USERNAME ?? username,
+      password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.httpConfig, this.logService, null);
 
     // eslint-disable-next-line no-constant-condition
