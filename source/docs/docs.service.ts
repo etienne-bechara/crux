@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
-import { RedocAppOptions, RedocRenderOptions } from './redoc.interface';
+import { DocsOptions, DocsRenderOptions } from './docs.interface';
 
 @Injectable()
-export class RedocService {
+export class DocsService {
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -15,9 +15,9 @@ export class RedocService {
    * necessary data from template and stringify the
    * underlying component params.
    */
-  public buildRenderOptions(): RedocRenderOptions {
-    const { redoc } = this.appConfig.APP_OPTIONS;
-    const options: RedocAppOptions = { ...redoc };
+  public buildRenderOptions(): DocsRenderOptions {
+    const { docs } = this.appConfig.APP_OPTIONS;
+    const options: DocsOptions = { ...docs };
     const { title, favicon, openApiUrl } = options;
 
     delete options.openApiUrl;

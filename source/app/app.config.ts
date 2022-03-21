@@ -66,7 +66,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       10_000, 20_000, 30_000, 50_000, 70_000,
     ],
   },
-  redoc: {
+  docs: {
     openApiUrl: 'http://127.0.0.1:8080/openapi/json',
     title: 'OpenAPI UI',
     version: '1.0.0',
@@ -78,10 +78,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       + '\n'
       + 'For further instructions on how to annotate your models and endpoints check [NestJS - OpenAPI Introduction](https://docs.nestjs.com/openapi/introduction).\n'
       + '\n'
-      + 'To customize logo, title, description and other layout options, configure the `redoc` property during application initialization:\n'
+      + 'To customize logo, title, description and other layout options, configure the `docs` property during application initialization:\n'
       + '\n```ts\n'
       + 'void AppModule.boot({\n'
-      + '  redoc: {\n'
+      + '  docs: {\n'
       + '    title: \'User API\',\n'
       + '    description: \'Manipulate user related data.\',\n'
       + '    // ...\n'

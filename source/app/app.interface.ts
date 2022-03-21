@@ -5,9 +5,9 @@ import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.i
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
+import { DocsOptions } from '../docs/docs.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
-import { RedocAppOptions } from '../redoc/redoc.interface';
 import { SentryOptions } from '../sentry/sentry.interface';
 import { SlackOptions } from '../slack/slack.interface';
 
@@ -33,7 +33,7 @@ export interface AppOptions extends ModuleMetadata {
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
-  disableDocumentation?: boolean;
+  disableDocs?: boolean;
   /** Disable `AsyncModule` and `MemoryModule` utilities. */
   disableUtilities?: boolean;
   /** Job name for metrics and log collection. */
@@ -66,8 +66,8 @@ export interface AppOptions extends ModuleMetadata {
   slack?: SlackOptions;
   /** Metrics configuration. */
   metrics?: MetricOptions;
-  /** Redoc configuration. */
-  redoc?: RedocAppOptions;
+  /** Auto generated API documentation options. */
+  docs?: DocsOptions;
 }
 
 /**

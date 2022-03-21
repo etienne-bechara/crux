@@ -17,6 +17,7 @@ import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextStorage } from '../context/context.storage';
+import { DocsModule } from '../docs/docs.module';
 import { HttpModule } from '../http/http.module';
 import { LoggerModule } from '../logger/logger.module';
 import { LoggerService } from '../logger/logger.service';
@@ -24,7 +25,6 @@ import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
-import { RedocModule } from '../redoc/redoc.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
@@ -83,7 +83,7 @@ export class AppModule {
     this.configureOptions(options);
     await this.configureAdapter();
 
-    if (!this.options.disableDocumentation) {
+    if (!this.options.disableDocs) {
       this.configureDocumentation();
     }
 
@@ -102,7 +102,7 @@ export class AppModule {
       'sentry',
       'slack',
       'metrics',
-      'redoc',
+      'docs',
     ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
@@ -115,7 +115,7 @@ export class AppModule {
     }
 
     if (this.options.disableAll) {
-      this.options.disableDocumentation = true;
+      this.options.disableDocs = true;
       this.options.disableFilter = true;
       this.options.disableLogger = true;
       this.options.disableMetrics = true;
@@ -165,13 +165,13 @@ export class AppModule {
    * endpoint naming.
    */
   private static configureDocumentation(): void {
-    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.redoc;
+    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.docs;
     const memoryService: MemoryService<AppMemory> = this.instance.get(MemoryService);
 
     this.instance['setViewEngine']({
       engine: { handlebars },
       // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'redoc'),
+      templates: path.join(__dirname, '..', 'docs'),
     });
 
     const builder = documentBuilder || new DocumentBuilder()
@@ -255,7 +255,7 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogger, disableMetrics, disableDocumentation } = this.options;
+    const { disableScan, disableLogger, disableMetrics, disableDocs } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
@@ -288,8 +288,8 @@ export class AppModule {
       defaultModules.push(MetricDisabledModule);
     }
 
-    if (!disableDocumentation) {
-      defaultModules.push(RedocModule);
+    if (!disableDocs) {
+      defaultModules.push(DocsModule);
     }
 
     if (!disableScan) {
