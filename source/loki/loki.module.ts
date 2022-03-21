@@ -12,9 +12,9 @@ import { LokiService } from './loki.service';
       useFactory: (appConfig: AppConfig, lokiConfig: LokiConfig) => ({
         name: 'LokiModule',
         silent: true,
-        prefixUrl: lokiConfig.LOKI_URL || appConfig.APP_OPTIONS.logger?.lokiUrl,
-        username: lokiConfig.LOKI_USERNAME ?? appConfig.APP_OPTIONS.logger?.lokiUsername,
-        password: lokiConfig.LOKI_PASSWORD ?? appConfig.APP_OPTIONS.logger?.lokiPassword,
+        prefixUrl: lokiConfig.LOKI_URL || appConfig.APP_OPTIONS.loki?.url,
+        username: lokiConfig.LOKI_USERNAME ?? appConfig.APP_OPTIONS.loki?.username,
+        password: lokiConfig.LOKI_PASSWORD ?? appConfig.APP_OPTIONS.loki?.password,
       }),
     }),
   ],

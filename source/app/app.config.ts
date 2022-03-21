@@ -31,25 +31,31 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   ],
   fastify: {
     trustProxy: true,
-    genReqId: () => crypto.randomBytes(7).toString('base64url'),
+    genReqId: () => crypto.randomBytes(7).toString('hex'),
   },
-  logger: {
-    consoleMaxLength: 1000,
-    lokiSeverity: LoggerSeverity.DEBUG,
-    lokiPushInterval: 20_000,
-    lokiBatchSize: 1000,
-    sentrySeverity: LoggerSeverity.ERROR,
-    slackSeverity: LoggerSeverity.WARNING,
-    sensitiveKeys: [
-      'apikey',
-      'auth',
-      'authentication',
-      'authorization',
-      'clientkey',
-      'clientsecret',
-      'pass',
-      'password',
-    ],
+  sensitiveKeys: [
+    'apikey',
+    'auth',
+    'authentication',
+    'authorization',
+    'clientkey',
+    'clientsecret',
+    'pass',
+    'password',
+  ],
+  console: {
+    maxLength: 1000,
+  },
+  loki: {
+    severity: LoggerSeverity.DEBUG,
+    pushInterval: 20_000,
+    batchSize: 1000,
+  },
+  slack: {
+    severity: LoggerSeverity.WARNING,
+  },
+  sentry: {
+    severity: LoggerSeverity.ERROR,
   },
   metrics: {
     pushgatewayInterval: 20_000,

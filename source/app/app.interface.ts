@@ -4,18 +4,17 @@ import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import http from 'http';
 
-import { LoggerOptions } from '../logger/logger.interface';
+import { ConsoleOptions } from '../console/console.interface';
+import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { RedocAppOptions } from '../redoc/redoc.interface';
+import { SentryOptions } from '../sentry/sentry.interface';
+import { SlackOptions } from '../slack/slack.interface';
 
 export interface AppOptions extends ModuleMetadata {
   /** Provide an already built instance to skip `.compile()` step. */
   app?: INestApplication;
-  /** Job name for metrics and log collection. */
-  job?: string;
-  /** Instance ID for metrics and log collection. */
-  instance?: string;
-  /** Environment variables file path. Default: `.env`. */
+  /** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
   envPath?: string;
   /** Disables all custom implementations (which can also be individually disabled). */
   disableAll?: boolean;
@@ -37,12 +36,16 @@ export interface AppOptions extends ModuleMetadata {
   disableDocumentation?: boolean;
   /** Disable `AsyncModule` and `MemoryModule` utilities. */
   disableUtilities?: boolean;
+  /** Job name for metrics and log collection. */
+  job?: string;
+  /** Instance ID for metrics and log collection. */
+  instance?: string;
   /** Application port. Default: 8080. */
   port?: number;
   /** Application hostname. Default: `0.0.0.0`. */
   hostname?: string;
-  /** Application global prefix path. */
-  globalPrefix?: string;
+  /** Application prefix applied to all endpoints. */
+  prefix?: string;
   /** Application request timeout in milliseconds. Default: 60000. */
   timeout?: number;
   /** Application CORS response. */
@@ -51,8 +54,16 @@ export interface AppOptions extends ModuleMetadata {
   httpErrors?: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
-  /** Logger configuration. */
-  logger?: LoggerOptions;
+  /** Sensitive keys to be removed during logging of objects. */
+  sensitiveKeys?: string[];
+  /** Console logging transport configuration. */
+  console?: ConsoleOptions;
+  /** Loki logging transport configuration. */
+  loki?: LokiOptions;
+  /** Sentry logging transport configuration. */
+  sentry?: SentryOptions;
+  /** Slack logging transport configuration. */
+  slack?: SlackOptions;
   /** Metrics configuration. */
   metrics?: MetricOptions;
   /** Redoc configuration. */

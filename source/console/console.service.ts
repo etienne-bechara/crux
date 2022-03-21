@@ -23,10 +23,13 @@ export class ConsoleService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
+    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
+    const { severity } = consoleOptions;
+
     const environment = this.appConfig.NODE_ENV;
     const envSeverity = environment === AppEnvironment.LOCAL ? LoggerSeverity.TRACE : LoggerSeverity.WARNING;
-    return this.consoleConfig.CONSOLE_SEVERITY || logger.consoleSeverity || envSeverity;
+
+    return this.consoleConfig.CONSOLE_SEVERITY || severity || envSeverity;
   }
 
   /**
@@ -38,18 +41,18 @@ export class ConsoleService implements LoggerTransport {
   public log(params: LoggerParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { timestamp, severity, requestId, caller, message, data, error } = params;
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { consolePretty, consoleMaxLength } = logger;
+    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
+    const { prettyPrint, maxLength, hideDetails } = consoleOptions;
     const isError = this.loggerService.isHigherOrEqualSeverity(severity, LoggerSeverity.ERROR);
 
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
       const strFilename = caller.padEnd(25, ' ');
       const strRequestId = requestId || '-'.repeat(10);
-      const strData = JSON.stringify(data, null, consolePretty ? 2 : null);
+      const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
 
-      const slicedData = strData?.length > consoleMaxLength
-        ? `${strData.slice(0, consoleMaxLength - 6)} [...]`
+      const slicedData = strData?.length > maxLength
+        ? `${strData.slice(0, maxLength - 6)} [...]`
         : strData;
 
       const gray = LoggerStyle.FG_BRIGHT_BLACK;
@@ -75,7 +78,7 @@ export class ConsoleService implements LoggerTransport {
         + `${severityColor}${strRequestId}${reset}${separator}`
         + `${severityColor}${strFilename}${reset}${separator}`
         + `${severityColor}${message}${reset}`
-        + `${data ? `${gray}\n${slicedData}${reset}` : ''}`,
+        + `${data && !hideDetails ? `${gray}\n${slicedData}${reset}` : ''}`,
       );
 
       if (error) {

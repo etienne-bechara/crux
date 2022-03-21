@@ -12,11 +12,11 @@ import { SlackService } from './slack.service';
       useFactory: (appConfig: AppConfig, slackConfig: SlackConfig) => ({
         name: 'SlackModule',
         silent: true,
-        prefixUrl: slackConfig.SLACK_WEBHOOK || appConfig.APP_OPTIONS.logger?.slackWebhook,
+        prefixUrl: slackConfig.SLACK_WEBHOOK || appConfig.APP_OPTIONS.slack?.webhook,
         json: {
-          channel: slackConfig.SLACK_CHANNEL || appConfig.APP_OPTIONS.logger?.slackChannel,
-          username: slackConfig.SLACK_USERNAME || appConfig.APP_OPTIONS.logger?.slackUsername,
-          icon_url: slackConfig.SLACK_ICON_URL || appConfig.APP_OPTIONS.logger?.slackIconUrl,
+          channel: slackConfig.SLACK_CHANNEL || appConfig.APP_OPTIONS.slack?.channel,
+          username: slackConfig.SLACK_USERNAME || appConfig.APP_OPTIONS.slack?.username,
+          icon_url: slackConfig.SLACK_ICON_URL || appConfig.APP_OPTIONS.slack?.iconUrl,
         },
       }),
     }),

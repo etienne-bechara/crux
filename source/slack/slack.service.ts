@@ -24,10 +24,11 @@ export class SlackService implements LoggerTransport {
    * Checks if necessary variables are present and warn through console if not.
    */
   private setupTransport(): void {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const webhook = this.slackConfig.SLACK_WEBHOOK || logger.slackWebhook;
+    const { slack } = this.appConfig.APP_OPTIONS || { };
+    const { webhook } = slack;
+    const slackWebhook = this.slackConfig.SLACK_WEBHOOK || webhook;
 
-    if (!webhook) {
+    if (!slackWebhook) {
       this.loggerService.info('Slack transport disabled due to missing webhook');
       return;
     }
@@ -42,8 +43,9 @@ export class SlackService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    return this.slackConfig.SLACK_SEVERITY || logger.slackSeverity;
+    const { slack } = this.appConfig.APP_OPTIONS || { };
+    const { severity } = slack;
+    return this.slackConfig.SLACK_SEVERITY || severity;
   }
 
   /**

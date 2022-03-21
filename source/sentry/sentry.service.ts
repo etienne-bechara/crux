@@ -24,10 +24,11 @@ export class SentryService implements LoggerTransport {
    * are customizing it at logger service.
    */
   private setupTransport(): void {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const dsn = this.sentryConfig.SENTRY_DSN || logger.sentryDsn;
+    const { sentry } = this.appConfig.APP_OPTIONS || { };
+    const { dsn } = sentry;
+    const sentryDsn = this.sentryConfig.SENTRY_DSN || dsn;
 
-    if (!dsn) {
+    if (!sentryDsn) {
       this.loggerService.info('Sentry transport disabled due to missing DSN');
       return;
     }
@@ -46,8 +47,9 @@ export class SentryService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    return this.sentryConfig.SENTRY_SEVERITY || logger.sentrySeverity;
+    const { sentry } = this.appConfig.APP_OPTIONS || { };
+    const { severity } = sentry;
+    return this.sentryConfig.SENTRY_SEVERITY || severity;
   }
 
   /**

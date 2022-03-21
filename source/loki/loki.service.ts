@@ -27,10 +27,11 @@ export class LokiService implements LoggerTransport {
    * Checks if necessary variables are present and warn through console if not.
    */
   private setupTransport(): void {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const url = this.lokiConfig.LOKI_URL || logger.lokiUrl;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { url } = loki;
+    const lokiUrl = this.lokiConfig.LOKI_URL || url;
 
-    if (!url) {
+    if (!lokiUrl) {
       this.loggerService.info('Loki transport disabled due to missing url');
       return;
     }
@@ -45,8 +46,9 @@ export class LokiService implements LoggerTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LoggerSeverity {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    return this.lokiConfig.LOKI_SEVERITY || logger.lokiSeverity;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { severity } = loki;
+    return this.lokiConfig.LOKI_SEVERITY || severity;
   }
 
   /**
@@ -58,12 +60,12 @@ export class LokiService implements LoggerTransport {
     const { message } = params;
     if (message === this.lokiConfig.LOKI_EXCEPTION_MESSAGE) return;
 
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { lokiBatchSize } = logger;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { batchSize } = loki;
 
     this.publishQueue.push(params);
 
-    if (this.publishQueue.length >= lokiBatchSize) {
+    if (this.publishQueue.length >= batchSize) {
       void this.publishCurrentQueue();
     }
   }
@@ -72,13 +74,13 @@ export class LokiService implements LoggerTransport {
    * Publish logs once at every configured interval.
    */
   private async setupPush(): Promise<void> {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { lokiPushInterval } = logger;
-    if (!lokiPushInterval) return;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { pushInterval } = loki;
+    if (!pushInterval) return;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      await new Promise((r) => setTimeout(r, lokiPushInterval));
+      await new Promise((r) => setTimeout(r, pushInterval));
       void this.publishCurrentQueue();
     }
   }

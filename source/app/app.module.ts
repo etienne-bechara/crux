@@ -95,7 +95,15 @@ export class AppModule {
    * @param options
    */
   private static configureOptions(options: AppOptions): void {
-    const deepMergeProps: (keyof AppOptions)[] = [ 'fastify', 'logger', 'metrics', 'redoc' ];
+    const deepMergeProps: (keyof AppOptions)[] = [
+      'fastify',
+      'console',
+      'loki',
+      'sentry',
+      'slack',
+      'metrics',
+      'redoc',
+    ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
 
@@ -126,7 +134,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { fastify, globalPrefix, cors } = this.options;
+    const { fastify, prefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -148,7 +156,7 @@ export class AppModule {
       });
     });
 
-    this.instance.setGlobalPrefix(globalPrefix);
+    this.instance.setGlobalPrefix(prefix);
     this.instance.enableCors(cors);
   }
 
