@@ -24,7 +24,6 @@ services:
   loki:
     image: grafana/loki
     container_name: loki
-    user: root
     ports:
       - 3100:3100
     expose:
@@ -36,7 +35,22 @@ services:
     volumes:
       - ./loki:/etc/loki
 
-  # Prometheus - Metrics scraping and record in real-time database
+  # Tempo - 
+  tempo:
+    image: grafana/tempo
+    container_name: tempo
+    ports:
+      - 3200:3200
+    expose:
+      - 3200
+    networks:
+      - monitoring
+    command:
+      - --config.file=/etc/tempo/tempo.yaml
+    volumes:
+      - ./tempo:/etc/tempo
+
+  # Prometheus - Metrics scraping and timeseries database
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -47,7 +61,7 @@ services:
     networks:
       - monitoring
 
-  # Pushgateway - Metrics gateway for pushing instead of scraping
+  # Pushgateway - Gateway for pushing metrics providing centralized scraping
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
