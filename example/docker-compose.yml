@@ -26,8 +26,6 @@ services:
     container_name: loki
     ports:
       - 3100:3100
-    expose:
-      - 3100
     networks:
       - monitoring
     command:
@@ -40,9 +38,8 @@ services:
     image: grafana/tempo
     container_name: tempo
     ports:
+      - 14268:14268
       - 3200:3200
-    expose:
-      - 3200
     networks:
       - monitoring
     command:
