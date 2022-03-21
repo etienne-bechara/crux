@@ -32,7 +32,7 @@ import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppMemory } from './app.enum';
 import { AppFilter } from './app.filter';
-import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
+import { AppInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
 import { AppService } from './app.service';
 
@@ -343,7 +343,7 @@ export class AppModule {
    * and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilter, disableSerializer, disableValidator, disableLogger, timeout, providers } = this.options;
+    const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
       AppConfig,
@@ -353,14 +353,7 @@ export class AppModule {
     if (timeout) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: AppTimeoutInterceptor,
-      });
-    }
-
-    if (!disableLogger) {
-      preloadedProviders.push({
-        provide: APP_INTERCEPTOR,
-        useClass: AppLoggerInterceptor,
+        useClass: AppInterceptor,
       });
     }
 
