@@ -1,4 +1,4 @@
-import { IsObject, IsString } from '../validator/validator.decorator';
+import { IsObject, IsString } from '../validate/validate.decorator';
 
 export class DocSpecification {
 

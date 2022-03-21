@@ -49,4 +49,4 @@ export {
   NotEquals,
   ValidateIf,
   ValidateNested,
-} from '../validator/validator.decorator';
+} from '../validate/validate.decorator';

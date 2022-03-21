@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import os from 'os';
 
-import { IsNumber, IsObject, IsString, Min, ValidateNested } from '../validator/validator.decorator';
+import { IsNumber, IsObject, IsString, Min, ValidateNested } from '../validate/validate.decorator';
 
 export class AppStatusSystem {
 

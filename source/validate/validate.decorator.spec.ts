@@ -2,7 +2,7 @@ import { ValidationError } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import { OneOf } from './validator.decorator';
+import { OneOf } from './validate.decorator';
 
 class OneOfDto {
 
