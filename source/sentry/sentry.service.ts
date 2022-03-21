@@ -34,7 +34,7 @@ export class SentryService implements LoggerTransport {
     }
 
     Sentry.init({
-      dsn,
+      dsn: sentryDsn,
       environment: this.appConfig.NODE_ENV,
       integrations: (int) => int.filter((i) => i.name !== 'OnUncaughtException'),
     });

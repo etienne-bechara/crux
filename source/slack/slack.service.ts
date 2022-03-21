@@ -33,7 +33,7 @@ export class SlackService implements LoggerTransport {
       return;
     }
 
-    const webhookId = webhook.split('/')[webhook.split('/').length - 1];
+    const webhookId = slackWebhook.split('/')[slackWebhook.split('/').length - 1];
     this.loggerService.info(`Slack transport connected at ${webhookId}`);
 
     this.loggerService.registerTransport(this);
@@ -74,7 +74,9 @@ export class SlackService implements LoggerTransport {
         : details;
 
       const beatifyUrl = encodeURI(`https://codebeautify.org/jsonviewer?input=${trimmedDetails}`);
-      slackMsg = slackMsg.replace(message, `<${beatifyUrl}|${message}>`);
+      const normalizedUrl = beatifyUrl.replace(/[#&]+/g, '');
+
+      slackMsg = slackMsg.replace(message, `<${normalizedUrl}|${message}>`);
     }
 
     void this.publishSlackMessage(slackMsg);

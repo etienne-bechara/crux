@@ -36,7 +36,7 @@ export class LokiService implements LoggerTransport {
       return;
     }
 
-    this.loggerService.info(`Loki transport connected at ${url}`);
+    this.loggerService.info(`Loki transport connected at ${lokiUrl}`);
     this.loggerService.registerTransport(this);
 
     void this.setupPush();
