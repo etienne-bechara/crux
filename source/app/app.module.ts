@@ -292,10 +292,10 @@ export class AppModule {
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
-      PromiseModule,
       ContextModule,
       LogModule,
       MemoryModule,
+      PromiseModule,
       HttpModule.register({
         name: 'AppModule',
         responseType: 'json',

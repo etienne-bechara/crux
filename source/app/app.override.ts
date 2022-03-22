@@ -7,7 +7,7 @@ export * from 'class-transformer';
 export * from 'class-validator';
 export * from 'rxjs';
 
-export { HttpAdapterHost, ValidationError, Type, LoggerService as DisabledLogger } from '@nestjs/common';
+export { HttpAdapterHost, ValidationError, Type } from '@nestjs/common';
 export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
 
 export { Type as SetType } from 'class-transformer';
