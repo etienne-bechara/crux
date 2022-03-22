@@ -57,11 +57,10 @@ export class MetricService {
 
     const httpService = new HttpService({
       name: 'MetricModule',
-      silent: true,
       prefixUrl: pushgatewayUrl,
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
-    }, this.httpConfig, this.logService, null);
+    }, this.httpConfig, null, null, null);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {

@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
+import { TraceService } from '../trace/trace.service';
 import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpMethod } from './http.enum';
-import { HttpCookie, HttpExceptionParams, HttpMetricParams, HttpModuleOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse } from './http.interface';
+import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse, HttpTelemetryParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -19,9 +21,12 @@ export class HttpService {
     private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,
     private readonly metricService: MetricService,
+    private readonly traceService: TraceService,
   ) {
     if (this.httpModuleOptions.silent) {
       this.logService = undefined;
+      this.metricService = undefined;
+      this.traceService = undefined;
     }
 
     this.setup();
@@ -67,8 +72,7 @@ export class HttpService {
     const sendParams: HttpRequestSendParams = {
       url: this.buildRequestUrl(url, params),
       request: this.buildRequestParams(params),
-      metrics: { start, method, host, path },
-      logs: { method, host, path, replacements, query, body, headers },
+      telemetry: { start, method, host, path, replacements, query, body, headers },
       ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
       resolveBodyOnly: resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly,
     };
@@ -202,35 +206,57 @@ export class HttpService {
   }
 
   /**
+   * Build log message for outbound request.
+   * @param params
+   */
+  private buildLogMessage(params: HttpTelemetryParams): string {
+    const { method, host, path, response } = params;
+
+    return response
+      ? `⯆ ${method} ${host}${path === '/' ? '' : path}`
+      : `⯅ ${method} ${host}${path === '/' ? '' : path}`;
+  }
+
+  /**
    * Executes a request ensuring log and metrics collection.
    * @param params
    */
   private async sendRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
-    const { url, request, logs, metrics, ignoreExceptions } = params;
-    const { method, host, path } = logs;
+    const { url, request, telemetry, ignoreExceptions } = params;
+    const { method, host, path, replacements, query, body, headers } = telemetry;
+    const logMessage = this.buildLogMessage(telemetry);
     let response: HttpResponse<T>;
 
+    const span = this.traceService?.startChildSpan(logMessage, {
+      attributes: {
+        [SemanticAttributes.HTTP_METHOD]: method,
+        [SemanticAttributes.HTTP_HOST]: host,
+        [SemanticAttributes.HTTP_ROUTE]: path,
+      },
+    });
+
     try {
-      this.logService?.http(`⯅ ${method} ${host}${path}`, logs);
+      this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
       response = await this.instance(url, request) as HttpResponse<T>;
 
-      this.collectOutboundMetrics({ ...metrics, response });
+      this.registerOutboundTelemetry({ ...telemetry, response, span });
     }
     catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
 
       if (!isTimeout && !e.response) {
+        span.end();
         throw e;
       }
 
       const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
-      this.collectOutboundMetrics({ ...metrics, response: errorResponse });
+      this.registerOutboundTelemetry({ ...telemetry, response: errorResponse });
 
       if (ignoreExceptions) {
         response = errorResponse;
       }
       else {
-        this.handleRequestException({ ...metrics, error: e, request });
+        this.handleRequestException({ ...telemetry, error: e, request });
       }
     }
 
@@ -267,22 +293,33 @@ export class HttpService {
   }
 
   /**
-   * Collect metrics for target outbound HTTP request.
+   * Register logs, metrics and tracing of outbound request.
    * @param params
    */
-  private collectOutboundMetrics(params: HttpMetricParams): void {
-    const { start, method, host, path, response } = params;
+  private registerOutboundTelemetry(params: HttpTelemetryParams): void {
+    const { start, method, host, path, response, span } = params;
     const { statusCode, body, headers } = response;
-    const latency = Date.now() - start;
 
+    const latency = Date.now() - start;
     const code = statusCode?.toString?.() || '';
+
     const logData = { latency, code, body: body || undefined, headers };
-    this.logService?.http(`⯆ ${method} ${host}${path}`, logData);
+    this.logService?.http(this.buildLogMessage(params), logData);
 
     const histogram = this.metricService?.getHttpOutboundHistogram();
-    if (!histogram) return;
 
-    histogram.labels(method, host, path, code).observe(latency);
+    if (histogram) {
+      histogram.labels(method, host, path, code).observe(latency);
+    }
+
+    if (span) {
+      span.setAttributes({
+        [SemanticAttributes.HTTP_STATUS_CODE]: code,
+        'http.latency': latency,
+      });
+
+      span.end();
+    }
   }
 
   /**

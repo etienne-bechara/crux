@@ -1,4 +1,5 @@
 import { HttpStatus, ModuleMetadata } from '@nestjs/common';
+import { Span } from '@opentelemetry/api';
 import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
 
 import { HttpMethod } from './http.enum';
@@ -69,21 +70,25 @@ export interface HttpCookie {
 export interface HttpRequestSendParams {
   url: string;
   request: HttpRequestParams;
-  metrics: HttpMetricParams;
-  logs: Record<string, any>;
+  telemetry: HttpTelemetryParams;
   ignoreExceptions: boolean;
   resolveBodyOnly: boolean;
 }
 
-export interface HttpMetricParams {
+export interface HttpTelemetryParams {
   start: number;
   method: string;
   host: string;
   path: string;
+  replacements: Record<string, string>;
+  query: Record<string, string | string[]>;
+  body: any;
+  headers: any;
+  span?: Span;
   response?: HttpResponse<unknown>;
 }
 
-export interface HttpExceptionParams extends HttpMetricParams {
+export interface HttpExceptionParams extends HttpTelemetryParams {
   request: HttpRequestParams;
   error: any;
 }
