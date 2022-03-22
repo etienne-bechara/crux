@@ -249,7 +249,7 @@ export class HttpService {
       const isTimeout = /timeout/i.test(e.message as string);
 
       if (!isTimeout && !e.response) {
-        span.end();
+        span?.end();
         throw e;
       }
 
