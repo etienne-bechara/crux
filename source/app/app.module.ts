@@ -16,6 +16,7 @@ import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
+import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
 import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
@@ -144,6 +145,7 @@ export class AppModule {
     });
 
     const fastifyInstance = this.instance.getHttpAdapter().getInstance();
+    const contextService = this.instance.get(ContextService);
 
     fastifyInstance.addHook('onRequest', (req, res, next) => {
       req.time = Date.now();
@@ -151,9 +153,18 @@ export class AppModule {
 
       ContextStorage.run(new Map(), () => {
         const store = ContextStorage.getStore();
+        const tracer = trace.getTracer(job);
+
         store.set(ContextStorageKey.REQUEST, req);
         store.set(ContextStorageKey.RESPONSE, res);
-        store.set(ContextStorageKey.TRACER, trace.getTracer(job));
+        store.set(ContextStorageKey.TRACER, tracer);
+
+        const description = contextService.getRequestDescription('in');
+        const span = tracer.startSpan(description);
+        const traceId = span.spanContext().traceId;
+
+        store.set(ContextStorageKey.METADATA, { span, traceId });
+
         next();
       });
     });

@@ -20,17 +20,12 @@ export class TraceInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const description = this.contextService.getRequestDescription('in');
+    const span = this.tracerService.getRequestSpan();
 
-    const span = this.tracerService.startSpan(description, {
-      attributes: {
-        [SemanticAttributes.HTTP_METHOD]: this.contextService.getRequestMethod(),
-        [SemanticAttributes.HTTP_ROUTE]: this.contextService.getRequestPath(),
-      },
+    span.setAttributes({
+      [SemanticAttributes.HTTP_METHOD]: this.contextService.getRequestMethod(),
+      [SemanticAttributes.HTTP_ROUTE]: this.contextService.getRequestPath(),
     });
-
-    this.contextService.setMetadata('span', span);
-    this.contextService.setMetadata('traceId', span.spanContext().traceId);
 
     return next
       .handle()

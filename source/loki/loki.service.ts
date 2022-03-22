@@ -165,7 +165,7 @@ export class LokiService implements LogTransport {
 
       streamValues.push([
         unixNanoseconds.toString(),
-        JSON.stringify({ traceId, requestId, caller, message, data }),
+        JSON.stringify({ caller, message, requestId, traceId, data }),
       ]);
     }
 

@@ -53,10 +53,10 @@ export class LogService {
     const logMessage: LogParams = {
       timestamp: new Date().toISOString(),
       severity,
-      traceId: this.contextService.getMetadata('traceId'),
-      requestId: this.contextService.getRequestId(),
       caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
+      requestId: this.contextService.getRequestId(),
+      traceId: this.contextService.getMetadata('traceId'),
       data: this.getLogData(...args),
       error: this.getLogError(...args),
     };
