@@ -1,3 +1,10 @@
+## [4.10.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.1...v4.10.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* import order ([e1b935d](https://github.com/etienne-bechara/nestjs-core/commit/e1b935d23797a399dbd60f1435b1faf900752b66))
+
 ## [4.10.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.0...v4.10.1) (2022-03-22)
 
 
