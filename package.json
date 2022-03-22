@@ -28,7 +28,7 @@
   "scripts": {
     "prepare": "husky install .config/husky",
     "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./example/source/main.ts",
-    "dev:metrics": "cd example && docker-compose down && docker-compose up -d --build && pnpm dev",
+    "telemetry": "cd example && docker-compose down --rmi all && docker-compose up -d --build && pnpm dev",
     "build": "rimraf ./dist && pnpm run build:index && tsc -p tsconfig.build.json && pnpm run build:assets && pnpm run build:cleanup",
     "build:index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source",
     "build:assets": "copyfiles -u 1 ./source/redoc/redoc.handlebars ./dist/",

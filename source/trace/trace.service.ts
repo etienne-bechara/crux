@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { context, Span, SpanOptions, trace } from '@opentelemetry/api';
+import { context, diag, DiagLogger, DiagLogLevel, Span, SpanOptions, trace } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources';
 import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
@@ -8,6 +8,7 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { AppConfig } from '../app/app.config';
 import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
+import { LogService } from '../log/log.service';
 import { TraceConfig } from './trace.config';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class TraceService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly logService: LogService,
     private readonly traceConfig: TraceConfig,
   ) {
     this.setupTracer();
@@ -32,6 +34,8 @@ export class TraceService {
     const traceUrl = this.traceConfig.TRACE_URL || url;
     const traceUsername = this.traceConfig.TRACE_USERNAME ?? username;
     const tracePassword = this.traceConfig.TRACE_PASSWORD ?? password;
+
+    diag.setLogger(this.logService as any as DiagLogger, DiagLogLevel.ERROR);
 
     const exporter = new OTLPTraceExporter({
       url: `${traceUrl}/v1/traces`,
