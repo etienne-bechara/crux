@@ -1,6 +1,6 @@
 # Log Module
 
-Offers a logger service with predefined severity levels. When called, broadcasts the message to all connected transports and based on their own configuration decide whether or not to publish at it.
+Offers a log service with predefined severity levels. When called, broadcasts the message to all connected transports and based on their own configuration decide whether or not to publish at it.
 
 ---
 
@@ -44,7 +44,7 @@ export class FooService {
 The logging method accepts multiples arguments of the following typing:
 
 ```ts
-type LoggerArguments = string | Error | Record<string, any>;
+type LogArguments = string | Error | Record<string, any>;
 ```
 
 Which means you may call them in any combination of:

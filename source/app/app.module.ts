@@ -359,8 +359,7 @@ export class AppModule {
   }
 
   /**
-   * Adds exception filter, serializer, logger, timeout
-   * and validation pipe.
+   * Adds exception filter, serializer, timeout and validation pipe.
    */
   private static buildProviders(): any[] {
     const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;

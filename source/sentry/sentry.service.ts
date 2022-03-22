@@ -21,7 +21,7 @@ export class SentryService implements LogTransport {
   /**
    * Creates a connection to Sentry transport, disables
    * the native uncaught exception integration since we
-   * are customizing it at logger service.
+   * are customizing it at log service.
    */
   private setupTransport(): void {
     const { sentry } = this.appConfig.APP_OPTIONS || { };

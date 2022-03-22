@@ -16,13 +16,13 @@ export class LogService {
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService<AppRequestMetadata>,
   ) {
-    this.setupLogger();
+    this.setupLogs();
   }
 
   /**
    * Adds an event listener to catch uncaught exceptions.
    */
-  private setupLogger(): void {
+  private setupLogs(): void {
     process.on('uncaughtException', (err) => {
       this.error(err, { unexpected: true });
     });
@@ -102,7 +102,7 @@ export class LogService {
     for (const match of matches) {
       const filename = match[1];
 
-      if (!filename.includes('logger.service')) {
+      if (!filename.includes('log.service')) {
         return filename;
       }
     }

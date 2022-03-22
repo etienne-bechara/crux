@@ -63,7 +63,7 @@ export class SlackService implements LogTransport {
 
     let slackMsg = `*${this.getSlackEnvironment(environment)}*${separator}`
       + `*${this.getSlackSeverity(severity)}*${separator}`
-      + `${requestId ? `*${requestId}*${separator}` : ''}`
+      + `${requestId ? `*${requestId.slice(0, 6)}*${separator}` : ''}`
       + `${caller}${separator}${message}`;
 
     if (data) {
