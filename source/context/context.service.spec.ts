@@ -25,9 +25,9 @@ describe('ContextService', () => {
     });
   });
 
-  describe('getMetadataKey', () => {
+  describe('getMetadata', () => {
     it('should read metadata as undefined', () => {
-      const metadata = contextService.getMetadataKey('dummy');
+      const metadata = contextService.getMetadata('dummy');
       expect(metadata).toBeUndefined();
     });
   });

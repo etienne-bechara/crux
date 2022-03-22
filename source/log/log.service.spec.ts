@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { AppModule } from '../app/app.module';
-import { LoggerService } from './logger.service';
+import { LogService } from './log.service';
 
-describe('LoggerService', () => {
-  let loggerService: LoggerService;
+describe('LogService', () => {
+  let logService: LogService;
 
   beforeAll(async () => {
     const app = await AppModule.compile({ disableAll: true });
-    loggerService = app.get(LoggerService);
+    logService = app.get(LogService);
   });
 
   describe('sanitize', () => {
@@ -48,7 +48,7 @@ describe('LoggerService', () => {
         data: Buffer.from('test data'),
       };
 
-      const censoredObject = loggerService.sanitize(sensitiveObject);
+      const censoredObject = logService.sanitize(sensitiveObject);
 
       expect(censoredObject).toMatchObject({
         string: 'admin',

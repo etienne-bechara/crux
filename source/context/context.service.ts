@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Tracer } from '@opentelemetry/sdk-trace-base';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -9,40 +10,38 @@ import { ContextStorage } from './context.storage';
 export class ContextService<Metadata = Record<string, any>> {
 
   /**
-   * Returns local store for current context.
+   * Get local store for current context.
    */
   public getStore(): Map<string, any> {
     return ContextStorage.getStore();
   }
 
   /**
-   * Returns the inbound request.
+   * Get current request.
    */
   public getRequest(): AppRequest {
     return this.getStore()?.get(ContextStorageKey.REQUEST);
   }
 
   /**
-   * Returns the inbound request.
+   * Get current response.
    */
   public getResponse(): AppResponse {
     return this.getStore()?.get(ContextStorageKey.RESPONSE);
   }
 
   /**
-   * Reads all metadata bound to current request lifecycle,
-   * returning object should be immutable.
+   * Get current tracer.
    */
-  public getMetadata(): Metadata {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA);
-    return this.validateObjectLength({ ...metadata }) as Metadata;
+  public getTracer(): Tracer {
+    return this.getStore()?.get(ContextStorageKey.TRACER);
   }
 
   /**
    * Reads a metadata key bound to current request lifecycle.
    * @param key
    */
-  public getMetadataKey<K extends keyof Metadata>(key: K): Metadata[K] {
+  public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     return metadata[key];
   }
@@ -52,10 +51,19 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    * @param value
    */
-  public setMetadataKey<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
+  public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     metadata[key] = value;
     this.getStore().set(ContextStorageKey.METADATA, metadata);
+  }
+
+  /**
+   * Reads all metadata bound to current request lifecycle,
+   * returning object should be immutable.
+   */
+  public getRequestMetadata(): Metadata {
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA);
+    return this.validateObjectLength({ ...metadata }) as Metadata;
   }
 
   /**

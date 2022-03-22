@@ -34,11 +34,11 @@ const app = await AppModule.compile();
 
 // Acquire providers
 const appService = app.get(AppService);
-const loggerService = app.get(LoggerService);
+const logService = app.get(LogService);
 
 // Use providers
 const appStatus = appService.getStatus();
-loggerService.warn(appStatus);
+logService.warn(appStatus);
 ```
 
 ---

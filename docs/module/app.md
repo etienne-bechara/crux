@@ -7,7 +7,7 @@ Upon start, it will serve an HTTP adapter based on [Fastify](https://www.fastify
 The following custom enhancers will be globally applied:
 
 - [app.interceptor.ts](../../source/app/app.interceptor.ts) - Timeout interceptor to cancel running request that expires configured runtime.
-- [app.filter.ts](../../source/app/app.filter.ts) - Exception filter integrated with logger service to standardize error outputs.
+- [app.filter.ts](../../source/app/app.filter.ts) - Exception filter integrated with log service to standardize error outputs.
 
 Plus these techniques as officially documented:
 

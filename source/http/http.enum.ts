@@ -1,6 +1,6 @@
 export enum HttpInjectionToken {
-  MODULE_ID = 'MODULE_ID',
-  MODULE_OPTIONS = 'MODULE_OPTIONS',
+  HTTP_MODULE_ID = 'HTTP_MODULE_ID',
+  HTTP_MODULE_OPTIONS = 'HTTP_MODULE_OPTIONS',
 }
 
 export enum HttpMethod {

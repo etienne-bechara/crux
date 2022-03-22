@@ -3,27 +3,27 @@ import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, ValidationError } from 'class-validator';
 
 import { AppEnvironment } from '../app/app.enum';
-import { Config, InjectSecret } from './config.decorator';
+import { Config, InjectConfig } from './config.decorator';
 import { ConfigService } from './config.service';
 
 @Config()
 class TestMockConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsIn(Object.values(AppEnvironment))
   public readonly NODE_ENV: AppEnvironment;
 
-  @InjectSecret({ key: 'secret_unit_test_key' })
+  @InjectConfig({ key: 'secret_unit_test_key' })
   public readonly TEST_SECRET_INJECTION: string;
 
-  @InjectSecret({ fallback: 'secret_default' })
+  @InjectConfig({ fallback: 'secret_default' })
   public readonly TEST_SECRET_FALLBACK: string;
 
-  @InjectSecret({ fallback: '100' })
+  @InjectConfig({ fallback: '100' })
   @IsNumber()
   public readonly TEST_SECRET_VALIDATION: number;
 
-  @InjectSecret({ fallback: '100' })
+  @InjectConfig({ fallback: '100' })
   @Transform((o) => Number(o.value))
   public readonly TEST_SECRET_TRANSFORM: number;
 

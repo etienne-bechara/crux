@@ -5,9 +5,7 @@ import { Controller, Get } from '../app/app.decorator';
 import { MetricData, MetricReadDto } from './metric.dto';
 import { MetricService } from './metric.service';
 
-@Controller('metrics', {
-  tags: [ 'Application' ],
-})
+@Controller('metrics')
 export class MetricController {
 
   public constructor(

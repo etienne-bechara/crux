@@ -40,7 +40,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
-import { ValidatorStorage } from './validator.storage';
+const ValidateStorage: Map<string, any> = new Map();
 
 /**
  * Builds default ApiProperty options based on class-validator decorator.
@@ -64,7 +64,7 @@ function getPropertyOptions(type: any, validationOptions: ValidationOptions): Ap
  */
 export function OneOf(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
   const key = `MUTUALLY_EXCLUSIVE_${group}`;
-  const propKeys: string[] = ValidatorStorage.get(key) || [ ];
+  const propKeys: string[] = ValidateStorage.get(key) || [ ];
   const currentKeys = [ ...propKeys ];
 
   return applyDecorators(
@@ -84,10 +84,10 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
   // eslint-disable-next-line @typescript-eslint/ban-types
   return function (object: Object, propertyName: string): any {
     const key = `MUTUALLY_EXCLUSIVE_${group}`;
-    const mutuallyExclusiveProperties: string[] = ValidatorStorage.get(key) || [ ];
+    const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [ ];
 
     mutuallyExclusiveProperties.push(propertyName);
-    ValidatorStorage.set(key, mutuallyExclusiveProperties);
+    ValidateStorage.set(key, mutuallyExclusiveProperties);
 
     registerDecorator({
       name: 'MutuallyExclusive',
@@ -97,12 +97,12 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const propKeys: string[] = ValidatorStorage.get(key);
+          const propKeys: string[] = ValidateStorage.get(key);
           const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
           return propDefined === 1;
         },
         defaultMessage(args?: ValidationArguments) {
-          const propKeys: string[] = ValidatorStorage.get(key);
+          const propKeys: string[] = ValidateStorage.get(key);
           const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
 
           return propDefined === 0

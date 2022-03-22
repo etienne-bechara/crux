@@ -11,14 +11,14 @@ import { HttpService } from './http.service';
     HttpConfig,
     HttpService,
     {
-      provide: HttpInjectionToken.MODULE_OPTIONS,
+      provide: HttpInjectionToken.HTTP_MODULE_OPTIONS,
       useValue: { },
     },
   ],
   exports: [
     HttpConfig,
     HttpService,
-    HttpInjectionToken.MODULE_OPTIONS,
+    HttpInjectionToken.HTTP_MODULE_OPTIONS,
   ],
 })
 export class HttpModule {
@@ -32,11 +32,11 @@ export class HttpModule {
       module: HttpModule,
       providers: [
         {
-          provide: HttpInjectionToken.MODULE_ID,
-          useValue: crypto.randomBytes(20).toString('hex'),
+          provide: HttpInjectionToken.HTTP_MODULE_ID,
+          useValue: crypto.randomBytes(8).toString('hex'),
         },
         {
-          provide: HttpInjectionToken.MODULE_OPTIONS,
+          provide: HttpInjectionToken.HTTP_MODULE_OPTIONS,
           useValue: options,
         },
       ],
@@ -54,11 +54,11 @@ export class HttpModule {
       imports: options.imports,
       providers: [
         {
-          provide: HttpInjectionToken.MODULE_ID,
-          useValue: crypto.randomBytes(20).toString('hex'),
+          provide: HttpInjectionToken.HTTP_MODULE_ID,
+          useValue: crypto.randomBytes(8).toString('hex'),
         },
         {
-          provide: HttpInjectionToken.MODULE_OPTIONS,
+          provide: HttpInjectionToken.HTTP_MODULE_OPTIONS,
           inject: options.inject,
           useFactory: options.useFactory,
         },

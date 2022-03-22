@@ -5,7 +5,7 @@ import { AppStatus } from './app.dto';
 import { AppService } from './app.service';
 
 @Controller('', {
-  tags: [ 'Application' ],
+  tags: [ 'Status' ],
 })
 export class AppController {
 

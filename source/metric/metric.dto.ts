@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import { ToBoolean } from '../transform/transform.decorator';
-import { IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from '../validator/validator.decorator';
+import { IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from '../validate/validate.decorator';
 import { MetricAggregator, MetricDataType } from './metric.enum';
 
 export class MetricReadDto {

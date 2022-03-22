@@ -1,16 +1,16 @@
-/* eslint-disable no-case-declarations */
 import crypto from 'crypto';
 
-import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, LoggerService, UnauthorizedException } from '../../../source/app/app.override';
-import { AsyncService } from '../../../source/async/async.service';
+import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../../source/app/app.override';
+import { LogService } from '../../../source/log/log.service';
+import { PromiseService } from '../../../source/promise/promise.service';
 
 @Injectable()
 export class RandomService {
 
   public constructor(
-    private readonly asyncService: AsyncService,
+    private readonly promiseService: PromiseService,
     private readonly httpService: HttpService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
   ) { }
 
   /**
@@ -18,11 +18,12 @@ export class RandomService {
    */
   // eslint-disable-next-line complexity
   public async doRandom(): Promise<any> {
-    const latency = Math.random() * 5000;
-    await this.asyncService.sleep(latency);
+    const inLatency = Math.random() * 1000;
+    const outLatency = Math.random() * 1000;
+    await this.promiseService.sleep(inLatency);
 
     const dice = Math.random() * 100;
-    const metadata = { latency, dice, crypt: crypto.randomBytes(7).toString('hex') };
+    const metadata = { latency: inLatency, dice, crypt: crypto.randomBytes(7).toString('hex') };
 
     switch (true) {
       case dice > 95:
@@ -46,62 +47,88 @@ export class RandomService {
       case dice > 65:
         throw new Error('unexpected error');
 
-      case dice > 60:
+      case dice > 60: {
         const divisionByZero = dice / 0;
         return divisionByZero;
+      }
 
-      case dice > 55:
+      case dice > 55: {
         const propertyAccess = 'x'['y']['z'];
         return propertyAccess;
+      }
 
-      case dice > 50:
-        return this.httpService.get('https://www.google.com', {
+      case dice > 50: {
+        const google = await this.httpService.get('https://www.google.com', {
           responseType: 'text',
         });
 
-      case dice > 45:
-        return this.httpService.get('https://jsonplaceholder.typicode.com/posts/:id', {
+        await this.promiseService.sleep(outLatency);
+        return google;
+      }
+
+      case dice > 45: {
+        const post = await this.httpService.get('https://jsonplaceholder.typicode.com/posts/:id', {
           replacements: { id: Math.floor(Math.random() * 100).toString() },
           responseType: 'json',
         });
 
-      case dice > 40:
-        this.loggerService.fatal('Catasthrophic failure', metadata);
-        return metadata;
+        await this.promiseService.sleep(outLatency);
+        return post;
+      }
 
-      case dice > 35:
-        this.loggerService.error('Failed to do something', metadata);
+      case dice > 40: {
+        this.logService.fatal('Catasthrophic failure', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 30:
-        this.loggerService.warning('Something bad is about to happen', metadata);
+      case dice > 35: {
+        this.logService.error('Failed to do something', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 25:
-        this.loggerService.notice('Random stuff done successfully', metadata);
+      case dice > 30: {
+        this.logService.warning('Something bad is about to happen', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 20:
-        this.loggerService.info('Doing random stuff', metadata);
+      case dice > 25: {
+        this.logService.notice('Random stuff done successfully', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 15:
-        this.loggerService.debug('Detailing random stuff being done', metadata);
+      case dice > 20: {
+        this.logService.info('Doing random stuff', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 10:
-        this.loggerService.trace('Detailing random stuff being done even more', metadata);
+      case dice > 15: {
+        this.logService.debug('Detailing random stuff being done', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
 
-      case dice > 5:
-        this.loggerService.fatal(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.error(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.warning(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.notice(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.info(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.debug(crypto.randomBytes(20).toString('base64url'), metadata);
-        this.loggerService.trace(crypto.randomBytes(20).toString('base64url'), metadata);
+      case dice > 10: {
+        this.logService.trace('Detailing random stuff being done even more', metadata);
+        await this.promiseService.sleep(outLatency);
         return metadata;
+      }
+
+      case dice > 5: {
+        this.logService.fatal(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.error(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.warning(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.notice(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.info(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.debug(crypto.randomBytes(20).toString('base64url'), metadata);
+        this.logService.trace(crypto.randomBytes(20).toString('base64url'), metadata);
+        await this.promiseService.sleep(outLatency);
+        return metadata;
+      }
 
       default:
         return metadata;

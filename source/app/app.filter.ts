@@ -1,21 +1,24 @@
 import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import cycle from 'cycle';
 
 import { ContextService } from '../context/context.service';
-import { LoggerService } from '../logger/logger.service';
+import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
+import { TraceService } from '../trace/trace.service';
 import { AppConfig } from './app.config';
-import { AppEnvironment } from './app.enum';
-import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
+import { AppEnvironment, AppMetric } from './app.enum';
+import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequestMetadata } from './app.interface';
 
 @Catch()
 export class AppFilter implements ExceptionFilter {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService,
-    private readonly loggerService: LoggerService,
+    private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly logService: LogService,
     private readonly metricService: MetricService,
+    private readonly traceService: TraceService,
   ) { }
 
   /**
@@ -33,10 +36,11 @@ export class AppFilter implements ExceptionFilter {
 
       this.logException(appException);
       this.collectExceptionMetrics(appException);
+      this.closeRequestSpan(appException);
       this.sendResponse(appException);
     }
     catch (e) {
-      this.loggerService.error('Failed to handle exception', e as Error);
+      this.logService.error('Failed to handle exception', e as Error);
     }
   }
 
@@ -124,14 +128,14 @@ export class AppFilter implements ExceptionFilter {
       query: this.contextService.getRequestQuery(),
       body: this.contextService.getRequestBody(),
       headers: this.contextService.getRequestHeaders(),
-      metadata: this.contextService.getMetadata(),
+      metadata: this.contextService.getRequestMetadata(),
     };
 
     const data = { message, inboundRequest, ...details };
 
     return httpErrors.includes(code)
-      ? this.loggerService.error(exception, data)
-      : this.loggerService.info(exception, data);
+      ? this.logService.error(exception, data)
+      : this.logService.info(exception, data);
   }
 
   /**
@@ -141,7 +145,7 @@ export class AppFilter implements ExceptionFilter {
   private collectExceptionMetrics(params: AppException): void {
     const { code } = params;
 
-    const histogram = this.metricService?.getHttpInboundHistogram();
+    const histogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_LATENCY);
     if (!histogram) return;
 
     const latency = this.contextService.getRequestLatency();
@@ -149,6 +153,24 @@ export class AppFilter implements ExceptionFilter {
     const path = this.contextService.getRequestPath();
 
     histogram.labels(method, path, code.toString()).observe(latency);
+  }
+
+  /**
+   * Close request span setting http attributes.
+   * @param params
+   */
+  private closeRequestSpan(params: AppException): void {
+    const { code } = params;
+
+    const span = this.traceService?.getRequestSpan();
+    if (!span) return;
+
+    span.setAttributes({
+      [SemanticAttributes.HTTP_STATUS_CODE]: code,
+      'http.latency': this.contextService.getRequestLatency(),
+    });
+
+    span.end();
   }
 
   /**
@@ -175,7 +197,7 @@ export class AppFilter implements ExceptionFilter {
       ? exceptionBody
       : filteredResponse;
 
-    this.loggerService.http(this.contextService.getRequestDescription('out'), {
+    this.logService.http(this.contextService.getRequestDescription('out'), {
       latency: this.contextService.getRequestLatency(),
       code,
       body: clientResponse,

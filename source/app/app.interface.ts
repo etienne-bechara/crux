@@ -2,20 +2,21 @@ import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@ne
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { Span } from '@opentelemetry/api';
 import http from 'http';
 
-import { LoggerOptions } from '../logger/logger.interface';
+import { ConsoleOptions } from '../console/console.interface';
+import { DocOptions } from '../doc/doc.interface';
+import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
-import { RedocAppOptions } from '../redoc/redoc.interface';
+import { SentryOptions } from '../sentry/sentry.interface';
+import { SlackOptions } from '../slack/slack.interface';
+import { TraceOptions } from '../trace/trace.interface';
 
 export interface AppOptions extends ModuleMetadata {
   /** Provide an already built instance to skip `.compile()` step. */
   app?: INestApplication;
-  /** Job name for metrics and log collection. */
-  job?: string;
-  /** Instance ID for metrics and log collection. */
-  instance?: string;
-  /** Environment variables file path. Default: `.env`. */
+  /** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
   envPath?: string;
   /** Disables all custom implementations (which can also be individually disabled). */
   disableAll?: boolean;
@@ -29,20 +30,24 @@ export interface AppOptions extends ModuleMetadata {
   disableSerializer?: boolean;
   /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
-  /** Disables all logger transports (Console, Sentry and Slack). */
-  disableLogger?: boolean;
+  /** Disables all logging transports (Console, Loki, Sentry and Slack). */
+  disableLogs?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
+  /** Disables request tracer. */
+  disableTraces?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
-  disableDocumentation?: boolean;
-  /** Disable `AsyncModule` and `MemoryModule` utilities. */
-  disableUtilities?: boolean;
+  disableDocs?: boolean;
+  /** Job name for metrics and log collection. */
+  job?: string;
+  /** Instance ID for metrics and log collection. */
+  instance?: string;
   /** Application port. Default: 8080. */
   port?: number;
   /** Application hostname. Default: `0.0.0.0`. */
   hostname?: string;
-  /** Application global prefix path. */
-  globalPrefix?: string;
+  /** Application prefix applied to all endpoints. */
+  prefix?: string;
   /** Application request timeout in milliseconds. Default: 60000. */
   timeout?: number;
   /** Application CORS response. */
@@ -51,12 +56,26 @@ export interface AppOptions extends ModuleMetadata {
   httpErrors?: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
-  /** Logger configuration. */
-  logger?: LoggerOptions;
+  /** Sensitive keys to be removed during logging of objects. */
+  sensitiveKeys?: string[];
+  /** Console logging transport configuration. */
+  console?: ConsoleOptions;
+  /** Loki logging transport configuration. */
+  loki?: LokiOptions;
+  /** Sentry logging transport configuration. */
+  sentry?: SentryOptions;
+  /** Slack logging transport configuration. */
+  slack?: SlackOptions;
   /** Metrics configuration. */
   metrics?: MetricOptions;
-  /** Redoc configuration. */
-  redoc?: RedocAppOptions;
+  /** Traces configuration. */
+  traces?: TraceOptions;
+  /** Auto generated API documentation options. */
+  docs?: DocOptions;
+}
+
+export interface AppMemory {
+  openApiSpecification: string;
 }
 
 /**
@@ -91,6 +110,11 @@ export interface AppRequest {
  */
 export interface AppRawRequest extends http.IncomingMessage {
   metadata: any;
+}
+
+export interface AppRequestMetadata {
+  span: Span;
+  traceId: string;
 }
 
 export interface AppResponse {

@@ -1,4 +1,4 @@
-export enum LoggerSeverity {
+export enum LogSeverity {
   FATAL = 'fatal',
   ERROR = 'error',
   WARNING = 'warning',
@@ -9,7 +9,7 @@ export enum LoggerSeverity {
   TRACE = 'trace',
 }
 
-export enum LoggerStyle {
+export enum LogStyle {
   RESET = '\u001B[0m',
   BRIGHT = '\u001B[1m',
   DIM = '\u001B[2m',

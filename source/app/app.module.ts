@@ -5,34 +5,37 @@ import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Mo
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import path from 'path';
 
-import { AsyncModule } from '../async/async.module';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
+import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
+import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
-import { LoggerModule } from '../logger/logger.module';
-import { LoggerService } from '../logger/logger.service';
+import { LogModule } from '../log/log.module';
+import { LogService } from '../log/log.service';
 import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
-import { RedocModule } from '../redoc/redoc.module';
+import { PromiseModule } from '../promise/promise.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
+import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
-import { AppMemory } from './app.enum';
+import { TagStorage } from './app.decorator';
 import { AppFilter } from './app.filter';
-import { AppLoggerInterceptor, AppTimeoutInterceptor } from './app.interceptor';
-import { AppOptions } from './app.interface';
+import { AppInterceptor } from './app.interceptor';
+import { AppMemory, AppOptions } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()
@@ -83,7 +86,7 @@ export class AppModule {
     this.configureOptions(options);
     await this.configureAdapter();
 
-    if (!this.options.disableDocumentation) {
+    if (!this.options.disableDocs) {
       this.configureDocumentation();
     }
 
@@ -95,7 +98,15 @@ export class AppModule {
    * @param options
    */
   private static configureOptions(options: AppOptions): void {
-    const deepMergeProps: (keyof AppOptions)[] = [ 'fastify', 'logger', 'metrics', 'redoc' ];
+    const deepMergeProps: (keyof AppOptions)[] = [
+      'fastify',
+      'console',
+      'loki',
+      'sentry',
+      'slack',
+      'metrics',
+      'docs',
+    ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
 
@@ -107,14 +118,13 @@ export class AppModule {
     }
 
     if (this.options.disableAll) {
-      this.options.disableDocumentation = true;
+      this.options.disableDocs = true;
       this.options.disableFilter = true;
-      this.options.disableLogger = true;
+      this.options.disableLogs = true;
       this.options.disableMetrics = true;
       this.options.disableScan = true;
       this.options.disableSerializer = true;
       this.options.disableStatus = true;
-      this.options.disableUtilities = true;
       this.options.disableValidator = true;
     }
 
@@ -126,7 +136,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { fastify, globalPrefix, cors } = this.options;
+    const { job, fastify, prefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -135,6 +145,7 @@ export class AppModule {
     });
 
     const fastifyInstance = this.instance.getHttpAdapter().getInstance();
+    const contextService = this.instance.get(ContextService);
 
     fastifyInstance.addHook('onRequest', (req, res, next) => {
       req.time = Date.now();
@@ -142,13 +153,23 @@ export class AppModule {
 
       ContextStorage.run(new Map(), () => {
         const store = ContextStorage.getStore();
+        const tracer = trace.getTracer(job);
+
         store.set(ContextStorageKey.REQUEST, req);
         store.set(ContextStorageKey.RESPONSE, res);
+        store.set(ContextStorageKey.TRACER, tracer);
+
+        const description = contextService.getRequestDescription('in');
+        const span = tracer.startSpan(description);
+        const traceId = span.spanContext().traceId;
+
+        store.set(ContextStorageKey.METADATA, { span, traceId });
+
         next();
       });
     });
 
-    this.instance.setGlobalPrefix(globalPrefix);
+    this.instance.setGlobalPrefix(prefix);
     this.instance.enableCors(cors);
   }
 
@@ -157,13 +178,13 @@ export class AppModule {
    * endpoint naming.
    */
   private static configureDocumentation(): void {
-    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.redoc;
+    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.docs;
     const memoryService: MemoryService<AppMemory> = this.instance.get(MemoryService);
 
     this.instance['setViewEngine']({
       engine: { handlebars },
       // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'redoc'),
+      templates: path.join(__dirname, '..', 'doc'),
     });
 
     const builder = documentBuilder || new DocumentBuilder()
@@ -171,6 +192,7 @@ export class AppModule {
       .setDescription(description)
       .setVersion(version);
 
+    // Standardize operation ID names
     const document = SwaggerModule.createDocument(this.instance, builder.build(), {
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const entityName = controllerKey.replace('Controller', '');
@@ -194,9 +216,26 @@ export class AppModule {
       },
     });
 
+    // Standardize tag grouping
+    const appTagGroups = [
+      ...tagGroups || [ ],
+      { name: 'Application', tags: [ 'Docs', 'Metrics', 'Status' ] },
+    ];
+
+    const appTags = new Set(appTagGroups.flatMap((t) => t.tags));
+    const ungroupedTags = TagStorage.filter((t) => !appTags.has(t));
+
+    if (ungroupedTags.length > 0) {
+      appTagGroups.push({ name: 'API', tags: ungroupedTags });
+    }
+
+    appTagGroups.sort((a, b) => a.name > b.name ? 1 : -1);
+    for (const t of appTagGroups) t.tags.sort();
+
+    // Saves specification to memory
     memoryService.setKey('openApiSpecification', JSON.stringify(document));
 
-    document['x-tagGroups'] = tagGroups;
+    document['x-tagGroups'] = appTagGroups;
     document.info['x-logo'] = logo;
 
     SwaggerModule.setup('openapi', this.instance, document);
@@ -210,12 +249,12 @@ export class AppModule {
     const { instance, port, hostname } = this.options;
 
     const app = this.getInstance();
-    const loggerService = app.get(LoggerService);
+    const logService = app.get(LogService);
 
     const httpServer = await app.listen(port, hostname);
     httpServer.setTimeout(0);
 
-    loggerService.info(`Instance ${instance} listening on port ${port}`);
+    logService.info(`Instance ${instance} listening on port ${port}`);
   }
 
   /**
@@ -247,15 +286,15 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogger, disableMetrics, disableDocumentation } = this.options;
+    const { disableScan, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
-      AsyncModule,
+      PromiseModule,
       ContextModule,
-      LoggerModule,
+      LogModule,
       MemoryModule,
       HttpModule.register({
         name: 'AppModule',
@@ -264,7 +303,7 @@ export class AppModule {
       }),
     ];
 
-    if (!disableLogger) {
+    if (!disableLogs) {
       defaultModules.push(
         ConsoleModule,
         LokiModule,
@@ -280,8 +319,15 @@ export class AppModule {
       defaultModules.push(MetricDisabledModule);
     }
 
-    if (!disableDocumentation) {
-      defaultModules.push(RedocModule);
+    if (!disableTraces) {
+      defaultModules.push(TraceModule);
+    }
+    else {
+      defaultModules.push(TracerDisabledModule);
+    }
+
+    if (!disableDocs) {
+      defaultModules.push(DocModule);
     }
 
     if (!disableScan) {
@@ -323,11 +369,10 @@ export class AppModule {
   }
 
   /**
-   * Adds exception filter, serializer, logger, timeout
-   * and validation pipe.
+   * Adds exception filter, serializer, timeout and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilter, disableSerializer, disableValidator, disableLogger, timeout, providers } = this.options;
+    const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
       AppConfig,
@@ -337,14 +382,7 @@ export class AppModule {
     if (timeout) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: AppTimeoutInterceptor,
-      });
-    }
-
-    if (!disableLogger) {
-      preloadedProviders.push({
-        provide: APP_INTERCEPTOR,
-        useClass: AppLoggerInterceptor,
+        useClass: AppInterceptor,
       });
     }
 

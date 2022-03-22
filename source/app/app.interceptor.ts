@@ -1,55 +1,11 @@
-import { CallHandler, ExecutionContext, GatewayTimeoutException, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, GatewayTimeoutException, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-import { mergeMap, timeout } from 'rxjs/operators';
+import { timeout } from 'rxjs/operators';
 
-import { ContextService } from '../context/context.service';
-import { LoggerService } from '../logger/logger.service';
 import { AppConfig } from './app.config';
 
 @Injectable()
-export class AppLoggerInterceptor implements NestInterceptor {
-
-  public constructor(
-    private readonly contextService: ContextService,
-    private readonly loggerService: LoggerService,
-  ) { }
-
-  /**
-   * Log inbound HTTP requests.
-   * @param context
-   * @param next
-   */
-  public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    this.loggerService.http(this.contextService.getRequestDescription('in'), {
-      method: this.contextService.getRequestMethod(),
-      path: this.contextService.getRequestPath(),
-      clientIp: this.contextService.getRequestIp(),
-      params: this.contextService.getRequestParams(),
-      query: this.contextService.getRequestQuery(),
-      body: this.contextService.getRequestBody(),
-      headers: this.contextService.getRequestHeaders(),
-    });
-
-    return next
-      .handle()
-      .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
-        mergeMap(async (data) => {
-          this.loggerService.http(this.contextService.getRequestDescription('out'), {
-            latency: this.contextService.getRequestLatency(),
-            code: this.contextService.getResponseCode() || HttpStatus.OK,
-            body: data,
-          });
-
-          return data;
-        }),
-      );
-  }
-
-}
-
-@Injectable()
-export class AppTimeoutInterceptor implements NestInterceptor {
+export class AppInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly appConfig: AppConfig,

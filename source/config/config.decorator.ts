@@ -28,7 +28,7 @@ export function Config(): any {
  * be interpreted by secret service when building its path.
  * @param options
  */
-export function InjectSecret(options: ConfigInjectionOptions = { }): any {
+export function InjectConfig(options: ConfigInjectionOptions = { }): any {
   const { key: baseKey, json, fallback } = options;
 
   return function (target: unknown, propertyKey: string): void {

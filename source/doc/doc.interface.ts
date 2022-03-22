@@ -1,14 +1,14 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 import { RedocOptions } from 'nestjs-redoc';
 
-export interface RedocRenderOptions {
+export interface DocRenderOptions {
   title: string;
   favicon: string;
   openApiUrl: string;
   options: string;
 }
 
-export interface RedocAppOptions extends RedocOptions {
+export interface DocOptions extends RedocOptions {
   documentBuilder?: DocumentBuilder;
   openApiUrl?: string;
   version?: string;

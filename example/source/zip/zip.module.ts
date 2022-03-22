@@ -1,5 +1,6 @@
 import { HttpModule, Module } from '../../../source/app/app.override';
 import { ZipConfig } from './zip.config';
+import { ZipController } from './zip.controller';
 import { ZipService } from './zip.service';
 
 @Module({
@@ -14,6 +15,9 @@ import { ZipService } from './zip.service';
         responseType: 'json',
       }),
     }),
+  ],
+  controllers: [
+    ZipController,
   ],
   providers: [
     ZipConfig,

@@ -1,5 +1,5 @@
 import { AppModule } from '../app/app.module';
-import { AsyncService } from './async.service';
+import { PromiseService } from './promise.service';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 const mockFailure = async (c): Promise<void> => {
@@ -7,19 +7,19 @@ const mockFailure = async (c): Promise<void> => {
   throw new Error('error');
 };
 
-describe('AsyncService', () => {
-  let asyncService: AsyncService;
+describe('PromiseService', () => {
+  let promiseService: PromiseService;
 
   beforeAll(async () => {
     const app = await AppModule.compile({ disableAll: true });
-    asyncService = app.get(AsyncService);
+    promiseService = app.get(PromiseService);
   });
 
   describe('sleep', () => {
     it('should sleep code execution for 1000ms', async () => {
       const sleepTime = 1000;
       const start = Date.now();
-      await asyncService.sleep(sleepTime);
+      await promiseService.sleep(sleepTime);
       const elapsed = Date.now() - start;
       expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
       expect(elapsed).toBeLessThan(sleepTime * 1.05);
@@ -30,9 +30,9 @@ describe('AsyncService', () => {
     it('should restrict resolution if over limit', async () => {
       const start = Date.now();
 
-      await asyncService.resolveLimited({
+      await promiseService.resolveLimited({
         data: [ 100, 200, 300, 400 ],
-        method: (t) => asyncService.sleep(t),
+        promise: (t) => promiseService.sleep(t),
         limit: 1,
       });
 
@@ -43,9 +43,9 @@ describe('AsyncService', () => {
     it('should resolve in parallel if within limit', async () => {
       const start = Date.now();
 
-      await asyncService.resolveLimited({
+      await promiseService.resolveLimited({
         data: [ 100, 200, 300, 400 ],
-        method: (t) => asyncService.sleep(t),
+        promise: (t) => promiseService.sleep(t),
         limit: 4,
       });
 
@@ -60,8 +60,8 @@ describe('AsyncService', () => {
       const retries = 5;
 
       try {
-        await asyncService.retryOnException({
-          method: () => mockFailure(counter),
+        await promiseService.retryOnRejection({
+          promise: () => mockFailure(counter),
           retries,
         });
       }
@@ -76,8 +76,8 @@ describe('AsyncService', () => {
       const delay = 550;
 
       try {
-        await asyncService.retryOnException({
-          method: () => mockFailure(counter),
+        await promiseService.retryOnRejection({
+          promise: () => mockFailure(counter),
           timeout,
           delay,
         });
@@ -92,8 +92,8 @@ describe('AsyncService', () => {
       const timeout = 1000;
 
       try {
-        await asyncService.retryOnException({
-          method: () => asyncService.sleep(2000),
+        await promiseService.retryOnRejection({
+          promise: () => promiseService.sleep(2000),
           timeout,
         });
       }
@@ -108,8 +108,8 @@ describe('AsyncService', () => {
       const retries = 0;
 
       try {
-        await asyncService.retryOnException({
-          method: () => mockFailure(counter),
+        await promiseService.retryOnRejection({
+          promise: () => mockFailure(counter),
           retries,
         });
       }

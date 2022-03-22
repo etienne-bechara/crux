@@ -2,26 +2,27 @@ import { HttpException, Injectable } from '@nestjs/common';
 import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
+import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
-import { LoggerSeverity } from './logger.enum';
-import { LoggerArguments, LoggerParams, LoggerTransport } from './logger.interface';
+import { LogSeverity } from './log.enum';
+import { LogArguments, LogParams, LogTransport } from './log.interface';
 
 @Injectable()
-export class LoggerService {
+export class LogService {
 
-  private transports: LoggerTransport[] = [ ];
+  private transports: LogTransport[] = [ ];
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService,
+    private readonly contextService: ContextService<AppRequestMetadata>,
   ) {
-    this.setupLogger();
+    this.setupLogs();
   }
 
   /**
    * Adds an event listener to catch uncaught exceptions.
    */
-  private setupLogger(): void {
+  private setupLogs(): void {
     process.on('uncaughtException', (err) => {
       this.error(err, { unexpected: true });
     });
@@ -33,7 +34,7 @@ export class LoggerService {
    * array of publishers.
    * @param transport
    */
-  public registerTransport(transport: LoggerTransport): void {
+  public registerTransport(transport: LogTransport): void {
     const severity = transport.getSeverity();
 
     if (severity) {
@@ -48,13 +49,14 @@ export class LoggerService {
    * @param severity
    * @param args
    */
-  private log(severity: LoggerSeverity, ...args: LoggerArguments[]): void {
-    const logMessage: LoggerParams = {
+  private log(severity: LogSeverity, ...args: LogArguments[]): void {
+    const logMessage: LogParams = {
       timestamp: new Date().toISOString(),
       severity,
-      requestId: this.contextService.getRequestId(),
       caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
+      requestId: this.contextService.getRequestId(),
+      traceId: this.contextService.getMetadata('traceId'),
       data: this.getLogData(...args),
       error: this.getLogError(...args),
     };
@@ -74,16 +76,16 @@ export class LoggerService {
    * @param a
    * @param b
    */
-  public isHigherOrEqualSeverity(a: LoggerSeverity, b: LoggerSeverity): boolean {
+  public isHigherOrEqualSeverity(a: LogSeverity, b: LogSeverity): boolean {
     const severity = [
-      LoggerSeverity.FATAL,
-      LoggerSeverity.ERROR,
-      LoggerSeverity.WARNING,
-      LoggerSeverity.NOTICE,
-      LoggerSeverity.INFO,
-      LoggerSeverity.HTTP,
-      LoggerSeverity.DEBUG,
-      LoggerSeverity.TRACE,
+      LogSeverity.FATAL,
+      LogSeverity.ERROR,
+      LogSeverity.WARNING,
+      LogSeverity.NOTICE,
+      LogSeverity.INFO,
+      LogSeverity.HTTP,
+      LogSeverity.DEBUG,
+      LogSeverity.TRACE,
     ];
 
     return severity.indexOf(a) <= severity.indexOf(b);
@@ -93,14 +95,14 @@ export class LoggerService {
    * Acquires log caller, which includes filename and line.
    * @param args
    */
-  private getCaller(...args: LoggerArguments[]): string {
+  private getCaller(...args: LogArguments[]): string {
     const error = args.find((a) => a instanceof Error) as Error || new Error('-');
     const matches = error.stack.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
 
     for (const match of matches) {
       const filename = match[1];
 
-      if (!filename.includes('logger.service')) {
+      if (!filename.includes('log.service')) {
         return filename;
       }
     }
@@ -113,7 +115,7 @@ export class LoggerService {
    * or of an object containing `message` property.
    * @param args
    */
-  private getLogMessage(...args: LoggerArguments[]): string {
+  private getLogMessage(...args: LogArguments[]): string {
     for (const arg of args) {
       if (typeof arg === 'string') {
         return arg;
@@ -128,7 +130,7 @@ export class LoggerService {
    * Given an event to log, extract it details.
    * @param args
    */
-  private getLogData(...args: LoggerArguments[]): Record<string, any> {
+  private getLogData(...args: LogArguments[]): Record<string, any> {
     let data: Record<string, any> = { };
 
     for (const arg of args) {
@@ -151,7 +153,7 @@ export class LoggerService {
    * Acquire an error instance associated with log record.
    * @param args
    */
-  private getLogError(...args: LoggerArguments[]): Error {
+  private getLogError(...args: LogArguments[]): Error {
     return args.find((a) => a instanceof Error) as unknown as Error;
   }
 
@@ -163,8 +165,7 @@ export class LoggerService {
    */
   // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { sensitiveKeys } = logger;
+    const { sensitiveKeys } = this.appConfig.APP_OPTIONS;
 
     if (typeof object !== 'object') {
       return object;
@@ -212,64 +213,64 @@ export class LoggerService {
    * Logs a FATAL event.
    * @param args
    */
-  public fatal(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.FATAL, ...args);
+  public fatal(...args: LogArguments[]): void {
+    return this.log(LogSeverity.FATAL, ...args);
   }
 
   /**
    * Logs an ERROR event.
    * @param args
    */
-  public error(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.ERROR, ...args);
+  public error(...args: LogArguments[]): void {
+    return this.log(LogSeverity.ERROR, ...args);
   }
 
   /**
    * Logs a WARN event.
    * @param args
    */
-  public warning(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.WARNING, ...args);
+  public warning(...args: LogArguments[]): void {
+    return this.log(LogSeverity.WARNING, ...args);
   }
 
   /**
    * Logs an NOTICE event.
    * @param args
    */
-  public notice(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.NOTICE, ...args);
+  public notice(...args: LogArguments[]): void {
+    return this.log(LogSeverity.NOTICE, ...args);
   }
 
   /**
    * Logs an INFO event.
    * @param args
    */
-  public info(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.INFO, ...args);
+  public info(...args: LogArguments[]): void {
+    return this.log(LogSeverity.INFO, ...args);
   }
 
   /**
    * Logs a HTTP event.
    * @param args
    */
-  public http(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.HTTP, ...args);
+  public http(...args: LogArguments[]): void {
+    return this.log(LogSeverity.HTTP, ...args);
   }
 
   /**
    * Logs a DEBUG event.
    * @param args
    */
-  public debug(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.DEBUG, ...args);
+  public debug(...args: LogArguments[]): void {
+    return this.log(LogSeverity.DEBUG, ...args);
   }
 
   /**
    * Logs a TRACE event.
    * @param args
    */
-  public trace(...args: LoggerArguments[]): void {
-    return this.log(LoggerSeverity.TRACE, ...args);
+  public trace(...args: LogArguments[]): void {
+    return this.log(LogSeverity.TRACE, ...args);
   }
 
 }

@@ -3,21 +3,21 @@ import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
-import { LoggerSeverity } from '../logger/logger.enum';
-import { LoggerParams, LoggerTransport } from '../logger/logger.interface';
-import { LoggerService } from '../logger/logger.service';
+import { LogSeverity } from '../log/log.enum';
+import { LogParams, LogTransport } from '../log/log.interface';
+import { LogService } from '../log/log.service';
 import { LokiConfig } from './loki.config';
 import { LokiPushStream } from './loki.interface';
 
 @Injectable()
-export class LokiService implements LoggerTransport {
+export class LokiService implements LogTransport {
 
-  private publishQueue: LoggerParams[] = [ ];
+  private publishQueue: LogParams[] = [ ];
 
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly httpService: HttpService,
-    private readonly loggerService: LoggerService,
+    private readonly logService: LogService,
     private readonly lokiConfig: LokiConfig,
   ) {
     this.setupTransport();
@@ -27,16 +27,17 @@ export class LokiService implements LoggerTransport {
    * Checks if necessary variables are present and warn through console if not.
    */
   private setupTransport(): void {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const url = this.lokiConfig.LOKI_URL || logger.lokiUrl;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { url } = loki;
+    const lokiUrl = this.lokiConfig.LOKI_URL || url;
 
-    if (!url) {
-      this.loggerService.info('Loki transport disabled due to missing url');
+    if (!lokiUrl) {
+      this.logService.info('Loki transport disabled due to missing url');
       return;
     }
 
-    this.loggerService.info(`Loki transport connected at ${url}`);
-    this.loggerService.registerTransport(this);
+    this.logService.info(`Loki transport connected at ${lokiUrl}`);
+    this.logService.registerTransport(this);
 
     void this.setupPush();
   }
@@ -44,9 +45,10 @@ export class LokiService implements LoggerTransport {
   /**
    * Returns minimum level for logging this transport.
    */
-  public getSeverity(): LoggerSeverity {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    return this.lokiConfig.LOKI_SEVERITY || logger.lokiSeverity;
+  public getSeverity(): LogSeverity {
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { severity } = loki;
+    return this.lokiConfig.LOKI_SEVERITY || severity;
   }
 
   /**
@@ -54,16 +56,16 @@ export class LokiService implements LoggerTransport {
    * interval or if target batch size is met.
    * @param params
    */
-  public log(params: LoggerParams): void {
+  public log(params: LogParams): void {
     const { message } = params;
     if (message === this.lokiConfig.LOKI_EXCEPTION_MESSAGE) return;
 
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { lokiBatchSize } = logger;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { batchSize } = loki;
 
     this.publishQueue.push(params);
 
-    if (this.publishQueue.length >= lokiBatchSize) {
+    if (this.publishQueue.length >= batchSize) {
       void this.publishCurrentQueue();
     }
   }
@@ -72,13 +74,13 @@ export class LokiService implements LoggerTransport {
    * Publish logs once at every configured interval.
    */
   private async setupPush(): Promise<void> {
-    const { logger } = this.appConfig.APP_OPTIONS || { };
-    const { lokiPushInterval } = logger;
-    if (!lokiPushInterval) return;
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { pushInterval } = loki;
+    if (!pushInterval) return;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      await new Promise((r) => setTimeout(r, lokiPushInterval));
+      await new Promise((r) => setTimeout(r, pushInterval));
       void this.publishCurrentQueue();
     }
   }
@@ -109,7 +111,7 @@ export class LokiService implements LoggerTransport {
       });
     }
     catch (e) {
-      this.loggerService.warning(this.lokiConfig.LOKI_EXCEPTION_MESSAGE, e as Error);
+      this.logService.warning(this.lokiConfig.LOKI_EXCEPTION_MESSAGE, e as Error);
     }
   }
 
@@ -118,12 +120,12 @@ export class LokiService implements LoggerTransport {
    * split the streams by severity and label them accordingly.
    * @param logs
    */
-  private buildPushStream(logs: LoggerParams[]): LokiPushStream[] {
+  private buildPushStream(logs: LogParams[]): LokiPushStream[] {
     const { job, instance } = this.appConfig.APP_OPTIONS;
     const pushStreams: LokiPushStream[] = [ ];
     const environment = this.appConfig.NODE_ENV;
 
-    for (const severity of Object.values(LoggerSeverity)) {
+    for (const severity of Object.values(LogSeverity)) {
       const matchingLogs = logs.filter((l) => l.severity === severity);
       if (matchingLogs.length === 0) continue;
 
@@ -143,8 +145,8 @@ export class LokiService implements LoggerTransport {
    * by Grafana Loki Explorer.
    * @param severity
    */
-  private getLokiLevel(severity: LoggerSeverity): string {
-    return severity === LoggerSeverity.HTTP
+  private getLokiLevel(severity: LogSeverity): string {
+    return severity === LogSeverity.HTTP
       ? 'info'
       : severity;
   }
@@ -154,16 +156,16 @@ export class LokiService implements LoggerTransport {
    * [ '<unix epoch in nanoseconds>', '<log line>' ].
    * @param logs
    */
-  private buildPushStreamValues(logs: LoggerParams[]): string[][] {
+  private buildPushStreamValues(logs: LogParams[]): string[][] {
     const streamValues: string[][] = [ ];
 
     for (const log of logs) {
-      const { timestamp, requestId, caller, message, data } = log;
+      const { timestamp, traceId, requestId, caller, message, data } = log;
       const unixNanoseconds = new Date(timestamp).getTime() * 10 ** 6;
 
       streamValues.push([
         unixNanoseconds.toString(),
-        JSON.stringify({ requestId, caller, message, data }),
+        JSON.stringify({ caller, message, requestId, traceId, data }),
       ]);
     }
 

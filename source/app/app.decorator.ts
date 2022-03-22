@@ -6,6 +6,8 @@ import { ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiProduces, Ap
 
 import { AppControllerParams, AppMethodParams } from './app.interface';
 
+export const TagStorage: string[] = [ ];
+
 /**
  * Decorator that marks a class as a Nest controller that can receive inbound
  * requests and produce responses.
@@ -31,10 +33,11 @@ import { AppControllerParams, AppMethodParams } from './app.interface';
 export function Controller(prefix: string, params: AppControllerParams = { }): any {
   const { tags, hidden } = params;
 
-  const decorators = [
-    NestController(prefix),
-    ApiTags(...tags || [ `${prefix.charAt(0).toUpperCase()}${prefix.slice(1)}` ]),
-  ];
+  const autoTag = prefix.split(/[\s_-]+/).map((w) => `${w.charAt(0).toUpperCase()}${w.slice(1)}`).join(' ');
+  const apiTags = tags || [ autoTag ];
+
+  TagStorage.push(...apiTags);
+  const decorators = [ NestController(prefix), ApiTags(...apiTags) ];
 
   if (hidden) {
     decorators.push(ApiExcludeController());

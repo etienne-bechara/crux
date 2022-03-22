@@ -10,15 +10,13 @@ Scraping is available at `/metrics` endpoint.
 
 ## Usage
 
-To create you own metrics, simply initiate them according to [prom-client](https://www.npmjs.com/package/prom-client) documentation and register it at `MetricService`:
+To create you own metrics, use provided methods `getCounter()`, `getGauge()`, `getHistogram()` or `getSummary()`, from the `MetricService`.
 
 ```ts
 import { Histogram, MetricService } from '@bechara/nestjs-core';
 
 @Injectable()
 export class FooService {
-
-  private fooHistogram: Histogram;
 
   public constructor(
     private readonly metricService: MetricService,
@@ -27,16 +25,18 @@ export class FooService {
   }
 
   public setup(): void {
-    this.fooHistogram = new Histogram({
-      name: 'foo_data',
-      help: 'Foo data.',
+    this.metricService.getHistogram('foo_size', {
+      help: 'Size of foo.',
       labelNames: [ 'foo', 'bar' ],
       buckets: [ 1, 3, 5, 8, 13 ],
     });
-
-    this.metricService.registerMetric(this.fooHistogram);
   }
 
+  public readFoo(): Foo {
+    // ...
+    const histogram = this.metricService.getHistogram('foo_size');
+    // ...
+  }
 }
 ```
 

@@ -7,12 +7,12 @@ export interface MetricOptions {
   defaultBuckets?: number[];
   /** Buckets for HTTP metrics histograms. */
   httpBuckets?: number[];
-  /** URL of gateway to push metrics. */
-  pushgatewayUrl?: string;
-  /** Pushgateway basic auth username. */
-  pushgatewayUsername?: string;
-  /** Pushgateway basic auth password. */
-  pushgatewayPassword?: string;
-  /** Interval in milliseconds to push data to gateway. */
-  pushgatewayInterval?: number;
+  /** Prometheus Pushgateway API URL to publish metrics. Can be overridden by env `METRIC_URL`. */
+  url?: string;
+  /** Prometheus Pushgateway username to publish metrics. Can be overridden by env `METRIC_USERNAME`. */
+  username?: string;
+  /** Prometheus Pushgateway password to publish metrics. Can be overridden by env `METRIC_PASSWORD`. */
+  password?: string;
+  /** Prometheus Pushgateway API push interval in milliseconds. Default: 20000. */
+  pushInterval?: number;
 }

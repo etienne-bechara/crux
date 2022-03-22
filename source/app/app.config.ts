@@ -3,15 +3,15 @@ import { HttpStatus } from '@nestjs/common';
 import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
-import { Config, InjectSecret } from '../config/config.decorator';
-import { LoggerSeverity } from '../logger/logger.enum';
+import { Config, InjectConfig } from '../config/config.decorator';
+import { LogSeverity } from '../log/log.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const APP_DEFAULT_OPTIONS: AppOptions = {
   job: 'unknown',
-  instance: crypto.randomBytes(4).toString('base64url'),
+  instance: crypto.randomBytes(8).toString('hex'),
   port: 8080,
   hostname: '0.0.0.0',
   timeout: 60_000,
@@ -31,28 +31,34 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   ],
   fastify: {
     trustProxy: true,
-    genReqId: () => crypto.randomBytes(7).toString('base64url'),
+    genReqId: () => crypto.randomBytes(16).toString('hex'),
   },
-  logger: {
-    consoleMaxLength: 1000,
-    lokiSeverity: LoggerSeverity.DEBUG,
-    lokiPushInterval: 20_000,
-    lokiBatchSize: 1000,
-    sentrySeverity: LoggerSeverity.ERROR,
-    slackSeverity: LoggerSeverity.WARNING,
-    sensitiveKeys: [
-      'apikey',
-      'auth',
-      'authentication',
-      'authorization',
-      'clientkey',
-      'clientsecret',
-      'pass',
-      'password',
-    ],
+  sensitiveKeys: [
+    'apikey',
+    'auth',
+    'authentication',
+    'authorization',
+    'clientkey',
+    'clientsecret',
+    'pass',
+    'password',
+  ],
+  console: {
+    maxLength: 1000,
+  },
+  loki: {
+    severity: LogSeverity.DEBUG,
+    pushInterval: 20_000,
+    batchSize: 1000,
+  },
+  slack: {
+    severity: LogSeverity.WARNING,
+  },
+  sentry: {
+    severity: LogSeverity.ERROR,
   },
   metrics: {
-    pushgatewayInterval: 20_000,
+    pushInterval: 20_000,
     httpBuckets: [
       10, 20, 30, 50, 70,
       100, 200, 300, 500, 700,
@@ -60,7 +66,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       10_000, 20_000, 30_000, 50_000, 70_000,
     ],
   },
-  redoc: {
+  traces: {
+    pushInterval: 20_000,
+  },
+  docs: {
     openApiUrl: 'http://127.0.0.1:8080/openapi/json',
     title: 'OpenAPI UI',
     version: '1.0.0',
@@ -72,10 +81,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       + '\n'
       + 'For further instructions on how to annotate your models and endpoints check [NestJS - OpenAPI Introduction](https://docs.nestjs.com/openapi/introduction).\n'
       + '\n'
-      + 'To customize logo, title, description and other layout options, configure the `redoc` property during application initialization:\n'
+      + 'To customize logo, title, description and other layout options, configure the `docs` property during application initialization:\n'
       + '\n```ts\n'
       + 'void AppModule.boot({\n'
-      + '  redoc: {\n'
+      + '  docs: {\n'
       + '    title: \'User API\',\n'
       + '    description: \'Manipulate user related data.\',\n'
       + '    // ...\n'
@@ -99,11 +108,11 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
 @Config()
 export class AppConfig {
 
-  @InjectSecret()
+  @InjectConfig()
   @IsIn(Object.values(AppEnvironment))
   public readonly NODE_ENV: AppEnvironment;
 
-  @InjectSecret()
+  @InjectConfig()
   public readonly APP_OPTIONS: AppOptions;
 
 }
