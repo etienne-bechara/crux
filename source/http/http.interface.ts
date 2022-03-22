@@ -19,7 +19,7 @@ export interface HttpModuleOptions extends ExtendOptions {
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
   /** Request query params with array joining support, overrides `searchParams`. */
-  query?: Record<string, string | string[]>;
+  query?: Record<string, any>;
   /** Query separator when joining string arrays. Default ','. */
   querySeparator?: string;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
@@ -42,7 +42,7 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string>;
   /** Request query params with array joining support, overrides `searchParams`. */
-  query?: Record<string, string | string[]>;
+  query?: Record<string, any>;
   /** Query separator when joining string arrays. Default ','. */
   querySeparator?: string;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
@@ -81,7 +81,7 @@ export interface HttpTelemetryParams {
   host: string;
   path: string;
   replacements: Record<string, string>;
-  query: Record<string, string | string[]>;
+  query: Record<string, any>;
   body: any;
   headers: any;
   span?: Span;

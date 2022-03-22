@@ -190,6 +190,9 @@ export class HttpService {
         if (Array.isArray(testValue)) {
           mergedQuery[key] = testValue.join(separator);
         }
+        else if (testValue?.toString) {
+          mergedQuery[key] = testValue.toString();
+        }
       }
 
       params.searchParams = mergedQuery as Record<string, string>;
