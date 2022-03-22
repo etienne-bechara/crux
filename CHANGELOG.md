@@ -1,3 +1,10 @@
+## [4.10.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.2...v4.10.3) (2022-03-22)
+
+
+### Bug Fixes
+
+* optional span ([1a07eb7](https://github.com/etienne-bechara/nestjs-core/commit/1a07eb7f13a2fcbb3c5c8e4963e4e4324b9da7f4))
+
 ## [4.10.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.1...v4.10.2) (2022-03-22)
 
 
