@@ -1,7 +1,7 @@
 import { Header, Render } from '@nestjs/common';
 
 import { Controller, Get } from '../app/app.decorator';
-import { AppMemory } from '../app/app.enum';
+import { AppMemory } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocSpecification } from './doc.dto';
 import { DocOptions } from './doc.interface';

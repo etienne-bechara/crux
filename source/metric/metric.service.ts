@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { collectDefaultMetrics, Histogram, Metric, metric, Registry } from 'prom-client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
 
 import { AppConfig } from '../app/app.config';
+import { AppMetric } from '../app/app.enum';
 import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
+import { MetricDataType } from './metric.enum';
 
 @Injectable()
 export class MetricService {
 
   private register: Registry;
-  private httpInboundHistogram: Histogram<any>;
-  private httpOutboundHistogram: Histogram<any>;
+  private metrics: Map<string, Metric<any>> = new Map();
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -21,6 +22,7 @@ export class MetricService {
     private readonly metricConfig: MetricConfig,
   ) {
     this.setupRegistry();
+    this.setupMetrics();
     void this.setupPushgateway();
   }
 
@@ -40,6 +42,26 @@ export class MetricService {
       prefix: defaultPrefix,
       labels: defaultLabels,
       gcDurationBuckets: defaultBuckets,
+    });
+  }
+
+  /**
+   * Setup custom metrics used by application.
+   */
+  private setupMetrics(): void {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { httpBuckets } = metrics;
+
+    this.getHistogram(AppMetric.HTTP_INBOUND_LATENCY, {
+      help: 'Latency of inbound HTTP requests in milliseconds.',
+      labelNames: [ 'method', 'path', 'code' ],
+      buckets: httpBuckets,
+    });
+
+    this.getHistogram(AppMetric.HTTP_OUTBOUND_LATENCY, {
+      help: 'Latency of outbound HTTP requests in milliseconds.',
+      labelNames: [ 'method', 'host', 'path', 'code' ],
+      buckets: httpBuckets,
     });
   }
 
@@ -85,52 +107,41 @@ export class MetricService {
   }
 
   /**
-   * Acquires the underlying Prometheus registry.
+   * Gets metric by name creating if necessary.
+   * @param type
+   * @param name
+   * @param params
    */
-  public getRegister(): Registry {
-    return this.register;
-  }
+  private getMetric(type: MetricDataType, name: string, params: any): any {
+    let metric = this.metrics.get(name);
+    if (metric) return metric;
 
-  /**
-   * Acquires configured inbound HTTP histogram.
-   */
-  public getHttpInboundHistogram(): Histogram<'method' | 'path' | 'code'> {
-    if (!this.httpInboundHistogram) {
-      const { metrics } = this.appConfig.APP_OPTIONS || { };
-      const { httpBuckets } = metrics;
-
-      this.httpInboundHistogram = new Histogram({
-        name: 'http_inbound_latency',
-        help: 'Latency of inbound HTTP requests in milliseconds.',
-        labelNames: [ 'method', 'path', 'code' ],
-        buckets: httpBuckets,
-      });
-
-      this.registerMetric(this.httpInboundHistogram);
+    if (!params) {
+      throw new InternalServerErrorException(`cannot get metric ${name} since it was never initialized`);
     }
 
-    return this.httpInboundHistogram;
-  }
+    switch (type) {
+      case MetricDataType.COUNTER:
+        metric = new Counter({ name, ...params } as CounterConfiguration<any>);
+        break;
 
-  /**
-   * Acquires configured outbound HTTP histogram.
-   */
-  public getHttpOutboundHistogram(): Histogram<'method' | 'host' | 'path' | 'code'> {
-    if (!this.httpOutboundHistogram) {
-      const { metrics } = this.appConfig.APP_OPTIONS || { };
-      const { httpBuckets } = metrics;
+      case MetricDataType.GAUGE:
+        metric = new Gauge({ name, ...params } as GaugeConfiguration<any>);
+        break;
 
-      this.httpOutboundHistogram = new Histogram({
-        name: 'http_outbound_latency',
-        help: 'Latency of outbound HTTP requests in milliseconds.',
-        labelNames: [ 'method', 'host', 'path', 'code' ],
-        buckets: httpBuckets,
-      });
+      case MetricDataType.HISTOGRAM:
+        metric = new Histogram({ name, ...params } as HistogramConfiguration<any>);
+        break;
 
-      this.registerMetric(this.httpOutboundHistogram);
+      case MetricDataType.SUMMARY:
+        metric = new Summary({ name, ...params } as SummaryConfiguration<any>);
+        break;
     }
 
-    return this.httpOutboundHistogram;
+    this.register.registerMetric(metric);
+    this.metrics.set(name, metric);
+
+    return metric;
   }
 
   public readMetrics(): Promise<string>;
@@ -146,11 +157,51 @@ export class MetricService {
   }
 
   /**
-   * Registers target metric.
+   * Gets or create a counter by name.
+   * Counters go up, and reset when the process restarts.
+   * @param name
    * @param params
    */
-  public registerMetric(params: Metric<string>): void {
-    this.register.registerMetric(params);
+  public getCounter<T extends string>(
+    name: string, params?: Omit<CounterConfiguration<string>, 'name'>,
+  ): Counter<T> {
+    return this.getMetric(MetricDataType.COUNTER, name, params);
+  }
+
+  /**
+   * Gets or create a gauge by name.
+   * Gauges can go up or down, and reset when the process restarts.
+   * @param name
+   * @param params
+   */
+  public getGauge<T extends string>(
+    name: string, params?: Omit<GaugeConfiguration<string>, 'name'>,
+  ): Gauge<T> {
+    return this.getMetric(MetricDataType.GAUGE, name, params);
+  }
+
+  /**
+   * Gets or create a histogram by name.
+   * Histograms track sizes and frequency of events.
+   * @param name
+   * @param params
+   */
+  public getHistogram<T extends string>(
+    name: string, params?: Omit<HistogramConfiguration<string>, 'name'>,
+  ): Histogram<T> {
+    return this.getMetric(MetricDataType.HISTOGRAM, name, params);
+  }
+
+  /**
+   * Gets or create a summary by name.
+   * Summaries calculate percentiles of observed values.
+   * @param name
+   * @param params
+   */
+  public getSummary<T extends string>(
+    name: string, params?: Omit<SummaryConfiguration<string>, 'name'>,
+  ): Summary<T> {
+    return this.getMetric(MetricDataType.SUMMARY, name, params);
   }
 
 }

@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
 import { mergeMap, Observable } from 'rxjs';
 
+import { AppMetric } from '../app/app.enum';
 import { ContextService } from '../context/context.service';
 import { MetricService } from './metric.service';
 
@@ -18,7 +19,7 @@ export class MetricInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const histogram = this.metricService.getHttpInboundHistogram();
+    const histogram = this.metricService.getHistogram(AppMetric.HTTP_INBOUND_LATENCY);
 
     return next
       .handle()

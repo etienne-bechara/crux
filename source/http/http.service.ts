@@ -3,6 +3,7 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
+import { AppMetric } from '../app/app.enum';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { TraceService } from '../trace/trace.service';
@@ -306,7 +307,7 @@ export class HttpService {
     const logData = { latency, code, body: body || undefined, headers };
     this.logService?.http(this.buildLogMessage(params), logData);
 
-    const histogram = this.metricService?.getHttpOutboundHistogram();
+    const histogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_LATENCY);
 
     if (histogram) {
       histogram.labels(method, host, path, code).observe(latency);

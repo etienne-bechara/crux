@@ -32,10 +32,9 @@ import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { TagStorage } from './app.decorator';
-import { AppMemory } from './app.enum';
 import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
-import { AppOptions } from './app.interface';
+import { AppMemory, AppOptions } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()

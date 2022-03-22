@@ -6,6 +6,7 @@ export enum AppEnvironment {
   TEST = 'test',
 }
 
-export interface AppMemory {
-  openApiSpecification: string;
+export enum AppMetric {
+  HTTP_INBOUND_LATENCY = 'http_inbound_latency',
+  HTTP_OUTBOUND_LATENCY = 'http_outbound_latency',
 }

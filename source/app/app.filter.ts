@@ -7,7 +7,7 @@ import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { TraceService } from '../trace/trace.service';
 import { AppConfig } from './app.config';
-import { AppEnvironment } from './app.enum';
+import { AppEnvironment, AppMetric } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequestMetadata } from './app.interface';
 
 @Catch()
@@ -145,7 +145,7 @@ export class AppFilter implements ExceptionFilter {
   private collectExceptionMetrics(params: AppException): void {
     const { code } = params;
 
-    const histogram = this.metricService?.getHttpInboundHistogram();
+    const histogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_LATENCY);
     if (!histogram) return;
 
     const latency = this.contextService.getRequestLatency();
