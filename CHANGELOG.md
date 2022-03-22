@@ -1,3 +1,34 @@
+# [4.10.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.9.1...v4.10.0) (2022-03-22)
+
+
+### Bug Fixes
+
+* add http telemetry data ([0a73c17](https://github.com/etienne-bechara/nestjs-core/commit/0a73c17136d1a9d01af061ca307825e2cc2a387a))
+* add span metadata at adpter config ([d3ef445](https://github.com/etienne-bechara/nestjs-core/commit/d3ef445fca02361c3a2b9ec40835ed91d485f157))
+* doc renaming ([72cb45a](https://github.com/etienne-bechara/nestjs-core/commit/72cb45a4619b373b82dd98e5c775d6b67658a2b4))
+* doc tag grouping ([76b6b73](https://github.com/etienne-bechara/nestjs-core/commit/76b6b7301e35d1861064c62159b5e5927bcffe71))
+* http query typing ([f72ac8f](https://github.com/etienne-bechara/nestjs-core/commit/f72ac8f1fa10083afae9605c4a5f2b5dffe059df))
+* logger transport options structure ([ddf5623](https://github.com/etienne-bechara/nestjs-core/commit/ddf5623020ee0a3ace2aef94bf7dcdaefb4dbb24))
+* logging details ([cf2f073](https://github.com/etienne-bechara/nestjs-core/commit/cf2f0731bdafc83a63bd1cf6572dc2daae37d77c))
+* metric naming conventions ([41ad6de](https://github.com/etienne-bechara/nestjs-core/commit/41ad6de8b46a1a5d1bb5249cd3ef56839c1d1ff8))
+* move log interceptor to context ([7a76a08](https://github.com/etienne-bechara/nestjs-core/commit/7a76a08880dc8b86357036135f55f1c5c9bacc46))
+* override nest logger as disabled ([cf999ca](https://github.com/etienne-bechara/nestjs-core/commit/cf999ca3931b103f12f65ba9de6019a9020040fc))
+* remove unused docker compose expose ([0ca2849](https://github.com/etienne-bechara/nestjs-core/commit/0ca2849cdb3eee465c8d1b7438e02099b94dad10))
+* rename module for consistency ([1e22c9e](https://github.com/etienne-bechara/nestjs-core/commit/1e22c9ed36e88e914cd53ccc5704955c6072d869))
+* rename redoc to docs ([eaa0483](https://github.com/etienne-bechara/nestjs-core/commit/eaa04830e4ceccf6f5ceb96c2c1750d6baca16ba))
+* rename validator ([93d6b56](https://github.com/etienne-bechara/nestjs-core/commit/93d6b56fd8c57c66df546ba531c4bec414a641c6))
+* trace wip ([3b08799](https://github.com/etienne-bechara/nestjs-core/commit/3b0879949b5144182cb6e41d3fdfc8febe1fd8f6))
+* transport strings ([e4cd1c3](https://github.com/etienne-bechara/nestjs-core/commit/e4cd1c30276a9acc2db72d94ec82d42fb222cb8a))
+* use hex for request and instance ids ([c19adc6](https://github.com/etienne-bechara/nestjs-core/commit/c19adc62262e362abc82ddb7f97893d96522ce49))
+
+
+### Features
+
+* add basic tracing ([7c4ee25](https://github.com/etienne-bechara/nestjs-core/commit/7c4ee25d16ddcddae58d191fbc98443ec6b91330))
+* add http query array joining support ([1885279](https://github.com/etienne-bechara/nestjs-core/commit/1885279ef3e374bc850776bbceb889c939dc9c9e))
+* add metric getter ([9267a92](https://github.com/etienne-bechara/nestjs-core/commit/9267a92d19dd1c6287800184a379fedcd8c654f9))
+* add tempo in docker compose ([336799d](https://github.com/etienne-bechara/nestjs-core/commit/336799d551e300b7ef334c6893674e894552bc06))
+
 ## [4.9.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.9.0...v4.9.1) (2022-03-19)
 
 
