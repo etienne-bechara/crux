@@ -1,3 +1,10 @@
+## [4.10.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.0...v4.10.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* allow other types at http query ([5129a0a](https://github.com/etienne-bechara/nestjs-core/commit/5129a0ae410046f4fc936c30e5cd12da766b41fc))
+
 # [4.10.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.9.1...v4.10.0) (2022-03-22)
 
 
