@@ -58,7 +58,7 @@ export class SentryService implements LogTransport {
    * @param params
    */
   public log(params: LogParams): void {
-    const { severity, message, requestId, data, error: rawError } = params;
+    const { severity, message, traceId, requestId, data, error: rawError } = params;
     const error = rawError || new Error(message);
 
     if (message !== error.message) {
@@ -73,6 +73,7 @@ export class SentryService implements LogTransport {
       }
 
       scope.setExtras({
+        traceId,
         requestId,
         details: JSON.stringify(data || { }, null, 2),
       });

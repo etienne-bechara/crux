@@ -19,7 +19,7 @@ export class RandomService {
    */
   // eslint-disable-next-line complexity
   public async doRandom(): Promise<any> {
-    const latency = Math.random() * 5000;
+    const latency = Math.random() * 2000;
     await this.promiseService.sleep(latency);
 
     const dice = Math.random() * 100;

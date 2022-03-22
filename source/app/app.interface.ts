@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@ne
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { Span } from '@opentelemetry/api';
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
@@ -10,6 +11,7 @@ import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { SentryOptions } from '../sentry/sentry.interface';
 import { SlackOptions } from '../slack/slack.interface';
+import { TraceOptions } from '../trace/trace.interface';
 
 export interface AppOptions extends ModuleMetadata {
   /** Provide an already built instance to skip `.compile()` step. */
@@ -66,6 +68,8 @@ export interface AppOptions extends ModuleMetadata {
   slack?: SlackOptions;
   /** Metrics configuration. */
   metrics?: MetricOptions;
+  /** Traces configuration. */
+  traces?: TraceOptions;
   /** Auto generated API documentation options. */
   docs?: DocOptions;
 }
@@ -102,6 +106,11 @@ export interface AppRequest {
  */
 export interface AppRawRequest extends http.IncomingMessage {
   metadata: any;
+}
+
+export interface AppRequestMetadata {
+  span: Span;
+  traceId: string;
 }
 
 export interface AppResponse {

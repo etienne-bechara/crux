@@ -9,7 +9,7 @@ export interface LokiOptions {
   username?: string;
   /** Loki password to publish logs. Can be overridden by env `LOKI_PASSWORD`. */
   password?: string;
-  /** Loki API push interval in milliseconds. Default: 30000. */
+  /** Loki API push interval in milliseconds. Default: 20000. */
   pushInterval?: number;
   /** Loki maximum batch size, will trigger a premature push if necessary. Default: 1000. */
   batchSize?: number;

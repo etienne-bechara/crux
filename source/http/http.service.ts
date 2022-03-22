@@ -14,7 +14,7 @@ export class HttpService {
   private instance: Got;
 
   public constructor(
-    @Inject(HttpInjectionToken.MODULE_OPTIONS)
+    @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,

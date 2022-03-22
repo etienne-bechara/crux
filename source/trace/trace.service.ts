@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { trace, Tracer } from '@opentelemetry/api';
+import { context, Span, SpanOptions, trace } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { BasicTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { Resource } from '@opentelemetry/resources';
+import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 import { AppConfig } from '../app/app.config';
+import { AppRequestMetadata } from '../app/app.interface';
+import { ContextService } from '../context/context.service';
+import { TraceConfig } from './trace.config';
 
 @Injectable()
 export class TraceService {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly traceConfig: TraceConfig,
   ) {
     this.setupTracer();
   }
@@ -18,21 +25,68 @@ export class TraceService {
    * Sets up the tracer client.
    */
   private setupTracer(): void {
+    const { job, instance, traces } = this.appConfig.APP_OPTIONS || { };
+    const { url, username, password, pushInterval } = traces;
+    const environment = this.appConfig.NODE_ENV;
+
+    const traceUrl = this.traceConfig.TRACE_URL || url;
+    const traceUsername = this.traceConfig.TRACE_USERNAME ?? username;
+    const tracePassword = this.traceConfig.TRACE_PASSWORD ?? password;
+
     const exporter = new OTLPTraceExporter({
-      url: 'http://127.0.0.1:55681/v1/traces',
+      url: `${traceUrl}/v1/traces`,
+      headers: username
+        ? {
+          authorization: `Basic ${Buffer.from(`${traceUsername}:${tracePassword}`).toString('base64')}`,
+        }
+        : undefined,
     });
 
-    const processor = new SimpleSpanProcessor(exporter);
-    const provider = new BasicTracerProvider();
+    // const exporter = new ConsoleSpanExporter();
+
+    const processor = new BatchSpanProcessor(exporter, {
+      scheduledDelayMillis: pushInterval,
+    });
+
+    const provider = new BasicTracerProvider({
+      resource: new Resource({
+        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: environment,
+        [SemanticResourceAttributes.SERVICE_NAME]: job,
+        [SemanticResourceAttributes.SERVICE_INSTANCE_ID]: instance,
+      }),
+    });
+
     provider.addSpanProcessor(processor);
     provider.register();
   }
 
   /**
-   * Get current tracer.
+   * Acquires the span tied to current request.
    */
-  public getTracer(): Tracer {
-    return trace.getTracer('sample-123');
+  public getRequestSpan(): Span {
+    return this.contextService.getMetadata('span');
+  }
+
+  /**
+   * Starts a new span.
+   * @param name
+   * @param options
+   */
+  public startSpan(name: string, options?: SpanOptions): Span {
+    const { job } = this.appConfig.APP_OPTIONS;
+    return trace.getTracer(job).startSpan(name, options);
+  }
+
+  /**
+   * Start a new child span under current request.
+   * @param name
+   * @param options
+   */
+  public startChildSpan(name: string, options?: SpanOptions): Span {
+    const { job } = this.appConfig.APP_OPTIONS;
+    const requestSpan = this.getRequestSpan();
+    const ctx = trace.setSpan(context.active(), requestSpan);
+    return trace.getTracer(job).startSpan(name, options, ctx);
   }
 
 }

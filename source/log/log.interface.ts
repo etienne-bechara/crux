@@ -5,6 +5,7 @@ export type LogArguments = string | Error | Record<string, any>;
 export interface LogParams {
   timestamp: string;
   severity: LogSeverity;
+  traceId: string;
   requestId: string;
   caller: string;
   message: string;

@@ -19,4 +19,8 @@ void AppModule.boot({
     url: 'http://127.0.0.1:9091',
     pushInterval: 5000,
   },
+  traces: {
+    url: 'http://127.0.0.1:55681',
+    pushInterval: 5000,
+  },
 });

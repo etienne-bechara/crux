@@ -66,6 +66,9 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       10_000, 20_000, 30_000, 50_000, 70_000,
     ],
   },
+  traces: {
+    pushInterval: 20_000,
+  },
   docs: {
     openApiUrl: 'http://127.0.0.1:8080/openapi/json',
     title: 'OpenAPI UI',

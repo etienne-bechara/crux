@@ -5,6 +5,7 @@ import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Mo
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import fs from 'fs';
 import handlebars from 'handlebars';
@@ -135,7 +136,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { fastify, prefix, cors } = this.options;
+    const { job, fastify, prefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -153,6 +154,7 @@ export class AppModule {
         const store = ContextStorage.getStore();
         store.set(ContextStorageKey.REQUEST, req);
         store.set(ContextStorageKey.RESPONSE, res);
+        store.set(ContextStorageKey.TRACER, trace.getTracer(job));
         next();
       });
     });
