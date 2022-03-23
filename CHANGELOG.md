@@ -1,3 +1,18 @@
+# [4.11.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.4...v4.11.0) (2022-03-23)
+
+
+### Bug Fixes
+
+* built-in @IsOptional() calls ([401e8e5](https://github.com/etienne-bechara/nestjs-core/commit/401e8e525eb1d3e53c95935c2bd5d274fd95db11))
+* improve isobject to validated nested ([197dc3b](https://github.com/etienne-bechara/nestjs-core/commit/197dc3b0a273f16cb73b2c25378b1aff89014487))
+* trace child and logs ([1d9d32d](https://github.com/etienne-bechara/nestjs-core/commit/1d9d32db3d14a39011acfa46a7df088e75e22806))
+* trace error logging ([c2a8850](https://github.com/etienne-bechara/nestjs-core/commit/c2a8850dc1fc1565f8b868b219ff7a3f38d5eeb2))
+
+
+### Features
+
+* add distributed tracing ([85be9aa](https://github.com/etienne-bechara/nestjs-core/commit/85be9aae0269746f98b7d630ff33c67a5b727be3))
+
 ## [4.10.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.3...v4.10.4) (2022-03-22)
 
 
