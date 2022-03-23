@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 
 import { ToBoolean } from '../transform/transform.decorator';
-import { IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from '../validate/validate.decorator';
+import { IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString } from '../validate/validate.decorator';
 import { MetricAggregator, MetricDataType } from './metric.enum';
 
 export class MetricReadDto {
@@ -36,10 +35,7 @@ export class MetricData {
   @IsIn(Object.values(MetricDataType))
   public type: MetricDataType;
 
-  @ApiProperty({ type: [ MetricValue ] })
-  @ValidateNested()
-  @Type(() => MetricValue)
-  @IsObject({ each: true })
+  @IsObject(MetricValue, { each: true })
   public values: MetricValue[];
 
   @IsIn(Object.values(MetricAggregator))

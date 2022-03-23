@@ -1,8 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import os from 'os';
 
-import { IsNumber, IsObject, IsString, Min, ValidateNested } from '../validate/validate.decorator';
+import { IsNumber, IsObject, IsString, Min } from '../validate/validate.decorator';
 
 export class AppStatusSystem {
 
@@ -63,9 +61,7 @@ export class AppStatusCpu {
   @IsNumber() @Min(0)
   public speed: number;
 
-  @ValidateNested()
-  @Type(() => AppStatusCpuTimes)
-  @IsObject()
+  @IsObject(AppStatusCpuTimes)
   public times: AppStatusCpuTimes;
 
 }
@@ -75,32 +71,23 @@ export class AppStatusNetwork {
   @IsString()
   public publicIp: string;
 
-  @IsObject()
+  @IsObject({ }, { each: true })
   public interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>;
 
 }
 
 export class AppStatus {
 
-  @ValidateNested()
-  @Type(() => AppStatusSystem)
-  @IsObject()
+  @IsObject(AppStatusSystem)
   public system: AppStatusSystem;
 
-  @ApiProperty({ type: [ AppStatusCpu ] })
-  @ValidateNested()
-  @Type(() => AppStatusCpu)
-  @IsObject({ each: true })
+  @IsObject(AppStatusCpu, { each: true })
   public cpus: AppStatusCpu[];
 
-  @ValidateNested()
-  @Type(() => AppStatusMemory)
-  @IsObject()
+  @IsObject(AppStatusMemory)
   public memory: AppStatusMemory;
 
-  @ValidateNested()
-  @Type(() => AppStatusNetwork)
-  @IsObject()
+  @IsObject(AppStatusNetwork)
   public network: AppStatusNetwork;
 
 }

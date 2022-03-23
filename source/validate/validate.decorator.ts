@@ -488,7 +488,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
  * @param type
  * @param validationOptions
  */
-export function IsObject(type: any, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsObject(type: any = { }, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(type, validationOptions);
 
   const decorators = [
