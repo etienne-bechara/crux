@@ -1,3 +1,10 @@
+## [4.10.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.3...v4.10.4) (2022-03-22)
+
+
+### Bug Fixes
+
+* log trace exception ([7cef3d1](https://github.com/etienne-bechara/nestjs-core/commit/7cef3d1789c1937329284dc070e834713431e756))
+
 ## [4.10.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.2...v4.10.3) (2022-03-22)
 
 
