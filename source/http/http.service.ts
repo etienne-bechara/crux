@@ -214,11 +214,11 @@ export class HttpService {
    * @param params
    */
   private buildLogMessage(params: HttpTelemetryParams): string {
-    const { method, host, path, response } = params;
+    const { method, path, response } = params;
 
     return response
-      ? `⯆ ${method} ${host}${path === '/' ? '' : path}`
-      : `⯅ ${method} ${host}${path === '/' ? '' : path}`;
+      ? `⯆ ${method} ${path}`
+      : `⯅ ${method} ${path}`;
   }
 
   /**

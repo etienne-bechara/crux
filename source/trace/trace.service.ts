@@ -10,6 +10,7 @@ import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { TraceConfig } from './trace.config';
+import { TraceAppDiag } from './trace.interface';
 
 @Injectable()
 export class TraceService {
@@ -35,7 +36,15 @@ export class TraceService {
     const traceUsername = this.traceConfig.TRACE_USERNAME ?? username;
     const tracePassword = this.traceConfig.TRACE_PASSWORD ?? password;
 
-    diag.setLogger(this.logService as any as DiagLogger, DiagLogLevel.ERROR);
+    if (!traceUrl) {
+      this.logService.warning('Trace disable due to missing URL');
+      return;
+    }
+
+    diag.setLogger(
+      new TraceAppDiag(this.logService) as any as DiagLogger,
+      DiagLogLevel.WARN,
+    );
 
     const exporter = new OTLPTraceExporter({
       url: `${traceUrl}/v1/traces`,
@@ -45,8 +54,6 @@ export class TraceService {
         }
         : undefined,
     });
-
-    // const exporter = new ConsoleSpanExporter();
 
     const processor = new BatchSpanProcessor(exporter, {
       scheduledDelayMillis: pushInterval,

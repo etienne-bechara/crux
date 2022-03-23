@@ -32,7 +32,7 @@ export class LokiService implements LogTransport {
     const lokiUrl = this.lokiConfig.LOKI_URL || url;
 
     if (!lokiUrl) {
-      this.logService.info('Loki transport disabled due to missing url');
+      this.logService.info('Loki transport disabled due to missing URL');
       return;
     }
 
