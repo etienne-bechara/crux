@@ -17,6 +17,7 @@ export { Controller, Get, Post, Put, Patch, Delete, Head, Options } from '../app
 export { HttpModuleOptions } from '../http/http.interface';
 export { HttpModule } from '../http/http.module';
 export { HttpService } from '../http/http.service';
+export { LogService as LoggerService } from '../log/log.service';
 
 export {
   Contains,

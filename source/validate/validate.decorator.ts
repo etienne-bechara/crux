@@ -40,6 +40,8 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
+import { SetType } from '../app/app.override';
+
 const ValidateStorage: Map<string, any> = new Map();
 
 /**
@@ -482,14 +484,25 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 // @IsJWT()	Checks if the string is valid JWT.
 
 /**
- * Checks if the value is valid Object. Returns false if the value is not an object.
+ * Checks if the value is of target object. Returns false if the value is not an object.
+ * @param type
  * @param validationOptions
  */
-export function IsObject(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(
+export function IsObject(type: any, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(type, validationOptions);
+
+  const decorators = [
+    ValidateNested(),
+    SetType(() => type),
     CvIsObject(validationOptions),
-    ApiProperty(),
-  );
+    ApiProperty(propertyOptions),
+  ];
+
+  if (validationOptions?.each) {
+    decorators.push(IsArray());
+  }
+
+  return applyDecorators(...decorators);
 }
 
 // @IsNotEmptyObject()	Checks if the object is not empty.

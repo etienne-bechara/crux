@@ -1,6 +1,16 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, SetType, ValidateNested } from '../../../source/app/app.override';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../../source/app/app.override';
 import { OneOf } from '../../../source/validate/validate.decorator';
 import { UserAddressState, UserGender, UserOneOf } from './user.enum';
+
+export class UserEmployer {
+
+  @IsString()
+  public name: string;
+
+  @IsNumber()
+  public salary: number;
+
+}
 
 export class UserAddress {
 
@@ -49,15 +59,6 @@ export class User {
   @IsString() @MinLength(3)
   public name: string;
 
-  @IsString() @MinLength(3)
-  public surname: string;
-
-  @Matches(/(?:\d{3}\.){2}\d{3}-\d{2}/)
-  public taxId: string;
-
-  @IsIn(Object.values(UserGender))
-  public gender: UserGender;
-
   @OneOf(UserOneOf.USER_AGE_BIRTH_YEAR)
   @IsNumber() @Min(0)
   public age?: number;
@@ -69,6 +70,18 @@ export class User {
   public birthYear?: number;
 
   @IsOptional()
+  @IsString() @MinLength(3)
+  public surname?: string;
+
+  @IsOptional()
+  @Matches(/(?:\d{3}\.){2}\d{3}-\d{2}/)
+  public taxId?: string;
+
+  @IsOptional()
+  @IsIn(Object.values(UserGender))
+  public gender?: UserGender;
+
+  @IsOptional()
   @IsEmail()
   public email?: string;
 
@@ -76,9 +89,11 @@ export class User {
   @IsNumberString() @Length(10, 11)
   public phone?: string;
 
-  @ValidateNested()
-  @SetType(() => UserAddress)
-  @IsObject()
+  @IsObject(UserAddress)
   public address: UserAddress;
+
+  @IsOptional()
+  @IsObject(UserEmployer, { each: true })
+  public employers: UserEmployer[];
 
 }
