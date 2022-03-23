@@ -5,7 +5,7 @@ import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Mo
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { trace } from '@opentelemetry/api';
+import { propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import fs from 'fs';
 import handlebars from 'handlebars';
@@ -160,7 +160,8 @@ export class AppModule {
         store.set(ContextStorageKey.TRACER, tracer);
 
         const description = contextService.getRequestDescription('in');
-        const span = tracer.startSpan(description);
+        const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
+        const span = trace.getTracer(job).startSpan(description, { }, ctx);
         const traceId = span.spanContext().traceId;
 
         store.set(ContextStorageKey.METADATA, { span, traceId });

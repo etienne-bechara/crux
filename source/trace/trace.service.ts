@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { context, diag, DiagLogger, DiagLogLevel, Span, SpanOptions, trace } from '@opentelemetry/api';
+import { Context, context, diag, DiagLogger, DiagLogLevel, Span, SpanOptions, trace } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
@@ -67,8 +68,10 @@ export class TraceService {
       }),
     });
 
+    const propagator = new B3Propagator();
+
     provider.addSpanProcessor(processor);
-    provider.register();
+    provider.register({ propagator });
   }
 
   /**
@@ -79,25 +82,33 @@ export class TraceService {
   }
 
   /**
-   * Starts a new span.
-   * @param name
-   * @param options
+   * Acquires the context tied to current request.
    */
-  public startSpan(name: string, options?: SpanOptions): Span {
-    const { job } = this.appConfig.APP_OPTIONS;
-    return trace.getTracer(job).startSpan(name, options);
+  public getRequestContext(): Context {
+    return trace.setSpan(context.active(), this.getRequestSpan());
   }
 
   /**
-   * Start a new child span, if `parent` is omitted uses current request.
+   * Acquires context of target span.
+   * @param span
+   */
+  public getSpanContext(span: Span): Context {
+    return trace.setSpan(context.active(), span);
+  }
+
+  /**
+   * Starts a new span, if `parent` is omitted uses current request.
    * @param name
    * @param options
    * @param parent
    */
-  public startChildSpan(name: string, options?: SpanOptions, parent?: Span): Span {
+  public startSpan(name: string, options?: SpanOptions, parent?: Span): Span {
     const { job } = this.appConfig.APP_OPTIONS;
-    const parentSpan = parent || this.getRequestSpan();
-    const ctx = trace.setSpan(context.active(), parentSpan);
+
+    const ctx = parent
+      ? trace.setSpan(context.active(), parent)
+      : this.getRequestContext();
+
     return trace.getTracer(job).startSpan(name, options, ctx);
   }
 

@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { propagation } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
@@ -231,13 +232,20 @@ export class HttpService {
     const logMessage = this.buildLogMessage(telemetry);
     let response: HttpResponse<T>;
 
-    const span = this.traceService?.startChildSpan(logMessage, {
+    const span = this.traceService?.startSpan(logMessage, {
       attributes: {
         [SemanticAttributes.HTTP_METHOD]: method,
         [SemanticAttributes.HTTP_HOST]: host,
         [SemanticAttributes.HTTP_ROUTE]: path,
       },
     });
+
+    if (span) {
+      request.headers ??= { };
+      const ctx = this.traceService.getSpanContext(span);
+      // eslint-disable-next-line unicorn/consistent-destructuring
+      propagation.inject(ctx, request.headers);
+    }
 
     try {
       this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
@@ -254,7 +262,7 @@ export class HttpService {
       }
 
       const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
-      this.registerOutboundTelemetry({ ...telemetry, response: errorResponse });
+      this.registerOutboundTelemetry({ ...telemetry, response: errorResponse, span });
 
       if (ignoreExceptions) {
         response = errorResponse;
@@ -347,7 +355,7 @@ export class HttpService {
     delete request.url;
 
     throw new HttpException({
-      message: `⯅ ${method} ${host}${path} | ${message}`,
+      message: `⯅ ${method} ${path} | ${message}`,
       proxyExceptions: isProxyExceptions,
       outboundRequest: {
         method,

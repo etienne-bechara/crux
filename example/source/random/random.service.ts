@@ -18,12 +18,28 @@ export class RandomService {
    */
   // eslint-disable-next-line complexity
   public async doRandom(): Promise<any> {
+    const metadata = { random: crypto.randomBytes(7).toString('hex') };
     const inLatency = Math.random() * 1000;
     const outLatency = Math.random() * 1000;
+    const splitChance = Math.random() * 100;
+
     await this.promiseService.sleep(inLatency);
 
+    if (splitChance > 70) {
+      const result = await Promise.all([
+        this.httpService.get('http://127.0.0.1:8080/random', {
+          retryLimit: 0,
+        }),
+        this.httpService.get('http://127.0.0.1:8080/random', {
+          retryLimit: 0,
+        }),
+      ]);
+
+      await this.promiseService.sleep(outLatency);
+      return result;
+    }
+
     const dice = Math.random() * 100;
-    const metadata = { latency: inLatency, dice, crypt: crypto.randomBytes(7).toString('hex') };
 
     switch (true) {
       case dice > 95:
