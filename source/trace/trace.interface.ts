@@ -11,9 +11,6 @@ export interface TraceOptions {
   pushInterval?: number;
 }
 
-/**
- * Implements a custom wrapper to translate trace erros as warnings.
- */
 export class TraceAppDiag {
 
   public constructor(
@@ -21,11 +18,28 @@ export class TraceAppDiag {
   ) { }
 
   /**
+   * Given a message to log, extracts its details.
+   * @param msg
+   */
+  private extractMessageData(msg: string): { message: string; data?: Record<string, any> } {
+    try {
+      const data = JSON.parse(msg);
+      const message = data?.message;
+      delete data?.message;
+
+      return { message, data };
+    }
+    catch {
+      return { message: msg };
+    }
+  }
+
+  /**
    * Logs trace errors as application warnings.
    * @param msg
    */
   public error(msg: string): void {
-    this.logService.warning(msg);
+    return this.warn(msg);
   }
 
   /**
@@ -33,7 +47,8 @@ export class TraceAppDiag {
    * @param msg
    */
   public warn(msg: string): void {
-    this.logService.warning(msg);
+    const { message, data } = this.extractMessageData(msg);
+    this.logService.warning(message, data);
   }
 
 }

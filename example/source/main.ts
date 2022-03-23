@@ -11,14 +11,14 @@ void AppModule.boot({
     UserModule,
     ZipModule,
   ],
-  // loki: {
-  //   url: 'http://localhost:3100',
-  //   pushInterval: 5000,
-  // },
-  // metrics: {
-  //   url: 'http://127.0.0.1:9091',
-  //   pushInterval: 5000,
-  // },
+  loki: {
+    url: 'http://localhost:3100',
+    pushInterval: 5000,
+  },
+  metrics: {
+    url: 'http://127.0.0.1:9091',
+    pushInterval: 5000,
+  },
   traces: {
     url: 'http://127.0.0.1:55681',
     pushInterval: 5000,

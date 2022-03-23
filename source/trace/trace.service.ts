@@ -89,14 +89,15 @@ export class TraceService {
   }
 
   /**
-   * Start a new child span under current request.
+   * Start a new child span, if `parent` is omitted uses current request.
    * @param name
    * @param options
+   * @param parent
    */
-  public startChildSpan(name: string, options?: SpanOptions): Span {
+  public startChildSpan(name: string, options?: SpanOptions, parent?: Span): Span {
     const { job } = this.appConfig.APP_OPTIONS;
-    const requestSpan = this.getRequestSpan();
-    const ctx = trace.setSpan(context.active(), requestSpan);
+    const parentSpan = parent || this.getRequestSpan();
+    const ctx = trace.setSpan(context.active(), parentSpan);
     return trace.getTracer(job).startSpan(name, options, ctx);
   }
 
