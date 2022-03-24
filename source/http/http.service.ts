@@ -313,7 +313,7 @@ export class HttpService {
     const { statusCode, body, headers } = response;
 
     const duration = Date.now() - start;
-    const code = statusCode?.toString?.() || '';
+    const code = statusCode || '';
     const egress = Number(reqHeaders?.['content-length'] || 0);
     const ingress = Number(headers?.['content-length'] || 0);
 
@@ -325,9 +325,9 @@ export class HttpService {
     const egressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_EGRESS);
 
     if (durationHistogram) {
-      durationHistogram.labels(method, host, path, code).observe(duration);
-      ingressHistogram.labels(method, host, path, code).observe(egress);
-      egressHistogram.labels(method, host, path, code).observe(ingress);
+      durationHistogram.labels(method, host, path, code.toString()).observe(duration);
+      ingressHistogram.labels(method, host, path, code.toString()).observe(egress);
+      egressHistogram.labels(method, host, path, code.toString()).observe(ingress);
     }
 
     if (span) {
