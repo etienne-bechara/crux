@@ -1,3 +1,10 @@
+## [4.12.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.0...v4.12.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* unnecessary steps in context ([bfb497e](https://github.com/etienne-bechara/nestjs-core/commit/bfb497ec46b05baa5b53092b06d62ea62d65c349))
+
 # [4.12.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.11.0...v4.12.0) (2022-03-24)
 
 
