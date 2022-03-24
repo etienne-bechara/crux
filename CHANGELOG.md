@@ -1,3 +1,18 @@
+# [4.12.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.11.0...v4.12.0) (2022-03-24)
+
+
+### Bug Fixes
+
+* improve telemetry collection ([bc48a4a](https://github.com/etienne-bechara/nestjs-core/commit/bc48a4aaab5dc6521fbaeb827298f07c1c0580a1))
+* numeric code ([6333fa5](https://github.com/etienne-bechara/nestjs-core/commit/6333fa5c7bb977bd08adadf1c5f6bf01011ae425))
+* numeric code ([2c00904](https://github.com/etienne-bechara/nestjs-core/commit/2c00904305bba165b0d1eed80f23847d3740d58d))
+* status code ([cc0e0b4](https://github.com/etienne-bechara/nestjs-core/commit/cc0e0b4fb6baf3b28eef192aa1cf35016a9aec90))
+
+
+### Features
+
+* add request size to tracing and histogram ([74f4bbc](https://github.com/etienne-bechara/nestjs-core/commit/74f4bbca7188f3bbc1870317ea1adc2459a9fff6))
+
 # [4.11.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.10.4...v4.11.0) (2022-03-23)
 
 
