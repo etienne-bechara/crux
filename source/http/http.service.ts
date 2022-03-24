@@ -332,7 +332,7 @@ export class HttpService {
 
     if (span) {
       span.setAttributes({
-        [SemanticAttributes.HTTP_STATUS_CODE]: code ? Number(code) : '',
+        [SemanticAttributes.HTTP_STATUS_CODE]: code ? Number(code) : undefined,
         [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: egress,
         [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: ingress,
         'http.duration': duration,
