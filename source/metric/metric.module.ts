@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { MetricConfig } from './metric.config';
 import { MetricController } from './metric.controller';
-import { MetricInterceptor } from './metric.interceptor';
 import { MetricService } from './metric.service';
 
 @Module({
@@ -11,7 +9,6 @@ import { MetricService } from './metric.service';
     MetricController,
   ],
   providers: [
-    { provide: APP_INTERCEPTOR, useClass: MetricInterceptor },
     MetricConfig,
     MetricService,
   ],

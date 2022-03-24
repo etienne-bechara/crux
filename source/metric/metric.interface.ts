@@ -7,8 +7,6 @@ export interface MetricOptions {
   defaultBuckets?: number[];
   /** Buckets for HTTP duration metrics histograms. */
   httpDurationBuckets?: number[];
-  /** Buckets for HTTP traffic metrics histograms. */
-  httpTrafficBuckets?: number[];
   /** Prometheus Pushgateway API URL to publish metrics. Can be overridden by env `METRIC_URL`. */
   url?: string;
   /** Prometheus Pushgateway username to publish metrics. Can be overridden by env `METRIC_USERNAME`. */

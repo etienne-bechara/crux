@@ -251,7 +251,7 @@ export class HttpService {
       this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
       response = await this.instance(url, request) as HttpResponse<T>;
 
-      this.registerOutboundTelemetry({ ...telemetry, response, span });
+      this.collectOutboundTelemetry({ ...telemetry, response, span });
     }
     catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
@@ -262,7 +262,7 @@ export class HttpService {
       }
 
       const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
-      this.registerOutboundTelemetry({ ...telemetry, response: errorResponse, span });
+      this.collectOutboundTelemetry({ ...telemetry, response: errorResponse, span });
 
       if (ignoreExceptions) {
         response = errorResponse;
@@ -308,33 +308,25 @@ export class HttpService {
    * Register logs, metrics and tracing of outbound request.
    * @param params
    */
-  private registerOutboundTelemetry(params: HttpTelemetryParams): void {
-    const { start, method, host, path, response, span, headers: reqHeaders } = params;
+  private collectOutboundTelemetry(params: HttpTelemetryParams): void {
+    const { start, method, host, path, response, span } = params;
     const { statusCode, body, headers } = response;
 
     const duration = Date.now() - start;
     const code = statusCode || '';
-    const egress = Number(reqHeaders?.['content-length'] || 0);
-    const ingress = Number(headers?.['content-length'] || 0);
 
     const logData = { duration, code, body: body || undefined, headers };
     this.logService?.http(this.buildLogMessage(params), logData);
 
     const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION);
-    const ingressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_INGRESS);
-    const egressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_EGRESS);
 
     if (durationHistogram) {
       durationHistogram.labels(method, host, path, code.toString()).observe(duration);
-      ingressHistogram.labels(method, host, path, code.toString()).observe(egress);
-      egressHistogram.labels(method, host, path, code.toString()).observe(ingress);
     }
 
     if (span) {
       span.setAttributes({
         [SemanticAttributes.HTTP_STATUS_CODE]: code ? Number(code) : undefined,
-        [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: egress,
-        [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: ingress,
         'http.duration': duration,
       });
 

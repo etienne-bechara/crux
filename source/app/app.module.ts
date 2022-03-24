@@ -37,6 +37,7 @@ import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
 import { AppMemory, AppOptions } from './app.interface';
 import { AppService } from './app.service';
+import { AppTimeout } from './app.timeout';
 
 @Global()
 @Module({ })
@@ -376,6 +377,7 @@ export class AppModule {
     const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
+      { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
       AppConfig,
       AppService,
     ];
@@ -383,7 +385,7 @@ export class AppModule {
     if (timeout) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: AppInterceptor,
+        useClass: AppTimeout,
       });
     }
 

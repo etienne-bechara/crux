@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import os from 'os';
 
+import { ContextService } from '../context/context.service';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
+import { MetricService } from '../metric/metric.service';
+import { TraceService } from '../trace/trace.service';
 import { AppStatus } from './app.dto';
+import { AppMetric } from './app.enum';
 
 @Injectable()
 export class AppService {
@@ -11,8 +16,11 @@ export class AppService {
   private publicIp: string;
 
   public constructor(
+    private readonly contextService: ContextService,
     private readonly httpService: HttpService,
     private readonly logService: LogService,
+    private readonly metricService: MetricService,
+    private readonly traceService: TraceService,
   ) { }
 
   /**
@@ -63,6 +71,34 @@ export class AppService {
         interfaces: os.networkInterfaces(),
       },
     };
+  }
+
+  /**
+   * Register logs, metrics and tracing of inbound request.
+   * @param code
+   */
+  public collectInboundTelemetry(code: HttpStatus): void {
+    const span = this.traceService?.getRequestSpan();
+    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
+
+    const method = this.contextService.getRequestMethod();
+    const path = this.contextService.getRequestPath();
+    const duration = this.contextService.getRequestDuration();
+
+    if (durationHistogram) {
+      durationHistogram.labels(method, path, code.toString()).observe(duration);
+    }
+
+    if (span) {
+      span.setAttributes({
+        [SemanticAttributes.HTTP_METHOD]: method,
+        [SemanticAttributes.HTTP_ROUTE]: path,
+        [SemanticAttributes.HTTP_STATUS_CODE]: code,
+        'http.duration': duration,
+      });
+
+      span.end();
+    }
   }
 
 }

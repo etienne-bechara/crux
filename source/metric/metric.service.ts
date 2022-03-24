@@ -50,7 +50,7 @@ export class MetricService {
    */
   private setupMetrics(): void {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { httpDurationBuckets, httpTrafficBuckets } = metrics;
+    const { httpDurationBuckets } = metrics;
 
     const httpInboundLabels = [ 'method', 'path', 'code' ];
     const httpOutboundLabels = [ 'method', 'host', 'path', 'code' ];
@@ -61,34 +61,10 @@ export class MetricService {
       buckets: httpDurationBuckets,
     });
 
-    this.getHistogram(AppMetric.HTTP_INBOUND_INGRESS, {
-      help: 'Size of inbound HTTP ingress traffic in bytes.',
-      labelNames: httpInboundLabels,
-      buckets: httpTrafficBuckets,
-    });
-
-    this.getHistogram(AppMetric.HTTP_INBOUND_EGRESS, {
-      help: 'Size of inbound HTTP egress traffic in bytes.',
-      labelNames: httpInboundLabels,
-      buckets: httpTrafficBuckets,
-    });
-
     this.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION, {
       help: 'Duration of outbound HTTP requests in seconds.',
       labelNames: httpOutboundLabels,
       buckets: httpDurationBuckets,
-    });
-
-    this.getHistogram(AppMetric.HTTP_OUTBOUND_INGRESS, {
-      help: 'Size of outbound HTTP ingress traffic in bytes.',
-      labelNames: httpOutboundLabels,
-      buckets: httpTrafficBuckets,
-    });
-
-    this.getHistogram(AppMetric.HTTP_OUTBOUND_EGRESS, {
-      help: 'Size of outbound HTTP egress traffic in bytes.',
-      labelNames: httpOutboundLabels,
-      buckets: httpTrafficBuckets,
     });
   }
 

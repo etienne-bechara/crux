@@ -65,12 +65,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       1, 2.5, 5, 7.5,
       10, 25, 50, 75,
     ],
-    httpTrafficBuckets: [
-      100, 250, 500, 750,
-      1000, 2500, 5000, 7500,
-      10_000, 25_000, 50_000, 75_000,
-      100_000, 250_000, 500_000, 750_000,
-    ],
   },
   traces: {
     pushInterval: 20_000,

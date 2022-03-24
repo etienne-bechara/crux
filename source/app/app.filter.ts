@@ -1,24 +1,21 @@
 import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
-import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import cycle from 'cycle';
 
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
-import { MetricService } from '../metric/metric.service';
-import { TraceService } from '../trace/trace.service';
 import { AppConfig } from './app.config';
-import { AppEnvironment, AppMetric } from './app.enum';
+import { AppEnvironment } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequestMetadata } from './app.interface';
+import { AppService } from './app.service';
 
 @Catch()
 export class AppFilter implements ExceptionFilter {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly appService: AppService,
     private readonly contextService: ContextService<AppRequestMetadata>,
     private readonly logService: LogService,
-    private readonly metricService: MetricService,
-    private readonly traceService: TraceService,
   ) { }
 
   /**
@@ -35,7 +32,7 @@ export class AppFilter implements ExceptionFilter {
       };
 
       this.logException(appException);
-      this.collectExceptionTelemetry(appException);
+      this.appService.collectInboundTelemetry(appException.code);
       this.sendResponse(appException);
     }
     catch (e) {
@@ -135,42 +132,6 @@ export class AppFilter implements ExceptionFilter {
     return httpErrors.includes(code)
       ? this.logService.error(exception, data)
       : this.logService.info(exception, data);
-  }
-
-  /**
-   * Register exception metrics and tracing.
-   * @param params
-   */
-  private collectExceptionTelemetry(params: AppException): void {
-    const { code } = params;
-
-    const span = this.traceService?.getRequestSpan();
-    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
-    const ingressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_INGRESS);
-    const egressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_EGRESS);
-
-    const method = this.contextService.getRequestMethod();
-    const path = this.contextService.getRequestPath();
-    const duration = this.contextService.getRequestDuration();
-    const ingress = Number(this.contextService.getRequestHeader('content-length') || 0);
-    const egress = Number(this.contextService.getResponseHeader('content-length') || 0);
-
-    if (span) {
-      span.setAttributes({
-        [SemanticAttributes.HTTP_STATUS_CODE]: code,
-        [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: ingress,
-        [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: egress,
-        'http.duration': duration,
-      });
-
-      span.end();
-    }
-
-    if (durationHistogram) {
-      durationHistogram.labels(method, path, code.toString()).observe(duration);
-      ingressHistogram.labels(method, path, code.toString()).observe(ingress);
-      egressHistogram.labels(method, path, code.toString()).observe(egress);
-    }
   }
 
   /**
