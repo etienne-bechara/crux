@@ -70,20 +70,14 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquire request id.
    */
   public getRequestId(): string {
-    const req = this.getRequest();
-    if (!req) return;
-
-    return req.id;
+    return this.getRequest()?.id;
   }
 
   /**
    * Acquire request method.
    */
   public getRequestMethod(): string {
-    const req = this.getRequest();
-    if (!req) return;
-
-    return req.method;
+    return this.getRequest()?.method;
   }
 
   /**
@@ -91,9 +85,7 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestPath(): string {
     const req = this.getRequest();
-    if (!req) return;
-
-    return req.routerPath || req.url;
+    return req?.routerPath || req?.url;
   }
 
   /**
@@ -122,33 +114,26 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestParams(): Record<string, any> {
     const req = this.getRequest();
-    if (!req) return;
 
-    if (req.params) {
+    if (req?.params) {
       delete req.params['*'];
     }
 
-    return this.validateObjectLength(req.params as Record<string, any>);
+    return this.validateObjectLength(req?.params as Record<string, any>);
   }
 
   /**
    * Acquire true client IP.
    */
   public getRequestQuery(): Record<string, any> {
-    const req = this.getRequest();
-    if (!req) return;
-
-    return this.validateObjectLength(req.query as Record<string, any>);
+    return this.validateObjectLength(this.getRequest()?.query as Record<string, any>);
   }
 
   /**
    * Acquire true client IP.
    */
   public getRequestBody(): Record<string, any> {
-    const req = this.getRequest();
-    if (!req) return;
-
-    return this.validateObjectLength(req.body as Record<string, any>);
+    return this.validateObjectLength(this.getRequest()?.body as Record<string, any>);
   }
 
   /**
@@ -156,19 +141,14 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestIp(): string {
     const req = this.getRequest();
-    if (!req) return;
-
-    return req.ips?.[req.ips.length - 1] || req.ip;
+    return req?.ips?.[req.ips.length - 1] || req?.ip;
   }
 
   /**
    * Acquire all request headers.
    */
   public getRequestHeaders(): Record<string, any> {
-    const req = this.getRequest();
-    if (!req) return;
-
-    return this.validateObjectLength(req.headers as Record<string, any>);
+    return this.validateObjectLength(this.getRequest()?.headers as Record<string, any>);
   }
 
   /**
@@ -176,8 +156,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    */
   public getRequestHeader(key: string): string {
-    const headers = this.getRequestHeaders() || { };
-    return headers[key.toLowerCase()];
+    return this.getRequestHeaders()?.[key.toLowerCase()];
   }
 
   /**
@@ -234,20 +213,14 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquire current response status code.
    */
   public getResponseCode(): number {
-    const res = this.getResponse();
-    if (!res) return;
-
-    return res.statusCode;
+    return this.getResponse()?.statusCode;
   }
 
   /**
    * Acquire all response headers.
    */
   public getResponseHeaders(): Record<string, string> {
-    const res = this.getResponse();
-    if (!res) return;
-
-    return res.getHeaders();
+    return this.getResponse()?.getHeaders();
   }
 
   /**
@@ -255,10 +228,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    */
   public getResponseHeader(key: string): string {
-    const res = this.getResponse();
-    if (!res) return;
-
-    return res.getHeader(key);
+    return this.getResponse()?.getHeader(key);
   }
 
 }
