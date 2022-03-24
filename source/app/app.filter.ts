@@ -35,8 +35,7 @@ export class AppFilter implements ExceptionFilter {
       };
 
       this.logException(appException);
-      this.collectExceptionMetrics(appException);
-      this.closeRequestSpan(appException);
+      this.collectExceptionTelemetry(appException);
       this.sendResponse(appException);
     }
     catch (e) {
@@ -139,38 +138,39 @@ export class AppFilter implements ExceptionFilter {
   }
 
   /**
-   * Register exception metrics.
+   * Register exception metrics and tracing.
    * @param params
    */
-  private collectExceptionMetrics(params: AppException): void {
-    const { code } = params;
-
-    const histogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_LATENCY);
-    if (!histogram) return;
-
-    const latency = this.contextService.getRequestLatency();
-    const method = this.contextService.getRequestMethod();
-    const path = this.contextService.getRequestPath();
-
-    histogram.labels(method, path, code.toString()).observe(latency);
-  }
-
-  /**
-   * Close request span setting http attributes.
-   * @param params
-   */
-  private closeRequestSpan(params: AppException): void {
+  private collectExceptionTelemetry(params: AppException): void {
     const { code } = params;
 
     const span = this.traceService?.getRequestSpan();
-    if (!span) return;
+    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
+    const ingressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_INGRESS);
+    const egressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_EGRESS);
 
-    span.setAttributes({
-      [SemanticAttributes.HTTP_STATUS_CODE]: code,
-      'http.latency': this.contextService.getRequestLatency(),
-    });
+    const method = this.contextService.getRequestMethod();
+    const path = this.contextService.getRequestPath();
+    const duration = this.contextService.getRequestDuration();
+    const ingress = Number(this.contextService.getRequestHeader('content-length') || 0);
+    const egress = Number(this.contextService.getResponseHeader('content-length') || 0);
 
-    span.end();
+    if (span) {
+      span.setAttributes({
+        [SemanticAttributes.HTTP_STATUS_CODE]: code,
+        [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: ingress,
+        [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: egress,
+        'http.duration': duration,
+      });
+
+      span.end();
+    }
+
+    if (durationHistogram) {
+      durationHistogram.labels(method, path, code.toString()).observe(duration);
+      ingressHistogram.labels(method, path, code.toString()).observe(ingress);
+      egressHistogram.labels(method, path, code.toString()).observe(egress);
+    }
   }
 
   /**
@@ -198,7 +198,7 @@ export class AppFilter implements ExceptionFilter {
       : filteredResponse;
 
     this.logService.http(this.contextService.getRequestDescription('out'), {
-      latency: this.contextService.getRequestLatency(),
+      duration: this.contextService.getRequestDuration(),
       code,
       body: clientResponse,
     });

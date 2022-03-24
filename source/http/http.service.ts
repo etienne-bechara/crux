@@ -59,7 +59,7 @@ export class HttpService {
    * - Response cookie parsing.
    *
    * At the end of external request, regardless of status,
-   * register latency at outbound histogram.
+   * register duration at outbound histogram.
    * @param url
    * @param params
    */
@@ -309,25 +309,33 @@ export class HttpService {
    * @param params
    */
   private registerOutboundTelemetry(params: HttpTelemetryParams): void {
-    const { start, method, host, path, response, span } = params;
+    const { start, method, host, path, response, span, headers: reqHeaders } = params;
     const { statusCode, body, headers } = response;
 
-    const latency = Date.now() - start;
+    const duration = Date.now() - start;
     const code = statusCode?.toString?.() || '';
+    const egress = Number(reqHeaders?.['content-length'] || 0);
+    const ingress = Number(headers?.['content-length'] || 0);
 
-    const logData = { latency, code, body: body || undefined, headers };
+    const logData = { duration, code, body: body || undefined, headers };
     this.logService?.http(this.buildLogMessage(params), logData);
 
-    const histogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_LATENCY);
+    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION);
+    const ingressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_INGRESS);
+    const egressHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_EGRESS);
 
-    if (histogram) {
-      histogram.labels(method, host, path, code).observe(latency);
+    if (durationHistogram) {
+      durationHistogram.labels(method, host, path, code).observe(duration);
+      ingressHistogram.labels(method, host, path, code).observe(egress);
+      egressHistogram.labels(method, host, path, code).observe(ingress);
     }
 
     if (span) {
       span.setAttributes({
         [SemanticAttributes.HTTP_STATUS_CODE]: code,
-        'http.latency': latency,
+        [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: egress,
+        [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: ingress,
+        'http.duration': duration,
       });
 
       span.end();

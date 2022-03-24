@@ -19,7 +19,9 @@ export class MetricInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const histogram = this.metricService.getHistogram(AppMetric.HTTP_INBOUND_LATENCY);
+    const durationHistogram = this.metricService.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
+    const ingressHistogram = this.metricService.getHistogram(AppMetric.HTTP_INBOUND_INGRESS);
+    const egressHistogram = this.metricService.getHistogram(AppMetric.HTTP_INBOUND_EGRESS);
 
     return next
       .handle()
@@ -29,9 +31,13 @@ export class MetricInterceptor implements NestInterceptor {
           const method = this.contextService.getRequestMethod();
           const path = this.contextService.getRequestPath();
           const code = this.contextService.getResponseCode() || HttpStatus.OK;
-          const latency = this.contextService.getRequestLatency();
+          const duration = this.contextService.getRequestDuration();
+          const ingress = Number(this.contextService.getRequestHeader('content-length') || 0);
+          const egress = Number(this.contextService.getResponseHeader('content-length') || 0);
 
-          histogram.labels(method, path, code.toString()).observe(latency);
+          durationHistogram.labels(method, path, code.toString()).observe(duration);
+          ingressHistogram.labels(method, path, code.toString()).observe(ingress);
+          egressHistogram.labels(method, path, code.toString()).observe(egress);
 
           return data;
         }),

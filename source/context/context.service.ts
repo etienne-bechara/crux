@@ -97,6 +97,18 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
+   * Builds a request description including method and path.
+   * @param step
+   */
+  public getRequestDescription(step: 'in' | 'out'): string {
+    const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
+
+    return step === 'in'
+      ? `⯈ ${description}`
+      : `⯇ ${description}`;
+  }
+
+  /**
    * Ensures target object is valid and contain at least one key,
    * if not return as `undefined`.
    * @param obj
@@ -150,7 +162,7 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Acquire request headers.
+   * Acquire all request headers.
    */
   public getRequestHeaders(): Record<string, any> {
     const req = this.getRequest();
@@ -160,20 +172,22 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Acquire request client user agent.
+   * Acquire specific request header.
+   * @param key
    */
-  public getRequestUserAgent(): string {
-    return this.getRequestHeaders()?.['user-agent'];
+  public getRequestHeader(key: string): string {
+    const headers = this.getRequestHeaders() || { };
+    return headers[key.toLowerCase()];
   }
 
   /**
-   * Acquire current request latency in milliseconds.
+   * Acquire current request duration in seconds.
    */
-  public getRequestLatency(): number {
+  public getRequestDuration(): number {
     const req = this.getRequest();
     if (!req) return;
 
-    return Date.now() - req.time;
+    return (Date.now() - req.time) / 1000;
   }
 
   /**
@@ -217,19 +231,6 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Builds a request description including method, path, ip and user agent.
-   * If `code` is provided consider as outbound and add latency details.
-   * @param step
-   */
-  public getRequestDescription(step: 'in' | 'out'): string {
-    const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
-
-    return step === 'in'
-      ? `⯈ ${description}`
-      : `⯇ ${description}`;
-  }
-
-  /**
    * Acquire current response status code.
    */
   public getResponseCode(): number {
@@ -237,6 +238,27 @@ export class ContextService<Metadata = Record<string, any>> {
     if (!res) return;
 
     return res.statusCode;
+  }
+
+  /**
+   * Acquire all response headers.
+   */
+  public getResponseHeaders(): Record<string, string> {
+    const res = this.getResponse();
+    if (!res) return;
+
+    return res.getHeaders();
+  }
+
+  /**
+   * Acquire specific response header.
+   * @param key
+   */
+  public getResponseHeader(key: string): string {
+    const res = this.getResponse();
+    if (!res) return;
+
+    return res.getHeader(key);
   }
 
 }

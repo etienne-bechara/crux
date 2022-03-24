@@ -34,7 +34,7 @@ export class ContextInterceptor implements NestInterceptor {
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
           this.logService.http(this.contextService.getRequestDescription('out'), {
-            latency: this.contextService.getRequestLatency(),
+            duration: this.contextService.getRequestDuration(),
             code: this.contextService.getResponseCode() || HttpStatus.OK,
             body: data,
           });

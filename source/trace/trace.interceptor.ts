@@ -15,7 +15,7 @@ export class TraceInterceptor implements NestInterceptor {
   ) { }
 
   /**
-   * Extracts parent tracer and wrap request into a span.
+   * Add base attributes to request span and further attributes on success.
    * @param context
    * @param next
    */
@@ -32,9 +32,14 @@ export class TraceInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
+          const ingress = Number(this.contextService.getRequestHeader('content-length') || 0);
+          const egress = Number(this.contextService.getResponseHeader('content-length') || 0);
+
           span.setAttributes({
             [SemanticAttributes.HTTP_STATUS_CODE]: this.contextService.getResponseCode() || HttpStatus.OK,
-            'http.latency': this.contextService.getRequestLatency(),
+            [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]: ingress,
+            [SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH]: egress,
+            'http.duration': this.contextService.getRequestDuration(),
           });
 
           span.end();
