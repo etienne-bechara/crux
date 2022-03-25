@@ -15,6 +15,8 @@ import {
   IsIn as CvIsIn,
   IsInt as CvIsInt,
   IsISO8601 as CvIsISO8601,
+  IsJSON as CvIsJSON,
+  IsJWT as CvIsJWT,
   IsNotEmpty as CvIsNotEmpty,
   IsNotIn as CvIsNotIn,
   IsNumber as CvIsNumber,
@@ -23,6 +25,7 @@ import {
   IsObject as CvIsObject,
   IsOptional as CvIsOptional,
   IsString as CvIsString,
+  IsUrl as CvIsUrl,
   IsUUID as CvIsUUID,
   Length as CvLength,
   Matches as CvMatches,
@@ -440,7 +443,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be an e-mail' }),
+    ApiProperty({ ...propertyOptions, description: 'Must be an e-mail address' }),
   );
 }
 
@@ -480,8 +483,31 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
   );
 }
 
-// @IsJSON()	Checks if the string is valid JSON.
-// @IsJWT()	Checks if the string is valid JWT.
+/**
+ * Checks if the string is valid JSON (note: uses JSON.parse). If given value is not a string, then it returns false.
+ * @param validationOptions
+ */
+export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(String, validationOptions);
+
+  return applyDecorators(
+    CvIsJSON(validationOptions),
+    ApiProperty({ ...propertyOptions, description: 'Must be in JSON format' }),
+  );
+}
+
+/**
+ * Checks if the string is valid JWT token. If given value is not a string, then it returns false.
+ * @param validationOptions
+ */
+export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(String, validationOptions);
+
+  return applyDecorators(
+    CvIsJWT(validationOptions),
+    ApiProperty({ ...propertyOptions, description: 'Must be a JWT' }),
+  );
+}
 
 /**
  * Checks if the value is of target object. Returns false if the value is not an object.
@@ -492,11 +518,16 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
   const propertyOptions = getPropertyOptions(type, validationOptions);
 
   const decorators = [
-    ValidateNested(),
-    SetType(() => type),
     CvIsObject(validationOptions),
     ApiProperty(propertyOptions),
   ];
+
+  if (Object.keys(type as Record<string, unknown>).length > 0) {
+    decorators.push(
+      ValidateNested(),
+      SetType(() => type),
+    );
+  }
 
   if (validationOptions?.each) {
     decorators.push(IsArray());
@@ -519,7 +550,21 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
 // @IsMultibyte()	Checks if the string contains one or more multibyte chars.
 // @IsNumberString(options?: IsNumericOptions)	Checks if the string is numeric.
 // @IsSurrogatePair()	Checks if the string contains any surrogate pairs chars.
-// @IsUrl(options?: IsURLOptions)	Checks if the string is an url.
+
+/**
+ * Checks if the string is an url. If given value is not a string, then it returns false.
+ * @param options
+ * @param validationOptions
+ */
+export function IsUrl(options?: any, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(String, validationOptions);
+
+  return applyDecorators(
+    CvIsUrl(options, validationOptions),
+    ApiProperty({ ...propertyOptions, description: 'Must be an URL' }),
+  );
+}
+
 // @IsMagnetURI()	Checks if the string is a magnet uri format.
 
 /**
