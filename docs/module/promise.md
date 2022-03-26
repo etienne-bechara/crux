@@ -33,7 +33,7 @@ export class FooService {
   }
 
   public async readFooWithRetry(): Promise<unknown> {
-    return this.promiseService.retryOnException({
+    return this.promiseService.retryOnRejection({
       method: () => this.httpService.get('foo'),
       retries: 5,
       timeout: 2 * 60 * 1000, // 2 minutes,
