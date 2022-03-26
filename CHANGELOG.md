@@ -1,3 +1,10 @@
+## [4.12.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.1...v4.12.2) (2022-03-25)
+
+
+### Bug Fixes
+
+* bug IsObject, add IsURL, IsJSON and IsJWT override ([6452aa0](https://github.com/etienne-bechara/nestjs-core/commit/6452aa06263af5e6ed8780abaf4bd8e8d4f90c7e))
+
 ## [4.12.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.0...v4.12.1) (2022-03-24)
 
 
