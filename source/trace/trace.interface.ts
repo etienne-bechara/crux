@@ -35,11 +35,11 @@ export class TraceAppDiag {
   }
 
   /**
-   * Logs trace errors as application warnings.
+   * Logs trace errors.
    * @param msg
    */
   public error(msg: string): void {
-    return this.warn(msg);
+    return this.error(msg);
   }
 
   /**

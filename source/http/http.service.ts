@@ -65,7 +65,7 @@ export class HttpService {
    */
   // eslint-disable-next-line complexity
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
-    const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, headers } = params;
+    const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, json, form, headers } = params;
     const { retryLimit, retryCodes, retryDelay } = params;
     const { host, path } = this.getHostPath(url, params);
     const start = Date.now();
@@ -74,7 +74,7 @@ export class HttpService {
     const sendParams: HttpRequestSendParams = {
       url: this.buildRequestUrl(url, params),
       request: this.buildRequestParams(params),
-      telemetry: { start, method, host, path, replacements, query, body, headers },
+      telemetry: { start, method, host, path, replacements, query, body: body || json || form, headers },
       ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
       resolveBodyOnly: resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly,
     };
