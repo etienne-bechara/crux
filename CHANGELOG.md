@@ -1,3 +1,11 @@
+## [4.12.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.2...v4.12.3) (2022-03-28)
+
+
+### Bug Fixes
+
+* add tracing compression and retry ([3930a97](https://github.com/etienne-bechara/nestjs-core/commit/3930a97bfdffe98eeb9fe4f7172a4b94661e4863))
+* isobject custom validation ([6523072](https://github.com/etienne-bechara/nestjs-core/commit/6523072850eb3bb93ad1b55b2fa6c90873a75f5d))
+
 ## [4.12.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.1...v4.12.2) (2022-03-25)
 
 
