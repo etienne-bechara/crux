@@ -522,9 +522,9 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
     ApiProperty(propertyOptions),
   ];
 
-  if (Object.keys(type as Record<string, unknown>).length > 0) {
+  if (typeof type === 'function') {
     decorators.push(
-      ValidateNested(),
+      ValidateNested(validationOptions),
       SetType(() => type),
     );
   }
