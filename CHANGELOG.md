@@ -1,3 +1,10 @@
+## [4.12.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.4...v4.12.5) (2022-03-29)
+
+
+### Bug Fixes
+
+* add missing deep merge ([b2be28b](https://github.com/etienne-bechara/nestjs-core/commit/b2be28bb5c2933c2b0be9a139230211873858023))
+
 ## [4.12.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.3...v4.12.4) (2022-03-29)
 
 
