@@ -152,7 +152,9 @@ export class HttpService {
 
     if (replacements) {
       for (const key in replacements) {
-        const replacement = replacements[key];
+        const replacement = typeof replacements[key] === 'string'
+          ? replacements[key]
+          : replacements[key]?.toString?.();
 
         if (!replacement || typeof replacement !== 'string') {
           throw new InternalServerErrorException(`path replacement ${key} must be a defined string`);

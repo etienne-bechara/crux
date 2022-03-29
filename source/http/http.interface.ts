@@ -40,7 +40,7 @@ export interface HttpRequestParams extends OptionsOfUnknownResponseBody {
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
   /** Object containing replacement string for path variables. */
-  replacements?: Record<string, string>;
+  replacements?: Record<string, string | number>;
   /** Request query params with array joining support, overrides `searchParams`. */
   query?: Record<string, any>;
   /** Query separator when joining string arrays. Default ','. */
@@ -80,7 +80,7 @@ export interface HttpTelemetryParams {
   method: string;
   host: string;
   path: string;
-  replacements: Record<string, string>;
+  replacements: Record<string, string | number>;
   query: Record<string, any>;
   body: any;
   headers: any;
