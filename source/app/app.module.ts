@@ -100,13 +100,14 @@ export class AppModule {
    */
   private static configureOptions(options: AppOptions): void {
     const deepMergeProps: (keyof AppOptions)[] = [
-      'fastify',
       'console',
+      'docs',
+      'fastify',
       'loki',
+      'metrics',
       'sentry',
       'slack',
-      'metrics',
-      'docs',
+      'traces',
     ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
