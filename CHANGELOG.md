@@ -1,3 +1,10 @@
+## [4.12.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.3...v4.12.4) (2022-03-29)
+
+
+### Bug Fixes
+
+* allo number in http replacements ([15b0f8c](https://github.com/etienne-bechara/nestjs-core/commit/15b0f8cfcfaa39e158e3641e5dd11918888e7f2c))
+
 ## [4.12.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.2...v4.12.3) (2022-03-28)
 
 
