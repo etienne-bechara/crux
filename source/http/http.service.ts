@@ -67,7 +67,7 @@ export class HttpService {
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const { ignoreExceptions, resolveBodyOnly, method, replacements, query, body, json, form, headers } = params;
     const { retryLimit, retryCodes, retryDelay } = params;
-    const { host, path } = this.getHostPath(url, params);
+    const { host, pathname: path } = this.buildUrl(url, params);
     const start = Date.now();
     let response: any;
 
@@ -124,20 +124,18 @@ export class HttpService {
   }
 
   /**
-   * Acquire pre replacement host and path given request params.
+   * Acquire pre replacement final URL, considering coalesced module
+   * and request options.
    * @param url
    * @param params
    */
-  private getHostPath(url: string, params: HttpRequestParams): { host: string; path: string} {
+  private buildUrl(url: string, params: HttpRequestParams): URL {
     const { prefixUrl } = params;
 
-    const rawHost: string = this.httpModuleOptions.prefixUrl as string || prefixUrl as string || url;
-    const host = rawHost?.replace(/^https?:\/\//, '').split('/')[0];
+    const finalPrefix = this.httpModuleOptions.prefixUrl || prefixUrl;
+    const finalUrl = url.startsWith('http') ? url : `${finalPrefix}/${url}`;
 
-    const rawPath = url.includes('http') ? url.replace(/^https?:\/\//, '').replace(host, '') : `/${url}`;
-    const path = rawPath || '/';
-
-    return { host, path };
+    return new URL(finalUrl);
   }
 
   /**
