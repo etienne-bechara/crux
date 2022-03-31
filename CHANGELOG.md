@@ -1,3 +1,10 @@
+## [4.12.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.5...v4.12.6) (2022-03-31)
+
+
+### Bug Fixes
+
+* final http url for telemetry ([71072e3](https://github.com/etienne-bechara/nestjs-core/commit/71072e3cba358a84d9ee9f25bcadb6799daf0eec))
+
 ## [4.12.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.4...v4.12.5) (2022-03-29)
 
 
