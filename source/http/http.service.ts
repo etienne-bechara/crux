@@ -36,10 +36,26 @@ export class HttpService {
 
   /**
    * Creates new HTTP instance based on GOT.
+   *
+   * Adds a hook to destroy p-cancellable request in order to prevent exceptions
+   * when fulfilling a request asynchronously.
    */
   public setup(): void {
     const { name, prefixUrl } = this.httpModuleOptions;
     this.logService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
+
+    this.httpModuleOptions.hooks ??= {
+      afterResponse: [
+        (res): any => {
+          const { statusCode, request } = res;
+          const limitStatusCode = request.options.followRedirect ? 299 : 399;
+          const isSuccess = statusCode >= 200 && statusCode <= limitStatusCode || statusCode === 304;
+          if (isSuccess) request.destroy();
+          return res;
+        },
+      ],
+    };
+
     this.instance = got.extend(this.httpModuleOptions);
   }
 
