@@ -23,6 +23,9 @@ datasources:
     url: http://tempo:3200
     basicAuth: false
     editable: true
+    jsonData:
+      nodeGraph:
+        enabled: true
 
   - name: Prometheus
     type: prometheus

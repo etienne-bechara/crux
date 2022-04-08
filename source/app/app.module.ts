@@ -30,6 +30,7 @@ import { PromiseModule } from '../promise/promise.module';
 import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
+import { TraceService } from '../trace/trace.service';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { TagStorage } from './app.decorator';
@@ -148,6 +149,8 @@ export class AppModule {
 
     const fastifyInstance = this.instance.getHttpAdapter().getInstance();
     const contextService = this.instance.get(ContextService);
+    const traceService = this.instance.get(TraceService);
+    const traceEnabled = traceService?.isEnabled();
 
     fastifyInstance.addHook('onRequest', (req, res, next) => {
       req.time = Date.now();
@@ -155,18 +158,21 @@ export class AppModule {
 
       ContextStorage.run(new Map(), () => {
         const store = ContextStorage.getStore();
-        const tracer = trace.getTracer(job);
-
         store.set(ContextStorageKey.REQUEST, req);
         store.set(ContextStorageKey.RESPONSE, res);
-        store.set(ContextStorageKey.TRACER, tracer);
 
-        const description = contextService.getRequestDescription('in');
-        const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
-        const span = trace.getTracer(job).startSpan(description, { }, ctx);
-        const traceId = span.spanContext().traceId;
+        if (traceEnabled) {
+          const tracer = trace.getTracer(job);
+          store.set(ContextStorageKey.TRACER, tracer);
 
-        store.set(ContextStorageKey.METADATA, { span, traceId });
+          const description = contextService.getRequestDescription('in');
+          const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
+          const span = trace.getTracer(job).startSpan(description, { }, ctx);
+          const traceId = span.spanContext().traceId;
+
+          res.header('trace-id', traceId);
+          store.set(ContextStorageKey.METADATA, { span, traceId });
+        }
 
         next();
       });

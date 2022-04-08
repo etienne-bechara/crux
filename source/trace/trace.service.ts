@@ -35,18 +35,27 @@ export class TraceService {
   }
 
   /**
-   * Sets up the tracer client.
+   * Ensures application has a valid push URL configured in order to
+   * enable tracing.
    */
-  private setupTracer(): void {
+  public isEnabled(): boolean {
     const { traces } = this.appConfig.APP_OPTIONS || { };
     const { url } = traces;
     const traceUrl = this.traceConfig.TRACE_URL || url;
 
-    if (!traceUrl) {
+    if (!this.appConfig.APP_OPTIONS.disableTraces && !traceUrl) {
       this.logService.warning('Trace disable due to missing URL');
-      return;
+      this.appConfig.APP_OPTIONS.disableTraces = true;
     }
 
+    return !this.appConfig.APP_OPTIONS.disableTraces;
+  }
+
+  /**
+   * Sets up the tracer client.
+   */
+  private setupTracer(): void {
+    if (!this.isEnabled()) return;
     this.setupOpenTelemetryComponents();
   }
 
