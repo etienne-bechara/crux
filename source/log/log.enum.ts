@@ -1,3 +1,14 @@
+export enum LogException {
+  PUBLISH_FAILED = 'Failed to publish log'
+}
+
+export enum LogTransportName {
+  CONSOLE = 'CONSOLE',
+  LOKI = 'LOKI',
+  SENTRY = 'SENTRY',
+  SLACK = 'SLACK',
+}
+
 export enum LogSeverity {
   FATAL = 'fatal',
   ERROR = 'error',

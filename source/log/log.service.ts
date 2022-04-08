@@ -4,7 +4,7 @@ import cycle from 'cycle';
 import { AppConfig } from '../app/app.config';
 import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
-import { LogSeverity } from './log.enum';
+import { LogException, LogSeverity, LogTransportName } from './log.enum';
 import { LogArguments, LogParams, LogTransport } from './log.interface';
 
 @Injectable()
@@ -50,7 +50,7 @@ export class LogService {
    * @param args
    */
   private log(severity: LogSeverity, ...args: LogArguments[]): void {
-    const logMessage: LogParams = {
+    const params: LogParams = {
       timestamp: new Date().toISOString(),
       severity,
       caller: this.getCaller(...args),
@@ -62,11 +62,13 @@ export class LogService {
     };
 
     for (const transport of this.transports) {
+      const transportName = transport.getName();
       const transportSeverity = transport.getSeverity();
       const isHigher = this.isHigherOrEqualSeverity(severity, transportSeverity);
+      const isSkippable = params.message === LogException.PUBLISH_FAILED && transportName !== LogTransportName.CONSOLE;
 
-      if (isHigher) {
-        transport.log(logMessage);
+      if (isHigher && !isSkippable) {
+        transport.log(params);
       }
     }
   }

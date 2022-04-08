@@ -14,6 +14,7 @@ export interface LogParams {
 }
 
 export interface LogTransport {
+  getName: () => string;
   getSeverity: () => LogSeverity;
   log: (params: LogParams) => void;
 }

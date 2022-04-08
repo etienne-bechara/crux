@@ -31,6 +31,4 @@ export class SlackConfig {
   @IsIn(Object.values(LogSeverity))
   public readonly SLACK_SEVERITY: LogSeverity;
 
-  public readonly SLACK_EXCEPTION_MESSAGE = 'Failed to publish Slack message';
-
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
-import { LogSeverity, LogStyle } from '../log/log.enum';
+import { LogSeverity, LogStyle, LogTransportName } from '../log/log.enum';
 import { LogParams, LogTransport } from '../log/log.interface';
 import { LogService } from '../log/log.service';
 import { ConsoleConfig } from './console.config';
@@ -17,6 +17,13 @@ export class ConsoleService implements LogTransport {
     private readonly logService: LogService,
   ) {
     this.logService.registerTransport(this);
+  }
+
+  /**
+   * Acquires this transport name.
+   */
+  public getName(): LogTransportName {
+    return LogTransportName.CONSOLE;
   }
 
   /**

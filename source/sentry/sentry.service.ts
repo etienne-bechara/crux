@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 
 import { AppConfig } from '../app/app.config';
-import { LogSeverity } from '../log/log.enum';
+import { LogSeverity, LogTransportName } from '../log/log.enum';
 import { LogParams, LogTransport } from '../log/log.interface';
 import { LogService } from '../log/log.service';
 import { SentryConfig } from './sentry.config';
@@ -41,6 +41,13 @@ export class SentryService implements LogTransport {
 
     this.logService.info(`Sentry transport connected at ${dsn}`);
     this.logService.registerTransport(this);
+  }
+
+  /**
+   * Acquires this transport name.
+   */
+  public getName(): LogTransportName {
+    return LogTransportName.SENTRY;
   }
 
   /**

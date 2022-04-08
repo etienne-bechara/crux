@@ -3,7 +3,7 @@ import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
-import { LogSeverity } from '../log/log.enum';
+import { LogException, LogSeverity, LogTransportName } from '../log/log.enum';
 import { LogParams, LogTransport } from '../log/log.interface';
 import { LogService } from '../log/log.service';
 import { LokiConfig } from './loki.config';
@@ -43,6 +43,13 @@ export class LokiService implements LogTransport {
   }
 
   /**
+   * Acquires this transport name.
+   */
+  public getName(): LogTransportName {
+    return LogTransportName.LOKI;
+  }
+
+  /**
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LogSeverity {
@@ -57,9 +64,6 @@ export class LokiService implements LogTransport {
    * @param params
    */
   public log(params: LogParams): void {
-    const { message } = params;
-    if (message === this.lokiConfig.LOKI_EXCEPTION_MESSAGE) return;
-
     const { loki } = this.appConfig.APP_OPTIONS || { };
     const { batchSize } = loki;
 
@@ -111,7 +115,7 @@ export class LokiService implements LogTransport {
       });
     }
     catch (e) {
-      this.logService.warning(this.lokiConfig.LOKI_EXCEPTION_MESSAGE, e as Error);
+      this.logService.warning(LogException.PUBLISH_FAILED, e as Error);
     }
   }
 

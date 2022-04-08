@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
-import { LogSeverity } from '../log/log.enum';
+import { LogException, LogSeverity, LogTransportName } from '../log/log.enum';
 import { LogParams, LogTransport } from '../log/log.interface';
 import { LogService } from '../log/log.service';
 import { SlackConfig } from './slack.config';
@@ -40,6 +40,13 @@ export class SlackService implements LogTransport {
   }
 
   /**
+   * Acquires this transport name.
+   */
+  public getName(): LogTransportName {
+    return LogTransportName.SENTRY;
+  }
+
+  /**
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LogSeverity {
@@ -56,7 +63,6 @@ export class SlackService implements LogTransport {
   public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { severity, requestId, caller, message, data } = params;
-    if (data?.messageBlocks || message === this.slackConfig.SLACK_EXCEPTION_MESSAGE) return;
 
     const maxCharacters = 3000;
     const separator = '  |  ';
@@ -100,7 +106,7 @@ export class SlackService implements LogTransport {
       });
     }
     catch (e) {
-      this.logService.warning(this.slackConfig.SLACK_EXCEPTION_MESSAGE, e as Error, { message });
+      this.logService.warning(LogException.PUBLISH_FAILED, e as Error, { message });
     }
   }
 

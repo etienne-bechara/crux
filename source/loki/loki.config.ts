@@ -26,6 +26,4 @@ export class LokiConfig {
   @IsIn(Object.values(LogSeverity))
   public readonly LOKI_SEVERITY: LogSeverity;
 
-  public readonly LOKI_EXCEPTION_MESSAGE = 'Failed to publish Loki batch';
-
 }
