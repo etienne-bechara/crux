@@ -11,7 +11,6 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
-import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
 import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
@@ -26,7 +25,7 @@ export class TraceService {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly contextService: ContextService,
     private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,
     private readonly traceConfig: TraceConfig,
@@ -140,17 +139,11 @@ export class TraceService {
   }
 
   /**
-   * Acquires the span tied to current request.
-   */
-  public getRequestSpan(): Span {
-    return this.contextService.getMetadata('span');
-  }
-
-  /**
    * Acquires the context tied to current request.
    */
-  public getRequestContext(): Context {
-    return trace.setSpan(context.active(), this.getRequestSpan());
+  private getRequestContext(): Context {
+    const span = this.contextService.getSpan();
+    return trace.setSpan(context.active(), span);
   }
 
   /**

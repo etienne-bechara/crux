@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@ne
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import { Span } from '@opentelemetry/api';
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
@@ -110,11 +109,6 @@ export interface AppRequest {
  */
 export interface AppRawRequest extends http.IncomingMessage {
   metadata: any;
-}
-
-export interface AppRequestMetadata {
-  span: Span;
-  traceId: string;
 }
 
 export interface AppResponse {

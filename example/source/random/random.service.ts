@@ -28,9 +28,11 @@ export class RandomService {
     if (splitChance > 70) {
       const result = await Promise.all([
         this.httpService.get('http://127.0.0.1:8080/random', {
+          ignoreExceptions: true,
           retryLimit: 0,
         }),
         this.httpService.get('http://127.0.0.1:8080/random', {
+          ignoreExceptions: true,
           retryLimit: 0,
         }),
       ]);

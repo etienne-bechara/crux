@@ -78,7 +78,7 @@ export class AppService {
    * @param code
    */
   public collectInboundTelemetry(code: HttpStatus): void {
-    const span = this.traceService?.getRequestSpan();
+    const span = this.contextService.getSpan();
     const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
 
     const method = this.contextService.getRequestMethod();

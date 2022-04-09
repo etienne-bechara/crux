@@ -1,6 +1,6 @@
 export enum ContextStorageKey {
   REQUEST = 'REQUEST',
   RESPONSE = 'RESPONSE',
-  TRACER = 'TRACER',
+  SPAN = 'SPAN',
   METADATA = 'METADATA'
 }

@@ -5,7 +5,7 @@ import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
-import { AppException, AppExceptionDetails, AppExceptionResponse, AppRequestMetadata } from './app.interface';
+import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
 import { AppService } from './app.service';
 
 @Catch()
@@ -14,7 +14,7 @@ export class AppFilter implements ExceptionFilter {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly appService: AppService,
-    private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly contextService: ContextService,
     private readonly logService: LogService,
   ) { }
 

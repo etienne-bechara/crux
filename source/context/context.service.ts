@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Tracer } from '@opentelemetry/sdk-trace-base';
+import { Span } from '@opentelemetry/api';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -17,24 +17,31 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Get current request.
+   * Get context request.
    */
   public getRequest(): AppRequest {
     return this.getStore()?.get(ContextStorageKey.REQUEST);
   }
 
   /**
-   * Get current response.
+   * Get context response.
    */
   public getResponse(): AppResponse {
     return this.getStore()?.get(ContextStorageKey.RESPONSE);
   }
 
   /**
-   * Get current tracer.
+   * Get context span.
    */
-  public getTracer(): Tracer {
-    return this.getStore()?.get(ContextStorageKey.TRACER);
+  public getSpan(): Span {
+    return this.getStore()?.get(ContextStorageKey.SPAN);
+  }
+
+  /**
+   * Get context trace ID.
+   */
+  public getTraceId(): string {
+    return this.getSpan()?.spanContext().traceId;
   }
 
   /**

@@ -162,16 +162,13 @@ export class AppModule {
         store.set(ContextStorageKey.RESPONSE, res);
 
         if (traceEnabled) {
-          const tracer = trace.getTracer(job);
-          store.set(ContextStorageKey.TRACER, tracer);
-
-          const description = contextService.getRequestDescription('in');
           const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
+          const description = contextService.getRequestDescription('in');
           const span = trace.getTracer(job).startSpan(description, { }, ctx);
           const traceId = span.spanContext().traceId;
 
+          store.set(ContextStorageKey.SPAN, span);
           res.header('trace-id', traceId);
-          store.set(ContextStorageKey.METADATA, { span, traceId });
         }
 
         next();

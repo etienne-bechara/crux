@@ -2,7 +2,6 @@ import { HttpException, Injectable } from '@nestjs/common';
 import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
-import { AppRequestMetadata } from '../app/app.interface';
 import { ContextService } from '../context/context.service';
 import { LogException, LogSeverity, LogTransportName } from './log.enum';
 import { LogArguments, LogParams, LogTransport } from './log.interface';
@@ -14,7 +13,7 @@ export class LogService {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService<AppRequestMetadata>,
+    private readonly contextService: ContextService,
   ) {
     this.setupLogs();
   }
@@ -56,7 +55,7 @@ export class LogService {
       caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
       requestId: this.contextService.getRequestId(),
-      traceId: this.contextService.getMetadata('traceId'),
+      traceId: this.contextService.getTraceId(),
       data: this.getLogData(...args),
       error: this.getLogError(...args),
     };
