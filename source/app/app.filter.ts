@@ -32,7 +32,7 @@ export class AppFilter implements ExceptionFilter {
       };
 
       this.logException(appException);
-      this.appService.collectInboundTelemetry(appException.code);
+      this.appService.collectInboundTelemetry(appException.code, exception);
       this.sendResponse(appException);
     }
     catch (e) {

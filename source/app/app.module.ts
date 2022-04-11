@@ -5,7 +5,7 @@ import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Mo
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
+import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import handlebars from 'handlebars';
 import path from 'path';
@@ -162,14 +162,21 @@ export class AppModule {
         if (traceEnabled) {
           const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
           const description = contextService.getRequestDescription('in');
-          const span = trace.getTracer(job).startSpan(description, { }, ctx);
-          const traceId = span.spanContext().traceId;
 
-          store.set(ContextStorageKey.SPAN, span);
-          res.header('trace-id', traceId);
+          context.with(ctx, () => {
+            trace.getTracer(job).startActiveSpan(description, { }, (span) => {
+              const traceId = span.spanContext().traceId;
+
+              res.header('trace-id', traceId);
+              store.set(ContextStorageKey.SPAN, span);
+
+              next();
+            });
+          });
         }
-
-        next();
+        else {
+          next();
+        }
       });
     });
 

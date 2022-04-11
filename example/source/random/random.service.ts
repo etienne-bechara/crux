@@ -85,13 +85,11 @@ export class RandomService {
       }
 
       case dice > 45: {
-        const post = await this.httpService.get('https://jsonplaceholder.typicode.com/posts/:id', {
-          replacements: { id: Math.floor(Math.random() * 100).toString() },
-          responseType: 'json',
+        const notFound = await this.httpService.get('https://www.google.com/404', {
+          responseType: 'text',
         });
 
-        await this.promiseService.sleep(outLatency);
-        return post;
+        return notFound;
       }
 
       case dice > 40: {

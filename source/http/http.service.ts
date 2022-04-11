@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import { propagation } from '@opentelemetry/api';
+import { propagation, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
@@ -271,16 +271,14 @@ export class HttpService {
     }
     catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
+      const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
+
+      this.collectOutboundTelemetry({ ...telemetry, response: errorResponse, span, error: e });
 
       if (!isTimeout && !e.response) {
-        span?.end();
         throw e;
       }
-
-      const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
-      this.collectOutboundTelemetry({ ...telemetry, response: errorResponse, span });
-
-      if (ignoreExceptions) {
+      else if (ignoreExceptions) {
         response = errorResponse;
       }
       else {
@@ -325,26 +323,34 @@ export class HttpService {
    * @param params
    */
   private collectOutboundTelemetry(params: HttpTelemetryParams): void {
-    const { start, method, host, path, response, span } = params;
+    const { start, method, host, path, response, span, error } = params;
     const { statusCode, body, headers } = response;
 
     const duration = (Date.now() - start) / 1000;
-    const code = statusCode || '';
+    const strCode = statusCode?.toString() || '';
 
-    const logData = { duration, code, body: body || undefined, headers };
+    const logData = { duration, code: strCode, body: body || undefined, headers };
     this.logService?.http(this.buildLogMessage(params), logData);
 
     const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION);
 
     if (durationHistogram) {
-      durationHistogram.labels(method, host, path, code.toString()).observe(duration);
+      durationHistogram.labels(method, host, path, strCode).observe(duration);
     }
 
     if (span) {
       span.setAttributes({
-        [SemanticAttributes.HTTP_STATUS_CODE]: code ? Number(code) : undefined,
+        [SemanticAttributes.HTTP_STATUS_CODE]: statusCode || undefined,
         'http.duration': duration,
       });
+
+      if (error) {
+        span.recordException(error);
+        span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+      }
+      else {
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
 
       span.end();
     }

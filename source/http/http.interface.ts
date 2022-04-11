@@ -86,6 +86,7 @@ export interface HttpTelemetryParams {
   headers: any;
   span?: Span;
   response?: HttpResponse<unknown>;
+  error?: Error;
 }
 
 export interface HttpExceptionParams extends HttpTelemetryParams {

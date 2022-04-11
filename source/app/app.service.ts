@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import os from 'os';
 
@@ -6,7 +7,6 @@ import { ContextService } from '../context/context.service';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
-import { TraceService } from '../trace/trace.service';
 import { AppStatus } from './app.dto';
 import { AppMetric } from './app.enum';
 
@@ -20,7 +20,6 @@ export class AppService {
     private readonly httpService: HttpService,
     private readonly logService: LogService,
     private readonly metricService: MetricService,
-    private readonly traceService: TraceService,
   ) { }
 
   /**
@@ -76,8 +75,9 @@ export class AppService {
   /**
    * Register logs, metrics and tracing of inbound request.
    * @param code
+   * @param error
    */
-  public collectInboundTelemetry(code: HttpStatus): void {
+  public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getSpan();
     const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
 
@@ -96,6 +96,14 @@ export class AppService {
         [SemanticAttributes.HTTP_STATUS_CODE]: code,
         'http.duration': duration,
       });
+
+      if (error) {
+        span.recordException(error);
+        span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+      }
+      else {
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
 
       span.end();
     }

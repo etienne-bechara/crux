@@ -9,6 +9,7 @@ specifiers:
   '@nestjs/platform-fastify': 8.4.4
   '@nestjs/swagger': 5.2.1
   '@opentelemetry/api': 1.0.4
+  '@opentelemetry/context-async-hooks': 1.0.1
   '@opentelemetry/exporter-trace-otlp-http': 0.27.0
   '@opentelemetry/propagator-b3': 1.0.1
   '@opentelemetry/resources': 1.0.1
@@ -49,6 +50,7 @@ dependencies:
   '@nestjs/platform-fastify': 8.4.4_a78378ec5f3cecc3c353ed91b578f3e6
   '@nestjs/swagger': 5.2.1_2e7e791ae2712bc62a552060155ff067
   '@opentelemetry/api': 1.0.4
+  '@opentelemetry/context-async-hooks': 1.0.1_@opentelemetry+api@1.0.4
   '@opentelemetry/exporter-trace-otlp-http': 0.27.0_@opentelemetry+api@1.0.4
   '@opentelemetry/propagator-b3': 1.0.1_@opentelemetry+api@1.0.4
   '@opentelemetry/resources': 1.0.1_@opentelemetry+api@1.0.4
@@ -1067,6 +1069,15 @@ packages:
   /@opentelemetry/api/1.0.4:
     resolution: {integrity: sha512-BuJuXRSJNQ3QoKA6GWWDyuLpOUck+9hAXNMCnrloc1aWVoy6Xq6t9PUV08aBZ4Lutqq2LEHM486bpZqoViScog==}
     engines: {node: '>=8.0.0'}
+    dev: false
+
+  /@opentelemetry/context-async-hooks/1.0.1_@opentelemetry+api@1.0.4:
+    resolution: {integrity: sha512-oGCPjDlZ03gXPAdLxw5iqaQJIpL8BZFaiZhAPgF7Vj6XYmrmrA/FXVIsjfNECQTa2D+lt5p8vf0xYIkFufgceQ==}
+    engines: {node: '>=8.1.0'}
+    peerDependencies:
+      '@opentelemetry/api': '>=1.0.0 <1.1.0'
+    dependencies:
+      '@opentelemetry/api': 1.0.4
     dev: false
 
   /@opentelemetry/core/1.0.1_@opentelemetry+api@1.0.4:

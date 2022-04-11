@@ -2,6 +2,7 @@
 /* eslint-disable no-import-assign */
 import { Injectable } from '@nestjs/common';
 import { Context, context, diag, DiagLogger, DiagLogLevel, Span, SpanOptions, trace } from '@opentelemetry/api';
+import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import { CompressionAlgorithm, OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import * as OTLPUtil from '@opentelemetry/exporter-trace-otlp-http/build/src/platform/node/util';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
@@ -60,17 +61,20 @@ export class TraceService {
 
   /**
    * Sets up the tracer client, which includes:
-   * - Custom diag to log warning as errors integrated with application logger
+   * - Custom diag to log warning and errors integrated with application logger
    * - HTTP client override to send traces through built-in implementation
    * - Batch processor for trace publishing
    * - Trace provider stamping environment, job and instance
-   * - Propagator using B3 standard headers.
+   * - Propagator using B3 standard headers
+   * - Context tracking using async hooks.
    */
   private setupOpenTelemetryComponents(): void {
     const { job, instance, traces } = this.appConfig.APP_OPTIONS || { };
     const { url, username, password, pushInterval } = traces;
     const environment = this.appConfig.NODE_ENV;
     const traceUrl = this.traceConfig.TRACE_URL || url;
+    const contextManager = new AsyncHooksContextManager();
+    const propagator = new B3Propagator();
 
     diag.setLogger(
       new TraceAppDiag(this.logService) as any as DiagLogger,
@@ -105,10 +109,11 @@ export class TraceService {
       }),
     });
 
-    const propagator = new B3Propagator();
-
     provider.addSpanProcessor(processor);
     provider.register({ propagator });
+
+    contextManager.enable();
+    context.setGlobalContextManager(contextManager);
   }
 
   /**
