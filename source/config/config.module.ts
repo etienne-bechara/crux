@@ -1,23 +1,178 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, ValidationError } from '@nestjs/common';
+import { ClassConstructor, plainToClass } from 'class-transformer';
+import { validateSync } from 'class-validator';
+import dotenv from 'dotenv';
+import fs from 'fs';
 
-import { AppModule } from '../app/app.module';
-import { ConfigModuleOptions } from './config.interface';
-import { ConfigService } from './config.service';
+import { AppEnvironment } from '../app/app.enum';
+import { LogSeverity } from '../log/log.enum';
+import { LogParams } from '../log/log.interface';
+import { ConfigModuleOptions, ConfigRecord } from './config.interface';
 
 @Module({ })
 export class ConfigModule {
 
+  private static configs: ConfigRecord[] = [ ];
+  private static classes = [ ];
+  private static isRegistered: boolean;
+
   /**
-   * During initialization, create a cache of all required secrets.
+   * During registration scan for environment file and instantiate
+   * each config class to apply @InjectConfig() decorators.
    * @param options
    */
   public static register(options: ConfigModuleOptions = { }): DynamicModule {
-    options.envPath ??= AppModule.searchEnvFile();
-    ConfigService.setupSecretEnvironment(options);
+    options.envPath ??= this.scanEnvFile();
+    this.isRegistered = true;
 
-    return {
-      module: ConfigModule,
-    };
+    for (const configClass of this.classes) {
+      new configClass();
+    }
+
+    this.setBaseValues(options);
+    this.validateConfigs(options);
+
+    return { module: ConfigModule };
+  }
+
+  /**
+   * Given current working directory, attempt to find
+   * an .env file up to the desired maximum depth.
+   * @param maxDepth
+   */
+  private static scanEnvFile(maxDepth: number = 5): string {
+    let testPath = process.cwd();
+    let testFile = `${testPath}/.env`;
+
+    for (let i = 0; i < maxDepth; i++) {
+      const pathExist = fs.existsSync(testPath);
+      const fileExist = fs.existsSync(testFile);
+
+      if (!pathExist) break;
+      if (fileExist) return testFile;
+
+      testPath = `${testPath}/..`;
+      testFile = testFile.replace(/\.env$/g, '../.env');
+    }
+  }
+
+  /**
+   * For each application config, set its default value based
+   * on process environment or configured fallback.
+   * @param options
+   */
+  private static setBaseValues(options: ConfigModuleOptions): void {
+    const { envPath: path } = options;
+    const envFile = dotenv.config({ path }).parsed || { };
+    process.env = { ...process.env, ...envFile };
+
+    for (const config of this.configs) {
+      const { key, fallback, json, value: baseValue } = config;
+      let value: any = process.env[key] ?? process.env[key.toUpperCase()] ?? baseValue;
+
+      if ((value === undefined || value === null) && fallback) {
+        value = typeof fallback === 'function'
+          ? fallback(process.env.NODE_ENV as AppEnvironment)
+          : fallback;
+      }
+
+      if (value && json && typeof value === 'string') {
+        try {
+          value = JSON.parse(value);
+        }
+        catch {
+          value = 'invalid json string';
+        }
+      }
+
+      this.set({ key, value });
+    }
+  }
+
+  /**
+   * Validate properties annotated with @InjectConfig().
+   * @param options
+   */
+  private static validateConfigs(options: ConfigModuleOptions): ValidationError[] {
+    const { allowValidationErrors } = options;
+    const errors: ValidationError[] = [ ];
+    const configObj: Record<string, any> = { };
+
+    for (const config of this.configs) {
+      const { key, value } = config;
+      configObj[key] = value;
+    }
+
+    for (const configClass of this.classes) {
+      const configInstance = plainToClass(configClass as ClassConstructor<unknown>, configObj);
+
+      const validationErrors = validateSync(configInstance as object, {
+        validationError: { target: false },
+      });
+
+      if (validationErrors && validationErrors.length > 0) {
+        errors.push(...validationErrors);
+      }
+    }
+
+    if (errors.length > 0 && !allowValidationErrors) {
+      const validationErrors = errors.map(({ property, constraints }) => ({ property, constraints }));
+
+      const logMessage: Partial<LogParams> = {
+        timestamp: new Date().toISOString(),
+        severity: LogSeverity.FATAL,
+        caller: 'config.module',
+        message: 'Environment validation failed',
+        data: { constraints: validationErrors },
+      };
+
+      // eslint-disable-next-line no-console
+      console.error(JSON.stringify(logMessage, null, 2));
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(1);
+    }
+
+    return errors;
+  }
+
+  /**
+   * Store provided class with config definition into the classes array.
+   * @param config
+   */
+  public static setClass(config: any): void {
+    this.classes.push(config);
+  }
+
+  /**
+   * Read target config by key.
+   * @param key
+   */
+  public static get(key: string): any {
+    if (!this.isRegistered) {
+      const envFile = dotenv.config({ path: this.scanEnvFile() }).parsed || { };
+      return envFile[key];
+    }
+
+    const config = this.configs.find((c) => c.key === key.toUpperCase());
+    return config?.value;
+  }
+
+  /**
+   * Creates an application config, or replace value of existing.
+   * @param config
+   */
+  public static set(config: ConfigRecord): void {
+    config.key = config.key.toUpperCase();
+
+    const { key, value } = config;
+    const index = this.configs.findIndex((c) => c.key === key);
+
+    if (index >= 0) {
+      this.configs[index].value = value;
+    }
+    else {
+      this.configs.push(config);
+    }
   }
 
 }

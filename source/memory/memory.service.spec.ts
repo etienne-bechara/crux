@@ -23,17 +23,17 @@ describe('MemoryService', () => {
     memoryService = app.get(MemoryService);
   });
 
-  describe('setKey', () => {
+  describe('set', () => {
     it('should successfully set storage keys', () => {
-      memoryService.setKey('testString', testString);
-      memoryService.setKey('testNumber', testNumber);
-      memoryService.setKey('testObject', testObject);
-      memoryService.setKey('testArray', testArray);
+      memoryService.set('testString', testString);
+      memoryService.set('testNumber', testNumber);
+      memoryService.set('testObject', testObject);
+      memoryService.set('testArray', testArray);
       expect(true).toBeTruthy();
     });
 
     it('should successfully set storage key with TTL', () => {
-      memoryService.setKey('testTtl', testTtl, { ttl });
+      memoryService.set('testTtl', testTtl, { ttl });
       expect(true).toBeTruthy();
     });
 
@@ -41,38 +41,38 @@ describe('MemoryService', () => {
       const delay = 1500;
       await new Promise((r) => setTimeout(r, delay));
 
-      memoryService.setKey('testTtl', testTtl, { ttl });
+      memoryService.set('testTtl', testTtl, { ttl });
       const exp = memoryService['memoryExpiration'].get('testTtl');
 
       expect(exp - Date.now()).toBeLessThanOrEqual(ttl - delay);
     });
   });
 
-  describe('getKey', () => {
+  describe('get', () => {
     it('should successfully read storage keys', () => {
-      expect(memoryService.getKey('testString')).toBe(testString);
-      expect(memoryService.getKey('testNumber')).toBe(testNumber);
-      expect(memoryService.getKey('testObject')).toBe(testObject);
-      expect(memoryService.getKey('testArray')).toBe(testArray);
+      expect(memoryService.get('testString')).toBe(testString);
+      expect(memoryService.get('testNumber')).toBe(testNumber);
+      expect(memoryService.get('testObject')).toBe(testObject);
+      expect(memoryService.get('testArray')).toBe(testArray);
     });
 
     it('should read undefined for storage keys with expired TTL', async () => {
-      expect(memoryService.getKey('testTtl')).toBe(testTtl);
+      expect(memoryService.get('testTtl')).toBe(testTtl);
       await new Promise((r) => setTimeout(r, ttl * 1.05));
-      expect(memoryService.getKey('testTtl')).toBe(undefined);
+      expect(memoryService.get('testTtl')).toBe(undefined);
     });
   });
 
-  describe('delKey', () => {
+  describe('del', () => {
     it('should successfully erase storage keys', () => {
-      memoryService.delKey('testString');
-      memoryService.delKey('testNumber');
-      memoryService.delKey('testObject');
-      memoryService.delKey('testArray');
-      expect(memoryService.getKey('testString')).toBe(undefined);
-      expect(memoryService.getKey('testNumber')).toBe(undefined);
-      expect(memoryService.getKey('testObject')).toBe(undefined);
-      expect(memoryService.getKey('testArray')).toBe(undefined);
+      memoryService.del('testString');
+      memoryService.del('testNumber');
+      memoryService.del('testObject');
+      memoryService.del('testArray');
+      expect(memoryService.get('testString')).toBe(undefined);
+      expect(memoryService.get('testNumber')).toBe(undefined);
+      expect(memoryService.get('testObject')).toBe(undefined);
+      expect(memoryService.get('testArray')).toBe(undefined);
     });
   });
 });

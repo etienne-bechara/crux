@@ -19,7 +19,7 @@ export class FooService {
   ) { }
 
   public getFoo(): unknown {
-    const foo = this.memoryService.getKey('FOO');
+    const foo = this.memoryService.get('FOO');
 
     if (!foo) {
       throw new InternalServerErrorException('foo not available');
@@ -28,7 +28,7 @@ export class FooService {
 
   public setFoo(params: unknown): void {
     const ttl = 5 * 60 * 1000; // 5 minutes
-    this.memoryService.setKey('FOO', params, { ttl });
+    this.memoryService.set('FOO', params, { ttl });
   }
 
 }

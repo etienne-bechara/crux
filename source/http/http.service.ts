@@ -328,7 +328,7 @@ export class HttpService {
     const { start, method, host, path, response, span } = params;
     const { statusCode, body, headers } = response;
 
-    const duration = Date.now() - start;
+    const duration = (Date.now() - start) / 1000;
     const code = statusCode || '';
 
     const logData = { duration, code, body: body || undefined, headers };

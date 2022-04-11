@@ -1,3 +1,3 @@
-export enum ConfigMetadataKey {
-  SECRET_KEY = 'SECRET_KEY',
+export enum ConfigMetadata {
+  CONFIG_KEY = 'CONFIG_KEY',
 }

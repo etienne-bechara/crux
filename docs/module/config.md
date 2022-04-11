@@ -36,9 +36,7 @@ export class FooConfig {
 The framework also allows decoration of properties using `class-validator` and `class-transformer` to enforce validation of the value before initialization:
 
 ```ts
-import { Config, InjectSecret } from '@bechara/nestjs-core';
-import { IsUrl, IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Config, InjectSecret, IsUrl, IsString, Length, ToNumber } from '@bechara/nestjs-core';
 
 @Config()
 export class FooConfig {
@@ -52,7 +50,7 @@ export class FooConfig {
   FOO_API_KEY: string;
 
   @InjectSecret({ fallback: '15' })
-  @Transform((v) => Number(v))
+  @ToNumber()
   @IsNumber()
   FOO_API_MAX_CONCURRENCY: number;
 

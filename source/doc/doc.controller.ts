@@ -31,7 +31,7 @@ export class DocController {
     response: { type: DocSpecification },
   })
   public getDocsJson(): DocSpecification {
-    const document = this.memoryService.getKey('openApiSpecification');
+    const document = this.memoryService.get('openApiSpecification');
     return JSON.parse(document);
   }
 

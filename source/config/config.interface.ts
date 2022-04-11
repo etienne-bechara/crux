@@ -14,6 +14,6 @@ export interface ConfigInjectionOptions {
   json?: boolean;
 }
 
-export interface ConfigSecretRecord extends ConfigInjectionOptions {
+export interface ConfigRecord extends ConfigInjectionOptions {
   value?: any;
 }

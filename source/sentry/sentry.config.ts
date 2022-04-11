@@ -8,7 +8,7 @@ export class SentryConfig {
 
   @InjectConfig()
   @IsOptional()
-  @Matches('^http.+?sentry\\.io')
+  @Matches(/^http.+?sentry\\.io/)
   public readonly SENTRY_DSN: string;
 
   @InjectConfig()

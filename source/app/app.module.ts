@@ -7,12 +7,10 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
-import fs from 'fs';
 import handlebars from 'handlebars';
 import path from 'path';
 
 import { ConfigModule } from '../config/config.module';
-import { ConfigService } from '../config/config.service';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
@@ -131,7 +129,7 @@ export class AppModule {
       this.options.disableValidator = true;
     }
 
-    ConfigService.setSecret({ key: 'APP_OPTIONS', value: this.options });
+    ConfigModule.set({ key: 'APP_OPTIONS', value: this.options });
   }
 
   /**
@@ -239,7 +237,7 @@ export class AppModule {
     for (const t of appTagGroups) t.tags.sort();
 
     // Saves specification to memory
-    memoryService.setKey('openApiSpecification', JSON.stringify(document));
+    memoryService.set('openApiSpecification', JSON.stringify(document));
 
     document['x-tagGroups'] = appTagGroups;
     document.info['x-logo'] = logo;
@@ -444,27 +442,6 @@ export class AppModule {
     });
 
     return exportsArrays.flat();
-  }
-
-  /**
-   * Given current working directory, attempt to find
-   * an .env file up to the desired maximum depth.
-   * @param maxDepth
-   */
-  public static searchEnvFile(maxDepth: number = 5): string {
-    let testPath = process.cwd();
-    let testFile = `${testPath}/.env`;
-
-    for (let i = 0; i < maxDepth; i++) {
-      const pathExist = fs.existsSync(testPath);
-      const fileExist = fs.existsSync(testFile);
-
-      if (!pathExist) break;
-      if (fileExist) return testFile;
-
-      testPath = `${testPath}/..`;
-      testFile = testFile.replace(/\.env$/g, '../.env');
-    }
   }
 
 }

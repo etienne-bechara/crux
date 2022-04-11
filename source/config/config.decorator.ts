@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators, Injectable } from '@nestjs/common';
 
-import { ConfigMetadataKey } from './config.enum';
+import { ConfigMetadata } from './config.enum';
 import { ConfigInjectionOptions } from './config.interface';
-import { ConfigService } from './config.service';
+import { ConfigModule } from './config.module';
 
 /**
  * Loads decorated class as a config.
@@ -11,7 +11,7 @@ import { ConfigService } from './config.service';
 export function Config(): any {
   // eslint-disable-next-line unicorn/consistent-function-scoping
   const loadTargetAsConfig = (target: unknown): void => {
-    ConfigService.loadConfigDefinition(target);
+    ConfigModule.setClass(target);
   };
 
   return applyDecorators(
@@ -33,14 +33,12 @@ export function InjectConfig(options: ConfigInjectionOptions = { }): any {
 
   return function (target: unknown, propertyKey: string): void {
     const key = baseKey || propertyKey;
-    Reflect.defineMetadata(ConfigMetadataKey.SECRET_KEY, key, target, propertyKey);
-    ConfigService.setSecret({ key, fallback, json });
+    Reflect.defineMetadata(ConfigMetadata.CONFIG_KEY, key, target, propertyKey);
+    ConfigModule.set({ key, fallback, json });
 
     Object.defineProperty(target, propertyKey, {
-      get: () => ConfigService.getSecret(key),
-      set: (value) => {
-        ConfigService.setSecret({ key, value, fallback });
-      },
+      get: () => ConfigModule.get(key),
+      set: (value) => { ConfigModule.set({ key, value }); },
     });
   };
 }
