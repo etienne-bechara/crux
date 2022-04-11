@@ -1,3 +1,15 @@
+## [4.12.7](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.6...v4.12.7) (2022-04-09)
+
+
+### Bug Fixes
+
+* add http destroy hook ([74b8112](https://github.com/etienne-bechara/nestjs-core/commit/74b811243c48e9b0eee878ddf1436098f7fbb605))
+* only run tracing on adapter hooks if enabled ([bdc3ce1](https://github.com/etienne-bechara/nestjs-core/commit/bdc3ce15eb4f1f1644f78dc1ac8f2d2804cb63fd))
+* prevent infinite log loop ([54ee745](https://github.com/etienne-bechara/nestjs-core/commit/54ee74562511997dd1eff006d69ee8817402b754))
+* remove unnecesary tsconfig ([1882e49](https://github.com/etienne-bechara/nestjs-core/commit/1882e49419b6cb7c71e6b72c854e8eac29f7caa6))
+* standardize eol as lf ([1be1337](https://github.com/etienne-bechara/nestjs-core/commit/1be1337bb0504c054da8c1104b4990cb85167f55))
+* store span at context instead of tracer ([79262e1](https://github.com/etienne-bechara/nestjs-core/commit/79262e1db4fcd69c54158289df9a0f9631c4822f))
+
 ## [4.12.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.5...v4.12.6) (2022-03-31)
 
 
