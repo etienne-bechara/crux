@@ -1,4 +1,4 @@
-import { IsIn, IsOptional, Matches } from 'class-validator';
+import { IsIn, IsOptional, IsUrl } from 'class-validator';
 
 import { Config, InjectConfig } from '../config/config.decorator';
 import { LogSeverity } from '../log/log.enum';
@@ -8,7 +8,7 @@ export class SentryConfig {
 
   @InjectConfig()
   @IsOptional()
-  @Matches(/^http.+?sentry\\.io/)
+  @IsUrl()
   public readonly SENTRY_DSN: string;
 
   @InjectConfig()
