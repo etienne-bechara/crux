@@ -1,3 +1,10 @@
+## [4.12.9](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.8...v4.12.9) (2022-04-11)
+
+
+### Bug Fixes
+
+* sentry url validation ([dbb75a6](https://github.com/etienne-bechara/nestjs-core/commit/dbb75a6cf1c174b11705756150214e6e6f4da457))
+
 ## [4.12.8](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.7...v4.12.8) (2022-04-11)
 
 
