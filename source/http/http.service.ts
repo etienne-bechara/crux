@@ -351,7 +351,7 @@ export class HttpService {
    */
   private collectOutboundTelemetry(step: 'result' | 'iteration', params: HttpTelemetryParams): void {
     const { start, method, host, path, response, span, error } = params;
-    const { statusCode, body, headers } = response;
+    const { statusCode, body, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
     if (step === 'iteration') {
