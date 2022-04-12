@@ -1,4 +1,4 @@
-import { Controller, Get } from '../../../source/app/app.override';
+import { BadRequestException, Controller, Get, Param } from '../../../source/app/app.override';
 import { RandomService } from './random.service';
 
 @Controller('random', {
@@ -13,6 +13,17 @@ export class RandomController {
   @Get()
   public getRandom(): Promise<any> {
     return this.randomService.doRandom();
+  }
+
+  @Get(':amount')
+  public getRandomSplit(@Param('amount') amount: string): Promise<any> {
+    const numericAmount = Number(amount);
+
+    if (!numericAmount) {
+      throw new BadRequestException('amount must be a number');
+    }
+
+    return this.randomService.doRandomSplit(numericAmount);
   }
 
 }

@@ -106,7 +106,7 @@ export class SlackService implements LogTransport {
       });
     }
     catch (e) {
-      this.logService.warning(LogException.PUBLISH_FAILED, e as Error, { message });
+      this.logService.error(LogException.PUBLISH_FAILED, e as Error, { message });
     }
   }
 

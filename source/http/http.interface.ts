@@ -67,12 +67,20 @@ export interface HttpCookie {
   expires: Date;
 }
 
+export interface HttpRetryParams {
+  retryLimit: number;
+  retryCodes: HttpStatus[];
+  retryDelay: (attempts: number) => number;
+  attempt: number;
+}
+
 export interface HttpRequestSendParams {
   url: string;
   request: HttpRequestParams;
-  telemetry: HttpTelemetryParams;
   ignoreExceptions: boolean;
   resolveBodyOnly: boolean;
+  telemetry: HttpTelemetryParams;
+  retry: HttpRetryParams;
 }
 
 export interface HttpTelemetryParams {
@@ -84,7 +92,7 @@ export interface HttpTelemetryParams {
   query: Record<string, any>;
   body: any;
   headers: any;
-  span?: Span;
+  span: Span;
   response?: HttpResponse<unknown>;
   error?: Error;
 }

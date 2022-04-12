@@ -115,7 +115,7 @@ export class LokiService implements LogTransport {
       });
     }
     catch (e) {
-      this.logService.warning(LogException.PUBLISH_FAILED, e as Error);
+      this.logService.error(LogException.PUBLISH_FAILED, e as Error);
     }
   }
 
