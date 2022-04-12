@@ -1,3 +1,10 @@
+## [4.13.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.1...v4.13.2) (2022-04-12)
+
+
+### Bug Fixes
+
+* coalesce http outbound response ([3ad67e3](https://github.com/etienne-bechara/nestjs-core/commit/3ad67e39f70f33931e3bee015e83674a74d7ca41))
+
 ## [4.13.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.0...v4.13.1) (2022-04-12)
 
 
