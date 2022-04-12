@@ -1,3 +1,10 @@
+## [4.13.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.0...v4.13.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* allow disabling propagation ([36b02db](https://github.com/etienne-bechara/nestjs-core/commit/36b02db9a0e70df631cfef1d6fc8112173eb9a07))
+
 # [4.13.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.9...v4.13.0) (2022-04-12)
 
 
