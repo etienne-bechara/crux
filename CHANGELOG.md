@@ -1,3 +1,18 @@
+# [4.13.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.9...v4.13.0) (2022-04-12)
+
+
+### Bug Fixes
+
+* add trace error status ([7a72b43](https://github.com/etienne-bechara/nestjs-core/commit/7a72b431338f021d41a35c7ed9d11654057892a1))
+* improve retryOnRejection readability ([68ebe2c](https://github.com/etienne-bechara/nestjs-core/commit/68ebe2c13f446144f6c91ede90be413937f9923b))
+* split dev script into telemetry ([318e63f](https://github.com/etienne-bechara/nestjs-core/commit/318e63fe2668b5c5e4dc2fcd3b89e9dafc6c32ba))
+* tracing context and http improvements ([6c7a8a0](https://github.com/etienne-bechara/nestjs-core/commit/6c7a8a04b3ad3934d509f3ec53452999c0b24b84))
+
+
+### Features
+
+* add @Span() decorator ([1a3ec4b](https://github.com/etienne-bechara/nestjs-core/commit/1a3ec4bda03b8e42c1a646f6967932b3f86ee308))
+
 ## [4.12.9](https://github.com/etienne-bechara/nestjs-core/compare/v4.12.8...v4.12.9) (2022-04-11)
 
 
