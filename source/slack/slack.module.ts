@@ -11,7 +11,7 @@ import { SlackService } from './slack.service';
       inject: [ AppConfig, SlackConfig ],
       useFactory: (appConfig: AppConfig, slackConfig: SlackConfig) => ({
         name: 'SlackModule',
-        silent: true,
+        disableTelemetry: true,
         prefixUrl: slackConfig.SLACK_WEBHOOK || appConfig.APP_OPTIONS.slack?.webhook,
         json: {
           channel: slackConfig.SLACK_CHANNEL || appConfig.APP_OPTIONS.slack?.channel,

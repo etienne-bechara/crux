@@ -25,7 +25,7 @@ export class HttpService {
     private readonly metricService: MetricService,
     private readonly traceService: TraceService,
   ) {
-    if (this.httpModuleOptions.silent) {
+    if (this.httpModuleOptions.disableTelemetry) {
       this.logService = undefined;
       this.metricService = undefined;
       this.traceService = undefined;
@@ -283,7 +283,7 @@ export class HttpService {
       },
     }, this.traceService?.getSpanContext(parentSpan));
 
-    if (span) {
+    if (span && !this.httpModuleOptions.disablePropagation) {
       request.headers ??= { };
       const ctx = this.traceService.getSpanContext(span);
       propagation.inject(ctx, request.headers);

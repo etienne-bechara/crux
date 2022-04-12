@@ -12,8 +12,10 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
 export interface HttpModuleOptions extends ExtendOptions {
   /** Display name for logging. */
   name?: string;
-  /** Disable logging of operations. */
-  silent?: boolean;
+  /** Disable logs, metrics and traces. */
+  disableTelemetry?: boolean;
+  /** Disable trace propagation. */
+  disablePropagation?: boolean;
   /** In case of an exception, ignore it and return the response object. */
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
