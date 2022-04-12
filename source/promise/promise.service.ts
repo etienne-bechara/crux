@@ -79,38 +79,40 @@ export class PromiseService {
    */
   // eslint-disable-next-line complexity
   public async retryOnRejection<T>(params: PromiseRetryParams<T>): Promise<T> {
-    const txtName = `${params.name || 'retryOnException()'}`;
-    const txtPrefix = `${txtName}:`;
-    const txtRetry = params.retries || params.retries === 0 ? params.retries : '∞';
-    const txtTimeout = params.timeout ? params.timeout / 1000 : '∞ ';
+    const { name, retries, timeout, promise, breakIf, delay } = params;
+    const start = Date.now();
+
+    const txtPrefix = `${name || 'retryOnException()'}`;
+    const txtRetry = retries || retries === 0 ? retries : '∞';
+    const txtTimeout = timeout ? timeout / 1000 : '∞ ';
+
     const msgStart = `${txtPrefix} running with ${txtRetry} retries and ${txtTimeout}s timeout`;
-    const startTime = Date.now();
+    this.logService.debug(msgStart);
+
     let tentative = 1;
     let result: T;
-
-    this.logService.debug(msgStart);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        const elapsed = Date.now() - startTime;
+        const elapsed = Date.now() - start;
 
-        result = params.timeout
-          ? await this.resolveOrTimeout(params.promise(), params.timeout - elapsed)
-          : await params.promise();
+        result = timeout
+          ? await this.resolveOrTimeout(promise(), timeout - elapsed)
+          : await promise();
 
         break;
       }
       catch (e) {
-        const elapsed = Date.now() - startTime;
+        const elapsed = Date.now() - start;
 
         if (
-          (params.retries || params.retries === 0) && tentative > params.retries
-          || params.timeout && elapsed > params.timeout
-          || params.breakIf?.(e)
+          (retries || retries === 0) && tentative > retries
+          || timeout && elapsed > timeout
+          || breakIf?.(e)
         ) {
           if (e?.message?.startsWith('promise resolution timed out')) {
-            e.message = `${txtName} timed out after ${params.timeout / 1000}s`;
+            e.message = `${txtPrefix} timed out after ${timeout / 1000}s`;
           }
 
           throw e;
@@ -119,11 +121,10 @@ export class PromiseService {
         tentative++;
 
         const txtElapsed = `${elapsed / 1000}/${txtTimeout}`;
-        const msgRetry = `${txtPrefix} ${e.message} | Retry #${tentative}/${txtRetry}, elapsed ${txtElapsed}s`;
-
+        const msgRetry = `${txtPrefix} ${e.message} | Attempt #${tentative}/${txtRetry} | Elapsed ${txtElapsed}s`;
         this.logService.debug(msgRetry);
 
-        await this.sleep(params.delay || 0);
+        await this.sleep(delay || 0);
       }
     }
 
