@@ -275,18 +275,17 @@ export class HttpService {
     const start = Date.now();
     let response: HttpResponse<T>;
 
-    const span = this.traceService?.startSpan(`⯅ ${method} ${path} | #${attempt}/${retryLimit}`, {
+    const span = this.traceService?.startSpan(`⯆ ${method} ${host}${path} | #${attempt}/${retryLimit}`, {
       attributes: {
         [SemanticAttributes.HTTP_METHOD]: method,
         [SemanticAttributes.HTTP_HOST]: host,
         [SemanticAttributes.HTTP_ROUTE]: path,
       },
-    }, parentSpan);
+    }, this.traceService?.getSpanContext(parentSpan));
 
     if (span) {
       request.headers ??= { };
       const ctx = this.traceService.getSpanContext(span);
-      // eslint-disable-next-line unicorn/consistent-destructuring
       propagation.inject(ctx, request.headers);
     }
 
@@ -406,7 +405,7 @@ export class HttpService {
     delete request.url;
 
     throw new HttpException({
-      message: `⯅ ${method} ${host}${path} | ${message}`,
+      message: `⯆ ${method} ${host}${path} | ${message}`,
       proxyExceptions: isProxyExceptions,
       outboundRequest: {
         method,

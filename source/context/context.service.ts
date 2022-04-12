@@ -31,9 +31,9 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Get context span.
+   * Get request span.
    */
-  public getSpan(): Span {
+  public getRequestSpan(): Span {
     return this.getStore()?.get(ContextStorageKey.SPAN);
   }
 
@@ -41,7 +41,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Get context trace ID.
    */
   public getTraceId(): string {
-    return this.getSpan()?.spanContext().traceId;
+    return this.getRequestSpan()?.spanContext().traceId;
   }
 
   /**

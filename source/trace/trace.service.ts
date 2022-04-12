@@ -12,7 +12,6 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
-import { ContextService } from '../context/context.service';
 import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
@@ -22,11 +21,11 @@ import { TraceAppDiag } from './trace.interface';
 @Injectable()
 export class TraceService {
 
+  private static job: string;
   private httpService: HttpService;
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService,
     private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,
     private readonly traceConfig: TraceConfig,
@@ -71,10 +70,14 @@ export class TraceService {
   private setupOpenTelemetryComponents(): void {
     const { job, instance, traces } = this.appConfig.APP_OPTIONS || { };
     const { url, username, password, pushInterval } = traces;
+
     const environment = this.appConfig.NODE_ENV;
     const traceUrl = this.traceConfig.TRACE_URL || url;
+
     const contextManager = new AsyncHooksContextManager();
     const propagator = new B3Propagator();
+
+    TraceService.job = job;
 
     diag.setLogger(
       new TraceAppDiag(this.logService) as any as DiagLogger,
@@ -144,14 +147,6 @@ export class TraceService {
   }
 
   /**
-   * Acquires the context tied to current request.
-   */
-  private getRequestContext(): Context {
-    const span = this.contextService.getSpan();
-    return trace.setSpan(context.active(), span);
-  }
-
-  /**
    * Acquires context of target span.
    * @param span
    */
@@ -160,19 +155,49 @@ export class TraceService {
   }
 
   /**
-   * Starts a new span, if `parent` is omitted uses current request.
+   * Starts a new span without setting it on context.
+   * This method do NOT modify the current Context.
    * @param name
    * @param options
-   * @param parent
+   * @param context
    */
-  public startSpan(name: string, options?: SpanOptions, parent?: Span): Span {
-    const { job } = this.appConfig.APP_OPTIONS;
+  public startSpan(name: string, options?: SpanOptions, context?: Context): Span {
+    return TraceService.startSpan(name, options, context);
+  }
 
-    const ctx = parent
-      ? trace.setSpan(context.active(), parent)
-      : this.getRequestContext();
+  /**
+   * Starts a new span without setting it on context.
+   * This method do NOT modify the current Context.
+   * @param name
+   * @param options
+   * @param context
+   */
+  public static startSpan(name: string, options?: SpanOptions, context?: Context): Span {
+    return trace.getTracer(this.job).startSpan(name, options, context);
+  }
 
-    return trace.getTracer(job).startSpan(name, options, ctx);
+  /**
+   * Starts a new Span and calls the given function passing it the created
+   * span as first argument. Additionally the new span gets set in context
+   * and this context is activated for the duration of the function call.
+   * @param name
+   * @param options
+   * @param fn
+   */
+  public startActiveSpan(name: string, options: SpanOptions, fn: any): any {
+    return TraceService.startActiveSpan(name, options, fn);
+  }
+
+  /**
+   * Starts a new Span and calls the given function passing it the created
+   * span as first argument. Additionally the new span gets set in context
+   * and this context is activated for the duration of the function call.
+   * @param name
+   * @param options
+   * @param fn
+   */
+  public static startActiveSpan(name: string, options: SpanOptions, fn: any): any {
+    return trace.getTracer(this.job).startActiveSpan(name, options, fn);
   }
 
 }

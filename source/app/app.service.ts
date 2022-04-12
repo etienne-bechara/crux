@@ -78,7 +78,7 @@ export class AppService {
    * @param error
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
-    const span = this.contextService.getSpan();
+    const span = this.contextService.getRequestSpan();
     const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
 
     const method = this.contextService.getRequestMethod();

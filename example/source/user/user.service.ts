@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, uuidV4 } from '../../../source/app/app.override';
 import { ContextService } from '../../../source/context/context.service';
+import { Span } from '../../../source/trace/trace.decorator';
 import { ZipService } from '../zip/zip.service';
 import { UserCollection, UserCreateDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
@@ -18,6 +19,7 @@ export class UserService {
   /**
    * Read all users.
    */
+  @Span()
   public readUsers(): UserCollection {
     return {
       count: this.USER_DATABASE.length,
@@ -29,6 +31,7 @@ export class UserService {
    * Read user by ID.
    * @param id
    */
+  @Span()
   public readUserById(id: string): User {
     const user = this.USER_DATABASE.find((u) => u.id === id);
 
@@ -43,6 +46,7 @@ export class UserService {
    * Create user.
    * @param params
    */
+  @Span()
   public async createUser(params: UserCreateDto): Promise<User> {
     const { age, birthYear, address } = params;
     const { zip } = address;
@@ -76,6 +80,7 @@ export class UserService {
    * @param id
    * @param params
    */
+  @Span()
   public updateUserById(id: string, params: UserUpdateDto): User {
     const user = this.readUserById(id);
 
@@ -90,6 +95,7 @@ export class UserService {
    * Delete user by id.
    * @param id
    */
+  @Span()
   public deleteUserById(id: string): void {
     const index = this.USER_DATABASE.findIndex((u) => u.id === id);
 
