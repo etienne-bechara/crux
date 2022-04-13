@@ -1,3 +1,10 @@
+## [4.13.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.2...v4.13.3) (2022-04-13)
+
+
+### Bug Fixes
+
+* console log ([d981e23](https://github.com/etienne-bechara/nestjs-core/commit/d981e23d6f5002b472bc3582b5943124e3f01fdc))
+
 ## [4.13.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.1...v4.13.2) (2022-04-12)
 
 
