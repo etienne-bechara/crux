@@ -97,8 +97,8 @@ export class ConsoleService implements LogTransport {
       }
     }
     else {
-      const strLog = JSON.stringify({ timestamp, severity, traceId, requestId, caller, message, data });
-      console[isError ? 'error' : 'log'](JSON.stringify(strLog));
+      const logParams = { timestamp, severity, traceId, requestId, caller, message, data };
+      console[isError ? 'error' : 'log'](JSON.stringify(logParams));
     }
   }
 
