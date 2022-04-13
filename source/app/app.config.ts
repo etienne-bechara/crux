@@ -70,7 +70,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     pushInterval: 20_000,
   },
   docs: {
-    openApiUrl: 'http://127.0.0.1:8080/openapi/json',
+    openApiUrl: '/openapi/json',
     title: 'OpenAPI UI',
     version: '1.0.0',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
