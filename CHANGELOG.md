@@ -1,3 +1,10 @@
+## [4.13.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.5...v4.13.6) (2022-04-13)
+
+
+### Bug Fixes
+
+* openApiUrl ([2331c11](https://github.com/etienne-bechara/nestjs-core/commit/2331c114106ae3b9e5aa61d7677488b25675e3d9))
+
 ## [4.13.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.4...v4.13.5) (2022-04-13)
 
 
