@@ -1,5 +1,5 @@
 export enum LogException {
-  PUBLISH_FAILED = 'Failed to publish log'
+  PUSH_FAILED = 'Failed to push logs'
 }
 
 export enum LogTransportName {

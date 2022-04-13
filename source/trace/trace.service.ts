@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-import-assign */
 import { Injectable } from '@nestjs/common';
-import { Context, context, diag, DiagLogger, DiagLogLevel, Span, SpanOptions, trace } from '@opentelemetry/api';
+import { Context, context, Span, SpanOptions, trace } from '@opentelemetry/api';
 import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import { CompressionAlgorithm, OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import * as OTLPUtil from '@opentelemetry/exporter-trace-otlp-http/build/src/platform/node/util';
@@ -16,7 +16,6 @@ import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { TraceConfig } from './trace.config';
-import { TraceAppDiag } from './trace.interface';
 
 @Injectable()
 export class TraceService {
@@ -60,7 +59,6 @@ export class TraceService {
 
   /**
    * Sets up the tracer client, which includes:
-   * - Custom diag to log warning and errors integrated with application logger
    * - HTTP client override to send traces through built-in implementation
    * - Batch processor for trace publishing
    * - Trace provider stamping environment, job and instance
@@ -78,11 +76,6 @@ export class TraceService {
     const propagator = new B3Propagator();
 
     TraceService.job = job;
-
-    diag.setLogger(
-      new TraceAppDiag(this.logService) as any as DiagLogger,
-      DiagLogLevel.WARN,
-    );
 
     this.httpService = new HttpService({
       name: 'TraceModule',
@@ -142,6 +135,7 @@ export class TraceService {
       onSuccess();
     }
     catch (e) {
+      this.logService.error('Failed to push traces', e as Error);
       onError(e);
     }
   }

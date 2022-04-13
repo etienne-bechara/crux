@@ -104,7 +104,7 @@ export class MetricService {
         });
       }
       catch (e) {
-        this.logService.error('Failed to push to metrics to gateway', e as Error);
+        this.logService.error('Failed to push metrics', e as Error);
       }
     }
   }

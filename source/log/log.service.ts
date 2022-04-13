@@ -64,7 +64,7 @@ export class LogService {
       const transportName = transport.getName();
       const transportSeverity = transport.getSeverity();
       const isHigher = this.isHigherOrEqualSeverity(severity, transportSeverity);
-      const isSkippable = params.message === LogException.PUBLISH_FAILED && transportName !== LogTransportName.CONSOLE;
+      const isSkippable = params.message === LogException.PUSH_FAILED && transportName !== LogTransportName.CONSOLE;
 
       if (isHigher && !isSkippable) {
         transport.log(params);
