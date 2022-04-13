@@ -24,7 +24,7 @@
   <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.0/dist/try.js"></script>
   <script>
     initTry({
-      openApi: '{{ openApiUrl }}',
+      openApi: '{{ openApiUrl }}' || window.location.href.replace(/\/docs$/, '/openapi/json'),
       tryText: '⯈',
       redocOptions: JSON.parse('{{{ options }}}'),
     })
