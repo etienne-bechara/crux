@@ -1,3 +1,11 @@
+## [4.13.7](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.6...v4.13.7) (2022-04-14)
+
+
+### Bug Fixes
+
+* add support for proxy path in docs ([87d2d46](https://github.com/etienne-bechara/nestjs-core/commit/87d2d46c7ccff668747b1952e11b99331433111a))
+* memory delete closer to Map signature ([504d1cb](https://github.com/etienne-bechara/nestjs-core/commit/504d1cbb99614fff7e325aea8da58981f645d03c))
+
 ## [4.13.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.5...v4.13.6) (2022-04-13)
 
 
