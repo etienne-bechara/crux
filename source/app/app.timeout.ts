@@ -2,13 +2,16 @@ import { CallHandler, ExecutionContext, GatewayTimeoutException, Injectable, Nes
 import { Observable, throwError } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
+import { ContextService } from '../context/context.service';
 import { AppConfig } from './app.config';
+import { AppMetadata } from './app.enum';
 
 @Injectable()
 export class AppTimeout implements NestInterceptor {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly contextService: ContextService,
   ) { }
 
   /**
@@ -29,7 +32,10 @@ export class AppTimeout implements NestInterceptor {
       .pipe(
         timeout({
           first: msTimeout,
-          with: () => throwError(() => new GatewayTimeoutException('failed to fulfill request within timeout')),
+          with: () => throwError(() => {
+            this.contextService.setMetadata(AppMetadata.REQUEST_TIMEOUT, true);
+            return new GatewayTimeoutException('failed to fulfill request within timeout');
+          }),
         }),
       );
   }

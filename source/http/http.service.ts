@@ -4,7 +4,9 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
-import { AppMetric } from '../app/app.enum';
+import { AppMetadata, AppMetric } from '../app/app.enum';
+import { ContextStorageKey } from '../context/context.enum';
+import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { TraceService } from '../trace/trace.service';
@@ -216,6 +218,7 @@ export class HttpService {
    * @param params
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
+    const contextTimeoutMsg = 'context request timed out';
     const { ignoreExceptions, resolveBodyOnly } = params;
     let response: any;
 
@@ -230,7 +233,14 @@ export class HttpService {
 
     while (!response) {
       try {
+        const reqMetadata = ContextStorage.getStore()?.get(ContextStorageKey.METADATA);
+        const isTimedOut = reqMetadata?.[AppMetadata.REQUEST_TIMEOUT];
         sendParams.retry.attempt++;
+
+        if (isTimedOut) {
+          throw new Error(contextTimeoutMsg);
+        }
+
         response = await this.sendRequest(sendParams);
       }
       catch (e) {
@@ -239,7 +249,7 @@ export class HttpService {
         const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
         const attemptsLeft = retryLimit - attempt;
 
-        if (!attemptsLeft || !isRetryableCode) {
+        if (!attemptsLeft || !isRetryableCode || e.message === contextTimeoutMsg) {
           this.collectOutboundTelemetry('result', { ...sendParams.telemetry, response: attemptResponse, error: e });
           throw e;
         }
