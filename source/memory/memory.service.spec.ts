@@ -63,12 +63,12 @@ describe('MemoryService', () => {
     });
   });
 
-  describe('del', () => {
+  describe('delete', () => {
     it('should successfully erase storage keys', () => {
-      memoryService.del('testString');
-      memoryService.del('testNumber');
-      memoryService.del('testObject');
-      memoryService.del('testArray');
+      memoryService.delete('testString');
+      memoryService.delete('testNumber');
+      memoryService.delete('testObject');
+      memoryService.delete('testArray');
       expect(memoryService.get('testString')).toBe(undefined);
       expect(memoryService.get('testNumber')).toBe(undefined);
       expect(memoryService.get('testObject')).toBe(undefined);

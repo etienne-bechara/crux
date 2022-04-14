@@ -47,7 +47,7 @@ export class MemoryService<DataKey = Record<string, any>> {
    * Removes target data and TTL from key.
    * @param key
    */
-  public del<K extends keyof DataKey>(key: K): void {
+  public delete<K extends keyof DataKey>(key: K): void {
     this.memoryData.delete(key as string);
     this.memoryExpiration.delete(key as string);
   }
