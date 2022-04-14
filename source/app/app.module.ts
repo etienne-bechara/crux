@@ -137,7 +137,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { job, fastify, prefix, cors } = this.options;
+    const { job, fastify, globalPrefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -180,7 +180,7 @@ export class AppModule {
       });
     });
 
-    this.instance.setGlobalPrefix(prefix);
+    this.instance.setGlobalPrefix(globalPrefix);
     this.instance.enableCors(cors);
   }
 
@@ -189,7 +189,8 @@ export class AppModule {
    * endpoint naming.
    */
   private static configureDocumentation(): void {
-    const { title, description, version, logo, tagGroups, documentBuilder } = this.options.docs;
+    const { globalPrefix, proxyPrefix, docs } = this.options;
+    const { title, description, version, logo, tagGroups, documentBuilder } = docs;
     const memoryService: MemoryService<AppMemory> = this.instance.get(MemoryService);
 
     this.instance['setViewEngine']({
@@ -203,8 +204,17 @@ export class AppModule {
       .setDescription(description)
       .setVersion(version);
 
+    if (proxyPrefix || globalPrefix) {
+      const server = proxyPrefix && globalPrefix
+        ? `${proxyPrefix}/${globalPrefix}`
+        : proxyPrefix || globalPrefix;
+
+      builder.addServer(`/${server}`);
+    }
+
     // Standardize operation ID names
     const document = SwaggerModule.createDocument(this.instance, builder.build(), {
+      ignoreGlobalPrefix: true,
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const entityName = controllerKey.replace('Controller', '');
         const defaultId = `${controllerKey}_${methodKey}`;
@@ -249,7 +259,9 @@ export class AppModule {
     document['x-tagGroups'] = appTagGroups;
     document.info['x-logo'] = logo;
 
-    SwaggerModule.setup('openapi', this.instance, document);
+    SwaggerModule.setup('openapi', this.instance, document, {
+      useGlobalPrefix: true,
+    });
   }
 
   /**

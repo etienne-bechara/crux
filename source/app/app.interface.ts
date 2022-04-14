@@ -45,8 +45,10 @@ export interface AppOptions extends ModuleMetadata {
   port?: number;
   /** Application hostname. Default: `0.0.0.0`. */
   hostname?: string;
-  /** Application prefix applied to all endpoints. */
-  prefix?: string;
+  /** Application prefix to apply to all endpoints. */
+  globalPrefix?: string;
+  /** Application prefix applied at proxy level. */
+  proxyPrefix?: string;
   /** Application request timeout in milliseconds. Default: 60000. */
   timeout?: number;
   /** Application CORS response. */
