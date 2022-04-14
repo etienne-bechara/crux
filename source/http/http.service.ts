@@ -234,7 +234,7 @@ export class HttpService {
     while (!response) {
       try {
         const reqMetadata = ContextStorage.getStore()?.get(ContextStorageKey.METADATA);
-        const isTimedOut = reqMetadata?.[AppMetadata.REQUEST_TIMEOUT];
+        const isTimedOut = reqMetadata?.[AppMetadata.REQUEST_TIMEOUT] && url !== 'v1/traces';
         sendParams.retry.attempt++;
 
         if (isTimedOut) {
