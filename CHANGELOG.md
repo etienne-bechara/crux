@@ -1,3 +1,10 @@
+# [4.14.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.7...v4.14.0) (2022-04-14)
+
+
+### Features
+
+* break further http activity if client request timed out ([a531158](https://github.com/etienne-bechara/nestjs-core/commit/a531158e358edea78799ba4dbfd61517746c67b4))
+
 ## [4.13.7](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.6...v4.13.7) (2022-04-14)
 
 
