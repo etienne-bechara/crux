@@ -1,3 +1,10 @@
+## [4.14.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.0...v4.14.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* allow trace to be pushed if request time out ([07cee49](https://github.com/etienne-bechara/nestjs-core/commit/07cee4927b896512085d4b49714cc8a5a1098f9a))
+
 # [4.14.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.13.7...v4.14.0) (2022-04-14)
 
 
