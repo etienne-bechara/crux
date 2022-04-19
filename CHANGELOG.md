@@ -1,3 +1,10 @@
+## [4.14.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.2...v4.14.3) (2022-04-19)
+
+
+### Bug Fixes
+
+* getRequestJwtPayload ([a330cb5](https://github.com/etienne-bechara/nestjs-core/commit/a330cb5ab23aeff9366f389972dde3a9e062ea14))
+
 ## [4.14.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.1...v4.14.2) (2022-04-19)
 
 
