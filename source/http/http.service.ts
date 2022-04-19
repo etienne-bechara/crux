@@ -4,28 +4,29 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
+import { AppConfig } from '../app/app.config';
 import { AppMetadata, AppMetric } from '../app/app.enum';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { TraceService } from '../trace/trace.service';
-import { HttpConfig } from './http.config';
 import { HttpInjectionToken, HttpMethod } from './http.enum';
-import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
+import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
+  private defaultOptions: HttpOptions;
   private instance: Got;
 
   public constructor(
     @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
-    private readonly httpConfig: HttpConfig,
-    private readonly logService: LogService,
-    private readonly metricService: MetricService,
-    private readonly traceService: TraceService,
+    private readonly appConfig: AppConfig,
+    private readonly logService?: LogService,
+    private readonly metricService?: MetricService,
+    private readonly traceService?: TraceService,
   ) {
     if (this.httpModuleOptions.disableTelemetry) {
       this.logService = undefined;
@@ -51,6 +52,8 @@ export class HttpService {
    */
   private setup(): void {
     const { name, prefixUrl } = this.httpModuleOptions;
+
+    this.defaultOptions = this.appConfig.APP_OPTIONS.http || { };
     this.logService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
 
     this.httpModuleOptions.hooks ??= {
@@ -78,11 +81,13 @@ export class HttpService {
    */
   private buildRetryParams(params: HttpRequestParams): HttpRetryParams {
     const { method: paramsMethod, retryLimit: paramsLimit, retryCodes: paramsCode, retryDelay: paramsDelay } = params;
+    const { retryLimit: defaultRetryLimit, retryCodes: defaultRetryCodes } = this.defaultOptions;
+    const { retryMethods: defaultRetryMethods, retryDelay: defaultRetryDelay } = this.defaultOptions;
 
-    const retryLimitBase = paramsLimit ?? this.httpModuleOptions.retryLimit ?? this.httpConfig.HTTP_DEFAULT_RETRY_LIMIT;
-    const retryMethods = this.httpModuleOptions.retryMethods ?? this.httpConfig.HTTP_DEFAULT_RETRY_METHODS;
-    const retryCodes = paramsCode ?? this.httpModuleOptions.retryCodes ?? this.httpConfig.HTTP_DEFAULT_RETRY_CODES;
-    const retryDelay = paramsDelay ?? this.httpModuleOptions.retryDelay ?? this.httpConfig.HTTP_DEFAULT_RETRY_DELAY;
+    const retryLimitBase = paramsLimit ?? this.httpModuleOptions.retryLimit ?? defaultRetryLimit;
+    const retryMethods = this.httpModuleOptions.retryMethods ?? defaultRetryMethods;
+    const retryCodes = paramsCode ?? this.httpModuleOptions.retryCodes ?? defaultRetryCodes;
+    const retryDelay = paramsDelay ?? this.httpModuleOptions.retryDelay ?? defaultRetryDelay;
 
     const method: HttpMethod = paramsMethod as any || HttpMethod.GET;
     const isRetryable = !!paramsLimit || paramsLimit === 0 || retryMethods.includes(method);

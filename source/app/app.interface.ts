@@ -6,6 +6,7 @@ import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
+import { HttpOptions } from '../http/http.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { SentryOptions } from '../sentry/sentry.interface';
@@ -59,6 +60,8 @@ export interface AppOptions extends ModuleMetadata {
   fastify?: Record<string, any>;
   /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
+  /** Http configuation. */
+  http?: HttpOptions;
   /** Console logging transport configuration. */
   console?: ConsoleOptions;
   /** Loki logging transport configuration. */

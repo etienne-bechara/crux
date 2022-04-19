@@ -4,6 +4,7 @@ import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
 import { Config, InjectConfig } from '../config/config.decorator';
+import { HttpMethod } from '../http/http.enum';
 import { LogSeverity } from '../log/log.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
@@ -43,6 +44,28 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     'pass',
     'password',
   ],
+  http: {
+    retryLimit: 2,
+    retryMethods: [
+      HttpMethod.GET,
+      HttpMethod.PUT,
+      HttpMethod.HEAD,
+      HttpMethod.DELETE,
+      HttpMethod.OPTIONS,
+      HttpMethod.TRACE,
+    ],
+    retryCodes: [
+      HttpStatus.REQUEST_TIMEOUT,
+      HttpStatus.TOO_MANY_REQUESTS,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      HttpStatus.BAD_GATEWAY,
+      HttpStatus.SERVICE_UNAVAILABLE,
+      HttpStatus.GATEWAY_TIMEOUT,
+    ],
+    retryDelay: (attempts: number): number => {
+      return attempts > 4 ? 16_000 : 2 ** (attempts - 1) * 1000;
+    },
+  },
   console: {
     maxLength: 1000,
   },

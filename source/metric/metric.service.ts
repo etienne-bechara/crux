@@ -3,7 +3,6 @@ import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfi
 
 import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
-import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
@@ -17,7 +16,6 @@ export class MetricService {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,
     private readonly metricConfig: MetricConfig,
   ) {
@@ -85,7 +83,7 @@ export class MetricService {
       prefixUrl: pushgatewayUrl,
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
-    }, this.httpConfig, null, null, null);
+    }, this.appConfig);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {

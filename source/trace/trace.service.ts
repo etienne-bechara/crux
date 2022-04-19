@@ -12,7 +12,6 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
-import { HttpConfig } from '../http/http.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { TraceConfig } from './trace.config';
@@ -25,7 +24,6 @@ export class TraceService {
 
   public constructor(
     private readonly appConfig: AppConfig,
-    private readonly httpConfig: HttpConfig,
     private readonly logService: LogService,
     private readonly traceConfig: TraceConfig,
   ) {
@@ -82,7 +80,7 @@ export class TraceService {
       prefixUrl: traceUrl,
       username: this.traceConfig.TRACE_USERNAME ?? username,
       password: this.traceConfig.TRACE_PASSWORD ?? password,
-    }, this.httpConfig, null, null, null);
+    }, this.appConfig);
 
     // @ts-ignore
     OTLPUtil.sendWithHttp = (collector, data: string, contentType, onSuccess, onError): Promise<void> => {
