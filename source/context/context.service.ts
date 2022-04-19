@@ -180,7 +180,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquire authorization header and decode its payload if applicable.
    */
   public getRequestJwtPayload(): ContextJwtPayload {
-    const token: string = this.getRequest()?.headers.authorization;
+    const token: string = this.getRequestHeader('authorization');
     return this.decodeJwtPayload(token);
   }
 
