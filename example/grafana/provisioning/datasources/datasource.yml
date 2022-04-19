@@ -26,6 +26,9 @@ datasources:
     jsonData:
       nodeGraph:
         enabled: true
+      tracesToLogs:
+        datasourceUid: 'loki'
+        lokiSearch: true
 
   - name: Prometheus
     type: prometheus

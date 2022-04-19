@@ -139,10 +139,32 @@ export class TraceService {
   }
 
   /**
+   * Acquires active span.
+   */
+  public getActiveSpan(): Span {
+    return TraceService.getActiveSpan();
+  }
+
+  /**
+   * Acquires active span.
+   */
+  public static getActiveSpan(): Span {
+    return trace.getSpan(context.active());
+  }
+
+  /**
    * Acquires context of target span.
    * @param span
    */
-  public getSpanContext(span: Span): Context {
+  public getContextBySpan(span: Span): Context {
+    return TraceService.getContextBySpan(span);
+  }
+
+  /**
+   * Acquires context of target span.
+   * @param span
+   */
+  public static getContextBySpan(span: Span): Context {
     return trace.setSpan(context.active(), span);
   }
 

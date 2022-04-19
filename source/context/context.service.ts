@@ -40,7 +40,7 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Get context trace ID.
    */
-  public getTraceId(): string {
+  public getRequestTraceId(): string {
     return this.getRequestSpan()?.spanContext().traceId;
   }
 

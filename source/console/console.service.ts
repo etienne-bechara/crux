@@ -47,7 +47,7 @@ export class ConsoleService implements LogTransport {
   // eslint-disable-next-line complexity
   public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
-    const { timestamp, severity, traceId, requestId, caller, message, data, error } = params;
+    const { timestamp, severity, caller, message, requestId, traceId, spanId, data, error } = params;
     const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
     const { prettyPrint, maxLength, hideDetails } = consoleOptions;
     const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
@@ -97,7 +97,7 @@ export class ConsoleService implements LogTransport {
       }
     }
     else {
-      const logParams = { timestamp, severity, traceId, requestId, caller, message, data };
+      const logParams = { timestamp, severity, caller, message, requestId, traceId, spanId, data };
       console[isError ? 'error' : 'log'](JSON.stringify(logParams));
     }
   }

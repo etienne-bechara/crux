@@ -296,11 +296,11 @@ export class HttpService {
         [SemanticAttributes.HTTP_HOST]: host,
         [SemanticAttributes.HTTP_ROUTE]: path,
       },
-    }, this.traceService?.getSpanContext(parentSpan));
+    }, this.traceService?.getContextBySpan(parentSpan));
 
     if (span && !this.httpModuleOptions.disablePropagation) {
       request.headers ??= { };
-      const ctx = this.traceService.getSpanContext(span);
+      const ctx = this.traceService.getContextBySpan(span);
       propagation.inject(ctx, request.headers);
     }
 

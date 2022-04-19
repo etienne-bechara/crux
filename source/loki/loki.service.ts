@@ -164,12 +164,12 @@ export class LokiService implements LogTransport {
     const streamValues: string[][] = [ ];
 
     for (const log of logs) {
-      const { timestamp, traceId, requestId, caller, message, data } = log;
+      const { timestamp, caller, message, requestId, traceId, spanId, data } = log;
       const unixNanoseconds = new Date(timestamp).getTime() * 10 ** 6;
 
       streamValues.push([
         unixNanoseconds.toString(),
-        JSON.stringify({ caller, message, requestId, traceId, data }),
+        JSON.stringify({ caller, message, requestId, traceId, spanId, data }),
       ]);
     }
 

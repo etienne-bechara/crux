@@ -14,10 +14,11 @@ export interface LogOptions {
 export interface LogParams {
   timestamp: string;
   severity: LogSeverity;
-  traceId: string;
-  requestId: string;
   caller: string;
   message: string;
+  requestId: string;
+  traceId: string;
+  spanId: string;
   data: Record<string, any>;
   error: Error;
 }

@@ -1,4 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { context, trace } from '@opentelemetry/api';
 import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
@@ -55,7 +56,8 @@ export class LogService {
       caller: this.getCaller(...args),
       message: this.getLogMessage(...args),
       requestId: this.contextService.getRequestId(),
-      traceId: this.contextService.getTraceId(),
+      traceId: this.contextService.getRequestTraceId(),
+      spanId: trace.getSpan(context.active())?.spanContext().spanId,
       data: this.getLogData(...args),
       error: this.getLogError(...args),
     };
