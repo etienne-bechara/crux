@@ -1,3 +1,10 @@
+## [4.14.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.1...v4.14.2) (2022-04-19)
+
+
+### Bug Fixes
+
+* set metadata optional chain ([20e3e33](https://github.com/etienne-bechara/nestjs-core/commit/20e3e33865f95e4c39da3be9e031f716cd4b7fb1))
+
 ## [4.14.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.0...v4.14.1) (2022-04-14)
 
 
