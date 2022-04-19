@@ -166,7 +166,7 @@ export class LogService {
    */
   // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
-    const { sensitiveKeys } = this.appConfig.APP_OPTIONS;
+    const { sensitiveKeys } = this.appConfig.APP_OPTIONS.logs || { };
 
     if (typeof object !== 'object') {
       return object;
@@ -185,7 +185,7 @@ export class LogService {
 
     for (const key in clone) {
       const alphaKey = key.toLowerCase().replace(/[^a-z]+/g, '');
-      const isSensitive = sensitiveKeys.includes(alphaKey);
+      const isSensitive = sensitiveKeys?.includes(alphaKey);
       const isArray = Array.isArray(clone[key]);
       const isObject = typeof clone[key] === 'object';
       const hasZeroKey = isObject && clone[key] && (clone[key]['0'] || clone[key]['0'] === 0);

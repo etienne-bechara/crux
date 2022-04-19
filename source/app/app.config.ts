@@ -34,16 +34,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     trustProxy: true,
     genReqId: () => crypto.randomBytes(16).toString('hex'),
   },
-  sensitiveKeys: [
-    'apikey',
-    'auth',
-    'authentication',
-    'authorization',
-    'clientkey',
-    'clientsecret',
-    'pass',
-    'password',
-  ],
   http: {
     retryLimit: 2,
     retryMethods: [
@@ -66,6 +56,19 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
       return attempts > 4 ? 16_000 : 2 ** (attempts - 1) * 1000;
     },
   },
+  logs: {
+    sensitiveKeys: [
+      'apikey',
+      'auth',
+      'authentication',
+      'authorization',
+      'clientkey',
+      'clientsecret',
+      'pass',
+      'password',
+    ],
+  },
+
   console: {
     maxLength: 1000,
   },

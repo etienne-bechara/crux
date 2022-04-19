@@ -284,7 +284,7 @@ export class HttpService {
    */
   private async sendRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
     const { url, request, telemetry, retry, ignoreExceptions } = params;
-    const { method, host, path, replacements, query, body, headers, span: parentSpan } = telemetry;
+    const { method, host, path, replacements, query, body: reqBody, headers, span: parentSpan } = telemetry;
     const { attempt, retryLimit } = retry;
     const logMessage = this.buildLogMessage('up', { method, host, path });
     const start = Date.now();
@@ -305,6 +305,7 @@ export class HttpService {
     }
 
     try {
+      const body = this.httpModuleOptions.filterRequestBody ? undefined : reqBody;
       this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
       response = await this.instance(url, request) as HttpResponse<T>;
 
@@ -366,12 +367,13 @@ export class HttpService {
    */
   private collectOutboundTelemetry(step: 'result' | 'iteration', params: HttpTelemetryParams): void {
     const { start, method, host, path, response, span, error } = params;
-    const { statusCode, body, headers } = response || { };
+    const { statusCode, body: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
     if (step === 'iteration') {
       const strCode = statusCode?.toString() || '';
-      const logData = { duration, code: strCode, body: body || undefined, headers };
+      const body = this.httpModuleOptions.filterResponseBody ? undefined : resBody || undefined;
+      const logData = { duration, code: strCode, body, headers };
       this.logService?.http(this.buildLogMessage('down', params), logData);
 
       const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION);
