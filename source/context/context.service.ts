@@ -61,7 +61,7 @@ export class ContextService<Metadata = Record<string, any>> {
   public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
     metadata[key] = value;
-    this.getStore().set(ContextStorageKey.METADATA, metadata);
+    this.getStore()?.set(ContextStorageKey.METADATA, metadata);
   }
 
   /**
