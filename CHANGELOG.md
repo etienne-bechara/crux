@@ -1,3 +1,11 @@
+# [4.15.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.3...v4.15.0) (2022-04-19)
+
+
+### Features
+
+* add http default configs at app level ([17368a9](https://github.com/etienne-bechara/nestjs-core/commit/17368a9325eea8a3e6e20460773bcbab4fb1b776))
+* allow filtering http bodies ([a2388bc](https://github.com/etienne-bechara/nestjs-core/commit/a2388bce7daeb6a5a21744fcab441a5b597ebe98))
+
 ## [4.14.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.2...v4.14.3) (2022-04-19)
 
 
