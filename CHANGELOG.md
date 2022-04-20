@@ -1,3 +1,11 @@
+# [4.16.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.15.0...v4.16.0) (2022-04-20)
+
+
+### Features
+
+* add spanId to logs ([10ea479](https://github.com/etienne-bechara/nestjs-core/commit/10ea4794680efc9a8599be27f50affb7f733d7ac))
+* correctly set http child spans ([94f284b](https://github.com/etienne-bechara/nestjs-core/commit/94f284b37ee045886e97b9e9b7f9dc0677c03248))
+
 # [4.15.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.14.3...v4.15.0) (2022-04-19)
 
 
