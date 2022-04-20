@@ -1,5 +1,5 @@
 import { HttpStatus, ModuleMetadata } from '@nestjs/common';
-import { Span } from '@opentelemetry/api';
+import { Span, SpanOptions } from '@opentelemetry/api';
 import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
 
 import { HttpMethod } from './http.enum';
@@ -81,6 +81,7 @@ export interface HttpRequestSendParams {
   resolveBodyOnly: boolean;
   telemetry: HttpTelemetryParams;
   retry: HttpRetryParams;
+  span?: Span;
 }
 
 export interface HttpTelemetryParams {
@@ -92,7 +93,9 @@ export interface HttpTelemetryParams {
   query: Record<string, any>;
   body: any;
   headers: any;
-  span: Span;
+  spanName: string;
+  spanOptions: SpanOptions;
+  span?: Span;
   response?: HttpResponse<unknown>;
   error?: Error;
 }
