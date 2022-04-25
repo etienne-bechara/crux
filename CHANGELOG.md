@@ -1,3 +1,10 @@
+## [4.16.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.0...v4.16.1) (2022-04-25)
+
+
+### Bug Fixes
+
+* retry attempt scope ([d83c9dd](https://github.com/etienne-bechara/nestjs-core/commit/d83c9dd509bcb14a970c7fb3f9854d620c3bae1c))
+
 # [4.16.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.15.0...v4.16.0) (2022-04-20)
 
 
