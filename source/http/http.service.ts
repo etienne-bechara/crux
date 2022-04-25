@@ -262,18 +262,19 @@ export class HttpService {
     const contextTimeoutMsg = 'context request timed out';
     const { telemetry, retry, request, span } = params;
     const { method, host, path, spanOptions } = telemetry;
-    const { attempt, retryLimit } = retry;
+    const { retryLimit, retryCodes, retryDelay } = retry;
     const { url } = request;
     let response: any;
 
     while (!response) {
+      retry.attempt++;
+      const { attempt } = retry;
+
       try {
         const childSpanName = `⯆ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
         const reqMetadata = ContextStorage.getStore()?.get(ContextStorageKey.METADATA);
         const isTimedOut = reqMetadata?.[AppMetadata.REQUEST_TIMEOUT] && url !== 'v1/traces';
         if (isTimedOut) throw new Error(contextTimeoutMsg);
-
-        retry.attempt++;
 
         response = this.traceService
           ? await this.traceService.startActiveSpan(childSpanName, spanOptions, async (childSpan) => {
@@ -282,7 +283,6 @@ export class HttpService {
           : await this.sendRequest(params);
       }
       catch (e) {
-        const { attempt, retryLimit, retryCodes, retryDelay } = retry;
         const attemptResponse = e.response?.outboundResponse;
         const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
         const attemptsLeft = retryLimit - attempt;
