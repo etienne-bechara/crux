@@ -1,3 +1,11 @@
+## [4.16.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.1...v4.16.2) (2022-04-27)
+
+
+### Bug Fixes
+
+* do not encode on path replacement ([4890497](https://github.com/etienne-bechara/nestjs-core/commit/4890497ce0f264d5cddf9b19444ca7e3c5985b44))
+* lint ([8094fdc](https://github.com/etienne-bechara/nestjs-core/commit/8094fdc1536ef07b81f1ec2de2ca9a6aa2bc32e1))
+
 ## [4.16.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.0...v4.16.1) (2022-04-25)
 
 
