@@ -145,7 +145,8 @@ export class HttpService {
 
         if (Array.isArray(testValue)) {
           mergedQuery[key] = testValue.join(separator);
-        } else if (testValue?.toString) {
+        }
+        else if (testValue?.toString) {
           mergedQuery[key] = testValue.toString();
         }
       }
@@ -277,7 +278,8 @@ export class HttpService {
             return this.sendRequest({ ...params, span: childSpan });
           })
           : await this.sendRequest(params);
-      } catch (e) {
+      }
+      catch (e) {
         const attemptResponse = e.response?.outboundResponse;
         const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
         const attemptsLeft = retryLimit - attempt;
@@ -326,7 +328,8 @@ export class HttpService {
       response = await this.instance(url, request) as HttpResponse<T>;
 
       this.collectOutboundTelemetry('iteration', { ...telemetry, start, response, span });
-    } catch (e) {
+    }
+    catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
       const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
 
@@ -334,9 +337,11 @@ export class HttpService {
 
       if (!isTimeout && !e.response) {
         throw e;
-      } else if (ignoreExceptions) {
+      }
+      else if (ignoreExceptions) {
         response = errorResponse;
-      } else {
+      }
+      else {
         this.handleRequestException({ ...telemetry, error: e, request });
       }
     }
@@ -405,7 +410,8 @@ export class HttpService {
       if (error) {
         span.recordException(error);
         span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-      } else {
+      }
+      else {
         span.setStatus({ code: SpanStatusCode.OK });
       }
 
