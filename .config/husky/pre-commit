@@ -1,4 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-pnpx -y lint-staged --config .config/lint-staged/.lintstagedrc.json --allow-empty --verbose
