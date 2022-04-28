@@ -79,14 +79,15 @@ export class AppService {
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getRequestSpan();
-    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_INBOUND_DURATION);
+    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_DURATION);
 
     const method = this.contextService.getRequestMethod();
+    const host = this.contextService.getRequestHost();
     const path = this.contextService.getRequestPath();
     const duration = this.contextService.getRequestDuration();
 
     if (durationHistogram) {
-      durationHistogram.labels(method, path, code.toString()).observe(duration);
+      durationHistogram.labels('inbound', method, host, path, code.toString()).observe(duration);
     }
 
     if (span) {

@@ -394,10 +394,10 @@ export class HttpService {
       const logData = { duration, code: strCode, body, headers };
       this.logService?.http(this.buildLogMessage('down', params), logData);
 
-      const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION);
+      const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_DURATION);
 
       if (durationHistogram) {
-        durationHistogram.labels(method, host, path, strCode).observe(duration);
+        durationHistogram.labels('outbound', method, host, path, strCode).observe(duration);
       }
     }
 

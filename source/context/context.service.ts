@@ -88,6 +88,13 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
+   * Acquire request host.
+   */
+  public getRequestHost(): string {
+    return this.getRequest()?.hostname;
+  }
+
+  /**
    * Acquire request path.
    */
   public getRequestPath(): string {

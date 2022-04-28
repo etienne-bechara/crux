@@ -26,6 +26,7 @@ export class AppInterceptor implements NestInterceptor {
 
     this.logService.http(this.contextService.getRequestDescription('in'), {
       method: this.contextService.getRequestMethod(),
+      host: this.contextService.getRequestHost(),
       path: this.contextService.getRequestPath(),
       clientIp: this.contextService.getRequestIp(),
       params: this.contextService.getRequestParams(),

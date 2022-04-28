@@ -50,18 +50,9 @@ export class MetricService {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { httpDurationBuckets } = metrics;
 
-    const httpInboundLabels = [ 'method', 'path', 'code' ];
-    const httpOutboundLabels = [ 'method', 'host', 'path', 'code' ];
-
-    this.getHistogram(AppMetric.HTTP_INBOUND_DURATION, {
+    this.getHistogram(AppMetric.HTTP_DURATION, {
       help: 'Duration of inbound HTTP requests in seconds.',
-      labelNames: httpInboundLabels,
-      buckets: httpDurationBuckets,
-    });
-
-    this.getHistogram(AppMetric.HTTP_OUTBOUND_DURATION, {
-      help: 'Duration of outbound HTTP requests in seconds.',
-      labelNames: httpOutboundLabels,
+      labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
       buckets: httpDurationBuckets,
     });
   }

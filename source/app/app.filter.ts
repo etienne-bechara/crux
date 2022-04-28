@@ -119,6 +119,7 @@ export class AppFilter implements ExceptionFilter {
 
     const inboundRequest = {
       method: this.contextService.getRequestMethod(),
+      host: this.contextService.getRequestHost(),
       path: this.contextService.getRequestPath(),
       params: this.contextService.getRequestParams(),
       query: this.contextService.getRequestQuery(),
