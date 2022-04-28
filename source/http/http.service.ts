@@ -5,7 +5,7 @@ import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 
 import { AppConfig } from '../app/app.config';
-import { AppMetadata, AppMetric } from '../app/app.enum';
+import { AppMetric } from '../app/app.enum';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
@@ -269,8 +269,7 @@ export class HttpService {
 
       try {
         const childSpanName = `⯆ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
-        const reqMetadata = ContextStorage.getStore()?.get(ContextStorageKey.METADATA);
-        const isTimedOut = reqMetadata?.[AppMetadata.REQUEST_TIMEOUT] && url !== 'v1/traces';
+        const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.TIMEOUT) && url !== 'v1/traces';
         if (isTimedOut) throw new Error(contextTimeoutMsg);
 
         response = this.traceService

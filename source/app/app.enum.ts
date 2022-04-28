@@ -9,7 +9,3 @@ export enum AppEnvironment {
 export enum AppMetric {
   HTTP_DURATION = 'http_duration_seconds',
 }
-
-export enum AppMetadata {
-  REQUEST_TIMEOUT = 'requestTimeout',
-}
