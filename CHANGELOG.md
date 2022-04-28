@@ -1,3 +1,12 @@
+## [4.16.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.2...v4.16.3) (2022-04-28)
+
+
+### Bug Fixes
+
+* add inbound/outbound http as label ([32fbbf7](https://github.com/etienne-bechara/nestjs-core/commit/32fbbf7a191f292f9929e78a5546d8786e063b52))
+* remove lint staged ([5c0a34f](https://github.com/etienne-bechara/nestjs-core/commit/5c0a34f1d6b5ac90b9a171a64d040fa878cd74e3))
+* use timeout as context key ([d2a3ed1](https://github.com/etienne-bechara/nestjs-core/commit/d2a3ed106a37009030a1f1e4213d6a353e805ec9))
+
 ## [4.16.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.1...v4.16.2) (2022-04-27)
 
 
