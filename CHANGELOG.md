@@ -1,3 +1,16 @@
+# [4.17.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.3...v4.17.0) (2022-05-13)
+
+
+### Bug Fixes
+
+* do not merge http json arrays ([e16a544](https://github.com/etienne-bechara/nestjs-core/commit/e16a544fe92151789347f35557edcf7a7e3af859))
+* remove pnpx ([811a5f4](https://github.com/etienne-bechara/nestjs-core/commit/811a5f47b8ad3d9ec932a2242d547681410d9e21))
+
+
+### Features
+
+* tags ([43dc28e](https://github.com/etienne-bechara/nestjs-core/commit/43dc28ebee20e646e0d8a71e31817685e0389aac))
+
 ## [4.16.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.3...v4.16.4) (2022-05-13)
 
 
