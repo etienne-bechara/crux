@@ -154,7 +154,7 @@ export class HttpService {
       params.searchParams = mergedQuery as Record<string, string>;
     }
 
-    if (json) {
+    if (json && !Array.isArray(json)) {
       params.json = { ...this.httpModuleOptions.json, ...json };
     }
 
