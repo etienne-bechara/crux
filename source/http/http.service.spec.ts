@@ -180,16 +180,15 @@ describe('HttpService', () => {
           stringArray: [ 'string', 'string' ],
           test: [ 'test1', 'test2', 'test3' ],
         },
-        querySeparator: '|',
+        queryOptions: {
+          arrayFormat: 'separator',
+          arrayFormatSeparator: '|',
+        },
       };
 
-      const expectation = {
-        string: 'string',
-        stringArray: 'string|string',
-        test: 'test1|test2|test3',
-      };
-
+      const expectation = 'string=string&stringArray=string|string&test=test1|test2|test3';
       const result = appHttpService['buildRequestParams'](params);
+
       expect(result.searchParams).toStrictEqual(expectation);
     });
   });

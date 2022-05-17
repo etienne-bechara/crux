@@ -1,6 +1,7 @@
 import { HttpStatus, ModuleMetadata } from '@nestjs/common';
 import { Span, SpanOptions } from '@opentelemetry/api';
 import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
+import { StringifyOptions } from 'query-string';
 
 import { HttpMethod } from './http.enum';
 
@@ -27,8 +28,8 @@ export interface HttpSharedOptions extends HttpOptions {
   proxyExceptions?: boolean;
   /** Request query params with array joining support, overrides `searchParams`. */
   query?: Record<string, any>;
-  /** Query separator when joining string arrays. Default ','. */
-  querySeparator?: string;
+  /** Query stringify options. */
+  queryOptions?: StringifyOptions;
   /** @deprecated Use `retryLimit` and `retryCodes`. */
   retry?: never;
 }

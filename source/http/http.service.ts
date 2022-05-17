@@ -3,6 +3,7 @@ import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
+import { stringify } from 'query-string';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
@@ -131,27 +132,15 @@ export class HttpService {
    * @param params
    */
   private buildRequestParams(params: HttpRequestParams): HttpRequestParams {
-    const { query, querySeparator, json, form } = params;
+    const { query, queryOptions, json, form } = params;
 
     params.method ??= HttpMethod.GET;
     params.resolveBodyOnly = false;
 
     if (query || this.httpModuleOptions.query) {
-      const separator = querySeparator ?? this.httpModuleOptions.querySeparator ?? ',';
+      const qsOptions = queryOptions || this.httpModuleOptions.queryOptions;
       const mergedQuery = { ...this.httpModuleOptions.query, ...query };
-
-      for (const key in mergedQuery) {
-        const testValue = mergedQuery[key];
-
-        if (Array.isArray(testValue)) {
-          mergedQuery[key] = testValue.join(separator);
-        }
-        else if (testValue?.toString) {
-          mergedQuery[key] = testValue.toString();
-        }
-      }
-
-      params.searchParams = mergedQuery as Record<string, string>;
+      params.searchParams = stringify(mergedQuery, qsOptions);
     }
 
     if (json && !Array.isArray(json)) {
