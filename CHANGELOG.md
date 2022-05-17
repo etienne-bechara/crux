@@ -1,3 +1,10 @@
+## [4.17.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.0...v4.17.1) (2022-05-17)
+
+
+### Bug Fixes
+
+* add improved qs support ([6d61a3e](https://github.com/etienne-bechara/nestjs-core/commit/6d61a3e383e08a98c424ff2d67cad9ca034021db))
+
 # [4.17.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.16.3...v4.17.0) (2022-05-13)
 
 
