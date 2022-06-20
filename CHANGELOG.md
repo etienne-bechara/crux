@@ -1,3 +1,10 @@
+## [4.17.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.1...v4.17.2) (2022-06-20)
+
+
+### Bug Fixes
+
+* initial config acquisition ([80cfd6b](https://github.com/etienne-bechara/nestjs-core/commit/80cfd6be8c5e83d84d8a480c5960ddac9b6a61fb))
+
 ## [4.17.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.0...v4.17.1) (2022-05-17)
 
 
