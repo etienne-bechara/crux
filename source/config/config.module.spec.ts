@@ -31,16 +31,21 @@ class TestConfig {
 }
 
 describe('ConfigModule', () => {
-  beforeAll(() => {
-    ConfigModule.register({ allowValidationErrors: true });
-  });
-
-  describe('getConfig', () => {
-    it('should read an injected config', () => {
+  describe('get (unregistered)', () => {
+    it('should read an exiting config prior to registering', () => {
       const configValue = ConfigModule.get('NODE_ENV');
       expect(configValue).toBeDefined();
     });
+  });
 
+  describe('registerAsync', () => {
+    it('should register configs without exceptions', () => {
+      ConfigModule.register({ allowValidationErrors: true });
+      expect(true).toBeTruthy();
+    });
+  });
+
+  describe('get', () => {
     it('should return config fallback', () => {
       const configValue = ConfigModule.get('TEST_CONFIG_FALLBACK');
       expect(configValue).toBe('config_fallback');

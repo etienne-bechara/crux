@@ -22,7 +22,6 @@ export class ConfigModule {
    * @param options
    */
   public static register(options: ConfigModuleOptions = { }): DynamicModule {
-    options.envPath ??= this.scanEnvFile();
     this.isRegistered = true;
 
     for (const configClass of this.classes) {
@@ -33,6 +32,18 @@ export class ConfigModule {
     this.validateConfigs(options);
 
     return { module: ConfigModule };
+  }
+
+  /**
+   * Returns an object corresponding to merged process with environment file.
+   * @param options
+   */
+  private static getMergedEnv(options: ConfigModuleOptions = { }): Record<string, any> {
+    const { envPath } = options;
+    const path = envPath || this.scanEnvFile();
+    const envFile = dotenv.config({ path }).parsed || { };
+
+    return { ...process.env, ...envFile };
   }
 
   /**
@@ -62,17 +73,15 @@ export class ConfigModule {
    * @param options
    */
   private static setBaseValues(options: ConfigModuleOptions): void {
-    const { envPath: path } = options;
-    const envFile = dotenv.config({ path }).parsed || { };
-    process.env = { ...process.env, ...envFile };
+    const env = this.getMergedEnv(options);
 
     for (const config of this.configs) {
       const { key, fallback, json, value: baseValue } = config;
-      let value: any = process.env[key] ?? process.env[key.toUpperCase()] ?? baseValue;
+      let value: any = env[key] ?? env[key.toUpperCase()] ?? baseValue;
 
       if ((value === undefined || value === null) && fallback) {
         value = typeof fallback === 'function'
-          ? fallback(process.env.NODE_ENV as AppEnvironment)
+          ? fallback(env.NODE_ENV as AppEnvironment)
           : fallback;
       }
 
@@ -149,8 +158,8 @@ export class ConfigModule {
    */
   public static get(key: string): any {
     if (!this.isRegistered) {
-      const envFile = dotenv.config({ path: this.scanEnvFile() }).parsed || { };
-      return envFile[key];
+      const env = this.getMergedEnv();
+      return env[key];
     }
 
     const config = this.configs.find((c) => c.key === key.toUpperCase());
