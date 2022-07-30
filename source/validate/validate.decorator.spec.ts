@@ -1,8 +1,9 @@
+/* eslint-disable max-len */
 import { ValidationError } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
 
-import { OneOf } from './validate.decorator';
+import { IsConditional, OneOf } from './validate.decorator';
 
 class OneOfDto {
 
@@ -21,29 +22,96 @@ class OneOfDto {
   @OneOf('group2')
   public oneOf5?: string;
 
-  @OneOf('group3')
-  public oneOf6?: string;
+}
+
+class IsConditionalDto {
+
+  @IsOptional()
+  @IsString() @IsNotEmpty()
+  public isConditional1: string;
+
+  @IsConditional((o) => o.isConditional1)
+  public isConditional2: string;
+
+  @IsConditional((o) => !o.isConditional1)
+  public isConditional3: string;
 
 }
 
 const oneOfValidator = (obj): ValidationError[] => validateSync(plainToClass(OneOfDto, obj));
+const isConditionalValidator = (obj): ValidationError[] => validateSync(plainToClass(IsConditionalDto, obj));
 
 describe('ValidatorDecorator', () => {
   describe('OneOf', () => {
-    it('should obey one of groups', () => {
-      const scenario1 = oneOfValidator({ oneOf3: 'set' });
-      const scenario2 = oneOfValidator({ oneOf1: 'set', oneOf6: 'set' });
-      const scenario3 = oneOfValidator({ oneOf1: 'set', oneOf3: 'set', oneOf6: 'set' });
-      const scenario4 = oneOfValidator({ oneOf1: 'set', oneOf2: 'set' });
-      const scenario5 = oneOfValidator({ oneOf3: 'set', oneOf4: 'set', oneOf5: 'set' });
-      const scenario6 = oneOfValidator({ oneOf1: 'set', oneOf2: 'set', oneOf3: 'set', oneOf5: 'set' });
+    it('should require group2', () => {
+      const scenario = oneOfValidator({ oneOf1: 'set' });
+      expect(scenario.length).toBe(2);
+      expect(scenario[0].constraints.MutuallyExclusive).toBe('one of oneOf3, oneOf4, oneOf5 must be defined');
+      expect(scenario[1].constraints.MutuallyExclusive).toBe('one of oneOf3, oneOf4, oneOf5 must be defined');
+    });
 
-      expect(scenario1.length).toBeTruthy(); // Missing groups 1 and 3
-      expect(scenario2.length).toBeTruthy(); // Missing group 2
-      expect(scenario3.length).toBeFalsy(); // OK
-      expect(scenario4.length).toBeTruthy(); // Missing groups 2 and 3, conflict on group 1
-      expect(scenario5.length).toBeTruthy(); // Missing groups 1 and 3, conflict on group 2
-      expect(scenario6.length).toBeTruthy(); // Conflict on group 1
+    it('should complain group1 and require group2', () => {
+      const scenario = oneOfValidator({ oneOf1: 'set', oneOf2: 'set' });
+      expect(scenario.length).toBe(3);
+      expect(scenario[0].constraints.MutuallyExclusive).toBe('properties oneOf1, oneOf2 are mutually exclusive');
+      expect(scenario[1].constraints.MutuallyExclusive).toBe('one of oneOf3, oneOf4, oneOf5 must be defined');
+      expect(scenario[2].constraints.MutuallyExclusive).toBe('one of oneOf3, oneOf4, oneOf5 must be defined');
+    });
+
+    it('should pass', () => {
+      const scenario = oneOfValidator({ oneOf2: 'set', oneOf3: 'set' });
+      expect(scenario.length).toBe(0);
+    });
+
+    it('should complain group1', () => {
+      const scenario = oneOfValidator({ oneOf1: 'set', oneOf2: 'set', oneOf3: 'set' });
+      expect(scenario.length).toBe(1);
+      expect(scenario[0].constraints.MutuallyExclusive).toBe('properties oneOf1, oneOf2 are mutually exclusive');
+    });
+
+    it('should complain group2', () => {
+      const scenario = oneOfValidator({ oneOf2: 'set', oneOf3: 'set', oneOf4: 'set' });
+      expect(scenario.length).toBe(1);
+      expect(scenario[0].constraints.MutuallyExclusive).toBe('properties oneOf3, oneOf4, oneOf5 are mutually exclusive');
+    });
+
+    it('should complain group1 and complain group2', () => {
+      const scenario = oneOfValidator({ oneOf1: 'set', oneOf2: 'set', oneOf3: 'set', oneOf4: 'set' });
+      expect(scenario.length).toBe(2);
+      expect(scenario[0].constraints.MutuallyExclusive).toBe('properties oneOf1, oneOf2 are mutually exclusive');
+      expect(scenario[1].constraints.MutuallyExclusive).toBe('properties oneOf3, oneOf4, oneOf5 are mutually exclusive');
+    });
+  });
+
+  describe('IsConditional', () => {
+    it('should require isConditional2', () => {
+      const scenario = isConditionalValidator({ isConditional1: 'set' });
+      expect(scenario.length).toBe(1);
+      expect(scenario[0].constraints.IsConditional).toBe('property isConditional2 should exist');
+    });
+
+    it('should pass', () => {
+      const scenario = isConditionalValidator({ isConditional1: 'set', isConditional2: 'set' });
+      expect(scenario.length).toBe(0);
+    });
+
+    it('should require isConditional2 and complain isConditional3', () => {
+      const scenario = isConditionalValidator({ isConditional1: 'set', isConditional3: 'set' });
+      expect(scenario.length).toBe(2);
+      expect(scenario[0].constraints.IsConditional).toBe('property isConditional2 should exist');
+      expect(scenario[1].constraints.IsConditional).toBe('property isConditional3 should not exist');
+    });
+
+    it('should complain isConditional2', () => {
+      const scenario = isConditionalValidator({ isConditional2: 'set', isConditional3: 'set' });
+      expect(scenario.length).toBe(1);
+      expect(scenario[0].constraints.IsConditional).toBe('property isConditional2 should not exist');
+    });
+
+    it('should complain isConditional3', () => {
+      const scenario = isConditionalValidator({ isConditional1: 'set', isConditional2: 'set', isConditional3: 'set' });
+      expect(scenario.length).toBe(1);
+      expect(scenario[0].constraints.IsConditional).toBe('property isConditional3 should not exist');
     });
   });
 });
