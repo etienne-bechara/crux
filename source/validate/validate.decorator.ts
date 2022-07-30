@@ -86,8 +86,7 @@ export function OneOf(group: string, validationOptions?: ValidationOptions): Pro
  * @param validationOptions
  */
 export function MutuallyExclusive(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  return function (object: Object, propertyName: string): any {
+  return function (object: any, propertyName: string): any {
     const key = `MUTUALLY_EXCLUSIVE_${group}`;
     const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [ ];
 
@@ -106,13 +105,48 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
           const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
           return propDefined === 1;
         },
-        defaultMessage(args?: ValidationArguments) {
+        defaultMessage(args: ValidationArguments) {
           const propKeys: string[] = ValidateStorage.get(key);
           const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
 
           return propDefined === 0
             ? `one of ${propKeys.join(', ')} must be defined`
             : `properties ${propKeys.join(', ')} are mutually exclusive`;
+        },
+      },
+    });
+  };
+}
+
+/**
+ * Proceed with further validations when condition is `true`, on the other hand if condition
+ * is `false` and a value is provided, fails validation indicating it should not exist.
+ * @param condition
+ * @param validationOptions
+ */
+export function IsConditional(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
+  return function (object: any, propertyName: string): any {
+    registerDecorator({
+      name: 'IsConditional',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const { object } = args;
+          const meetsCondition = !!condition(object, value);
+          const isDefined = value !== undefined && value !== null;
+
+          return meetsCondition && isDefined || !meetsCondition && !isDefined;
+        },
+        defaultMessage(args: ValidationArguments) {
+          const { value, property, object } = args;
+          const meetsCondition = !!condition(object, value);
+          const isDefined = value !== undefined && value !== null;
+
+          return meetsCondition && !isDefined
+            ? `property ${property} should exist`
+            : `property ${property} should not exist`;
         },
       },
     });
