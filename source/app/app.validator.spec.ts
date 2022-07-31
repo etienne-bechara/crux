@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable jsdoc/require-jsdoc */
-import { Body, HttpStatus, INestApplication, Module } from '@nestjs/common';
+import { Body, HttpStatus, INestApplication, Module, Put } from '@nestjs/common';
 import supertest from 'supertest';
 
+import { ContextService } from '../context/context.service';
 import { Controller, Post } from './app.decorator';
 import { AppModule } from './app.module';
 import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './app.override';
@@ -33,13 +34,31 @@ class ValidatorCreateDto {
   @IsObject(ValidatorNestedDto)
   public requiredNested: ValidatorNestedDto;
 
+  @IsString({ groups: [ 'group1' ] })
+  public contextualString: string;
+
 }
 
 @Controller('validator')
 class ValidatorController {
 
+  public constructor(
+    private readonly contextService: ContextService,
+  ) { }
+
   @Post()
   public postValidator(@Body() body: ValidatorCreateDto): ValidatorCreateDto {
+    return body;
+  }
+
+  @Put()
+  public putValidator(@Body() body: ValidatorCreateDto): ValidatorCreateDto {
+    this.contextService.setValidatorOptions({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      groups: [ 'group1' ],
+    });
+
     return body;
   }
 

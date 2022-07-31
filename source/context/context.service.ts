@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Span } from '@opentelemetry/api';
+import { ValidatorOptions } from 'class-validator';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
@@ -243,6 +244,21 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getResponseHeader(key: string): string {
     return this.getResponse()?.getHeader(key);
+  }
+
+  /**
+   * Acquires validator options of current context.
+   */
+  public getValidatorOptions(): ValidatorOptions {
+    return this.getStore()?.get(ContextStorageKey.VALIDATOR);
+  }
+
+  /**
+   * Set validator options of current context.
+   * @param options
+   */
+  public setValidatorOptions(options: ValidatorOptions): void {
+    this.getStore()?.set(ContextStorageKey.VALIDATOR, options);
   }
 
 }
