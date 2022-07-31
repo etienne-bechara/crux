@@ -45,7 +45,6 @@ import {
 
 import { SetType } from '../app/app.override';
 
-const ValidateStorage: Map<string, any> = new Map();
 
 /**
  * Builds default ApiProperty options based on class-validator decorator.
@@ -57,99 +56,6 @@ function getPropertyOptions(type: any, validationOptions: ValidationOptions): Ap
 
   return {
     type: each ? [ type ] : type,
-  };
-}
-
-// -- Custom validation decorators
-
-/**
- * Ensures that exactly one property of target group is defined.
- * @param group
- * @param validationOptions
- */
-export function OneOf(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const key = `MUTUALLY_EXCLUSIVE_${group}`;
-  const propKeys: string[] = ValidateStorage.get(key) || [ ];
-  const currentKeys = [ ...propKeys ];
-
-  return applyDecorators(
-    MutuallyExclusive(group, validationOptions),
-    currentKeys.length === 0
-      ? IsOptional()
-      : ValidateIf((o) => currentKeys.filter((k) => o[k] === undefined).length === currentKeys.length),
-  );
-}
-
-/**
- * Checks if no more than one property of target group is defined.
- * @param group
- * @param validationOptions
- */
-export function MutuallyExclusive(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  return function (object: any, propertyName: string): any {
-    const key = `MUTUALLY_EXCLUSIVE_${group}`;
-    const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [ ];
-
-    mutuallyExclusiveProperties.push(propertyName);
-    ValidateStorage.set(key, mutuallyExclusiveProperties);
-
-    registerDecorator({
-      name: 'MutuallyExclusive',
-      target: object.constructor,
-      propertyName: propertyName,
-      constraints: [ group ],
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
-          return propDefined === 1;
-        },
-        defaultMessage(args: ValidationArguments) {
-          const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
-
-          return propDefined === 0
-            ? `one of ${propKeys.join(', ')} must be defined`
-            : `properties ${propKeys.join(', ')} are mutually exclusive`;
-        },
-      },
-    });
-  };
-}
-
-/**
- * Proceed with further validations when condition is `true`, on the other hand if condition
- * is `false` and a value is provided, fails validation indicating it should not exist.
- * @param condition
- * @param validationOptions
- */
-export function IsConditional(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
-  return function (object: any, propertyName: string): any {
-    registerDecorator({
-      name: 'IsConditional',
-      target: object.constructor,
-      propertyName: propertyName,
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const { object } = args;
-          const meetsCondition = !!condition(object, value);
-          const isDefined = value !== undefined && value !== null;
-
-          return meetsCondition && isDefined || !meetsCondition && !isDefined;
-        },
-        defaultMessage(args: ValidationArguments) {
-          const { value, property, object } = args;
-          const meetsCondition = !!condition(object, value);
-          const isDefined = value !== undefined && value !== null;
-
-          return meetsCondition && !isDefined
-            ? `property ${property} should exist`
-            : `property ${property} should not exist`;
-        },
-      },
-    });
   };
 }
 
