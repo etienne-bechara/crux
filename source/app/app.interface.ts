@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@ne
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ApiResponseOptions } from '@nestjs/swagger';
 import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ValidatorOptions } from 'class-validator';
 import http from 'http';
 
 import { ConsoleOptions } from '../console/console.interface';
@@ -59,7 +60,9 @@ export interface AppOptions extends ModuleMetadata {
   httpErrors?: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
-  /** Http configuation. */
+  /** Validation pipe options. Can be overwritten by request using `ContextService`. */
+  validator?: ValidatorOptions;
+  /** Http configuration. */
   http?: HttpOptions;
   /** Logs configuration. */
   logs?: LogOptions;

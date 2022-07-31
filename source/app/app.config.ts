@@ -34,6 +34,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     trustProxy: true,
     genReqId: () => crypto.randomBytes(16).toString('hex'),
   },
+  validator: {
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  },
   http: {
     retryLimit: 2,
     retryMethods: [

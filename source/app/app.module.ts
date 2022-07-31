@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -37,6 +37,7 @@ import { AppInterceptor } from './app.interceptor';
 import { AppMemory, AppOptions } from './app.interface';
 import { AppService } from './app.service';
 import { AppTimeout } from './app.timeout';
+import { AppValidator } from './app.validator';
 
 @Global()
 @Module({ })
@@ -427,10 +428,7 @@ export class AppModule {
     if (!disableValidator) {
       preloadedProviders.push({
         provide: APP_PIPE,
-        useFactory: (): ValidationPipe => new ValidationPipe({
-          whitelist: true,
-          forbidNonWhitelisted: true,
-        }),
+        useClass: AppValidator,
       });
     }
 
