@@ -143,17 +143,17 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
-   * Acquire true client IP.
+   * Acquire request query params.
    */
   public getRequestQuery(): Record<string, any> {
     return this.validateObjectLength(this.getRequest()?.query as Record<string, any>);
   }
 
   /**
-   * Acquire true client IP.
+   * Acquire request body.
    */
-  public getRequestBody(): Record<string, any> {
-    return this.validateObjectLength(this.getRequest()?.body as Record<string, any>);
+  public getRequestBody(): any {
+    return this.validateObjectLength(this.getRequest()?.body as unknown);
   }
 
   /**
