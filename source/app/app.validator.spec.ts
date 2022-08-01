@@ -75,12 +75,6 @@ class ValidatorController {
 
   @Put()
   public putValidator(@Body() body: ValidatorCreateDto): ValidatorCreateDto {
-    this.contextService.setValidatorOptions({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      groups: [ 'group1' ],
-    });
-
     return body;
   }
 
