@@ -4,4 +4,5 @@ export enum ContextStorageKey {
   SPAN = 'SPAN',
   TIMEOUT = 'TIMEOUT',
   METADATA = 'METADATA',
+  VALIDATOR = 'VALIDATOR',
 }
