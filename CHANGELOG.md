@@ -1,3 +1,21 @@
+# [4.19.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.18.0...v4.19.0) (2022-08-01)
+
+
+### Bug Fixes
+
+* OneOf and tests ([5ab622e](https://github.com/etienne-bechara/nestjs-core/commit/5ab622e801ff7e47c13ea92ccad39ca6c5d5a1b9))
+* remove custom validators ([ee100ab](https://github.com/etienne-bechara/nestjs-core/commit/ee100abdb706e7daf018db89f7093927d3c06e77))
+* remove IsConditional ([9fd1014](https://github.com/etienne-bechara/nestjs-core/commit/9fd1014861a45a1df9aa0f857c7b7f1d1c887118))
+* typos ([7a12e24](https://github.com/etienne-bechara/nestjs-core/commit/7a12e24251128a98b2ab4d59d1b53b06b9e73928))
+
+
+### Features
+
+* add @IsConditional() ([3e76b09](https://github.com/etienne-bechara/nestjs-core/commit/3e76b09f17c05cc08261776157f717eabdc9e1cc))
+* add contextual validation support and tests ([c9acd7b](https://github.com/etienne-bechara/nestjs-core/commit/c9acd7b233987918a7a00a449d3f2fada2cf6bdd))
+* add custom validator ([d50fc36](https://github.com/etienne-bechara/nestjs-core/commit/d50fc3644af70498b677177b9b913a3733c88cf4))
+* wip contextual validation ([4651270](https://github.com/etienne-bechara/nestjs-core/commit/46512703faf98fea2069ed98f723c3eb79cc3ccb))
+
 # [4.18.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.2...v4.18.0) (2022-07-30)
 
 
