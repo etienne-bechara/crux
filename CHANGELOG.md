@@ -1,3 +1,10 @@
+## [4.19.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.0...v4.19.1) (2022-08-01)
+
+
+### Bug Fixes
+
+* lower http bucket amount ([f522305](https://github.com/etienne-bechara/nestjs-core/commit/f522305861018ba24d2e851999ee9f87c1af6d76))
+
 # [4.19.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.18.0...v4.19.0) (2022-08-01)
 
 
