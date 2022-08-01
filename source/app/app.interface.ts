@@ -60,7 +60,7 @@ export interface AppOptions extends ModuleMetadata {
   httpErrors?: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
-  /** Validation pipe options. Can be overwritten by request using `ContextService`. */
+  /** Validation pipe options. Can be overwritten per request using `ContextService`. */
   validator?: ValidatorOptions;
   /** Http configuration. */
   http?: HttpOptions;

@@ -20,9 +20,7 @@ export class AppValidator implements PipeTransform {
    */
   public transform(value: any, metadata: ArgumentMetadata): void {
     const { metatype } = metadata;
-    const contextOptions = this.contextService.getValidatorOptions();
-    const defaultOptions = this.appConfig.APP_OPTIONS.validator;
-    const options = contextOptions || defaultOptions;
+    const options = this.contextService.getValidatorOptions();
 
     const validationErrors = validateSync(plainToClass(metatype, value) as object, options);
 
