@@ -1,3 +1,10 @@
+# [4.18.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.2...v4.18.0) (2022-07-30)
+
+
+### Features
+
+* add @IsConditional() ([bbe4b68](https://github.com/etienne-bechara/nestjs-core/commit/bbe4b684c9b17af7d3dc8732ac445cc017f38233))
+
 ## [4.17.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.17.1...v4.17.2) (2022-06-20)
 
 
