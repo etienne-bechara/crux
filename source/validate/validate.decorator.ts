@@ -118,43 +118,6 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
   };
 }
 
-/**
- * Proceed with further validations when condition is `true`, on the other hand if condition
- * is `false` and a value is provided, fails validation indicating it should not exist.
- * @param condition
- * @param validationOptions
- */
-export function IsConditional(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
-  return function (object: any, propertyName: string): any {
-    registerDecorator({
-      name: 'IsConditional',
-      target: object.constructor,
-      propertyName: propertyName,
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const { object } = args;
-          console.log({ object, value });
-          const meetsCondition = condition(object, value);
-          const isDefined = value !== undefined && value !== null;
-
-          console.log({ propertyName, meetsCondition, isDefined });
-          return meetsCondition && isDefined || !meetsCondition && !isDefined;
-        },
-        defaultMessage(args: ValidationArguments) {
-          const { value, property } = args;
-          const meetsCondition = condition(object, value);
-          const isDefined = value !== undefined && value !== null;
-
-          return meetsCondition && !isDefined
-            ? `property ${property} should exist`
-            : `property ${property} should not exist`;
-        },
-      },
-    });
-  };
-}
-
 // --- Common validation decorators
 
 /**
