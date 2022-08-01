@@ -1,3 +1,10 @@
+## [4.19.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.1...v4.19.2) (2022-08-01)
+
+
+### Bug Fixes
+
+* remove unnecessary code ([f7076cc](https://github.com/etienne-bechara/nestjs-core/commit/f7076ccb4a71a474ccfd41c4c6ada010180c250e))
+
 ## [4.19.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.0...v4.19.1) (2022-08-01)
 
 
