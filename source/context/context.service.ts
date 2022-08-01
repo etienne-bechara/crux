@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Span } from '@opentelemetry/api';
 import { ValidatorOptions } from 'class-validator';
 
+import { AppConfig } from '../app/app.config';
 import { AppRequest, AppResponse } from '../app/app.interface';
 import { ContextStorageKey } from './context.enum';
 import { ContextJwtPayload } from './context.interface';
@@ -9,6 +10,10 @@ import { ContextStorage } from './context.storage';
 
 @Injectable()
 export class ContextService<Metadata = Record<string, any>> {
+
+  public constructor(
+    private readonly appConfig: AppConfig,
+  ) { }
 
   /**
    * Get local store for current context.
@@ -250,7 +255,9 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquires validator options of current context.
    */
   public getValidatorOptions(): ValidatorOptions {
-    return this.getStore()?.get(ContextStorageKey.VALIDATOR);
+    const storeOptions = this.getStore()?.get(ContextStorageKey.VALIDATOR);
+    const defaultOptions = this.appConfig.APP_OPTIONS.validator;
+    return storeOptions || defaultOptions;
   }
 
   /**

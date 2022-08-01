@@ -37,6 +37,8 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   validator: {
     whitelist: true,
     forbidNonWhitelisted: true,
+    always: true,
+    strictGroups: true,
   },
   http: {
     retryLimit: 2,

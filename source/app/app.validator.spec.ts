@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
 /* eslint-disable jsdoc/require-jsdoc */
-import { Body, HttpStatus, INestApplication, Module, Put } from '@nestjs/common';
+import { Body, CanActivate, HttpStatus, INestApplication, Injectable, Module, Put } from '@nestjs/common';
 import supertest from 'supertest';
 
 import { ContextService } from '../context/context.service';
 import { Controller, Post } from './app.decorator';
 import { AppModule } from './app.module';
-import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './app.override';
+import { APP_GUARD, IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './app.override';
 
 class ValidatorNestedDto {
 
@@ -31,11 +31,33 @@ class ValidatorCreateDto {
   @IsString()
   public optionalString: string;
 
+  @IsString({ groups: [ 'group1' ] })
+  public contextualString: string;
+
   @IsObject(ValidatorNestedDto)
   public requiredNested: ValidatorNestedDto;
 
-  @IsString({ groups: [ 'group1' ] })
-  public contextualString: string;
+}
+
+@Injectable()
+class ValidatorGuard implements CanActivate {
+
+  public constructor(
+    private readonly contextService: ContextService,
+  ) { }
+
+  public canActivate(): boolean {
+    const method = this.contextService.getRequestMethod();
+
+    if (method === 'PUT') {
+      this.contextService.setValidatorOptions({
+        ...this.contextService.getValidatorOptions(),
+        groups: [ 'group1' ],
+      });
+    }
+
+    return true;
+  }
 
 }
 
@@ -67,6 +89,9 @@ class ValidatorController {
 @Module({
   controllers: [
     ValidatorController,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: ValidatorGuard },
   ],
 })
 class ValidatorModule { }
@@ -152,6 +177,47 @@ describe('AppValidator', () => {
 
       expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
       expect(body.constraints).toStrictEqual([ 'requiredNested.requiredBoolean must be a boolean value' ]);
+    });
+  });
+
+  describe('PUT /validator', () => {
+    it('[200] required properties', async () => {
+      const { statusCode } = await supertest(httpServer).put('/validator').send({
+        requiredString: 'set',
+        requiredNumber: 1,
+        contextualString: 'set',
+        requiredNested: {
+          requiredBoolean: true,
+        },
+      });
+
+      expect(statusCode).toBe(HttpStatus.OK);
+    });
+
+    it('[400] missing requiredString', async () => {
+      const { statusCode, body } = await supertest(httpServer).put('/validator').send({
+        requiredNumber: 1,
+        contextualString: 'set',
+        requiredNested: {
+          requiredBoolean: true,
+        },
+      });
+
+      expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(body.constraints).toStrictEqual([ 'requiredString must be a string' ]);
+    });
+
+    it('[400] missing contextualString', async () => {
+      const { statusCode, body } = await supertest(httpServer).put('/validator').send({
+        requiredString: 'set',
+        requiredNumber: 1,
+        requiredNested: {
+          requiredBoolean: true,
+        },
+      });
+
+      expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(body.constraints).toStrictEqual([ 'contextualString must be a string' ]);
     });
   });
 });
