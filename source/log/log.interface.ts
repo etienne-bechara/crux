@@ -5,10 +5,10 @@ export type LogArguments = string | Error | Record<string, any>;
 export interface LogOptions {
   /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
-  /** Disables logging inbound request bodies. */
-  filterRequestBody?: boolean;
-  /** Disables logging inbound response bodies. */
-  filterResponseBody?: boolean;
+  /** Enables logging request bodies. */
+  enableRequestBody?: boolean;
+  /** Enables logging response bodies. */
+  enableResponseBody?: boolean;
 }
 
 export interface LogParams {

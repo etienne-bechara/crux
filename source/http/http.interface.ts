@@ -39,10 +39,6 @@ export type HttpModuleOptionsBase = ExtendOptions & HttpSharedOptions;
 export interface HttpModuleOptions extends HttpModuleOptionsBase {
   /** Display name for logging. */
   name?: string;
-  /** Disables logging outbound request bodies. */
-  filterRequestBody?: boolean;
-  /** Disables logging outbound response bodies. */
-  filterResponseBody?: boolean;
   /** Disable logs, metrics and traces. */
   disableTelemetry?: boolean;
   /** Disable trace propagation. */

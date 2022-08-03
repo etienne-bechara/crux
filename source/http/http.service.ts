@@ -311,7 +311,7 @@ export class HttpService {
     }
 
     try {
-      const body = this.httpModuleOptions.filterRequestBody ? undefined : reqBody;
+      const body = this.appConfig.APP_OPTIONS.logs?.enableRequestBody ? reqBody : undefined;
       this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
       response = await this.instance(url, request) as HttpResponse<T>;
 
@@ -378,7 +378,7 @@ export class HttpService {
 
     if (step === 'iteration') {
       const strCode = statusCode?.toString() || '';
-      const body = this.httpModuleOptions.filterResponseBody ? undefined : resBody || undefined;
+      const body = this.appConfig.APP_OPTIONS.logs?.enableResponseBody ? resBody || undefined : undefined;
       const logData = { duration, code: strCode, body, headers };
       this.logService?.http(this.buildLogMessage('down', params), logData);
 

@@ -141,7 +141,7 @@ export class AppFilter implements ExceptionFilter {
    */
   private sendResponse(params: AppException): void {
     const { details, message, code } = params;
-    const { filterResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
+    const { enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
     const res = this.contextService.getResponse();
 
     const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
@@ -163,7 +163,7 @@ export class AppFilter implements ExceptionFilter {
     this.logService.http(this.contextService.getRequestDescription('out'), {
       duration: this.contextService.getRequestDuration(),
       code,
-      body: filterResponseBody ? undefined : clientResponse,
+      body: enableResponseBody ? clientResponse : undefined,
     });
 
     res.code(code);

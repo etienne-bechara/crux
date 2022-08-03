@@ -22,7 +22,7 @@ export class AppInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { filterRequestBody, filterResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
+    const { enableRequestBody, enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
 
     this.logService.http(this.contextService.getRequestDescription('in'), {
       method: this.contextService.getRequestMethod(),
@@ -31,7 +31,7 @@ export class AppInterceptor implements NestInterceptor {
       clientIp: this.contextService.getRequestIp(),
       params: this.contextService.getRequestParams(),
       query: this.contextService.getRequestQuery(),
-      body: filterRequestBody ? undefined : this.contextService.getRequestBody(),
+      body: enableRequestBody ? this.contextService.getRequestBody() : undefined,
       headers: this.contextService.getRequestHeaders(),
     });
 
@@ -45,7 +45,7 @@ export class AppInterceptor implements NestInterceptor {
           this.logService.http(this.contextService.getRequestDescription('out'), {
             duration: this.contextService.getRequestDuration(),
             code,
-            body: filterResponseBody ? undefined : data,
+            body: enableResponseBody ? data : undefined,
           });
 
           this.appService.collectInboundTelemetry(code);
