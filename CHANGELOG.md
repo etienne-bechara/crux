@@ -1,3 +1,10 @@
+## [4.19.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.2...v4.19.3) (2022-08-03)
+
+
+### Bug Fixes
+
+* invert request body logging logix ([27f613d](https://github.com/etienne-bechara/nestjs-core/commit/27f613d8912d80d90ebba4dd885e00393cfb0267))
+
 ## [4.19.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.1...v4.19.2) (2022-08-01)
 
 
