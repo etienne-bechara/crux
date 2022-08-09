@@ -31,13 +31,20 @@ export class TraceService {
   }
 
   /**
+   * Acquires configured trace URL giving priority to environment variable.
+   */
+  private buildTraceUrl(): string {
+    const { traces } = this.appConfig.APP_OPTIONS || { };
+    const { url } = traces;
+    return this.traceConfig.TRACE_URL || url;
+  }
+
+  /**
    * Ensures application has a valid push URL configured in order to
    * enable tracing.
    */
   public isEnabled(): boolean {
-    const { traces } = this.appConfig.APP_OPTIONS || { };
-    const { url } = traces;
-    const traceUrl = this.traceConfig.TRACE_URL || url;
+    const traceUrl = this.buildTraceUrl();
 
     if (!this.appConfig.APP_OPTIONS.disableTraces && !traceUrl) {
       this.logService.warning('Trace disable due to missing URL');
@@ -65,10 +72,9 @@ export class TraceService {
    */
   private setupOpenTelemetryComponents(): void {
     const { job, instance, traces } = this.appConfig.APP_OPTIONS || { };
-    const { url, username, password, pushInterval } = traces;
+    const { username, password, pushInterval } = traces;
 
     const environment = this.appConfig.NODE_ENV;
-    const traceUrl = this.traceConfig.TRACE_URL || url;
 
     const contextManager = new AsyncHooksContextManager();
     const propagator = new B3Propagator();
@@ -77,7 +83,6 @@ export class TraceService {
 
     this.httpService = new HttpService({
       name: 'TraceModule',
-      prefixUrl: traceUrl,
       username: this.traceConfig.TRACE_USERNAME ?? username,
       password: this.traceConfig.TRACE_PASSWORD ?? password,
     }, this.appConfig);
@@ -117,11 +122,12 @@ export class TraceService {
    * @param onError
    */
   private async publishTraces(data: string, onSuccess: any, onError: any): Promise<void> {
+    const traceUrl = this.buildTraceUrl();
     const buffer = Buffer.from(data);
     const gzip: Buffer = await new Promise((res, rej) => zlib.gzip(buffer, (e, d) => e ? rej(e) : res(d)));
 
     try {
-      await this.httpService.post('v1/traces', {
+      await this.httpService.post(traceUrl, {
         headers: {
           'content-type': 'application/json',
           'content-encoding': 'gzip',

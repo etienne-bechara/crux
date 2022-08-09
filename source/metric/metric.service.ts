@@ -25,6 +25,15 @@ export class MetricService {
   }
 
   /**
+   * Acquires configured metric URL giving priority to environment variable.
+   */
+  private buildMetricUrl(): string {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { url } = metrics;
+    return this.metricConfig.METRIC_URL || url;
+  }
+
+  /**
    * Create Prometheus metrics registry and built-in histograms.
    */
   private setupRegistry(): void {
@@ -63,27 +72,26 @@ export class MetricService {
    */
   private async setupPushgateway(): Promise<void> {
     const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushInterval: pushgatewayInterval } = metrics;
-    const { url, username, password } = metrics;
+    const { pushInterval } = metrics;
+    const { username, password } = metrics;
 
-    const pushgatewayUrl = this.metricConfig.METRIC_URL || url;
-    if (!pushgatewayUrl) return;
+    const metricUrl = this.buildMetricUrl();
+    if (!metricUrl) return;
 
     const httpService = new HttpService({
       name: 'MetricModule',
-      prefixUrl: pushgatewayUrl,
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.appConfig);
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      await new Promise((r) => setTimeout(r, pushgatewayInterval));
+      await new Promise((r) => setTimeout(r, pushInterval));
 
       try {
         const currentMetrics = await this.readMetrics();
 
-        await httpService.post('metrics/job/:job/instance/:instance', {
+        await httpService.post(metricUrl, {
           replacements: {
             job: job || 'unknown',
             instance: instance || 'unknown',

@@ -16,15 +16,15 @@ void AppModule.boot({
     ZipModule,
   ],
   loki: {
-    url: 'http://localhost:3100',
+    url: 'http://localhost:3100/loki/api/v1/push',
     pushInterval: 5000,
   },
   metrics: {
-    url: 'http://127.0.0.1:9091',
+    url: 'http://127.0.0.1:9091/metrics/job/:job/instance/:instance',
     pushInterval: 5000,
   },
   traces: {
-    url: 'http://127.0.0.1:55681',
+    url: 'http://127.0.0.1:55681/v1/traces',
     pushInterval: 5000,
   },
 });

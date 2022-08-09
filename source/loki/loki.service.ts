@@ -24,12 +24,19 @@ export class LokiService implements LogTransport {
   }
 
   /**
+   * Acquires configured Loki URL giving priority to environment variable.
+   */
+  private buildLokiUrl(): string {
+    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { url } = loki;
+    return this.lokiConfig.LOKI_URL || url;
+  }
+
+  /**
    * Checks if necessary variables are present and warn through console if not.
    */
   private setupTransport(): void {
-    const { loki } = this.appConfig.APP_OPTIONS || { };
-    const { url } = loki;
-    const lokiUrl = this.lokiConfig.LOKI_URL || url;
+    const lokiUrl = this.buildLokiUrl();
 
     if (!lokiUrl) {
       this.logService.info('Loki transport disabled due to missing URL');
@@ -96,6 +103,7 @@ export class LokiService implements LogTransport {
   private async publishCurrentQueue(): Promise<void> {
     if (this.publishQueue.length === 0) return;
 
+    const lokiUrl = this.buildLokiUrl();
     const logs = [ ...this.publishQueue ];
     this.publishQueue = [ ];
 
@@ -105,7 +113,7 @@ export class LokiService implements LogTransport {
     try {
       const gzip: Buffer = await new Promise((res, rej) => zlib.gzip(buffer, (e, d) => e ? rej(e) : res(d)));
 
-      await this.httpService.post('loki/api/v1/push', {
+      await this.httpService.post(lokiUrl, {
         headers: {
           'content-type': 'application/json',
           'content-encoding': 'gzip',

@@ -12,7 +12,6 @@ import { LokiService } from './loki.service';
       useFactory: (appConfig: AppConfig, lokiConfig: LokiConfig) => ({
         name: 'LokiModule',
         disableTelemetry: true,
-        prefixUrl: lokiConfig.LOKI_URL || appConfig.APP_OPTIONS.loki?.url,
         username: lokiConfig.LOKI_USERNAME ?? appConfig.APP_OPTIONS.loki?.username,
         password: lokiConfig.LOKI_PASSWORD ?? appConfig.APP_OPTIONS.loki?.password,
       }),
