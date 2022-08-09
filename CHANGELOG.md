@@ -1,3 +1,10 @@
+## [4.19.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.4...v4.19.5) (2022-08-09)
+
+
+### Bug Fixes
+
+* increase push intervals ([5987540](https://github.com/etienne-bechara/nestjs-core/commit/5987540e605022d4cc7ac0aa5050cacdfc13a29f))
+
 ## [4.19.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.3...v4.19.4) (2022-08-09)
 
 
