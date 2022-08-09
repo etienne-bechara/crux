@@ -1,3 +1,10 @@
+## [4.19.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.5...v4.19.6) (2022-08-09)
+
+
+### Bug Fixes
+
+* do not process array sensitive keys by default ([fadc242](https://github.com/etienne-bechara/nestjs-core/commit/fadc2422c38c5d1f6158deca058e92ae26188b03))
+
 ## [4.19.5](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.4...v4.19.5) (2022-08-09)
 
 
