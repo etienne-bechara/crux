@@ -65,8 +65,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   logs: {
     sensitiveKeys: [
       'apikey',
-      'auth',
-      'authentication',
       'authorization',
       'clientkey',
       'clientsecret',

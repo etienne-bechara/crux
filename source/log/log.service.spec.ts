@@ -24,7 +24,7 @@ describe('LogService', () => {
           authorization: 'Bearer eyj....s3h',
           'content-type': 'application/json',
         },
-        auth: {
+        authorization: {
           nonce: '8b0cbc6b-7596-4e2b-b7d1-572a466fcf26',
           user: 'admin',
           pass: 'admin',
@@ -61,7 +61,7 @@ describe('LogService', () => {
           authorization: '[filtered]',
           'content-type': 'application/json',
         },
-        auth: '[filtered]',
+        authorization: '[filtered]',
         body: {
           apiKey: '[filtered]',
           nested: {

@@ -50,25 +50,30 @@ export class LogService {
    * @param args
    */
   private log(severity: LogSeverity, ...args: LogArguments[]): void {
-    const params: LogParams = {
-      timestamp: new Date().toISOString(),
-      severity,
-      caller: this.getCaller(...args),
-      message: this.getLogMessage(...args),
-      requestId: this.contextService.getRequestId(),
-      traceId: this.contextService.getRequestTraceId(),
-      spanId: trace.getSpan(context.active())?.spanContext().spanId,
-      data: this.getLogData(...args),
-      error: this.getLogError(...args),
-    };
+    const message = this.getLogMessage(...args);
+    let params: LogParams;
 
     for (const transport of this.transports) {
       const transportName = transport.getName();
       const transportSeverity = transport.getSeverity();
       const isHigher = this.isHigherOrEqualSeverity(severity, transportSeverity);
-      const isSkippable = params.message === LogException.PUSH_FAILED && transportName !== LogTransportName.CONSOLE;
+      const isSkippable = message === LogException.PUSH_FAILED && transportName !== LogTransportName.CONSOLE;
 
       if (isHigher && !isSkippable) {
+        if (!params) {
+          params = {
+            timestamp: new Date().toISOString(),
+            severity,
+            caller: this.getCaller(...args),
+            message,
+            requestId: this.contextService.getRequestId(),
+            traceId: this.contextService.getRequestTraceId(),
+            spanId: trace.getSpan(context.active())?.spanContext().spanId,
+            data: this.getLogData(...args),
+            error: this.getLogError(...args),
+          };
+        }
+
         transport.log(params);
       }
     }
@@ -169,6 +174,7 @@ export class LogService {
   // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
     const { sensitiveKeys } = this.appConfig.APP_OPTIONS.logs || { };
+    const sensitiveSet = new Set(sensitiveKeys || [ ]);
 
     if (typeof object !== 'object') {
       return object;
@@ -186,22 +192,28 @@ export class LogService {
     const clone = { ...object };
 
     for (const key in clone) {
-      const alphaKey = key.toLowerCase().replace(/[^a-z]+/g, '');
-      const isSensitive = sensitiveKeys?.includes(alphaKey);
+      if (clone[key] === undefined) {
+        delete clone[key];
+        continue;
+      }
+
+      if (clone[key] === null) {
+        continue;
+      }
+
+      const lowerKey = key.toLowerCase().replace('-', '').replace('_', '');
+      const isSensitive = sensitiveSet.has(lowerKey);
+
+      if (isSensitive) {
+        clone[key] = '[filtered]';
+        continue;
+      }
+
       const isArray = Array.isArray(clone[key]);
       const isObject = typeof clone[key] === 'object';
       const hasZeroKey = isObject && clone[key] && (clone[key]['0'] || clone[key]['0'] === 0);
 
-      if (clone[key] === undefined) {
-        delete clone[key];
-      }
-      else if (clone[key] === null) {
-        continue;
-      }
-      else if (isSensitive) {
-        clone[key] = '[filtered]';
-      }
-      else if (isArray || isObject && !hasZeroKey) {
+      if (isArray || isObject && !hasZeroKey) {
         clone[key] = this.sanitize(clone[key], true);
       }
       else if (isObject && hasZeroKey) {
