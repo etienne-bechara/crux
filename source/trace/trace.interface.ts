@@ -6,6 +6,6 @@ export interface TraceOptions {
   username?: string;
   /** Open Telemetry password to publish traces. Can be overridden by env `TRACE_PASSWORD`. */
   password?: string;
-  /** Open Telemetry API push interval in milliseconds. Default: 20000. */
+  /** Open Telemetry API push interval in milliseconds. Default: 60000. */
   pushInterval?: number;
 }

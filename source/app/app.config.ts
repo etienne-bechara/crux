@@ -76,8 +76,8 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     maxLength: 1000,
   },
   loki: {
-    severity: LogSeverity.DEBUG,
-    pushInterval: 20_000,
+    severity: LogSeverity.HTTP,
+    pushInterval: 60_000,
     batchSize: 1000,
   },
   slack: {
@@ -87,14 +87,14 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     severity: LogSeverity.ERROR,
   },
   metrics: {
-    pushInterval: 20_000,
+    pushInterval: 60_000,
     httpDurationBuckets: [
       0.1, 0.25, 0.5, 1, 2.5,
       5, 10, 25, 50, 100,
     ],
   },
   traces: {
-    pushInterval: 20_000,
+    pushInterval: 60_000,
   },
   docs: {
     title: 'OpenAPI UI',
