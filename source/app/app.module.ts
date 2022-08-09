@@ -360,7 +360,7 @@ export class AppModule {
 
     if (type === 'imports') {
       preloadedModules.push(
-        ConfigModule.register({ envPath }),
+        ConfigModule.registerAsync({ envPath }),
         ...defaultModules,
         ...sourceModules,
         ...imports,

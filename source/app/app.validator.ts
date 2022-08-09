@@ -1,6 +1,6 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validateSync, ValidationError } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
 
 import { ContextService } from '../context/context.service';
 
@@ -16,14 +16,14 @@ export class AppValidator implements PipeTransform {
    * @param value
    * @param metadata
    */
-  public transform(value: any, metadata: ArgumentMetadata): any {
+  public async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
     const { metatype } = metadata;
     const baseConstructors: any[] = [ String, Boolean, Number, Array, Object, Buffer ];
     if (!metatype || baseConstructors.includes(metatype)) return value;
 
     const options = this.contextService.getValidatorOptions();
     const instance: object = plainToInstance(metatype, value || { });
-    const validationErrors = validateSync(instance, options);
+    const validationErrors = await validate(instance, options);
 
     if (validationErrors.length > 0) {
       const constraints = validationErrors.flatMap((v) => this.getConstraints(v));

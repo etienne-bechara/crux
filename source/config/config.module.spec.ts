@@ -39,8 +39,8 @@ describe('ConfigModule', () => {
   });
 
   describe('registerAsync', () => {
-    it('should register configs without exceptions', () => {
-      ConfigModule.register({ allowValidationErrors: true });
+    it('should register configs without exceptions', async () => {
+      await ConfigModule.registerAsync({ allowValidationErrors: true });
       expect(true).toBeTruthy();
     });
   });
@@ -63,8 +63,8 @@ describe('ConfigModule', () => {
   });
 
   describe('validateConfigs', () => {
-    it('should flag a configuration error', () => {
-      const validationErrors = ConfigModule['validateConfigs']({ allowValidationErrors: true });
+    it('should flag a configuration error', async () => {
+      const validationErrors = await ConfigModule['validateConfigs']({ allowValidationErrors: true });
       expect(validationErrors.length).toBeGreaterThanOrEqual(1);
       expect(validationErrors[0].property).toBe('TEST_CONFIG_VALIDATION');
     });

@@ -1,6 +1,6 @@
 import { DynamicModule, Module, ValidationError } from '@nestjs/common';
 import { ClassConstructor, plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { validate } from 'class-validator';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
@@ -21,7 +21,7 @@ export class ConfigModule {
    * each config class to apply @InjectConfig() decorators.
    * @param options
    */
-  public static register(options: ConfigModuleOptions = { }): DynamicModule {
+  public static async registerAsync(options: ConfigModuleOptions = { }): Promise<DynamicModule> {
     this.isRegistered = true;
 
     for (const configClass of this.classes) {
@@ -29,7 +29,7 @@ export class ConfigModule {
     }
 
     this.setBaseValues(options);
-    this.validateConfigs(options);
+    await this.validateConfigs(options);
 
     return { module: ConfigModule };
   }
@@ -102,7 +102,7 @@ export class ConfigModule {
    * Validate properties annotated with @InjectConfig().
    * @param options
    */
-  private static validateConfigs(options: ConfigModuleOptions): ValidationError[] {
+  private static async validateConfigs(options: ConfigModuleOptions): Promise<ValidationError[]> {
     const { allowValidationErrors } = options;
     const errors: ValidationError[] = [ ];
     const configObj: Record<string, any> = { };
@@ -115,7 +115,7 @@ export class ConfigModule {
     for (const configClass of this.classes) {
       const configInstance = plainToClass(configClass as ClassConstructor<unknown>, configObj);
 
-      const validationErrors = validateSync(configInstance as object, {
+      const validationErrors = await validate(configInstance as object, {
         validationError: { target: false },
       });
 
