@@ -1,3 +1,10 @@
+## [4.19.4](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.3...v4.19.4) (2022-08-09)
+
+
+### Bug Fixes
+
+* log performance ([d43afe9](https://github.com/etienne-bechara/nestjs-core/commit/d43afe91f791f372664e604bc0fcf86749f50f2a))
+
 ## [4.19.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.2...v4.19.3) (2022-08-03)
 
 
