@@ -71,7 +71,7 @@ describe('LogService', () => {
         mfa: [
           {
             user: 'john.doe',
-            password: '[filtered]',
+            password: '1234',
           },
           { },
         ],

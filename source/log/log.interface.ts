@@ -5,6 +5,8 @@ export type LogArguments = string | Error | Record<string, any>;
 export interface LogOptions {
   /** Sensitive keys to be removed during logging of objects. */
   sensitiveKeys?: string[];
+  /** Determines whether arrays should be processed when looking for sensitive keys. */
+  sensitiveArrays?: boolean;
   /** Enables logging request bodies. */
   enableRequestBody?: boolean;
   /** Enables logging response bodies. */

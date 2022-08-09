@@ -173,10 +173,11 @@ export class LogService {
    */
   // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
-    const { sensitiveKeys } = this.appConfig.APP_OPTIONS.logs || { };
+    const { sensitiveKeys, sensitiveArrays } = this.appConfig.APP_OPTIONS.logs || { };
     const sensitiveSet = new Set(sensitiveKeys || [ ]);
+    const isRootArray = Array.isArray(object);
 
-    if (typeof object !== 'object') {
+    if (typeof object !== 'object' || isRootArray && !sensitiveArrays) {
       return object;
     }
 
@@ -184,7 +185,7 @@ export class LogService {
       object = cycle.decycle(object);
     }
 
-    if (Array.isArray(object)) {
+    if (isRootArray) {
       const clone = [ ...object ];
       return clone.map((o) => this.sanitize(o, true));
     }
