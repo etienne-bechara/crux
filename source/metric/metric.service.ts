@@ -1,18 +1,26 @@
+/* eslint-disable no-constant-condition */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
+import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
+import { Type } from 'protobufjs';
+import { compress } from 'snappy';
+import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
-import { MetricDataType } from './metric.enum';
+import { MetricData } from './metric.dto';
+import { MetricDataType, MetricPushType } from './metric.enum';
+import { MetricPushTimeseries } from './metric.interface';
+import MetricProto from './metric.proto';
 
 @Injectable()
 export class MetricService {
 
   private register: Registry;
   private metrics: Map<string, Metric<any>> = new Map();
+  private httpService: HttpService;
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -21,7 +29,7 @@ export class MetricService {
   ) {
     this.setupRegistry();
     this.setupMetrics();
-    void this.setupPushgateway();
+    this.setupPush();
   }
 
   /**
@@ -67,36 +75,92 @@ export class MetricService {
   }
 
   /**
-   * When a pushgateway host is provided, configures a
-   * permanent push job to it.
+   * Configures metric pushing which may be based
+   * on pushgateway or remote write.
    */
-  private async setupPushgateway(): Promise<void> {
-    const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushInterval } = metrics;
-    const { username, password } = metrics;
-
+  private setupPush(): void {
     const metricUrl = this.buildMetricUrl();
     if (!metricUrl) return;
 
-    const httpService = new HttpService({
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { username, password, pushType } = metrics;
+
+    this.httpService = new HttpService({
       name: 'MetricModule',
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.appConfig);
 
-    // eslint-disable-next-line no-constant-condition
+    pushType === MetricPushType.PUSHGATEWAY
+      ? void this.setupPushgateway()
+      : void this.setupRemoteWrite();
+  }
+
+  /**
+   * Push metrics to a Prometheus Pushgateway.
+   */
+  private async setupPushgateway(): Promise<void> {
+    const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
+    const { pushInterval } = metrics;
+    const metricUrl = this.buildMetricUrl();
+
     while (true) {
-      await new Promise((r) => setTimeout(r, pushInterval));
+      await setTimeout(pushInterval);
 
       try {
         const currentMetrics = await this.readMetrics();
 
-        await httpService.post(metricUrl, {
+        await this.httpService.post(metricUrl, {
           replacements: {
             job: job || 'unknown',
             instance: instance || 'unknown',
           },
           body: Buffer.from(currentMetrics, 'utf-8'),
+          retryLimit: 2,
+        });
+      }
+      catch (e) {
+        this.logService.error('Failed to push metrics', e as Error);
+      }
+    }
+  }
+
+  /**
+   * Push metrics according to Prometheus remote write specification.
+   */
+  private async setupRemoteWrite(): Promise<void> {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { pushInterval } = metrics;
+    const metricUrl = this.buildMetricUrl();
+
+    const timeseriesProto: Type = MetricProto.prometheus.WriteRequest;
+
+    while (true) {
+      await setTimeout(pushInterval);
+
+      try {
+        const currentMetrics = await this.readMetricsJson();
+
+        const timeseries: MetricPushTimeseries = {
+          timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
+            labels: [
+              { name: '__name__', value: m.name },
+              ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
+            ],
+            samples: [
+              {
+                value: v.value,
+                timestamp: Date.now(),
+              },
+            ],
+          }))),
+        };
+
+        const buffer: Buffer = timeseriesProto.encode(timeseries).finish() as any;
+
+        await this.httpService.post(metricUrl, {
+          headers: { 'content-type': 'application/vnd.google.protobuf' },
+          body: await compress(buffer),
           retryLimit: 2,
         });
       }
@@ -144,16 +208,18 @@ export class MetricService {
     return metric;
   }
 
-  public readMetrics(): Promise<string>;
-  public readMetrics(json?: boolean): Promise<metric[]>;
   /**
-   * Read metrics in standard Prometheus string format.
-   * @param json
+   * Read metrics in Prometheus string format.
    */
-  public readMetrics(json?: boolean): Promise<string | metric[]> {
-    return json
-      ? this.register.getMetricsAsJSON()
-      : this.register.metrics();
+  public readMetrics(): Promise<string> {
+    return this.register.metrics();
+  }
+
+  /**
+   * Read metrics in Prometheus JSON format.
+   */
+  public readMetricsJson(): Promise<MetricData[]> {
+    return this.register.getMetricsAsJSON() as any;
   }
 
   /**

@@ -13,3 +13,8 @@ export enum MetricAggregator {
   MAX = 'max',
   AVERAGE = 'average',
 }
+
+export enum MetricPushType {
+  PUSHGATEWAY = 'PUSHGATEWAY',
+  REMOTE_WRITE = 'REMOTE_WRITE',
+}

@@ -1,3 +1,5 @@
+import { MetricPushType } from './metric.enum';
+
 export interface MetricOptions {
   /** Prefix for default metrics. */
   defaultPrefix?: string;
@@ -7,12 +9,36 @@ export interface MetricOptions {
   defaultBuckets?: number[];
   /** Buckets for HTTP duration metrics histograms. */
   httpDurationBuckets?: number[];
-  /** Prometheus Pushgateway API URL to publish metrics. Can be overridden by env `METRIC_URL`. */
+  /**
+   * Prometheus API URL to publish metrics. Supports `:job` and `:instance`
+   * for path replacements. Can be overridden by env `METRIC_URL`.
+   */
   url?: string;
-  /** Prometheus Pushgateway username to publish metrics. Can be overridden by env `METRIC_USERNAME`. */
+  /** Prometheus username to publish metrics. Can be overridden by env `METRIC_USERNAME`. */
   username?: string;
-  /** Prometheus Pushgateway password to publish metrics. Can be overridden by env `METRIC_PASSWORD`. */
+  /** Prometheus password to publish metrics. Can be overridden by env `METRIC_PASSWORD`. */
   password?: string;
-  /** Prometheus Pushgateway API push interval in milliseconds. Default: 60000. */
+  /** Prometheus API push interval in milliseconds. Default: 60000. */
   pushInterval?: number;
+  /** Prometheus push type. Default: PUSHGATEWAY. */
+  pushType?: MetricPushType;
+}
+
+export interface MetricLabel {
+  name: string;
+  value: string;
+}
+
+export interface MetricSample {
+  timestamp: number;
+  value: number;
+}
+
+export interface MetricTimeseries {
+  labels: MetricLabel[];
+  samples: MetricSample[];
+}
+
+export interface MetricPushTimeseries {
+  timeseries: MetricTimeseries[];
 }
