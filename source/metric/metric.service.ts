@@ -1,7 +1,6 @@
 /* eslint-disable no-constant-condition */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
-import { Type } from 'protobufjs';
 import { compress } from 'snappy';
 import { setTimeout } from 'timers/promises';
 
@@ -12,8 +11,8 @@ import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
 import { MetricDataType, MetricPushStrategy } from './metric.enum';
-import { MetricPushTimeseries } from './metric.interface';
-import MetricProto from './metric.proto';
+import { MetricMessage } from './metric.interface';
+import { MetricMessageProto } from './metric.proto';
 
 @Injectable()
 export class MetricService {
@@ -133,30 +132,27 @@ export class MetricService {
     const { pushInterval } = metrics;
     const metricUrl = this.buildMetricUrl();
 
-    const timeseriesProto: Type = MetricProto.prometheus.WriteRequest;
-
     while (true) {
       await setTimeout(pushInterval);
 
       try {
         const currentMetrics = await this.readMetricsJson();
+        const timestamp = Date.now();
 
-        const timeseries: MetricPushTimeseries = {
+        const messageData: MetricMessage = {
           timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
             labels: [
               { name: '__name__', value: v.metricName || m.name },
               ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
             ],
             samples: [
-              {
-                value: v.value,
-                timestamp: Date.now(),
-              },
+              { value: v.value, timestamp },
             ],
           }))),
         };
 
-        const buffer: Buffer = timeseriesProto.encode(timeseries).finish() as any;
+        const message = new MetricMessageProto(messageData);
+        const buffer: Buffer = MetricMessageProto.encode(message).finish() as any;
 
         await this.httpService.post(metricUrl, {
           headers: {

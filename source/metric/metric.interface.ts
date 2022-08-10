@@ -39,6 +39,6 @@ export interface MetricTimeseries {
   samples: MetricSample[];
 }
 
-export interface MetricPushTimeseries {
+export interface MetricMessage {
   timeseries: MetricTimeseries[];
 }
