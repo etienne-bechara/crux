@@ -1,4 +1,5 @@
 import { AppModule } from '../../source/app/app.module';
+import { MetricPushStrategy } from '../../source/metric/metric.enum';
 import { RandomModule } from './random/random.module';
 import { UserModule } from './user/user.module';
 import { ZipModule } from './zip/zip.module';
@@ -20,8 +21,9 @@ void AppModule.boot({
     pushInterval: 5000,
   },
   metrics: {
-    url: 'http://127.0.0.1:9091/metrics/job/:job/instance/:instance',
+    url: 'http://127.0.0.1:9090/api/v1/write',
     pushInterval: 5000,
+    pushStrategy: MetricPushStrategy.REMOTE_WRITE,
   },
   traces: {
     url: 'http://127.0.0.1:55681/v1/traces',
