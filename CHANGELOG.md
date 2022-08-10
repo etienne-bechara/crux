@@ -1,3 +1,10 @@
+## [4.20.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.0...v4.20.1) (2022-08-10)
+
+
+### Bug Fixes
+
+* rename type to strategy ([eafff8e](https://github.com/etienne-bechara/nestjs-core/commit/eafff8ea8f2b2793ee87b994e84d5dbafd760aab))
+
 # [4.20.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.6...v4.20.0) (2022-08-10)
 
 
