@@ -115,7 +115,7 @@ export class MetricService {
             job: job || 'unknown',
             instance: instance || 'unknown',
           },
-          body: Buffer.from(currentMetrics, 'utf-8'),
+          body: Buffer.from(currentMetrics, 'utf8'),
           retryLimit: 2,
         });
       }
@@ -159,7 +159,10 @@ export class MetricService {
         const buffer: Buffer = timeseriesProto.encode(timeseries).finish() as any;
 
         await this.httpService.post(metricUrl, {
-          headers: { 'content-type': 'application/vnd.google.protobuf' },
+          headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'content-type': 'application/vnd.google.protobuf',
+          },
           body: await compress(buffer),
           retryLimit: 2,
         });

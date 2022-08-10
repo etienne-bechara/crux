@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { AppModule } from '../app/app.module';

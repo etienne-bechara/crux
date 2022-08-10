@@ -392,7 +392,7 @@ export class HttpService {
     if (span) {
       span.setAttributes({
         [SemanticAttributes.HTTP_STATUS_CODE]: statusCode || undefined,
-        'http.duration': duration,
+        'http.duration': duration, // eslint-disable-line @typescript-eslint/naming-convention
       });
 
       if (error) {

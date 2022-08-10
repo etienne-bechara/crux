@@ -95,7 +95,7 @@ export class AppService {
         [SemanticAttributes.HTTP_METHOD]: method,
         [SemanticAttributes.HTTP_ROUTE]: path,
         [SemanticAttributes.HTTP_STATUS_CODE]: code,
-        'http.duration': duration,
+        'http.duration': duration, // eslint-disable-line @typescript-eslint/naming-convention
       });
 
       if (error) {

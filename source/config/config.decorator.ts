@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators, Injectable } from '@nestjs/common';
 
 import { ConfigMetadata } from './config.enum';

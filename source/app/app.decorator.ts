@@ -1,6 +1,3 @@
-/* eslint-disable padding-line-between-statements */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable jsdoc/require-jsdoc */
 import { applyDecorators, Controller as NestController, Delete as NestDelete, Get as NestGet, Head as NestHead, HttpCode, HttpStatus, Options as NestOptions, Patch as NestPatch, Post as NestPost, Put as NestPut, RequestMethod } from '@nestjs/common';
 import { ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -133,105 +130,105 @@ function getMethodParams(args: any[]): { prefix: string; params: AppMethodParams
   return { prefix, params };
 }
 
+export function Get(params?: AppMethodParams): any;
+export function Get(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP GET requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Get(params?: AppMethodParams): any;
-export function Get(prefix: string, params?: AppMethodParams): any;
 export function Get(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.GET, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Post(params?: AppMethodParams): any;
+export function Post(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP POST requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Post(params?: AppMethodParams): any;
-export function Post(prefix: string, params?: AppMethodParams): any;
 export function Post(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.POST, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Put(params?: AppMethodParams): any;
+export function Put(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP PUT requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Put(params?: AppMethodParams): any;
-export function Put(prefix: string, params?: AppMethodParams): any;
 export function Put(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.PUT, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Patch(params?: AppMethodParams): any;
+export function Patch(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP PATCH requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Patch(params?: AppMethodParams): any;
-export function Patch(prefix: string, params?: AppMethodParams): any;
 export function Patch(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.PATCH, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Delete(params?: AppMethodParams): any;
+export function Delete(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP DELETE requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Delete(params?: AppMethodParams): any;
-export function Delete(prefix: string, params?: AppMethodParams): any;
 export function Delete(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.DELETE, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Head(params?: AppMethodParams): any;
+export function Head(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP HEAD requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Head(params?: AppMethodParams): any;
-export function Head(prefix: string, params?: AppMethodParams): any;
 export function Head(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.HEAD, prefix, params);
   return applyDecorators(...decorators);
 }
 
+export function Options(params?: AppMethodParams): any;
+export function Options(prefix: string, params?: AppMethodParams): any;
+
 /**
  * Route handler (method) Decorator. Routes HTTP OPTIONS requests to the specified path.
  *
- * @param prefix
- * @param params
+ * @param args
  * @see [Routing](https://docs.nestjs.com/controllers#routing)
  */
-export function Options(params?: AppMethodParams): any;
-export function Options(prefix: string, params?: AppMethodParams): any;
 export function Options(...args: any[]): any {
   const { prefix, params } = getMethodParams(args);
   const decorators = buildMethodDecorators(RequestMethod.OPTIONS, prefix, params);

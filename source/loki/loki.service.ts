@@ -115,8 +115,8 @@ export class LokiService implements LogTransport {
 
       await this.httpService.post(lokiUrl, {
         headers: {
-          'content-type': 'application/json',
-          'content-encoding': 'gzip',
+          'content-type': 'application/json', // eslint-disable-line @typescript-eslint/naming-convention
+          'content-encoding': 'gzip', // eslint-disable-line @typescript-eslint/naming-convention
         },
         body: gzip,
         retryLimit: 2,
