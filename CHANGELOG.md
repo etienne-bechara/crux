@@ -1,3 +1,18 @@
+# [4.20.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.6...v4.20.0) (2022-08-10)
+
+
+### Bug Fixes
+
+* bump dev deps ([6c78646](https://github.com/etienne-bechara/nestjs-core/commit/6c78646619ec0151128fd8acbc79000106b1e25a))
+* remove usage of sync operations ([33f0602](https://github.com/etienne-bechara/nestjs-core/commit/33f0602ba9a1993ee5adb8d0ecfea38b1ae8d754))
+* require full URL for observability ([4111474](https://github.com/etienne-bechara/nestjs-core/commit/411147419b860cf90f3e89e5b7d598faf04a69f7))
+* trigger ci ([f542d60](https://github.com/etienne-bechara/nestjs-core/commit/f542d60f224e1aaecbb2f2fd32c72335cd5d0c57))
+
+
+### Features
+
+* add remote write push support ([e3e6289](https://github.com/etienne-bechara/nestjs-core/commit/e3e6289261bec50bbab8530f35175c93d1a57620))
+
 ## [4.19.6](https://github.com/etienne-bechara/nestjs-core/compare/v4.19.5...v4.19.6) (2022-08-09)
 
 
