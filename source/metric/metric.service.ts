@@ -11,7 +11,7 @@ import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
-import { MetricDataType, MetricPushType } from './metric.enum';
+import { MetricDataType, MetricPushStrategy } from './metric.enum';
 import { MetricPushTimeseries } from './metric.interface';
 import MetricProto from './metric.proto';
 
@@ -83,7 +83,7 @@ export class MetricService {
     if (!metricUrl) return;
 
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { username, password, pushType } = metrics;
+    const { username, password, pushStrategy } = metrics;
 
     this.httpService = new HttpService({
       name: 'MetricModule',
@@ -91,7 +91,7 @@ export class MetricService {
       password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.appConfig);
 
-    pushType === MetricPushType.PUSHGATEWAY
+    pushStrategy === MetricPushStrategy.PUSHGATEWAY
       ? void this.setupPushgateway()
       : void this.setupRemoteWrite();
   }
