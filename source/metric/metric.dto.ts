@@ -3,6 +3,9 @@ import { MetricAggregator, MetricDataType } from './metric.enum';
 
 export class MetricValue {
 
+  @IsString()
+  public metricName: string;
+
   @IsNumber()
   public value: number;
 

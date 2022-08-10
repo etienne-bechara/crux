@@ -144,7 +144,7 @@ export class MetricService {
         const timeseries: MetricPushTimeseries = {
           timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
             labels: [
-              { name: '__name__', value: m.name },
+              { name: '__name__', value: v.metricName || m.name },
               ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
             ],
             samples: [
