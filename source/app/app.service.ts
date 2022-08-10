@@ -74,6 +74,9 @@ export class AppService {
 
   /**
    * Register logs, metrics and tracing of inbound request.
+   *
+   * In the event of paths unspecified by controllers, replace them with
+   * `*` in order to reduce amount of timeseries.
    * @param code
    * @param error
    */
@@ -83,8 +86,11 @@ export class AppService {
 
     const method = this.contextService.getRequestMethod();
     const host = this.contextService.getRequestHost();
-    const path = this.contextService.getRequestPath();
     const duration = this.contextService.getRequestDuration();
+
+    const path = code === HttpStatus.NOT_FOUND && error?.message?.startsWith('Cannot')
+      ? '/*'
+      : this.contextService.getRequestPath();
 
     if (durationHistogram) {
       durationHistogram.labels('inbound', method, host, path, code.toString()).observe(duration);
