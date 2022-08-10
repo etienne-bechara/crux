@@ -1,3 +1,10 @@
+## [4.20.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.1...v4.20.2) (2022-08-10)
+
+
+### Bug Fixes
+
+* metric name when constructing timeseries ([9af3b3b](https://github.com/etienne-bechara/nestjs-core/commit/9af3b3b6317f444685a88c577c492d32abf63a1b))
+
 ## [4.20.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.0...v4.20.1) (2022-08-10)
 
 
