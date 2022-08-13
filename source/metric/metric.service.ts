@@ -66,7 +66,7 @@ export class MetricService {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { httpPercentiles } = metrics;
 
-    this.getSummary(AppMetric.HTTP_DURATION, {
+    this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
       help: 'Duration of inbound HTTP requests in seconds.',
       labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
       percentiles: httpPercentiles,
@@ -217,10 +217,11 @@ export class MetricService {
     let currentMetrics = await this.register.metrics();
 
     if (defaultFilter) {
+      const reportMetrics = [ ...defaultFilter, ...this.metrics.keys() ];
       const metricsArray = currentMetrics.split('\n');
 
       const filteredMetrics = metricsArray.filter((m) => {
-        for (const filter of defaultFilter) {
+        for (const filter of reportMetrics) {
           if (m.startsWith('#') || m.startsWith(filter)) {
             return true;
           }
@@ -243,7 +244,8 @@ export class MetricService {
     let currentMetrics: MetricData[] = await this.register.getMetricsAsJSON() as any;
 
     if (defaultFilter) {
-      currentMetrics = currentMetrics.filter((m) => defaultFilter.includes(m.name));
+      const reportMetrics = new Set([ ...defaultFilter, ...this.metrics.keys() ]);
+      currentMetrics = currentMetrics.filter((m) => reportMetrics.has(m.name));
     }
 
     return currentMetrics;

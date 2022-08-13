@@ -382,7 +382,7 @@ export class HttpService {
       const logData = { duration, code: strCode, body, headers };
       this.logService?.http(this.buildLogMessage('down', params), logData);
 
-      const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_DURATION);
+      const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_REQUEST_DURATION);
 
       if (durationSummary) {
         durationSummary.labels('outbound', method, host, path, strCode).observe(duration);

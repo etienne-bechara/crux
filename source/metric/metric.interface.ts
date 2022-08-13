@@ -7,7 +7,7 @@ export interface MetricOptions {
   defaultLabels?: Record<string, string>;
   /** Buckets for default metrics histograms. */
   defaultBuckets?: number[];
-  /** Allow filtering reported metrics only to target set in order to reduce timeseries. */
+  /** Filter built-in collected metrics to report in order to reduce amount of timeseries. */
   defaultFilter?: string[];
   /** Percentiles to measure for HTTP metrics. Default: [ 99, 95, 50 ]. */
   httpPercentiles?: number[];

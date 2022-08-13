@@ -82,7 +82,7 @@ export class AppService {
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getRequestSpan();
-    const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_DURATION);
+    const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_REQUEST_DURATION);
 
     const method = this.contextService.getRequestMethod();
     const host = this.contextService.getRequestHost();
