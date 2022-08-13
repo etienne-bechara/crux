@@ -82,7 +82,7 @@ export class AppService {
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getRequestSpan();
-    const durationHistogram = this.metricService?.getHistogram(AppMetric.HTTP_DURATION);
+    const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_DURATION);
 
     const method = this.contextService.getRequestMethod();
     const host = this.contextService.getRequestHost();
@@ -92,8 +92,8 @@ export class AppService {
       ? '/*'
       : this.contextService.getRequestPath();
 
-    if (durationHistogram) {
-      durationHistogram.labels('inbound', method, host, path, code.toString()).observe(duration);
+    if (durationSummary) {
+      durationSummary.labels('inbound', method, host, path, code.toString()).observe(duration);
     }
 
     if (span) {

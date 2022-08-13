@@ -41,7 +41,7 @@ export class MetricService {
   }
 
   /**
-   * Create Prometheus metrics registry and built-in histograms.
+   * Create Prometheus metrics registry and start collection defaults.
    */
   private setupRegistry(): void {
     const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
@@ -64,12 +64,12 @@ export class MetricService {
    */
   private setupMetrics(): void {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { httpDurationBuckets } = metrics;
+    const { httpPercentiles } = metrics;
 
-    this.getHistogram(AppMetric.HTTP_DURATION, {
+    this.getSummary(AppMetric.HTTP_DURATION, {
       help: 'Duration of inbound HTTP requests in seconds.',
       labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
-      buckets: httpDurationBuckets,
+      percentiles: httpPercentiles,
     });
   }
 

@@ -2,8 +2,6 @@
 
 Collect metrics based on [Prometheus](https://prometheus.io/).
 
-By default it will automatically collect histograms of Node.js process, as well as inbound and outbound HTTP request latencies.
-
 Scraping is available at `/metrics` endpoint.
 
 ---

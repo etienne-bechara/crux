@@ -7,5 +7,5 @@ export enum AppEnvironment {
 }
 
 export enum AppMetric {
-  HTTP_DURATION = 'http_duration_seconds',
+  HTTP_DURATION = 'http_request_duration_seconds',
 }

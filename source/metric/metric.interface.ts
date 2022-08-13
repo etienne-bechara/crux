@@ -7,8 +7,8 @@ export interface MetricOptions {
   defaultLabels?: Record<string, string>;
   /** Buckets for default metrics histograms. */
   defaultBuckets?: number[];
-  /** Buckets for HTTP duration metrics histograms. */
-  httpDurationBuckets?: number[];
+  /** Percentiles to measure for HTTP metrics. Default: [ 99, 95, 50 ]. */
+  httpPercentiles?: number[];
   /**
    * Prometheus API URL to publish metrics. Supports `:job` and `:instance`
    * for path replacements. Can be overridden by env `METRIC_URL`.

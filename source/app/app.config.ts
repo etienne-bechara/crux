@@ -90,10 +90,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   metrics: {
     pushStrategy: MetricPushStrategy.PUSHGATEWAY,
     pushInterval: 60_000,
-    httpDurationBuckets: [
-      0.1, 0.25, 0.5, 1, 2.5,
-      5, 10, 25, 50, 100,
-    ],
+    httpPercentiles: [ 0.99, 0.95, 0.5 ],
   },
   traces: {
     pushInterval: 60_000,
