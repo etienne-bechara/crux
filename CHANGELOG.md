@@ -1,3 +1,10 @@
+## [4.21.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.0...v4.21.1) (2022-08-13)
+
+
+### Bug Fixes
+
+* custom metrics not reporting ([87dc9a9](https://github.com/etienne-bechara/nestjs-core/commit/87dc9a99a060e29874345d68c92a8121818ca5ec))
+
 # [4.21.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.3...v4.21.0) (2022-08-13)
 
 
