@@ -1,3 +1,11 @@
+## [4.20.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.2...v4.20.3) (2022-08-10)
+
+
+### Bug Fixes
+
+* refactor metric proto to ts ([826b45c](https://github.com/etienne-bechara/nestjs-core/commit/826b45c003e60d2291a146012350f85733b1920e))
+* replace not found path in metrics with * ([0f5e40a](https://github.com/etienne-bechara/nestjs-core/commit/0f5e40ab3dae82247ad24f28dc98fd76b95dfdb4))
+
 ## [4.20.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.1...v4.20.2) (2022-08-10)
 
 
