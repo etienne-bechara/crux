@@ -210,15 +210,43 @@ export class MetricService {
   /**
    * Read metrics in Prometheus string format.
    */
-  public readMetrics(): Promise<string> {
-    return this.register.metrics();
+  public async readMetrics(): Promise<string> {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { defaultFilter } = metrics;
+
+    let currentMetrics = await this.register.metrics();
+
+    if (defaultFilter) {
+      const metricsArray = currentMetrics.split('\n');
+
+      const filteredMetrics = metricsArray.filter((m) => {
+        for (const filter of defaultFilter) {
+          if (m.startsWith('#') || m.startsWith(filter)) {
+            return true;
+          }
+        }
+      });
+
+      currentMetrics = filteredMetrics.join('\n');
+    }
+
+    return currentMetrics;
   }
 
   /**
    * Read metrics in Prometheus JSON format.
    */
-  public readMetricsJson(): Promise<MetricData[]> {
-    return this.register.getMetricsAsJSON() as any;
+  public async readMetricsJson(): Promise<MetricData[]> {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { defaultFilter } = metrics;
+
+    let currentMetrics: MetricData[] = await this.register.getMetricsAsJSON() as any;
+
+    if (defaultFilter) {
+      currentMetrics = currentMetrics.filter((m) => defaultFilter.includes(m.name));
+    }
+
+    return currentMetrics;
   }
 
   /**
