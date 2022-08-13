@@ -1,3 +1,15 @@
+# [4.21.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.3...v4.21.0) (2022-08-13)
+
+
+### Bug Fixes
+
+* allow filtering default metrics to report ([373a2fa](https://github.com/etienne-bechara/nestjs-core/commit/373a2fae9e6dc60e13a92bbf155a1d459f29a583))
+
+
+### Features
+
+* refactor http metric to be based on summary ([aa7405e](https://github.com/etienne-bechara/nestjs-core/commit/aa7405ece86b28327e977dc19cc412adc1c28192))
+
 ## [4.20.3](https://github.com/etienne-bechara/nestjs-core/compare/v4.20.2...v4.20.3) (2022-08-10)
 
 
