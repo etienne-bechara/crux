@@ -15,11 +15,21 @@ export interface LokiOptions {
   batchSize?: number;
 }
 
-export interface LokiPushParams {
-  streams: LokiPushStream[];
+export interface LokiTimestamp {
+  seconds: number;
+  nanos: number;
 }
 
-export interface LokiPushStream {
-  stream: Record<string, string>;
-  values: string[][];
+export interface LokiEntry {
+  timestamp: LokiTimestamp;
+  line: string;
+}
+
+export interface LokiStream {
+  labels: string;
+  entries: LokiEntry[];
+}
+
+export interface LokiMessage {
+  streams: LokiStream[];
 }
