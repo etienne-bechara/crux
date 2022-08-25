@@ -1,4 +1,3 @@
-import { MetricPushStrategy } from './metric.enum';
 
 export interface MetricOptions {
   /** Prefix for default metrics. */
@@ -22,8 +21,6 @@ export interface MetricOptions {
   password?: string;
   /** Prometheus API push interval in milliseconds. Default: 60000. */
   pushInterval?: number;
-  /** Prometheus push strategy. Default: PUSHGATEWAY. */
-  pushStrategy?: MetricPushStrategy;
 }
 
 export interface MetricLabel {

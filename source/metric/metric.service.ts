@@ -10,7 +10,7 @@ import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
-import { MetricDataType, MetricPushStrategy } from './metric.enum';
+import { MetricDataType } from './metric.enum';
 import { MetricMessage } from './metric.interface';
 import { MetricMessageProto } from './metric.proto';
 
@@ -28,7 +28,7 @@ export class MetricService {
   ) {
     this.setupRegistry();
     this.setupMetrics();
-    this.setupPush();
+    void this.setupPush();
   }
 
   /**
@@ -74,15 +74,14 @@ export class MetricService {
   }
 
   /**
-   * Configures metric pushing which may be based
-   * on pushgateway or remote write.
+   * Configures metric pushing based on remote write.
    */
-  private setupPush(): void {
+  private async setupPush(): Promise<void> {
     const metricUrl = this.buildMetricUrl();
     if (!metricUrl) return;
 
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { username, password, pushStrategy } = metrics;
+    const { username, password, pushInterval } = metrics;
 
     this.httpService = new HttpService({
       name: 'MetricModule',
@@ -90,31 +89,34 @@ export class MetricService {
       password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.appConfig);
 
-    pushStrategy === MetricPushStrategy.PUSHGATEWAY
-      ? void this.setupPushgateway()
-      : void this.setupRemoteWrite();
-  }
-
-  /**
-   * Push metrics to a Prometheus Pushgateway.
-   */
-  private async setupPushgateway(): Promise<void> {
-    const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushInterval } = metrics;
-    const metricUrl = this.buildMetricUrl();
-
     while (true) {
       await setTimeout(pushInterval);
 
       try {
-        const currentMetrics = await this.readMetrics();
+        const currentMetrics = await this.readMetricsJson();
+        const timestamp = Date.now();
+
+        const messageData: MetricMessage = {
+          timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
+            labels: [
+              { name: '__name__', value: v.metricName || m.name },
+              ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
+            ],
+            samples: [
+              { value: v.value, timestamp },
+            ],
+          }))),
+        };
+
+        const message = new MetricMessageProto(messageData);
+        const buffer: Buffer = MetricMessageProto.encode(message).finish() as any;
 
         await this.httpService.post(metricUrl, {
-          replacements: {
-            job: job || 'unknown',
-            instance: instance || 'unknown',
+          headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'content-type': 'application/vnd.google.protobuf',
           },
-          body: Buffer.from(currentMetrics, 'utf8'),
+          body: await compress(buffer),
           retryLimit: 2,
         });
       }

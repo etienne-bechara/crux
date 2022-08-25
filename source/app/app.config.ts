@@ -6,7 +6,6 @@ import crypto from 'crypto';
 import { Config, InjectConfig } from '../config/config.decorator';
 import { HttpMethod } from '../http/http.enum';
 import { LogSeverity } from '../log/log.enum';
-import { MetricPushStrategy } from '../metric/metric.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
@@ -85,7 +84,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     severity: LogSeverity.WARNING,
   },
   metrics: {
-    pushStrategy: MetricPushStrategy.PUSHGATEWAY,
     pushInterval: 60_000,
     httpPercentiles: [ 0.99, 0.95, 0.5 ],
   },

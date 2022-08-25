@@ -13,8 +13,3 @@ export enum MetricAggregator {
   MAX = 'max',
   AVERAGE = 'average',
 }
-
-export enum MetricPushStrategy {
-  PUSHGATEWAY = 'PUSHGATEWAY',
-  REMOTE_WRITE = 'REMOTE_WRITE',
-}
