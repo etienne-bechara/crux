@@ -1,3 +1,14 @@
+## [4.21.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.1...v4.21.2) (2022-08-25)
+
+
+### Bug Fixes
+
+* encode loki logs as proto ([2cb4419](https://github.com/etienne-bechara/nestjs-core/commit/2cb44191fa611f67edba86787958930ed01bd33c))
+* remove pushgateway ([aa91807](https://github.com/etienne-bechara/nestjs-core/commit/aa918072817f34a51d23880e6ccd85328bf7c00f))
+* remove sentry ([d6a7f1a](https://github.com/etienne-bechara/nestjs-core/commit/d6a7f1a2d82d4ac0efde6c39a9e69893b1919e94))
+* remove unused method ([ce51f24](https://github.com/etienne-bechara/nestjs-core/commit/ce51f2420575e25ae160af43ca7deef62d8b78f9))
+* test ([1b88cbc](https://github.com/etienne-bechara/nestjs-core/commit/1b88cbcfa65d60acc0a0ebe1090645c66ef4e83d))
+
 ## [4.21.1](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.0...v4.21.1) (2022-08-13)
 
 
