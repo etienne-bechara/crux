@@ -84,9 +84,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   slack: {
     severity: LogSeverity.WARNING,
   },
-  sentry: {
-    severity: LogSeverity.ERROR,
-  },
   metrics: {
     pushStrategy: MetricPushStrategy.PUSHGATEWAY,
     pushInterval: 60_000,

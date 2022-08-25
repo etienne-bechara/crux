@@ -11,7 +11,6 @@ import { HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
-import { SentryOptions } from '../sentry/sentry.interface';
 import { SlackOptions } from '../slack/slack.interface';
 import { TraceOptions } from '../trace/trace.interface';
 
@@ -32,7 +31,7 @@ export interface AppOptions extends ModuleMetadata {
   disableSerializer?: boolean;
   /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
-  /** Disables all logging transports (Console, Loki, Sentry and Slack). */
+  /** Disables all logging transports (Console, Loki and Slack). */
   disableLogs?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
@@ -70,8 +69,6 @@ export interface AppOptions extends ModuleMetadata {
   console?: ConsoleOptions;
   /** Loki logging transport configuration. */
   loki?: LokiOptions;
-  /** Sentry logging transport configuration. */
-  sentry?: SentryOptions;
   /** Slack logging transport configuration. */
   slack?: SlackOptions;
   /** Metrics configuration. */

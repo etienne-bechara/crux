@@ -65,7 +65,7 @@ this.logService.error(a: string, b: Error, c: Record<string, any>, d: Record<str
 
 ## Transporters
 
-This package offers the following built-in transporters: Console, Loki, Sentry and Slack.
+This package offers the following built-in transporters: Console, Loki and Slack.
 
 Configuration will be acquired from environment according to the following variables.
 
@@ -89,18 +89,6 @@ LOKI_URL      | Yes      | string |
 LOKI_USERNAME | No       | string |
 LOKI_PASSWORD | No       | string |
 LOKI_SEVERITY | No       | string | `debug`
-
-### Sentry
-
-Publish logs to [Sentry](https://sentry.io) platform.
-
-To enable this integration, create a project at Sentry and provide its `SENTRY_DSN`.
-
-Variable        | Required | Type   | Default
-:-------------- | :------: | :----: | :---
-SENTRY_DSN      | Yes      | string |
-SENTRY_SEVERITY | No       | string | `error`
-
 
 ### Slack
 

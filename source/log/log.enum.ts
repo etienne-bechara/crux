@@ -5,7 +5,6 @@ export enum LogException {
 export enum LogTransportName {
   CONSOLE = 'CONSOLE',
   LOKI = 'LOKI',
-  SENTRY = 'SENTRY',
   SLACK = 'SLACK',
 }
 

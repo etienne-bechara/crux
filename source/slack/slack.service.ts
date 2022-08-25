@@ -43,7 +43,7 @@ export class SlackService implements LogTransport {
    * Acquires this transport name.
    */
   public getName(): LogTransportName {
-    return LogTransportName.SENTRY;
+    return LogTransportName.SLACK;
   }
 
   /**

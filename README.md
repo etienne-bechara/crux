@@ -18,7 +18,7 @@ This package offers a wrapper around NestJS core components adding extra functio
 - [\[Config\] Environment Variables](docs/module/config.md)
 - [\[Context\] Request, Response and Metadata](docs/module/context.md)
 - [\[Http\] GOT Client](docs/module/http.md)
-- [\[Log\] Console, Loki, Slack and Sentry](docs/module/log.md)
+- [\[Log\] Console, Loki, and Slack](docs/module/log.md)
 - [\[Metric\] Prometheus](docs/module/metric.md)
 - [\[Trace\] Open Telemetry](docs/module/trace.md)
 - [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)

@@ -25,7 +25,6 @@ import { MemoryModule } from '../memory/memory.module';
 import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
-import { SentryModule } from '../sentry/sentry.module';
 import { SlackModule } from '../slack/slack.module';
 import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
@@ -105,7 +104,6 @@ export class AppModule {
       'fastify',
       'loki',
       'metrics',
-      'sentry',
       'slack',
       'traces',
     ];
@@ -331,7 +329,6 @@ export class AppModule {
       defaultModules.push(
         ConsoleModule,
         LokiModule,
-        SentryModule,
         SlackModule,
       );
     }

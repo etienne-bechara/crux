@@ -48,7 +48,6 @@
     "@opentelemetry/resources": "1.0.1",
     "@opentelemetry/sdk-trace-base": "1.0.1",
     "@opentelemetry/semantic-conventions": "1.0.1",
-    "@sentry/node": "6.19.6",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
     "cycle": "1.0.3",
