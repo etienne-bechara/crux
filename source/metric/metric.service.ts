@@ -127,51 +127,6 @@ export class MetricService {
   }
 
   /**
-   * Push metrics according to Prometheus remote write specification.
-   */
-  private async setupRemoteWrite(): Promise<void> {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { pushInterval } = metrics;
-    const metricUrl = this.buildMetricUrl();
-
-    while (true) {
-      await setTimeout(pushInterval);
-
-      try {
-        const currentMetrics = await this.readMetricsJson();
-        const timestamp = Date.now();
-
-        const messageData: MetricMessage = {
-          timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
-            labels: [
-              { name: '__name__', value: v.metricName || m.name },
-              ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
-            ],
-            samples: [
-              { value: v.value, timestamp },
-            ],
-          }))),
-        };
-
-        const message = new MetricMessageProto(messageData);
-        const buffer: Buffer = MetricMessageProto.encode(message).finish() as any;
-
-        await this.httpService.post(metricUrl, {
-          headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'content-type': 'application/vnd.google.protobuf',
-          },
-          body: await compress(buffer),
-          retryLimit: 2,
-        });
-      }
-      catch (e) {
-        this.logService.error('Failed to push metrics', e as Error);
-      }
-    }
-  }
-
-  /**
    * Gets metric by name creating if necessary.
    * @param type
    * @param name
