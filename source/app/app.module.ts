@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { ClassSerializerInterceptor, DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
+import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -29,6 +29,7 @@ import { PromiseModule } from '../promise/promise.module';
 import { SlackModule } from '../slack/slack.module';
 import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
+import { TransformInterceptor } from '../transform/transform.interceptor';
 import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
@@ -418,7 +419,7 @@ export class AppModule {
     if (!disableSerializer) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: ClassSerializerInterceptor,
+        useClass: TransformInterceptor,
       });
     }
 
