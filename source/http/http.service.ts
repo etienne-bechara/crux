@@ -227,13 +227,7 @@ export class HttpService {
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
-    const { spanName, spanOptions } = sendParams.telemetry;
-
-    const response = this.traceService
-      ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span) => {
-        return this.sendRetryableRequest({ ...sendParams, span });
-      })
-      : await this.sendRetryableRequest(sendParams);
+    const response: any = await this.sendRetryableRequest(sendParams);
 
     return sendParams.resolveBodyOnly
       ? response?.body
@@ -246,7 +240,7 @@ export class HttpService {
    */
   private async sendRetryableRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
     const contextTimeoutMsg = 'context request timed out';
-    const { telemetry, retry, request, span } = params;
+    const { telemetry, retry, request } = params;
     const { method, host, path, spanOptions } = telemetry;
     const { retryLimit, retryCodes, retryDelay } = retry;
     const { url } = request;
@@ -257,13 +251,13 @@ export class HttpService {
       const { attempt } = retry;
 
       try {
-        const childSpanName = `⯆ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
+        const spanName = `⯅ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
         const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.TIMEOUT) && url !== 'v1/traces';
         if (isTimedOut) throw new Error(contextTimeoutMsg);
 
         response = this.traceService
-          ? await this.traceService.startActiveSpan(childSpanName, spanOptions, async (childSpan) => {
-            return this.sendRequest({ ...params, span: childSpan });
+          ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span) => {
+            return this.sendRequest({ ...params, span });
           })
           : await this.sendRequest(params);
       }
@@ -273,7 +267,7 @@ export class HttpService {
         const attemptsLeft = retryLimit - attempt;
 
         if (!attemptsLeft || !isRetryableCode || e.message === contextTimeoutMsg) {
-          this.collectOutboundTelemetry('result', { ...telemetry, span, response: attemptResponse, error: e });
+          this.collectOutboundTelemetry('result', { ...telemetry, response: attemptResponse, error: e });
           throw e;
         }
 
@@ -289,7 +283,7 @@ export class HttpService {
       response.cookies = this.parseCookies(headers);
     }
 
-    this.collectOutboundTelemetry('result', { ...telemetry, span, response });
+    this.collectOutboundTelemetry('result', { ...telemetry, response });
     return response;
   }
 
