@@ -10,7 +10,7 @@ import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
-import { MetricDataType } from './metric.enum';
+import { MetricDataType, MetricHttpStrategy } from './metric.enum';
 import { MetricMessage } from './metric.interface';
 import { MetricMessageProto } from './metric.proto';
 
@@ -64,13 +64,22 @@ export class MetricService {
    */
   private setupMetrics(): void {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
-    const { httpPercentiles } = metrics;
+    const { httpStrategy, httpPercentiles, httpBuckets } = metrics;
 
-    this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
-      help: 'Duration of inbound HTTP requests in seconds.',
-      labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
-      percentiles: httpPercentiles,
-    });
+    if (httpStrategy === MetricHttpStrategy.SUMMARY) {
+      this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
+        help: 'Duration of inbound HTTP requests in seconds.',
+        labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
+        percentiles: httpPercentiles,
+      });
+    }
+    else {
+      this.getHistogram(AppMetric.HTTP_REQUEST_DURATION, {
+        help: 'Duration of inbound HTTP requests in seconds.',
+        labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
+        buckets: httpBuckets,
+      });
+    }
   }
 
   /**
@@ -206,6 +215,20 @@ export class MetricService {
     }
 
     return currentMetrics;
+  }
+
+  /**
+   * Acquires the HTTP metric collector which might be either
+   * a summary or histogram depending on app configuration.
+   */
+  public getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code'>(
+  ): Summary<T> | Histogram<T> {
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { httpStrategy } = metrics;
+
+    return httpStrategy === MetricHttpStrategy.SUMMARY
+      ? this.getSummary(AppMetric.HTTP_REQUEST_DURATION)
+      : this.getHistogram(AppMetric.HTTP_REQUEST_DURATION);
   }
 
   /**

@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { Config, InjectConfig } from '../config/config.decorator';
 import { HttpMethod } from '../http/http.enum';
 import { LogSeverity } from '../log/log.enum';
+import { MetricHttpStrategy } from '../metric/metric.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
@@ -85,7 +86,9 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   },
   metrics: {
     pushInterval: 60_000,
+    httpStrategy: MetricHttpStrategy.SUMMARY,
     httpPercentiles: [ 0.99, 0.95, 0.5 ],
+    httpBuckets: [ 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50 ],
   },
   traces: {
     pushInterval: 60_000,

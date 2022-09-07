@@ -8,7 +8,7 @@ import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { AppStatus } from './app.dto';
-import { AppMetric } from './app.enum';
+import { AppTraffic } from './app.enum';
 
 @Injectable()
 export class AppService {
@@ -82,7 +82,7 @@ export class AppService {
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getRequestSpan();
-    const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_REQUEST_DURATION);
+    const httpMetric = this.metricService?.getHttpMetric();
 
     const method = this.contextService.getRequestMethod();
     const host = this.contextService.getRequestHost();
@@ -92,8 +92,8 @@ export class AppService {
       ? '/*'
       : this.contextService.getRequestPath();
 
-    if (durationSummary) {
-      durationSummary.labels('inbound', method, host, path, code.toString()).observe(duration);
+    if (httpMetric) {
+      httpMetric.labels(AppTraffic.INBOUND, method, host, path, code.toString()).observe(duration);
     }
 
     if (span) {

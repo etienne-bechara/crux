@@ -9,3 +9,8 @@ export enum AppEnvironment {
 export enum AppMetric {
   HTTP_REQUEST_DURATION = 'http_request_duration_seconds',
 }
+
+export enum AppTraffic {
+  INBOUND = 'inbound',
+  OUTBOUND = 'outbound',
+}

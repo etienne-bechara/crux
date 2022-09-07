@@ -6,7 +6,7 @@ import { IncomingHttpHeaders } from 'http';
 import { stringify } from 'query-string';
 
 import { AppConfig } from '../app/app.config';
-import { AppMetric } from '../app/app.enum';
+import { AppTraffic } from '../app/app.enum';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
@@ -376,10 +376,10 @@ export class HttpService {
       const logData = { duration, code: strCode, body, headers };
       this.logService?.http(this.buildLogMessage('down', params), logData);
 
-      const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_REQUEST_DURATION);
+      const httpMetric = this.metricService?.getHttpMetric();
 
-      if (durationSummary) {
-        durationSummary.labels('outbound', method, host, path, strCode).observe(duration);
+      if (httpMetric) {
+        httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode).observe(duration);
       }
     }
 

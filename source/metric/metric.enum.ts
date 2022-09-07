@@ -13,3 +13,8 @@ export enum MetricAggregator {
   MAX = 'max',
   AVERAGE = 'average',
 }
+
+export enum MetricHttpStrategy {
+  HISTOGRAM = 'HISTOGRAM',
+  SUMMARY = 'SUMMARY',
+}
