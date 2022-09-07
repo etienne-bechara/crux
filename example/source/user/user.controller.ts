@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../source/app/app.override';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../source/override';
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';

@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '../../../source/app/app.override';
+import { HttpModule, Module } from '../../../source/override';
 import { ZipConfig } from './zip.config';
 import { ZipController } from './zip.controller';
 import { ZipService } from './zip.service';

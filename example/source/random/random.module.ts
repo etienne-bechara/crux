@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '../../../source/app/app.override';
+import { HttpModule, Module } from '../../../source/override';
 import { RandomController } from './random.controller';
 import { RandomService } from './random.service';
 

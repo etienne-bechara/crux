@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Param } from '../../../source/app/app.override';
+import { BadRequestException, Controller, Get, Param } from '../../../source/override';
 import { RandomService } from './random.service';
 
 @Controller('random', {

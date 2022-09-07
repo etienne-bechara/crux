@@ -18,6 +18,7 @@ import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
 import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
+import { LogInterceptor } from '../log/log.interceptor';
 import { LogModule } from '../log/log.module';
 import { LogService } from '../log/log.service';
 import { LokiModule } from '../loki/loki.module';
@@ -28,6 +29,7 @@ import { PromiseModule } from '../promise/promise.module';
 import { SlackModule } from '../slack/slack.module';
 import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
+import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { TagStorage } from './app.decorator';
@@ -35,8 +37,6 @@ import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
 import { AppMemory, AppOptions } from './app.interface';
 import { AppService } from './app.service';
-import { AppTimeout } from './app.timeout';
-import { AppValidator } from './app.validator';
 
 @Global()
 @Module({ })
@@ -396,7 +396,7 @@ export class AppModule {
     const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
-      { provide: APP_INTERCEPTOR, useClass: AppInterceptor },
+      { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
       AppConfig,
       AppService,
     ];
@@ -404,7 +404,7 @@ export class AppModule {
     if (timeout) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: AppTimeout,
+        useClass: AppInterceptor,
       });
     }
 
@@ -425,7 +425,7 @@ export class AppModule {
     if (!disableValidator) {
       preloadedProviders.push({
         provide: APP_PIPE,
-        useClass: AppValidator,
+        useClass: ValidatePipe,
       });
     }
 

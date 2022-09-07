@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException, uuidV4 } from '../../../source/app/app.override';
 import { ContextService } from '../../../source/context/context.service';
+import { Injectable, NotFoundException, uuidV4 } from '../../../source/override';
 import { Span } from '../../../source/trace/trace.decorator';
 import { ZipService } from '../zip/zip.service';
 import { UserCollection, UserCreateDto, UserUpdateDto } from './user.dto';

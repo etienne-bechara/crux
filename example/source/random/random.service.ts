@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../../source/app/app.override';
 import { LogService } from '../../../source/log/log.service';
+import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../../source/override';
 import { PromiseService } from '../../../source/promise/promise.service';
 
 @Injectable()

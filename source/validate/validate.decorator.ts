@@ -43,7 +43,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
-import { SetType } from '../app/app.override';
+import { SetType } from '../override';
 
 const ValidateStorage: Map<string, any> = new Map();
 

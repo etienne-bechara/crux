@@ -4,11 +4,11 @@ import { Body, CallHandler, ExecutionContext, HttpStatus, INestApplication, Inje
 import { Observable } from 'rxjs';
 import supertest from 'supertest';
 
+import { Controller, Post } from '../app/app.decorator';
+import { AppModule } from '../app/app.module';
 import { ContextService } from '../context/context.service';
+import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from '../override';
 import { ToNumber } from '../transform/transform.decorator';
-import { Controller, Post } from './app.decorator';
-import { AppModule } from './app.module';
-import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './app.override';
 
 class ValidatorNestedDto {
 

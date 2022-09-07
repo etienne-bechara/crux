@@ -1,56 +1,40 @@
-import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
-import { mergeMap, Observable } from 'rxjs';
+import { CallHandler, ExecutionContext, GatewayTimeoutException, Injectable, NestInterceptor } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
-import { ContextService } from '../context/context.service';
-import { LogService } from '../log/log.service';
+import { ContextStorageKey } from '../context/context.enum';
+import { ContextStorage } from '../context/context.storage';
 import { AppConfig } from './app.config';
-import { AppService } from './app.service';
 
 @Injectable()
 export class AppInterceptor implements NestInterceptor {
 
   public constructor(
-    private readonly appService: AppService,
     private readonly appConfig: AppConfig,
-    private readonly contextService: ContextService,
-    private readonly logService: LogService,
   ) { }
 
   /**
-   * Log all inbound HTTP requests and collect telemetry of successful ones.
+   * Creates a true server side timer that ends any requests
+   * if exceeding configured timeout.
+   *
+   * If using serverless, remember to configure service timeout
+   * over the one configure here at the application.
    * @param context
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { enableRequestBody, enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
-
-    this.logService.http(this.contextService.getRequestDescription('in'), {
-      method: this.contextService.getRequestMethod(),
-      host: this.contextService.getRequestHost(),
-      path: this.contextService.getRequestPath(),
-      clientIp: this.contextService.getRequestIp(),
-      params: this.contextService.getRequestParams(),
-      query: this.contextService.getRequestQuery(),
-      body: enableRequestBody ? this.contextService.getRequestBody() : undefined,
-      headers: this.contextService.getRequestHeaders(),
-    });
+    const { timeout: msTimeout } = this.appConfig.APP_OPTIONS;
+    if (!msTimeout) return next.handle();
 
     return next
       .handle()
       .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
-        mergeMap(async (data) => {
-          const code = this.contextService.getResponseCode() || HttpStatus.OK;
-
-          this.logService.http(this.contextService.getRequestDescription('out'), {
-            duration: this.contextService.getRequestDuration(),
-            code,
-            body: enableResponseBody ? data : undefined,
-          });
-
-          this.appService.collectInboundTelemetry(code);
-
-          return data;
+        timeout({
+          first: msTimeout,
+          with: () => throwError(() => {
+            ContextStorage.getStore()?.set(ContextStorageKey.TIMEOUT, true);
+            return new GatewayTimeoutException('failed to fulfill request within timeout');
+          }),
         }),
       );
   }

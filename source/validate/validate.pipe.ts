@@ -5,7 +5,7 @@ import { validate, ValidationError } from 'class-validator';
 import { ContextService } from '../context/context.service';
 
 @Injectable()
-export class AppValidator implements PipeTransform {
+export class ValidatePipe implements PipeTransform {
 
   public constructor(
     private readonly contextService: ContextService,

@@ -13,11 +13,11 @@ export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
 export { Type as SetType } from 'class-transformer';
 export { isEmpty, min, max } from 'class-validator';
 
-export { Controller, Get, Post, Put, Patch, Delete, Head, Options } from '../app/app.decorator';
-export { HttpModuleOptions } from '../http/http.interface';
-export { HttpModule } from '../http/http.module';
-export { HttpService } from '../http/http.service';
-export { LogService as LoggerService } from '../log/log.service';
+export { Controller, Get, Post, Put, Patch, Delete, Head, Options } from './app/app.decorator';
+export { HttpModuleOptions } from './http/http.interface';
+export { HttpModule } from './http/http.module';
+export { HttpService } from './http/http.service';
+export { LogService as LoggerService } from './log/log.service';
 
 export {
   Contains,
@@ -53,4 +53,4 @@ export {
   NotEquals,
   ValidateIf,
   ValidateNested,
-} from '../validate/validate.decorator';
+} from './validate/validate.decorator';

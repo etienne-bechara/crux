@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '../../../source/app/app.override';
+import { HttpService, Injectable } from '../../../source/override';
 import { Span } from '../../../source/trace/trace.decorator';
 import { Zip } from './zip.interface';
 
