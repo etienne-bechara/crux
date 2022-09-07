@@ -7,6 +7,7 @@ import { stringify } from 'query-string';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
+import { CacheStatus } from '../cache/cache.enum';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
@@ -379,7 +380,7 @@ export class HttpService {
       const durationSummary = this.metricService?.getSummary(AppMetric.HTTP_REQUEST_DURATION);
 
       if (durationSummary) {
-        durationSummary.labels('outbound', method, host, path, strCode).observe(duration);
+        durationSummary.labels('outbound', method, host, path, strCode, CacheStatus.DISABLED).observe(duration);
       }
     }
 

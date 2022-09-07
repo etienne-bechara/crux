@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { CacheOptions, CacheProvider } from '../cache/cache.interface';
 import { MemoryOptions } from './memory.interface';
 
 @Injectable()
-export class MemoryService<DataKey = Record<string, any>> {
+export class MemoryService<DataKey = Record<string, any>> implements CacheProvider {
 
   private memoryData = new Map<string, any>();
   private memoryExpiration = new Map<string, number>();
@@ -50,6 +51,26 @@ export class MemoryService<DataKey = Record<string, any>> {
   public delete<K extends keyof DataKey>(key: K): void {
     this.memoryData.delete(key as string);
     this.memoryExpiration.delete(key as string);
+  }
+
+  /**
+   * Acquire data from a cached key.
+   * @param key
+   */
+  public getCache(key: string): any {
+    return this.get(key as any);
+  }
+
+  /**
+   * Creates cache for target key.
+   * @param key
+   * @param data
+   * @param options
+   */
+  public setCache(key: string, data: any, options: CacheOptions): void {
+    const { ttl } = options;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    this.set(key as any, data, { ttl });
   }
 
 }

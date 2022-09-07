@@ -68,7 +68,7 @@ export class MetricService {
 
     this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
       help: 'Duration of inbound HTTP requests in seconds.',
-      labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
+      labelNames: [ 'traffic', 'method', 'host', 'path', 'code', 'cache' ],
       percentiles: httpPercentiles,
     });
   }

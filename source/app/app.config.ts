@@ -40,6 +40,9 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     always: true,
     strictGroups: true,
   },
+  cache: {
+    ttl: 60_000,
+  },
   http: {
     retryLimit: 2,
     retryMethods: [

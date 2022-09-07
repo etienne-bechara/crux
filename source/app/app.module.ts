@@ -10,6 +10,7 @@ import fg from 'fast-glob';
 import handlebars from 'handlebars';
 import path from 'path';
 
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
@@ -100,6 +101,7 @@ export class AppModule {
    */
   private static configureOptions(options: AppOptions): void {
     const deepMergeProps: (keyof AppOptions)[] = [
+      'cache',
       'console',
       'docs',
       'fastify',
@@ -315,6 +317,7 @@ export class AppModule {
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
+      CacheModule,
       ContextModule,
       LogModule,
       MemoryModule,
