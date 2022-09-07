@@ -1,52 +1,25 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { validate, ValidationError } from 'class-validator';
+import { Injectable, PipeTransform, ValidationPipe } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 import { ContextService } from '../context/context.service';
 
 @Injectable()
-export class ValidatePipe implements PipeTransform {
+export class ValidatePipe extends ValidationPipe implements PipeTransform {
 
   public constructor(
     private readonly contextService: ContextService,
-  ) { }
-
-  /**
-   * Validates request params, query and body based on provided class.
-   * @param value
-   * @param metadata
-   */
-  public async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
-    const { metatype } = metadata;
-    const baseConstructors: any[] = [ String, Boolean, Number, Array, Object, Buffer ];
-    if (!metatype || baseConstructors.includes(metatype)) return value;
-
-    const options = this.contextService.getValidatorOptions();
-    const instance: object = plainToInstance(metatype, value || { });
-    const validationErrors = await validate(instance, options);
-
-    if (validationErrors.length > 0) {
-      const constraints = validationErrors.flatMap((v) => this.getConstraints(v));
-      throw new BadRequestException(constraints);
-    }
-
-    return instanceToPlain(instance);
+  ) {
+    super({ transform: true });
   }
 
   /**
-   * Given a validation error acquire all nested failed constraints.
-   * @param validationError
-   * @param prefix
+   * Overwrite behaviour of built in NestJS validator by allowing
+   * dynamically acquired options from context.
+   * @param object
    */
-  private getConstraints(validationError: ValidationError, prefix = ''): string[] {
-    const { children, constraints, property } = validationError;
-
-    if (children?.length > 0) {
-      prefix += `${property}.`;
-      return children.flatMap((c) => this.getConstraints(c, prefix));
-    }
-
-    return Object.values(constraints || { }).map((c) => `${prefix}${c}`);
+  protected validate(object: object): Promise<ValidationError[]> | ValidationError[] {
+    const options = this.contextService.getValidatorOptions();
+    return super.validate(object, options);
   }
 
 }
