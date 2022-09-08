@@ -69,14 +69,14 @@ export class MetricService {
     if (httpStrategy === MetricHttpStrategy.SUMMARY) {
       this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
         help: 'Duration of inbound HTTP requests in seconds.',
-        labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
+        labelNames: [ 'traffic', 'method', 'host', 'path', 'code', 'cache' ],
         percentiles: httpPercentiles,
       });
     }
     else {
       this.getHistogram(AppMetric.HTTP_REQUEST_DURATION, {
         help: 'Duration of inbound HTTP requests in seconds.',
-        labelNames: [ 'traffic', 'method', 'host', 'path', 'code' ],
+        labelNames: [ 'traffic', 'method', 'host', 'path', 'code', 'cache' ],
         buckets: httpBuckets,
       });
     }
@@ -221,7 +221,7 @@ export class MetricService {
    * Acquires the HTTP metric collector which might be either
    * a summary or histogram depending on app configuration.
    */
-  public getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code'>(
+  public getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code' | 'cache' >(
   ): Summary<T> | Histogram<T> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { httpStrategy } = metrics;

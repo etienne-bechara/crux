@@ -5,6 +5,7 @@ import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.i
 import { ValidatorOptions } from 'class-validator';
 import http from 'http';
 
+import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
 import { HttpOptions } from '../http/http.interface';
@@ -61,6 +62,8 @@ export interface AppOptions extends ModuleMetadata {
   fastify?: Record<string, any>;
   /** Validation pipe options. Can be overwritten per request using `ContextService`. */
   validator?: ValidatorOptions;
+  /** Cache configuration. */
+  cache?: CacheOptions;
   /** Http configuration. */
   http?: HttpOptions;
   /** Logs configuration. */

@@ -4,6 +4,7 @@ import { ValidatorOptions } from 'class-validator';
 
 import { AppConfig } from '../app/app.config';
 import { AppRequest, AppResponse } from '../app/app.interface';
+import { CacheStatus } from '../cache/cache.enum';
 import { ContextStorageKey } from './context.enum';
 import { ContextJwtPayload } from './context.interface';
 import { ContextStorage } from './context.storage';
@@ -266,6 +267,22 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public setValidatorOptions(options: ValidatorOptions): void {
     this.getStore()?.set(ContextStorageKey.VALIDATOR, options);
+  }
+
+  /**
+   * Acquires cache status of current context.
+   */
+  public getCacheStatus(): CacheStatus {
+    const cacheStatus = this.getStore()?.get(ContextStorageKey.CACHE);
+    return cacheStatus || CacheStatus.DISABLED;
+  }
+
+  /**
+   * Set cache status of current context.
+   * @param status
+   */
+  public setCacheStatus(status: CacheStatus): void {
+    this.getStore()?.set(ContextStorageKey.CACHE, status);
   }
 
 }

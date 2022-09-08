@@ -87,13 +87,14 @@ export class AppService {
     const method = this.contextService.getRequestMethod();
     const host = this.contextService.getRequestHost();
     const duration = this.contextService.getRequestDuration();
+    const cache = this.contextService.getCacheStatus();
 
     const path = code === HttpStatus.NOT_FOUND && error?.message?.startsWith('Cannot')
       ? '/*'
       : this.contextService.getRequestPath();
 
     if (httpMetric) {
-      httpMetric.labels(AppTraffic.INBOUND, method, host, path, code.toString()).observe(duration);
+      httpMetric.labels(AppTraffic.INBOUND, method, host, path, code.toString(), cache).observe(duration);
     }
 
     if (span) {

@@ -1,3 +1,4 @@
+import { Cache } from '../../../source/cache/cache.decorator';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../source/override';
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
@@ -11,11 +12,13 @@ export class UserController {
   ) { }
 
   @Get({ response: { type: UserCollection } })
+  @Cache({ ttl: 10_000 })
   public getUser(): UserCollection {
     return this.userService.readUsers();
   }
 
   @Get(':id', { response: { type: User } })
+  @Cache({ ttl: 10_000 })
   public getUserById(@Param() params: UserIdDto): User {
     return this.userService.readUserById(params.id);
   }

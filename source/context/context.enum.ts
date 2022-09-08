@@ -1,4 +1,5 @@
 export enum ContextStorageKey {
+  CACHE = 'CACHE',
   REQUEST = 'REQUEST',
   RESPONSE = 'RESPONSE',
   SPAN = 'SPAN',
