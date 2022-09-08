@@ -14,6 +14,8 @@ export { Type as SetType } from 'class-transformer';
 export { isEmpty, min, max } from 'class-validator';
 
 export { Controller, Get, Post, Put, Patch, Delete, Head, Options } from './app/app.decorator';
+export { CacheInterceptor } from './cache/cache.interceptor';
+export { CacheModule } from './cache/cache.module';
 export { HttpModuleOptions } from './http/http.interface';
 export { HttpModule } from './http/http.module';
 export { HttpService } from './http/http.service';
