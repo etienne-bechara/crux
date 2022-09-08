@@ -1,3 +1,20 @@
+# [4.22.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.2...v4.22.0) (2022-09-08)
+
+
+### Bug Fixes
+
+* cache override ([c9df9cb](https://github.com/etienne-bechara/nestjs-core/commit/c9df9cbeca86ac93791e1f48291764dc0c42bd9b))
+* folder organization ([30be33c](https://github.com/etienne-bechara/nestjs-core/commit/30be33c69678105536d01aa506d51b507267dfd7))
+* refactor validate pipe to extend nest ([8968209](https://github.com/etienne-bechara/nestjs-core/commit/8968209a413a09f6b25ea0213c66a9af65390143))
+* stop wrapping external http retries into another span ([ae2f0cb](https://github.com/etienne-bechara/nestjs-core/commit/ae2f0cba3c08c7612448cca9d6b80787f894df61))
+* wrap nestjs serializer ([69162ed](https://github.com/etienne-bechara/nestjs-core/commit/69162ed44a6e9831e377a0a0131efdaeee774be0))
+
+
+### Features
+
+* add in-memory cache support ([f0b82f3](https://github.com/etienne-bechara/nestjs-core/commit/f0b82f3c1ffacaa4f4199ffb971b112f82dfb278))
+* allow configuring http metric strategy ([2928d69](https://github.com/etienne-bechara/nestjs-core/commit/2928d69d15e3c06be9da0bce6be40b7c243e0217))
+
 ## [4.21.2](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.1...v4.21.2) (2022-08-25)
 
 
