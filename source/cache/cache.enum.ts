@@ -3,7 +3,7 @@ export enum CacheReflector {
 }
 
 export enum CacheStatus {
-  DISABLED = 'DISABLED',
-  HIT = 'HIT',
-  MISS = 'MISS',
+  DISABLED = 'disabled',
+  HIT = 'hit',
+  MISS = 'miss',
 }

@@ -15,12 +15,13 @@ This package offers a wrapper around NestJS core components adding extra functio
 ### Curated Modules
 
 - [\[App\] Fastify Adapter](docs/module/app.md)
+- [\[Cache\] Inbound Caching](docs/module/cache.md)
 - [\[Config\] Environment Variables](docs/module/config.md)
 - [\[Context\] Request, Response and Metadata](docs/module/context.md)
+- [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)
 - [\[Http\] GOT Client](docs/module/http.md)
 - [\[Log\] Console, Loki, and Slack](docs/module/log.md)
-- [\[Metric\] Prometheus](docs/module/metric.md)
-- [\[Trace\] Open Telemetry](docs/module/trace.md)
-- [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)
-- [\[Promise\] Retry, Timeout and Limiting](docs/module/promise.md)
 - [\[Memory\] Volatile Storage with TTL](docs/module/memory.md)
+- [\[Metric\] Prometheus](docs/module/metric.md)
+- [\[Promise\] Retry, Timeout and Limiting](docs/module/promise.md)
+- [\[Trace\] Open Telemetry](docs/module/trace.md)
