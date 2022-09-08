@@ -17,6 +17,6 @@ export interface CacheOptions {
 }
 
 export interface CacheProvider {
-  get: (key: string) => any;
-  set: (key: string, data: any, options: CacheRouteOptions) => void;
+  get: <T>(key: string) => T | Promise<T>;
+  set: <T>(key: string, value: T, options: CacheRouteOptions) => void | Promise<void>;
 }

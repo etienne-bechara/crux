@@ -1,8 +1,8 @@
 import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import Redis from 'ioredis';
+import { v4 } from 'uuid';
 
 import { LogService } from '../log/log.service';
-import { uuidV4 } from '../override';
 import { PromiseService } from '../promise/promise.service';
 import { RedisInjectionToken } from './redis.enum';
 import { RedisLockOptions, RedisModuleOptions, RedisSetOptions, RedisTtlOptions } from './redis.interface';
@@ -86,7 +86,7 @@ export class RedisService {
    * @param key
    */
   public async get<T>(key: string): Promise<T> {
-    this.logService.trace(`Redis GET ${key}`);
+    this.logService.trace(`GET ${key}`);
 
     const stringValue = await this.getClient().get(key);
     const parsedData = JSON.parse(stringValue);
@@ -103,7 +103,7 @@ export class RedisService {
    * @param options
    */
   public async set<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
-    this.logService.trace(`Redis SET ${key}`);
+    this.logService.trace(`SET ${key}`);
     options.ttl ??= this.redisModuleOptions.defaultTtl;
 
     const { skip, get, keepTtl, ttl } = options;
@@ -133,7 +133,7 @@ export class RedisService {
    * @param key
    */
   public async del(key: string): Promise<void> {
-    this.logService.trace(`Redis DEL ${key}`);
+    this.logService.trace(`DEL ${key}`);
     await this.getClient().del(key);
   }
 
@@ -145,7 +145,7 @@ export class RedisService {
    * @param options
    */
   public async incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
-    this.logService.trace(`Redis INCRBYFLOAT ${key} (${amount > 0 ? '+' : ''}${amount})`);
+    this.logService.trace(`INCRBYFLOAT ${key} (${amount > 0 ? '+' : ''}${amount})`);
     options.ttl ??= this.redisModuleOptions.defaultTtl;
 
     const stringValue = await this.getClient().incrbyfloat(key, amount);
@@ -172,7 +172,7 @@ export class RedisService {
 
     const { ttl, delay, timeout, retries } = options;
     const lockKey = `lock:${key}`;
-    const lockValue = uuidV4();
+    const lockValue = v4();
 
     await this.promiseService.retryOnRejection({
       name: 'lock()',
@@ -197,7 +197,7 @@ export class RedisService {
    * @param key
    */
   public async unlock(key: string): Promise<void> {
-    this.logService.trace(`Redis UNLOCK ${key}`);
+    this.logService.trace(`UNLOCK ${key}`);
     return this.del(`lock:${key}`);
   }
 

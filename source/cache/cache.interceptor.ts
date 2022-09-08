@@ -19,12 +19,15 @@ export class CacheInterceptor implements NestInterceptor {
   ) { }
 
   /**
-   * X.
+   * Attempt to acquire cached data, if present, resolve with it
+   * before proceeding to controller.
+   *
+   * If not, acquire data from controller and then persist it.
    * @param context
    * @param next
    */
-  public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const cache = this.cacheService.getCache();
+  public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+    const cache = await this.cacheService.getCache();
     const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
 
     if (cache) {
@@ -36,10 +39,9 @@ export class CacheInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
           this.contextService.setCacheStatus(CacheStatus.MISS);
-          this.cacheService.setCache(data, options);
+          await this.cacheService.setCache(data, options);
           return data;
         }),
       );

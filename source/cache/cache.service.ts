@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
+import { RedisService } from '../redis/redis.service';
 import { CacheProvider, CacheRouteOptions } from './cache.interface';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class CacheService {
     private readonly contextService: ContextService,
     private readonly logService: LogService,
     private readonly memoryService: MemoryService,
-    // private readonly redisService: RedisService,
+    private readonly redisService: RedisService,
   ) {
     this.setupProvider();
   }
@@ -24,29 +25,33 @@ export class CacheService {
    * unless a Redis connection is provided.
    */
   private setupProvider(): void {
-    this.cacheProvider = this.memoryService;
+    this.cacheProvider = this.redisService.isInitialized()
+      ? this.redisService
+      : this.memoryService;
   }
 
   /**
    * Builds caching key for current request.
+   * @param type
    */
-  public buildCacheKey(): string {
+  public buildCacheKey(type: 'data' | 'buckets'): string {
     const method = this.contextService.getRequestMethod();
-    const path = this.contextService.getRequestPath();
+    const path = this.contextService.getRequestPath().replace(/:/g, '');
     const query = this.contextService.getRequestQuery();
     const sortedQueryObject = Object.fromEntries(Object.entries(query || { }).sort());
     const sortedQuery = new URLSearchParams(sortedQueryObject).toString();
-    return `CACHE_DATA_${method}_${path}${sortedQuery}`;
+    return `cache:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}:${type}`;
   }
 
   /**
    * Acquire cache data from current provider.
    */
-  public getCache(): any {
-    const cacheKey = this.buildCacheKey();
+  public async getCache<T>(): Promise<T> {
+    const cacheKey = this.buildCacheKey('data');
     this.logService.debug(`Reading cache ${cacheKey}`);
 
-    return this.cacheProvider.get(cacheKey);
+    const value = await this.cacheProvider.get<T>(cacheKey);
+    return value;
   }
 
   /**
@@ -54,11 +59,11 @@ export class CacheService {
    * @param value
    * @param options
    */
-  public setCache(value: any, options: CacheRouteOptions = { }): void {
-    const cacheKey = this.buildCacheKey();
+  public async setCache(value: any, options: CacheRouteOptions = { }): Promise<void> {
+    const cacheKey = this.buildCacheKey('data');
     this.logService.debug(`Setting cache ${cacheKey}`);
 
-    this.cacheProvider.set(cacheKey, value, options);
+    await this.cacheProvider.set(cacheKey, value, options);
   }
 
 }

@@ -13,7 +13,7 @@ export class ZipController {
   ) { }
 
   @Get(':code')
-  @Cache({ ttl: 10_000 })
+  @Cache({ ttl: 60_000 })
   public getZipCode(@Param('code') code: string): Promise<Zip> {
     return this.zipService.readZip(code);
   }
