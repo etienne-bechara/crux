@@ -37,7 +37,7 @@ import { AppController } from './app.controller';
 import { TagStorage } from './app.decorator';
 import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
-import { AppMemory, AppOptions } from './app.interface';
+import { AppOptions } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()
@@ -193,7 +193,7 @@ export class AppModule {
   private static configureDocumentation(): void {
     const { globalPrefix, proxyPrefix, docs } = this.options;
     const { title, description, version, logo, tagGroups, documentBuilder } = docs;
-    const memoryService: MemoryService<AppMemory> = this.instance.get(MemoryService);
+    const memoryService: MemoryService = this.instance.get(MemoryService);
 
     this.instance['setViewEngine']({
       engine: { handlebars },

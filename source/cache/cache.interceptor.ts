@@ -5,7 +5,7 @@ import { mergeMap, Observable, of } from 'rxjs';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { CacheReflector, CacheStatus } from './cache.enum';
-import { CacheOptions } from './cache.interface';
+import { CacheRouteOptions } from './cache.interface';
 import { CacheService } from './cache.service';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class CacheInterceptor implements NestInterceptor {
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const cache = this.cacheService.getCache();
-    const options: CacheOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
+    const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
 
     if (cache) {
       this.logService.debug('Resolving with cached data');

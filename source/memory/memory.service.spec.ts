@@ -1,16 +1,8 @@
 import { AppModule } from '../app/app.module';
 import { MemoryService } from './memory.service';
 
-interface MemoryTestKey {
-  testString: string;
-  testNumber: number;
-  testObject: Record<string, any>;
-  testArray: unknown[];
-  testTtl: string;
-}
-
 describe('MemoryService', () => {
-  let memoryService: MemoryService<MemoryTestKey>;
+  let memoryService: MemoryService;
   const testString = 'hello world';
   const testNumber = 1_234_567_890;
   const testObject = { hello: 'world', numbers: [ 1, 2, 3 ] };
@@ -63,12 +55,12 @@ describe('MemoryService', () => {
     });
   });
 
-  describe('delete', () => {
+  describe('del', () => {
     it('should successfully erase storage keys', () => {
-      memoryService.delete('testString');
-      memoryService.delete('testNumber');
-      memoryService.delete('testObject');
-      memoryService.delete('testArray');
+      memoryService.del('testString');
+      memoryService.del('testNumber');
+      memoryService.del('testObject');
+      memoryService.del('testArray');
       expect(memoryService.get('testString')).toBe(undefined);
       expect(memoryService.get('testNumber')).toBe(undefined);
       expect(memoryService.get('testObject')).toBe(undefined);

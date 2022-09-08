@@ -33,8 +33,9 @@
     "build:index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source",
     "build:assets": "copyfiles -u 1 ./source/doc/doc.handlebars ./dist/",
     "build:cleanup": "rimraf ./source/index.ts",
+    "redis": "docker start redis || docker run -d --name redis -p 6379:6379 redis:7",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
-    "test": "jest --verbose --forceExit --passWithNoTests --testTimeout=30000 --config .config/jest/.jestrc.json"
+    "test": "pnpm redis && jest --verbose --forceExit --testTimeout=30000 --config .config/jest/.jestrc.json"
   },
   "dependencies": {
     "@nestjs/common": "8.4.4",
@@ -56,6 +57,7 @@
     "fastify-swagger": "5.1.0",
     "got": "11.8.3",
     "handlebars": "4.7.7",
+    "ioredis": "5.2.3",
     "nestjs-redoc": "2.2.2",
     "point-of-view": "5.2.0",
     "prom-client": "14.0.1",

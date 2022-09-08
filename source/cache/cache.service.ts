@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
-import { CacheOptions, CacheProvider } from './cache.interface';
+import { CacheProvider, CacheRouteOptions } from './cache.interface';
 
 @Injectable()
 export class CacheService {
@@ -14,7 +14,16 @@ export class CacheService {
     private readonly contextService: ContextService,
     private readonly logService: LogService,
     private readonly memoryService: MemoryService,
+    // private readonly redisService: RedisService,
   ) {
+    this.setupProvider();
+  }
+
+  /**
+   * Configures the cache provider, memory will be used
+   * unless a Redis connection is provided.
+   */
+  private setupProvider(): void {
     this.cacheProvider = this.memoryService;
   }
 
@@ -37,7 +46,7 @@ export class CacheService {
     const cacheKey = this.buildCacheKey();
     this.logService.debug(`Reading cache ${cacheKey}`);
 
-    return this.cacheProvider.getCache(cacheKey);
+    return this.cacheProvider.get(cacheKey);
   }
 
   /**
@@ -45,11 +54,11 @@ export class CacheService {
    * @param value
    * @param options
    */
-  public setCache(value: any, options: CacheOptions = { }): void {
+  public setCache(value: any, options: CacheRouteOptions = { }): void {
     const cacheKey = this.buildCacheKey();
     this.logService.debug(`Setting cache ${cacheKey}`);
 
-    this.cacheProvider.setCache(cacheKey, value, options);
+    this.cacheProvider.set(cacheKey, value, options);
   }
 
 }

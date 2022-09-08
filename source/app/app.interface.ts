@@ -82,10 +82,6 @@ export interface AppOptions extends ModuleMetadata {
   docs?: DocOptions;
 }
 
-export interface AppMemory {
-  openApiSpecification: string;
-}
-
 /**
  * Equivalent to request wrapper created by Fastify
  * after going through the middlewares.

@@ -1,7 +1,6 @@
 import { Header, Render } from '@nestjs/common';
 
 import { Controller, Get } from '../app/app.decorator';
-import { AppMemory } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocSpecification } from './doc.dto';
 import { DocOptions } from './doc.interface';
@@ -15,7 +14,7 @@ export class DocController {
 
   public constructor(
     private readonly documentService: DocService,
-    private readonly memoryService: MemoryService<AppMemory>,
+    private readonly memoryService: MemoryService,
   ) { }
 
   @Get({ hidden: true })
@@ -31,7 +30,7 @@ export class DocController {
     response: { type: DocSpecification },
   })
   public getDocsJson(): DocSpecification {
-    const document = this.memoryService.get('openApiSpecification');
+    const document: string = this.memoryService.get('openApiSpecification');
     return JSON.parse(document);
   }
 
