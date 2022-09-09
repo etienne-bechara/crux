@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import zlib from 'zlib';
 
+import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
@@ -13,6 +15,7 @@ export class CacheService {
   private cacheProvider: CacheProvider;
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
     private readonly logService: LogService,
     private readonly memoryService: MemoryService,
@@ -50,8 +53,24 @@ export class CacheService {
    * the request reaches the controller.
    */
   public async getCache<T>(): Promise<T> {
+    const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
     const key = this.buildCacheKey();
-    return this.cacheProvider.get<T>(`cache:data:${key}`);
+
+    let value: any = disableCompression
+      ? await this.cacheProvider.get(`cache:data:${key}`)
+      : await this.cacheProvider.getBuffer(`cache:data:${key}`);
+
+    if (!value) return;
+
+    if (!disableCompression) {
+      const uncompressed: Buffer = await new Promise((res, rej) => {
+        return zlib.gunzip(value as Buffer, (e, d) => e ? rej(e) : res(d));
+      });
+
+      value = JSON.parse(uncompressed.toString());
+    }
+
+    return value;
   }
 
   /**
@@ -62,8 +81,17 @@ export class CacheService {
    * @param options
    */
   public async setCache(value: any, options: CacheTtlOptions = { }): Promise<void> {
+    const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
     const key = this.buildCacheKey();
-    await this.cacheProvider.set(`cache:data:${key}`, value, options);
+    let data = value;
+
+    if (!disableCompression) {
+      data = await new Promise((res, rej) => {
+        return zlib.gzip(Buffer.from(JSON.stringify(value)), (e, d) => e ? rej(e) : res(d));
+      });
+    }
+
+    await this.cacheProvider.set(`cache:data:${key}`, data, options);
   }
 
   /**

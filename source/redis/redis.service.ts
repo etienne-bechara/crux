@@ -2,13 +2,14 @@ import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs
 import Redis from 'ioredis';
 import { v4 } from 'uuid';
 
+import { CacheProvider } from '../cache/cache.interface';
 import { LogService } from '../log/log.service';
 import { PromiseService } from '../promise/promise.service';
 import { RedisInjectionToken } from './redis.enum';
 import { RedisLockOptions, RedisModuleOptions, RedisSetOptions, RedisTtlOptions } from './redis.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class RedisService {
+export class RedisService implements CacheProvider {
 
   private redisClient: Redis;
   private initialized: boolean;
@@ -97,13 +98,17 @@ export class RedisService {
    */
   public async get<T>(key: string): Promise<T> {
     this.logService.trace(`GET ${key}`);
+    const value = await this.getClient().get(key);
+    return JSON.parse(value);
+  }
 
-    const stringValue = await this.getClient().get(key);
-    const parsedData = JSON.parse(stringValue);
-
-    return parsedData?.type === 'Buffer'
-      ? Buffer.from(parsedData as unknown as SharedArrayBuffer)
-      : parsedData;
+  /**
+   * Reads given key as buffer.
+   * @param key
+   */
+  public async getBuffer(key: string): Promise<Buffer> {
+    this.logService.trace(`GET ${key}`);
+    return this.getClient().getBuffer(key);
   }
 
   /**
@@ -117,6 +122,7 @@ export class RedisService {
     options.ttl ??= this.redisModuleOptions.defaultTtl;
 
     const { skip, get, keepTtl, ttl } = options;
+    const data = Buffer.isBuffer(value) ? value : JSON.stringify(value);
     const extraParams: string[] = [ ];
 
     if (skip === 'IF_EXIST') {
@@ -134,7 +140,7 @@ export class RedisService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await this.getClient().set(key, JSON.stringify(value), ...extraParams as any);
+    await this.getClient().set(key, data, ...extraParams as any);
     return get ? this.get(key) : undefined;
   }
 

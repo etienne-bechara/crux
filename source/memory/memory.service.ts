@@ -26,6 +26,14 @@ export class MemoryService implements CacheProvider {
   }
 
   /**
+   * Reads buffer data from target storage key, if a TTL is set and expired removes the key.
+   * @param key
+   */
+  public getBuffer(key: string): Buffer {
+    return this.get(key);
+  }
+
+  /**
    * Sets data to target storage key, optionally add a TTL.
    * @param key
    * @param value

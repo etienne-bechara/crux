@@ -53,7 +53,7 @@ describe('RedisService', () => {
     });
 
     it('should read persisted random buffer', async () => {
-      const storedBuffer = await redisService.get(testBufferKey);
+      const storedBuffer = await redisService.getBuffer(testBufferKey);
       expect(storedBuffer).toEqual(randomBuffer);
     });
   });
