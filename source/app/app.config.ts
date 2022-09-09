@@ -12,7 +12,7 @@ import { AppOptions } from './app.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const APP_DEFAULT_OPTIONS: AppOptions = {
-  job: 'unknown',
+  name: 'unknown',
   instance: crypto.randomBytes(8).toString('hex'),
   port: 8080,
   hostname: '0.0.0.0',

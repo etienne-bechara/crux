@@ -139,7 +139,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { job, fastify, globalPrefix, cors } = this.options;
+    const { name, fastify, globalPrefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -166,7 +166,7 @@ export class AppModule {
           const description = contextService.getRequestDescription('in');
 
           context.with(ctx, () => {
-            trace.getTracer(job).startActiveSpan(description, { }, (span) => {
+            trace.getTracer(name).startActiveSpan(description, { }, (span) => {
               const traceId = span.spanContext().traceId;
 
               res.header('trace-id', traceId);

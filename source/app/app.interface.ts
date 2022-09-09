@@ -40,9 +40,9 @@ export interface AppOptions extends ModuleMetadata {
   disableTraces?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
   disableDocs?: boolean;
-  /** Job name for metrics and log collection. */
-  job?: string;
-  /** Instance ID for metrics and log collection. */
+  /** Application name, also used as job name for telemetry. */
+  name?: string;
+  /** Instance ID for telemetry. */
   instance?: string;
   /** Application port. Default: 8080. */
   port?: number;

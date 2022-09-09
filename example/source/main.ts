@@ -12,6 +12,7 @@ import { ZipModule } from './zip/zip.module';
  * and disabling scan as well as manually importing your modules unnecessary.
  */
 void AppModule.boot({
+  name: 'crux',
   disableTraces: true,
 
   // Not required when running from another project

@@ -34,13 +34,22 @@ export class CacheService {
   /**
    * Builds caching key for current request.
    */
-  public buildCacheKey(): string {
+  private buildCacheDataKey(): string {
+    const { name } = this.appConfig.APP_OPTIONS;
     const method = this.contextService.getRequestMethod();
     const path = this.contextService.getRequest().url.split('?')[0];
     const query = this.contextService.getRequestQuery();
     const sortedQueryObject = Object.fromEntries(Object.entries(query || { }).sort());
     const sortedQuery = new URLSearchParams(sortedQueryObject).toString();
-    return `${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
+    return `cache:data:${name}:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
+  }
+
+  /**
+   * Builds caching key for target bucket.
+   * @param bucket
+   */
+  private buildCacheBucketKey(bucket: string): string {
+    return `cache:bucket:${bucket}`;
   }
 
   /**
@@ -50,11 +59,11 @@ export class CacheService {
    */
   public async getCache<T>(): Promise<T> {
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
-    const key = this.buildCacheKey();
+    const dataKey = this.buildCacheDataKey();
 
     let value: any = disableCompression
-      ? await this.cacheProvider.get(`cache:data:${key}`)
-      : await this.cacheProvider.getBuffer(`cache:data:${key}`);
+      ? await this.cacheProvider.get(dataKey)
+      : await this.cacheProvider.getBuffer(dataKey);
 
     if (!value) return;
 
@@ -78,7 +87,7 @@ export class CacheService {
    */
   public async setCache(value: any, options: CacheTtlOptions = { }): Promise<void> {
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
-    const key = this.buildCacheKey();
+    const dataKey = this.buildCacheDataKey();
     let data = value;
 
     if (!disableCompression) {
@@ -87,7 +96,7 @@ export class CacheService {
       });
     }
 
-    await this.cacheProvider.set(`cache:data:${key}`, data, options);
+    await this.cacheProvider.set(dataKey, data, options);
   }
 
   /**
@@ -113,8 +122,9 @@ export class CacheService {
     const ttl = 60 * 1000;
 
     await Promise.all(buckets.map(async (b) => {
-      const key = this.buildCacheKey();
-      await this.cacheProvider.sadd(`cache:bucket:${b}`, `cache:data:${key}`, { ttl });
+      const bucketKey = this.buildCacheBucketKey(b);
+      const dataKey = this.buildCacheDataKey();
+      await this.cacheProvider.sadd(bucketKey, dataKey, { ttl });
     }));
   }
 
@@ -126,7 +136,8 @@ export class CacheService {
     const delPromises: Promise<void>[] = [ ];
 
     await Promise.all(buckets.map(async (b) => {
-      const set = await this.cacheProvider.smembers(`cache:bucket:${b}`);
+      const bucketKey = this.buildCacheBucketKey(b);
+      const set = await this.cacheProvider.smembers(bucketKey);
 
       for (const key of set) {
         delPromises.push(this.cacheProvider.del(key) as Promise<void>);

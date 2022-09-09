@@ -9,7 +9,7 @@ import { ZipModule } from './zip/zip.module';
  * Boots application with full telemetry functionalities.
  */
 void AppModule.boot({
-  job: 'nestjs-example',
+  name: 'crux',
   disableScan: true,
   imports: [
     BucketModule,

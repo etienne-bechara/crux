@@ -162,7 +162,7 @@ export class LokiService implements LogTransport {
    * @param log
    */
   private buildLokiLabels(log: LogParams): string {
-    const { job, instance } = this.appConfig.APP_OPTIONS;
+    const { name: job, instance } = this.appConfig.APP_OPTIONS;
     const environment = this.appConfig.NODE_ENV;
     const { severity } = log;
     const level = this.getLokiLevel(severity);

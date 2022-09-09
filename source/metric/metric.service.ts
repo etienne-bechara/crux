@@ -44,7 +44,7 @@ export class MetricService {
    * Create Prometheus metrics registry and start collection defaults.
    */
   private setupRegistry(): void {
-    const { job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
+    const { name: job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
     const { defaultPrefix, defaultLabels, defaultBuckets } = metrics;
     const environment = this.appConfig.NODE_ENV;
 

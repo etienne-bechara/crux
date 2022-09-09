@@ -71,7 +71,7 @@ export class TraceService {
    * - Context tracking using async hooks.
    */
   private setupOpenTelemetryComponents(): void {
-    const { job, instance, traces } = this.appConfig.APP_OPTIONS || { };
+    const { name: job, instance, traces } = this.appConfig.APP_OPTIONS || { };
     const { username, password, pushInterval } = traces;
 
     const environment = this.appConfig.NODE_ENV;
