@@ -12,13 +12,12 @@ export class UserController {
   ) { }
 
   @Get({ response: { type: UserCollection } })
-  @Cache({ ttl: 10_000 })
   public getUser(): UserCollection {
     return this.userService.readUsers();
   }
 
+  @Cache()
   @Get(':id', { response: { type: User } })
-  @Cache({ ttl: 10_000 })
   public getUserById(@Param() params: UserIdDto): User {
     return this.userService.readUserById(params.id);
   }

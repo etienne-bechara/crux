@@ -34,6 +34,7 @@ export class RedisService implements CacheProvider {
     }
 
     this.redisModuleOptions.defaultTtl ??= 60_000;
+    this.redisModuleOptions.enableAutoPipelining ??= true;
     this.redisModuleOptions.lazyConnect = true;
     this.redisModuleOptions.keepAlive ??= 1000;
 
@@ -172,6 +173,15 @@ export class RedisService implements CacheProvider {
     }
 
     return numberValue;
+  }
+
+  /**
+   * Reads all values from target set.
+   * @param key
+   */
+  public smembers(key: string): Promise<string[]> {
+    this.logService.trace(`SMEMBERS ${key}`);
+    return this.getClient().smembers(key);
   }
 
   /**

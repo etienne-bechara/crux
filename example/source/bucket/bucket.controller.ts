@@ -1,6 +1,7 @@
+
 import { Cache } from '../../../source/cache/cache.decorator';
 import { CacheService } from '../../../source/cache/cache.service';
-import { Controller, Get, Param } from '../../../source/override';
+import { Controller, Delete, Get, Param } from '../../../source/override';
 
 @Controller('bucket')
 export class BucketController {
@@ -9,20 +10,18 @@ export class BucketController {
     private readonly cacheService: CacheService,
   ) { }
 
-  @Get('foo/:ids')
-  @Cache({ ttl: 60_000 })
-  public getBucketFooIds(@Param('ids') ids: string): { rng: number } {
+  @Cache()
+  @Get(':ids')
+  public getBucketIds(@Param('ids') ids: string): { rng: number } {
     const buckets = ids.split(',');
-    this.cacheService.setBucketsAsync(buckets);
+    this.cacheService.setBuckets(buckets);
     return { rng: Math.random() };
   }
 
-  @Get('bar/:ids')
-  @Cache({ ttl: 60_000 })
-  public getBucketBarIds(@Param('ids') ids: string): { rng: number } {
+  @Delete(':ids')
+  public deleteBucketIds(@Param('ids') ids: string): void {
     const buckets = ids.split(',');
-    this.cacheService.setBucketsAsync(buckets);
-    return { rng: Math.random() };
+    void this.cacheService.invalidateBucketsSync(buckets);
   }
 
 }

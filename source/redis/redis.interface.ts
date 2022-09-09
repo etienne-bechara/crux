@@ -7,7 +7,7 @@ export interface RedisAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'>
 }
 
 export interface RedisModuleOptions extends RedisOptions {
-  /** Default TTL when using wrapped commands, does not direct commands through `.getClient()`. Default: 60000. */
+  /** Default TTL when using wrapped commands, does not direct commands through `.getClient()`. Default: 60s. */
   defaultTtl?: number;
 }
 

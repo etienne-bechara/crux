@@ -3,11 +3,9 @@ import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
-import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
-import { PromiseService } from '../promise/promise.service';
 import { RedisService } from '../redis/redis.service';
-import { CacheBucketOptions, CacheProvider, CacheTtlOptions } from './cache.interface';
+import { CacheProvider, CacheTtlOptions } from './cache.interface';
 
 @Injectable()
 export class CacheService {
@@ -17,9 +15,7 @@ export class CacheService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
-    private readonly logService: LogService,
     private readonly memoryService: MemoryService,
-    private readonly promiseService: PromiseService,
     private readonly redisService: RedisService,
   ) {
     this.setupProvider();
@@ -95,35 +91,49 @@ export class CacheService {
   }
 
   /**
-   * Asynchronously ties current context to target buckets.
+   * Ties cached data for current request with target buckets which
+   * can be individually invalidated.
+   *
+   * Bucket sets creation will occur asynchronously after data has
+   * been cached and sent to client.
    * @param buckets
-   * @param options
    */
-  public setBucketsAsync(buckets: string[], options: CacheBucketOptions = { }): void {
-    void this.setBuckets(buckets, options);
+  public setBuckets(buckets: string[]): void {
+    this.contextService.setCacheBuckets(buckets);
   }
 
   /**
-   * Ties current context to target buckets.
+   * Ties cached data for current request with target buckets which
+   * can be individually invalidated.
+   *
+   * Bucket sets creation will start immediately.
    * @param buckets
-   * @param options
    */
-  public async setBuckets(buckets: string[], options: CacheBucketOptions = { }): Promise<void> {
-    const { ttl, limit } = options;
+  public async setBucketsSync(buckets: string[]): Promise<void> {
+    const ttl = 60 * 1000;
 
-    try {
-      await this.promiseService.resolveLimited({
-        data: buckets,
-        limit: limit || 100,
-        promise: async (b) => {
-          const key = this.buildCacheKey();
-          await this.cacheProvider.sadd(`cache:bucket:${b}`, `cache:data:${key}`, { ttl });
-        },
-      });
-    }
-    catch (e) {
-      this.logService.error('failed to set cache buckets', e as Error, buckets);
-    }
+    await Promise.all(buckets.map(async (b) => {
+      const key = this.buildCacheKey();
+      await this.cacheProvider.sadd(`cache:bucket:${b}`, `cache:data:${key}`, { ttl });
+    }));
+  }
+
+  /**
+   * Invalidate target buckets and their related cached keys immediately.
+   * @param buckets
+   */
+  public async invalidateBucketsSync(buckets: string[]): Promise<void> {
+    const delPromises: Promise<void>[] = [ ];
+
+    await Promise.all(buckets.map(async (b) => {
+      const set = await this.cacheProvider.smembers(`cache:bucket:${b}`);
+
+      for (const key of set) {
+        delPromises.push(this.cacheProvider.del(key) as Promise<void>);
+      }
+    }));
+
+    await Promise.all(delPromises);
   }
 
 }

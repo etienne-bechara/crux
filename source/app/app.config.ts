@@ -41,6 +41,11 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     always: true,
     strictGroups: true,
   },
+  cache: {
+    defaultTimeout: 2000,
+    defaultTtl: 60_000,
+    bucketTtl: 30 * 24 * 60 * 1000,
+  },
   http: {
     retryLimit: 2,
     retryMethods: [

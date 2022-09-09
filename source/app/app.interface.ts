@@ -52,7 +52,7 @@ export interface AppOptions extends ModuleMetadata {
   globalPrefix?: string;
   /** Application prefix applied at proxy level. */
   proxyPrefix?: string;
-  /** Application request timeout in milliseconds. Default: 60000. */
+  /** Application request timeout in milliseconds. Default: 60s. */
   timeout?: number;
   /** Application CORS response. */
   cors?: CorsOptions;

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { CacheProvider } from '../cache/cache.interface';
 import { MemoryOptions } from './memory.interface';
@@ -62,10 +62,29 @@ export class MemoryService implements CacheProvider {
   }
 
   /**
-   * Set add is not supported when using memory.
+   * Reads all values from target set.
+   * @param key
    */
-  public sadd(): void {
-    throw new InternalServerErrorException('memory service does not support cache buckets');
+  public smembers(key: string): string[] {
+    const set: Set<string> = this.get(key);
+    return [ ...set ];
+  }
+
+  /**
+   * Adds a value to target key set.
+   * @param key
+   * @param value
+   * @param options
+   */
+  public sadd(key: string, value: string, options: MemoryOptions = { }): void {
+    const set: Set<string> = this.get(key);
+
+    if (!set) {
+      this.set(key, new Set([ value ]), options);
+    }
+    else {
+      set.add(value);
+    }
   }
 
 }

@@ -18,8 +18,8 @@ export class FooController {
     private readonly fooService: FooService,
   ) { }
 
-  @Get(':id')
   @Cache({ ttl: 60_000 })
+  @Get(':id')
   public getFoo(@Param('id') id: string): Promise<Foo> {
     return this.fooService.getFooById(id);
   }

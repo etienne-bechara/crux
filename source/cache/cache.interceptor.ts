@@ -2,8 +2,10 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Reflector } from '@nestjs/core';
 import { mergeMap, Observable, of } from 'rxjs';
 
+import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
+import { PromiseService } from '../promise/promise.service';
 import { CacheReflector, CacheStatus } from './cache.enum';
 import { CacheRouteOptions } from './cache.interface';
 import { CacheService } from './cache.service';
@@ -12,9 +14,11 @@ import { CacheService } from './cache.service';
 export class CacheInterceptor implements NestInterceptor {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly cacheService: CacheService,
     private readonly contextService: ContextService,
     private readonly logService: LogService,
+    private readonly promiseService: PromiseService,
     private readonly reflector: Reflector,
   ) { }
 
@@ -27,8 +31,18 @@ export class CacheInterceptor implements NestInterceptor {
    * @param next
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const cache = await this.cacheService.getCache();
     const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
+    const { timeout: routeTimeout, ttl: routeTtl } = options;
+    const timeout = routeTimeout || this.appConfig.APP_OPTIONS.cache?.defaultTimeout;
+    const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
+    let cache;
+
+    try {
+      cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
+    }
+    catch {
+      this.logService.warning('failed to acquire cached data within timeout', { timeout });
+    }
 
     if (cache) {
       this.logService.debug('Resolving with cached data');
@@ -41,10 +55,25 @@ export class CacheInterceptor implements NestInterceptor {
       .pipe(
         mergeMap(async (data) => {
           this.contextService.setCacheStatus(CacheStatus.MISS);
-          await this.cacheService.setCache(data, options);
+          await this.cacheService.setCache(data, { ttl });
+          void this.setCacheBuckets();
           return data;
         }),
       );
+  }
+
+  /**
+   * Set configured cache buckets.
+   */
+  private async setCacheBuckets(): Promise<void> {
+    const buckets = this.contextService.getCacheBuckets();
+
+    try {
+      await this.cacheService.setBucketsSync(buckets);
+    }
+    catch (e) {
+      this.logService.error('failed to set cache buckets', e as Error, buckets);
+    }
   }
 
 }

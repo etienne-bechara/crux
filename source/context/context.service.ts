@@ -285,4 +285,20 @@ export class ContextService<Metadata = Record<string, any>> {
     this.getStore()?.set(ContextStorageKey.CACHE_STATUS, status);
   }
 
+  /**
+   * Acquires cache buckets of current context.
+   */
+  public getCacheBuckets(): string[] {
+    const cacheBuckets = this.getStore()?.get(ContextStorageKey.CACHE_BUCKETS);
+    return cacheBuckets || [ ];
+  }
+
+  /**
+   * Set cache buckets of current context.
+   * @param buckets
+   */
+  public setCacheBuckets(buckets: string[]): void {
+    this.getStore()?.set(ContextStorageKey.CACHE_BUCKETS, buckets);
+  }
+
 }
