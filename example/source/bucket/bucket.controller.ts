@@ -21,7 +21,7 @@ export class BucketController {
   @Delete(':ids')
   public deleteBucketIds(@Param('ids') ids: string): void {
     const buckets = ids.split(',');
-    void this.cacheService.invalidateBucketsSync(buckets);
+    this.cacheService.invalidateBuckets(buckets);
   }
 
 }

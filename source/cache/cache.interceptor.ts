@@ -53,27 +53,13 @@ export class CacheInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
+        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
           this.contextService.setCacheStatus(CacheStatus.MISS);
-          await this.cacheService.setCache(data, { ttl });
-          void this.setCacheBuckets();
+          this.cacheService.setCache(data, { ttl });
           return data;
         }),
       );
-  }
-
-  /**
-   * Set configured cache buckets.
-   */
-  private async setCacheBuckets(): Promise<void> {
-    const buckets = this.contextService.getCacheBuckets();
-
-    try {
-      await this.cacheService.setBucketsSync(buckets);
-    }
-    catch (e) {
-      this.logService.error('failed to set cache buckets', e as Error, buckets);
-    }
   }
 
 }

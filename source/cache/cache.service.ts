@@ -3,7 +3,9 @@ import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
+import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
+import { PromiseService } from '../promise/promise.service';
 import { RedisService } from '../redis/redis.service';
 import { CacheProvider, CacheTtlOptions } from './cache.interface';
 
@@ -15,7 +17,9 @@ export class CacheService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
+    private readonly logService: LogService,
     private readonly memoryService: MemoryService,
+    private readonly promiseService: PromiseService,
     private readonly redisService: RedisService,
   ) {
     this.setupProvider();
@@ -79,72 +83,109 @@ export class CacheService {
   }
 
   /**
-   * Sets cached data for current request, for any route decorated
-   * with `@Cache()` this method will be automatically called before
-   * the response is sent to client.
+   * Asynchronously sets cached data for current request, for any route
+   * decorated with `@Cache()` this method will be automatically called\
+   * before the response is sent to client.
    * @param value
    * @param options
    */
-  public async setCache(value: any, options: CacheTtlOptions = { }): Promise<void> {
+  public setCache(value: any, options: CacheTtlOptions = { }): void {
+    void this.setCacheHandler(value, options);
+  }
+
+  /**
+   * Handler of setCache().
+   * @param value
+   * @param options
+   */
+  private async setCacheHandler(value: any, options: CacheTtlOptions = { }): Promise<void> {
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
     const dataKey = this.buildCacheDataKey();
     let data = value;
 
-    if (!disableCompression) {
-      data = await new Promise((res, rej) => {
-        return zlib.gzip(Buffer.from(JSON.stringify(value)), (e, d) => e ? rej(e) : res(d));
-      });
-    }
+    try {
+      if (!disableCompression) {
+        data = await new Promise((res, rej) => {
+          return zlib.gzip(Buffer.from(JSON.stringify(value)), (e, d) => e ? rej(e) : res(d));
+        });
+      }
 
-    await this.cacheProvider.set(dataKey, data, options);
+      await this.cacheProvider.set(dataKey, data, options);
+    }
+    catch (e) {
+      this.logService.error('failed to set cache data', e as Error, { data });
+    }
   }
 
   /**
-   * Ties cached data for current request with target buckets which
-   * can be individually invalidated.
-   *
-   * Bucket sets creation will occur asynchronously after data has
-   * been cached and sent to client.
+   * Asynchronously ties cached data for current request with
+   * target buckets which can be individually invalidated.
    * @param buckets
    */
   public setBuckets(buckets: string[]): void {
-    this.contextService.setCacheBuckets(buckets);
+    void this.setBucketsHandler(buckets);
   }
 
   /**
-   * Ties cached data for current request with target buckets which
-   * can be individually invalidated.
-   *
-   * Bucket sets creation will start immediately.
+   * Handler of setBuckets().
    * @param buckets
    */
-  public async setBucketsSync(buckets: string[]): Promise<void> {
-    const ttl = 60 * 1000;
+  private async setBucketsHandler(buckets: string[]): Promise<void> {
+    const { bucketTtl: ttl } = this.appConfig.APP_OPTIONS.cache || { };
 
-    await Promise.all(buckets.map(async (b) => {
-      const bucketKey = this.buildCacheBucketKey(b);
-      const dataKey = this.buildCacheDataKey();
-      await this.cacheProvider.sadd(bucketKey, dataKey, { ttl });
-    }));
+    try {
+      await this.promiseService.resolveLimited({
+        data: buckets,
+        limit: 1000,
+        promise: async (b) => {
+          const bucketKey = this.buildCacheBucketKey(b);
+          const dataKey = this.buildCacheDataKey();
+          await this.cacheProvider.sadd(bucketKey, dataKey, { ttl });
+        },
+      });
+    }
+    catch (e) {
+      this.logService.error('failed to set cache buckets', e as Error, { buckets });
+    }
   }
 
   /**
-   * Invalidate target buckets and their related cached keys immediately.
+   * Asynchronously invalidate target buckets which deletes
+   * their related cache data keys.
    * @param buckets
    */
-  public async invalidateBucketsSync(buckets: string[]): Promise<void> {
+  public invalidateBuckets(buckets: string[]): void {
+    void this.invalidateBucketsHandler(buckets);
+  }
+
+  /**
+   * Asynchronously invalidate target buckets which deletes
+   * their related cache data keys.
+   * @param buckets
+   */
+  private async invalidateBucketsHandler(buckets: string[]): Promise<void> {
     const delPromises: Promise<void>[] = [ ];
 
-    await Promise.all(buckets.map(async (b) => {
-      const bucketKey = this.buildCacheBucketKey(b);
-      const set = await this.cacheProvider.smembers(bucketKey);
+    try {
+      await this.promiseService.resolveLimited({
+        data: buckets,
+        limit: 1000,
+        promise: async (b) => {
+          const bucketKey = this.buildCacheBucketKey(b);
+          const dataSet = await this.cacheProvider.smembers(bucketKey);
+          delPromises.push(this.cacheProvider.del(bucketKey) as Promise<void>);
 
-      for (const key of set) {
-        delPromises.push(this.cacheProvider.del(key) as Promise<void>);
-      }
-    }));
+          for (const dataKey of dataSet) {
+            delPromises.push(this.cacheProvider.del(dataKey) as Promise<void>);
+          }
+        },
+      });
 
-    await Promise.all(delPromises);
+      await Promise.all(delPromises);
+    }
+    catch (e) {
+      this.logService.error('failed to invalidate cache buckets', e as Error, { buckets });
+    }
   }
 
 }
