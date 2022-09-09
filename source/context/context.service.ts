@@ -41,7 +41,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Get request span.
    */
   public getRequestSpan(): Span {
-    return this.getStore()?.get(ContextStorageKey.SPAN);
+    return this.getStore()?.get(ContextStorageKey.REQUEST_SPAN);
   }
 
   /**
@@ -56,7 +56,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    */
   public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || { };
     return metadata[key];
   }
 
@@ -66,9 +66,9 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param value
    */
   public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || { };
     metadata[key] = value;
-    this.getStore()?.set(ContextStorageKey.METADATA, metadata);
+    this.getStore()?.set(ContextStorageKey.REQUEST_METADATA, metadata);
   }
 
   /**
@@ -76,7 +76,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * returning object should be immutable.
    */
   public getRequestMetadata(): Metadata {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.METADATA);
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA);
     return this.validateObjectLength({ ...metadata }) as Metadata;
   }
 
@@ -256,7 +256,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquires validator options of current context.
    */
   public getValidatorOptions(): ValidatorOptions {
-    const storeOptions = this.getStore()?.get(ContextStorageKey.VALIDATOR);
+    const storeOptions = this.getStore()?.get(ContextStorageKey.VALIDATOR_OPTIONS);
     const defaultOptions = this.appConfig.APP_OPTIONS.validator;
     return storeOptions || defaultOptions;
   }
@@ -266,14 +266,14 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param options
    */
   public setValidatorOptions(options: ValidatorOptions): void {
-    this.getStore()?.set(ContextStorageKey.VALIDATOR, options);
+    this.getStore()?.set(ContextStorageKey.VALIDATOR_OPTIONS, options);
   }
 
   /**
    * Acquires cache status of current context.
    */
   public getCacheStatus(): CacheStatus {
-    const cacheStatus = this.getStore()?.get(ContextStorageKey.CACHE);
+    const cacheStatus = this.getStore()?.get(ContextStorageKey.CACHE_STATUS);
     return cacheStatus || CacheStatus.DISABLED;
   }
 
@@ -282,7 +282,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param status
    */
   public setCacheStatus(status: CacheStatus): void {
-    this.getStore()?.set(ContextStorageKey.CACHE, status);
+    this.getStore()?.set(ContextStorageKey.CACHE_STATUS, status);
   }
 
 }

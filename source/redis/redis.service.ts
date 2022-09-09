@@ -82,6 +82,16 @@ export class RedisService {
   }
 
   /**
+   * Expire target key after configured time in milliseconds.
+   * @param key
+   * @param ttl
+   */
+  public async expire(key: string, ttl: number): Promise<void> {
+    this.logService.trace(`EXPIRE ${key} ${ttl}`);
+    await this.getClient().expire(key, ttl / 1000);
+  }
+
+  /**
    * Reads given key and parse its value.
    * @param key
    */
@@ -145,17 +155,34 @@ export class RedisService {
    * @param options
    */
   public async incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
-    this.logService.trace(`INCRBYFLOAT ${key} (${amount > 0 ? '+' : ''}${amount})`);
+    this.logService.trace(`INCRBYFLOAT ${key} ${amount >= 0 ? '+' : ''}${amount}`);
     options.ttl ??= this.redisModuleOptions.defaultTtl;
 
     const stringValue = await this.getClient().incrbyfloat(key, amount);
     const numberValue = Number.parseFloat(stringValue);
 
     if (numberValue === amount) {
-      await this.getClient().expire(key, options.ttl / 1000);
+      await this.expire(key, options.ttl);
     }
 
     return numberValue;
+  }
+
+  /**
+   * Adds a value to target key set.
+   * @param key
+   * @param value
+   * @param options
+   */
+  public async sadd(key: string, value: string, options: RedisTtlOptions = { }): Promise<void> {
+    this.logService.trace(`SADD ${key} ${value}`);
+    options.ttl ??= this.redisModuleOptions.defaultTtl;
+
+    const setLength = await this.getClient().sadd(key, value);
+
+    if (setLength === 1) {
+      await this.expire(key, options.ttl);
+    }
   }
 
   /**

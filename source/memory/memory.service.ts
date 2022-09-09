@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { CacheProvider } from '../cache/cache.interface';
 import { MemoryOptions } from './memory.interface';
@@ -51,6 +51,13 @@ export class MemoryService implements CacheProvider {
   public del(key: string): void {
     this.memoryData.delete(key);
     this.memoryExpiration.delete(key);
+  }
+
+  /**
+   * Set add is not supported when using memory.
+   */
+  public sadd(): void {
+    throw new InternalServerErrorException('memory service does not support cache buckets');
   }
 
 }

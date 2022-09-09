@@ -1,4 +1,5 @@
 import { AppModule } from '../../source/app/app.module';
+import { BucketModule } from './bucket/bucket.module';
 import { RandomModule } from './random/random.module';
 import { UserModule } from './user/user.module';
 import { ZipModule } from './zip/zip.module';
@@ -16,6 +17,7 @@ void AppModule.boot({
   // Not required when running from another project
   disableScan: true,
   imports: [
+    BucketModule,
     RandomModule,
     UserModule,
     ZipModule,

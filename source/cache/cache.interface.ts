@@ -1,8 +1,11 @@
-export interface CacheRouteOptions {
+export interface CacheTtlOptions {
   /** Time to live in milliseconds. */
   ttl?: number;
-  /** Related buckets which invalidates target cache. */
-  buckets?: string[];
+}
+
+export interface CacheBucketOptions extends CacheTtlOptions {
+  /** Concurrency limit when asynchronously persisting bucket keys. Default: 100. */
+  limit?: number;
 }
 
 export interface CacheOptions {
@@ -18,5 +21,6 @@ export interface CacheOptions {
 
 export interface CacheProvider {
   get: <T>(key: string) => T | Promise<T>;
-  set: <T>(key: string, value: T, options: CacheRouteOptions) => void | Promise<void>;
+  set: (key: string, value: any, options?: CacheTtlOptions) => void | Promise<void>;
+  sadd: (key: string, value: string, options?: CacheTtlOptions) => void | Promise<void>;
 }

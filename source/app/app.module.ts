@@ -170,7 +170,7 @@ export class AppModule {
               const traceId = span.spanContext().traceId;
 
               res.header('trace-id', traceId);
-              store.set(ContextStorageKey.SPAN, span);
+              store.set(ContextStorageKey.REQUEST_SPAN, span);
 
               next();
             });

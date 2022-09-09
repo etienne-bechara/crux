@@ -32,7 +32,7 @@ export class AppInterceptor implements NestInterceptor {
         timeout({
           first: msTimeout,
           with: () => throwError(() => {
-            ContextStorage.getStore()?.set(ContextStorageKey.TIMEOUT, true);
+            ContextStorage.getStore()?.set(ContextStorageKey.REQUEST_TIMED_OUT, true);
             return new GatewayTimeoutException('failed to fulfill request within timeout');
           }),
         }),
