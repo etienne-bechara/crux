@@ -1,10 +1,16 @@
-⚠️ **Disclaimer**: This project is opinionated and intended for personal use.
+# CRUX
 
----
+A Node.js all-in-one opinionated package intended for backend projects.
 
-# NestJS Core Components
+- Framework: [NestJS](https://docs.nestjs.com/)
+- HTTP Server: [Fastify](https://www.fastify.io/docs/latest/)
+- HTTP Client: [GOT](https://github.com/sindresorhus/got)
+- HTTP Caching: [ioredis](https://www.npmjs.com/package/ioredis) (distributed) or in-memory (local)
+- Swagger Documentation: [Redoc](https://github.com/mxarc/nestjs-redoc)
+- Logs: [Loki](https://grafana.com/docs/loki/latest/api/) and [Slack](https://api.slack.com/messaging/webhooks)
+- Metrics: [Prometheus](https://github.com/siimon/prom-client)
+- Tracing: [Tempo](https://grafana.com/docs/tempo/latest/api_docs/) with [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-js)
 
-This package offers a wrapper around NestJS core components adding extra functionalities commonly found across back-end projects.
 
 ### How to Use
 

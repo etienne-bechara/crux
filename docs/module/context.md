@@ -13,7 +13,7 @@ The `ContextService` offers an stable alternative, based on NodeJS async local s
 Simply inject the `ContextService` at your target provider:
 
 ```ts
-import { ContextService } from '@bechara/nestjs-core';
+import { ContextService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

@@ -13,7 +13,7 @@ Register it in every module to which a provider will receive an injection of the
 First at `foo.module.ts`:
 
 ```ts
-import { HttpModule } from '@bechara/nestjs-core';
+import { HttpModule } from '@bechara/crux';
 
 @Module({
   imports: [ HttpModule.register() ],
@@ -26,7 +26,7 @@ export class FooModule { }
 Then at `foo.service.ts`:
 
 ```ts
-import { HttpService } from '@bechara/nestjs-core';
+import { HttpService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {
@@ -48,7 +48,7 @@ In a real world scenario, you would like to be able to configure base params lik
 To be able to do this while acquiring secrets asynchronously, you may register the module as following:
 
 ```ts
-import { HttpAsyncModuleOptions, HttpModule } from '@bechara/nestjs-core';
+import { HttpAsyncModuleOptions, HttpModule } from '@bechara/crux';
 
 const httpModuleOptions: HttpAsyncModuleOptions = {
   inject: [ FooConfig ],

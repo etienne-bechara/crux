@@ -1,14 +1,14 @@
 {
-  "name": "@bechara/nestjs-core",
+  "name": "@bechara/crux",
   "version": "4.22.0",
-  "description": "Core Components for NestJS Projects",
+  "description": "Node.js backend package including: framework (NestJS), HTTP server (Fastify), HTTP client (GOT), distributed caching (ioredis), swagger documentation (Redoc), logger (Loki and Slack), metrics (Prometheus) and tracing (Tempo with OpenTelemetry).",
   "author": {
     "name": "Etienne Bechara",
     "email": "bechara.etienne@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/etienne-bechara/nestjs-core"
+    "url": "https://github.com/etienne-bechara/crux"
   },
   "license": "MIT",
   "main": "dist/index.js",

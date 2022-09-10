@@ -9,7 +9,7 @@ Offers a log service with predefined severity levels. When called, broadcasts th
 Inject `LogService` at your provide and call any of its method based on severity:
 
 ```ts
-import { LogService } from '@bechara/nestjs-core';
+import { LogService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

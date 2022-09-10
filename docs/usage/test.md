@@ -11,7 +11,7 @@ With that in mind, you may use the built-in `compile()` method provided at `AppM
 Create your `*.service.spec.ts` file adding a `beforeAll()` hook to compile an application instance:
 
 ```ts
-import { AppModule } from '@bechara/nestjs-core';
+import { AppModule } from '@bechara/crux';
 
 describe('FooService', () => {
   let fooService: FooService;

@@ -31,7 +31,7 @@ NODE_ENV | Yes | [AppEnvironment](source/app/app.enum/app.environment.ts)
 When booting your application, you may configure options according to [AppBootOptions](../../source/app/app.interface.ts):
 
 ```ts
-import { AppModule } from '@bechara/nestjs-core';
+import { AppModule } from '@bechara/crux';
 
 void AppModule.boot({ /* See AppBootOptions */ });
 ```

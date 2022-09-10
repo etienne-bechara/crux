@@ -9,13 +9,13 @@ Uses `AppModule.compile()` to build core providers without serving an adapter.
 1\. Install the package into your existing project:
 
 ```sh
-npm i -E @bechara/nestjs-core
+npm i -E @bechara/crux
 ```
 
 2\. Add the following code at your bootstrap:
 
 ```ts
-import { AppModule } from '@bechara/nestjs-core';
+import { AppModule } from '@bechara/crux';
 
 async function bootstrap() {
   // ...

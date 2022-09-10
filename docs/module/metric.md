@@ -11,7 +11,7 @@ Scraping is available at `/metrics` endpoint.
 To create you own metrics, use provided methods `getCounter()`, `getGauge()`, `getHistogram()` or `getSummary()`, from the `MetricService`.
 
 ```ts
-import { Histogram, MetricService } from '@bechara/nestjs-core';
+import { Histogram, MetricService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

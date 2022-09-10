@@ -11,7 +11,7 @@ Refer to [PromiseService](../../source/promise/promise.service.ts) for further d
 Import `PromiseModule` at your application, followed by injecting `PromiseService` at your target provider:
 
 ```ts
-import { PromiseService, HttpService } from '@bechara/nestjs-core';
+import { PromiseService, HttpService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

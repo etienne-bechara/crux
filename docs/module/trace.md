@@ -11,7 +11,7 @@ Child spans are generated for all outbound HTTP requests, an you may create new 
 ## Usage
 
 ```ts
-import { TraceService } from '@bechara/nestjs-core';
+import { TraceService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

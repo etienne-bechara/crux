@@ -9,7 +9,7 @@ Allow setting and reading keys from memory with configurable TTL.
 Import `MemoryModule` at your application, followed by injecting `MemoryService` at your target provider:
 
 ```ts
-import { InternalServerErrorException, MemoryService } from '@bechara/nestjs-core';
+import { InternalServerErrorException, MemoryService } from '@bechara/crux';
 
 @Injectable()
 export class FooService {

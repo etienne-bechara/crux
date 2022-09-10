@@ -13,7 +13,7 @@ Any property decorated with `@InjectSecret()` will have its value extracted from
 Create a `*.config.ts` file declaring you configuration class with `@Config()` and decorate target properties with `@InjectSecret()`:
 
 ```ts
-import { Config, InjectSecret } from '@bechara/nestjs-core';
+import { Config, InjectSecret } from '@bechara/crux';
 
 @Config()
 export class FooConfig {
@@ -36,7 +36,7 @@ export class FooConfig {
 The framework also allows decoration of properties using `class-validator` and `class-transformer` to enforce validation of the value before initialization:
 
 ```ts
-import { Config, InjectSecret, IsUrl, IsString, Length, ToNumber } from '@bechara/nestjs-core';
+import { Config, InjectSecret, IsUrl, IsString, Length, ToNumber } from '@bechara/crux';
 
 @Config()
 export class FooConfig {

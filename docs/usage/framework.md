@@ -19,7 +19,7 @@ npm init -y
 
 npm i -g pnpm
 pnpm i -DE typescript @types/node ts-node-dev
-pnpm i -E @bechara/nestjs-core
+pnpm i -E @bechara/crux
 
 tsc --init
 ```
@@ -28,7 +28,7 @@ tsc --init
 
 ```ts
 // /source/main.ts
-import { AppModule } from '@bechara/nestjs-core';
+import { AppModule } from '@bechara/crux';
 
 void AppModule.boot();
 ```
@@ -80,7 +80,7 @@ Recommended core concepts before proceeding are:
 
 When developing, you should be aware of the following differences:
 
-1\. All imports should come from `@bechara/nestjs-core` instead of `@nestjs/common` and `@nestjs/core`.
+1\. All imports should come from `@bechara/crux` instead of `@nestjs/common` and `@nestjs/core`.
 
 Instead of:
 
@@ -91,7 +91,7 @@ import { Injectable } from '@nestjs/common';
 Use:
 
 ```ts
-import { Injectable } from '@bechara/nestjs-core';
+import { Injectable } from '@bechara/crux';
 ```
 
 2\. All `*.module.ts` files at your source directory will be automatically loaded by the wrapper at `main.ts`, there is no need to add them to a global module.
@@ -118,7 +118,7 @@ export class AppModule { }
 Use:
 
 ```ts
-import { AppModule } from '@bechara/nestjs-core';
+import { AppModule } from '@bechara/crux';
 
 // Foo, Bar and Baz module will be automatically
 // loaded as long as they are inside source and

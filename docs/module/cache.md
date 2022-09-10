@@ -9,7 +9,7 @@ Allows caching inbound responses for paths decorated with `@Cache()`.
 Add the `@Cache()` to target controller method:
 
 ```ts
-import { Cache, Controller, Get } from '@bechara/nestjs-core';
+import { Cache, Controller, Get } from '@bechara/crux';
 
 @Controller('foo')
 export class FooController {
