@@ -16,7 +16,7 @@ describe('RedisService', () => {
       imports: [
         RedisModule.register({
           host: 'localhost',
-          port: 6379,
+          port: 6380,
         }),
       ],
     });
