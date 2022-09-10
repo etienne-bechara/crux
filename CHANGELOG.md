@@ -1,3 +1,24 @@
+# [4.23.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.22.0...v4.23.0) (2022-09-10)
+
+
+### Bug Fixes
+
+* @Span() for async ([a18b716](https://github.com/etienne-bechara/nestjs-core/commit/a18b716d5d207a525d34e8e737b194439cddb1e4))
+* cache key names ([bf6e9e3](https://github.com/etienne-bechara/nestjs-core/commit/bf6e9e3f0a93fdca69847d952d7592399f16d834))
+* handle cache operations async ([25fbaef](https://github.com/etienne-bechara/nestjs-core/commit/25fbaef65372798d22d0a47fc2da151331154a6f))
+* move example app folder ([0d09cc0](https://github.com/etienne-bechara/nestjs-core/commit/0d09cc00bccc7701c36674121e944a8b1ef86835))
+* test redis port ([dc81b59](https://github.com/etienne-bechara/nestjs-core/commit/dc81b593c371581400f53bce87dcac288a9e5230))
+
+
+### Features
+
+* add cache bucket invalidation ([a7aa3b0](https://github.com/etienne-bechara/nestjs-core/commit/a7aa3b0b2ea569b81d36b3dd17532e9e0be92b69))
+* add cache bucket mvp ([8e7aa8a](https://github.com/etienne-bechara/nestjs-core/commit/8e7aa8a1b398a3e3db435af15887c01aca624362))
+* add cache compression ([f33fbbd](https://github.com/etienne-bechara/nestjs-core/commit/f33fbbdf90bf24149fb5b16aa42deb5116b32949))
+* add invalidate at @Cache() ([b7c1e0d](https://github.com/etienne-bechara/nestjs-core/commit/b7c1e0d05e6b4979089e1a899dcee64158dcd41b))
+* add redis which implements cache provider ([bd2f849](https://github.com/etienne-bechara/nestjs-core/commit/bd2f849a1c34decdc7b2b3324c398c199ea37b62))
+* add support for redis cache ([4f67c23](https://github.com/etienne-bechara/nestjs-core/commit/4f67c236b2dc67a45b10aaaf2955fb278f92c4b5))
+
 # [4.22.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.21.2...v4.22.0) (2022-09-08)
 
 
