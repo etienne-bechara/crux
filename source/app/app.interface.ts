@@ -32,6 +32,8 @@ export interface AppOptions extends ModuleMetadata {
   disableSerializer?: boolean;
   /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
+  /** Disables HTTP caching. */
+  disableCache?: boolean;
   /** Disables all logging transports (Console, Loki and Slack). */
   disableLogs?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */

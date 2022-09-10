@@ -7,8 +7,8 @@ import supertest from 'supertest';
 import { Controller, Post } from '../app/app.decorator';
 import { AppModule } from '../app/app.module';
 import { ContextService } from '../context/context.service';
-import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from '../override';
 import { ToNumber } from '../transform/transform.decorator';
+import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './validate.decorator';
 
 class ValidatorNestedDto {
 

@@ -1,4 +1,4 @@
-import { Module } from '../../../source/override';
+import { Module } from '../../../../source/override';
 import { BucketController } from './bucket.controller';
 
 @Module({

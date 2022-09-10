@@ -28,7 +28,7 @@ import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
 import { SlackModule } from '../slack/slack.module';
-import { TraceModule, TracerDisabledModule } from '../trace/trace.module';
+import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
 import { TransformInterceptor } from '../transform/transform.interceptor';
 import { ValidatePipe } from '../validate/validate.pipe';
@@ -121,6 +121,7 @@ export class AppModule {
     }
 
     if (this.options.disableAll) {
+      this.options.disableCache = true;
       this.options.disableDocs = true;
       this.options.disableFilter = true;
       this.options.disableLogs = true;
@@ -311,13 +312,12 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
+    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
     const { envPath, imports, exports } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
     const defaultModules = [
-      CacheModule,
       ContextModule,
       LogModule,
       MemoryModule,
@@ -328,6 +328,10 @@ export class AppModule {
         resolveBodyOnly: true,
       }),
     ];
+
+    if (!disableCache) {
+      defaultModules.push(CacheModule);
+    }
 
     if (!disableLogs) {
       defaultModules.push(
@@ -348,7 +352,7 @@ export class AppModule {
       defaultModules.push(TraceModule);
     }
     else {
-      defaultModules.push(TracerDisabledModule);
+      defaultModules.push(TraceDisabledModule);
     }
 
     if (!disableDocs) {

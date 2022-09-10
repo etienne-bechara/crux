@@ -1,7 +1,7 @@
 import { Param } from '@nestjs/common';
 
-import { Controller, Get } from '../../../source/app/app.decorator';
-import { Cache } from '../../../source/cache/cache.decorator';
+import { Controller, Get } from '../../../../source/app/app.decorator';
+import { Cache } from '../../../../source/cache/cache.decorator';
 import { Zip } from './zip.interface';
 import { ZipService } from './zip.service';
 

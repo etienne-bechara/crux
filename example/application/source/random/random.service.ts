@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
-import { LogService } from '../../../source/log/log.service';
-import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../../source/override';
-import { PromiseService } from '../../../source/promise/promise.service';
+import { LogService } from '../../../../source/log/log.service';
+import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../../../source/override';
+import { PromiseService } from '../../../../source/promise/promise.service';
 
 @Injectable()
 export class RandomService {

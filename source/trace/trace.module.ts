@@ -23,4 +23,4 @@ export class TraceModule { }
     { provide: TraceService, useValue: null },
   ],
 })
-export class TracerDisabledModule { }
+export class TraceDisabledModule { }

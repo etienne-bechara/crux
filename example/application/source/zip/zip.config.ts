@@ -1,4 +1,4 @@
-import { Config, InjectConfig } from '../../../source/config/config.decorator';
+import { Config, InjectConfig } from '../../../../source/config/config.decorator';
 
 @Config()
 export class ZipConfig {

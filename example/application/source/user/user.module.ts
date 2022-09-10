@@ -1,4 +1,4 @@
-import { Module } from '../../../source/override';
+import { Module } from '../../../../source/override';
 import { ZipModule } from '../zip/zip.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
