@@ -1,3 +1,10 @@
+## [4.23.1](https://github.com/etienne-bechara/crux/compare/v4.23.0...v4.23.1) (2022-09-10)
+
+
+### Bug Fixes
+
+* rename ([e49dd12](https://github.com/etienne-bechara/crux/commit/e49dd12090fae03a16b78ddb2f724550b915897e))
+
 # [4.23.0](https://github.com/etienne-bechara/nestjs-core/compare/v4.22.0...v4.23.0) (2022-09-10)
 
 
