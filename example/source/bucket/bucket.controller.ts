@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 
 import { Cache } from '../../../source/cache/cache.decorator';
 import { CacheService } from '../../../source/cache/cache.service';
@@ -12,10 +13,15 @@ export class BucketController {
 
   @Cache()
   @Get(':ids')
-  public getBucketIds(@Param('ids') ids: string): { rng: number } {
+  public getBucketIds(@Param('ids') ids: string): Record<string, any> {
     const buckets = ids.split(',');
     this.cacheService.setBuckets(buckets);
-    return { rng: Math.random() };
+
+    return {
+      buckets,
+      randomNumber: Math.random(),
+      randomString: crypto.randomBytes(50_000).toString('hex'),
+    };
   }
 
   @Delete(':ids')

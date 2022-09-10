@@ -31,23 +31,34 @@ export class CacheInterceptor implements NestInterceptor {
    * @param next
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+    const req = this.contextService.getRequest();
+    const method = this.contextService.getRequestMethod();
+
     const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
-    const { timeout: routeTimeout, ttl: routeTtl } = options;
+    const { enabled: routeEnabled, timeout: routeTimeout, ttl: routeTtl, buckets, invalidate } = options;
+
+    const enabled = routeEnabled ?? [ 'GET', 'HEAD' ].includes(method);
     const timeout = routeTimeout || this.appConfig.APP_OPTIONS.cache?.defaultTimeout;
     const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
-    let cache;
 
-    try {
-      cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
-    }
-    catch {
-      this.logService.warning('failed to acquire cached data within timeout', { timeout });
-    }
+    if (buckets) this.cacheService.setBuckets(buckets(req));
+    if (invalidate) this.cacheService.invalidateBuckets(invalidate(req));
 
-    if (cache) {
-      this.logService.debug('Resolving with cached data');
-      this.contextService.setCacheStatus(CacheStatus.HIT);
-      return of(cache);
+    if (enabled) {
+      let cache;
+
+      try {
+        cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
+      }
+      catch {
+        this.logService.warning('Failed to acquire cached data within timeout', { timeout });
+      }
+
+      if (cache) {
+        this.logService.debug('Resolving with cached data');
+        this.contextService.setCacheStatus(CacheStatus.HIT);
+        return of(cache);
+      }
     }
 
     return next
@@ -55,8 +66,11 @@ export class CacheInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          this.contextService.setCacheStatus(CacheStatus.MISS);
-          this.cacheService.setCache(data, { ttl });
+          if (enabled) {
+            this.contextService.setCacheStatus(CacheStatus.MISS);
+            this.cacheService.setCache(data, { ttl });
+          }
+
           return data;
         }),
       );

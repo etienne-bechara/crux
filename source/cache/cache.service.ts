@@ -113,7 +113,7 @@ export class CacheService {
       await this.cacheProvider.set(dataKey, data, options);
     }
     catch (e) {
-      this.logService.error('failed to set cache data', e as Error, { data });
+      this.logService.error('Failed to set cache data', e as Error, { data });
     }
   }
 
@@ -145,7 +145,7 @@ export class CacheService {
       });
     }
     catch (e) {
-      this.logService.error('failed to set cache buckets', e as Error, { buckets });
+      this.logService.error('Failed to set cache buckets', e as Error, { buckets });
     }
   }
 
@@ -184,7 +184,7 @@ export class CacheService {
       await Promise.all(delPromises);
     }
     catch (e) {
-      this.logService.error('failed to invalidate cache buckets', e as Error, { buckets });
+      this.logService.error('Failed to invalidate cache buckets', e as Error, { buckets });
     }
   }
 
