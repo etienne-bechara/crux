@@ -1,3 +1,15 @@
+# [4.24.0](https://github.com/etienne-bechara/crux/compare/v4.23.1...v4.24.0) (2022-09-15)
+
+
+### Bug Fixes
+
+* add tests ([2cd50dd](https://github.com/etienne-bechara/crux/commit/2cd50dd70b3416ef7454ffd1184b413edbc1e0a3))
+
+
+### Features
+
+* add data to cache set/invalidate buckets ([3c58e49](https://github.com/etienne-bechara/crux/commit/3c58e4967f08695e069435d7232f58fd98da2bb0))
+
 ## [4.23.1](https://github.com/etienne-bechara/crux/compare/v4.23.0...v4.23.1) (2022-09-10)
 
 
