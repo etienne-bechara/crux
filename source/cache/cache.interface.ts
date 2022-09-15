@@ -5,15 +5,19 @@ export interface CacheTtlOptions {
   ttl?: number;
 }
 
-export interface CacheRouteOptions extends CacheTtlOptions {
+export interface CacheRouteOptions<T = unknown> extends CacheTtlOptions {
   /** Whether or not to enable cache for this route. Default: `true` for `HEAD` and `GET`, `false` otherwise. */
   enabled?: boolean;
   /** Time in milliseconds to await for cache acquisition before processing regularly. */
   timeout?: number;
-  /** Which buckets to automatically set based on current request. */
-  buckets?: (req: AppRequest) => string[];
-  /** Which buckets to immediately invalidate based on current request. */
-  invalidate?: (req: AppRequest) => string[];
+  /** Which buckets to automatically set based on current request and response data. */
+  buckets?: (req: AppRequest, data: T) => string[];
+  /** Which buckets to immediately invalidate based on current request and response data. */
+  invalidate?: (req: AppRequest, data: T) => string[];
+}
+
+export interface CacheInterceptParams extends CacheRouteOptions{
+  ttl?: number;
 }
 
 export interface CacheOptions {

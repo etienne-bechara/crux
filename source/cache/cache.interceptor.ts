@@ -7,7 +7,7 @@ import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { PromiseService } from '../promise/promise.service';
 import { CacheReflector, CacheStatus } from './cache.enum';
-import { CacheRouteOptions } from './cache.interface';
+import { CacheInterceptParams, CacheRouteOptions } from './cache.interface';
 import { CacheService } from './cache.service';
 
 @Injectable()
@@ -31,22 +31,11 @@ export class CacheInterceptor implements NestInterceptor {
    * @param next
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+    const { enabled, timeout, buckets, invalidate, ttl } = this.buildCacheInterceptParams(context);
     const req = this.contextService.getRequest();
-    const method = this.contextService.getRequestMethod();
-
-    const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
-    const { enabled: routeEnabled, timeout: routeTimeout, ttl: routeTtl, buckets, invalidate } = options;
-
-    const enabled = routeEnabled ?? [ 'GET', 'HEAD' ].includes(method);
-    const timeout = routeTimeout || this.appConfig.APP_OPTIONS.cache?.defaultTimeout;
-    const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
-
-    if (buckets) this.cacheService.setBuckets(buckets(req));
-    if (invalidate) this.cacheService.invalidateBuckets(invalidate(req));
+    let cache: unknown;
 
     if (enabled) {
-      let cache;
-
       try {
         cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
       }
@@ -66,6 +55,14 @@ export class CacheInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
+          if (buckets) {
+            this.cacheService.setBuckets(buckets(req, data));
+          }
+
+          if (invalidate) {
+            this.cacheService.invalidateBuckets(invalidate(req, data));
+          }
+
           if (enabled) {
             this.contextService.setCacheStatus(CacheStatus.MISS);
             this.cacheService.setCache(data, { ttl });
@@ -74,6 +71,24 @@ export class CacheInterceptor implements NestInterceptor {
           return data;
         }),
       );
+  }
+
+  /**
+   * Build cache interception params by merging route options with
+   * application level.
+   * @param context
+   */
+  private buildCacheInterceptParams(context: ExecutionContext): CacheInterceptParams {
+    const method = this.contextService.getRequestMethod();
+
+    const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
+    const { enabled: routeEnabled, timeout: routeTimeout, ttl: routeTtl, buckets, invalidate } = options;
+
+    const enabled = routeEnabled ?? [ 'GET', 'HEAD' ].includes(method);
+    const timeout = routeTimeout || this.appConfig.APP_OPTIONS.cache?.defaultTimeout;
+    const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
+
+    return { enabled, timeout, buckets, invalidate, ttl };
   }
 
 }
