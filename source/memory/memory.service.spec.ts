@@ -5,8 +5,10 @@ describe('MemoryService', () => {
   let memoryService: MemoryService;
   const testString = 'hello world';
   const testNumber = 1_234_567_890;
+  const testBuffer = Buffer.from('buffer');
   const testObject = { hello: 'world', numbers: [ 1, 2, 3 ] };
   const testArray = [ 'hello', 'world', 1, 2, 3, testObject ];
+  const testSet = [ 'a', 'b' ];
   const testTtl = testString;
   const ttl = 2000;
 
@@ -19,6 +21,7 @@ describe('MemoryService', () => {
     it('should successfully set storage keys', () => {
       memoryService.set('testString', testString);
       memoryService.set('testNumber', testNumber);
+      memoryService.set('testBuffer', testBuffer);
       memoryService.set('testObject', testObject);
       memoryService.set('testArray', testArray);
       expect(true).toBeTruthy();
@@ -52,6 +55,26 @@ describe('MemoryService', () => {
       expect(memoryService.get('testTtl')).toBe(testTtl);
       await new Promise((r) => setTimeout(r, ttl * 1.05));
       expect(memoryService.get('testTtl')).toBe(undefined);
+    });
+  });
+
+  describe('getBuffer', () => {
+    it('should successfully read buffer storage keys', () => {
+      expect(memoryService.get('testBuffer')).toBe(testBuffer);
+    });
+  });
+
+  describe('sadd', () => {
+    it('should successfully add two members to a set', () => {
+      memoryService.sadd('testSet', testSet[0]);
+      memoryService.sadd('testSet', testSet[1]);
+      expect(true).toBeTruthy();
+    });
+  });
+
+  describe('smembers', () => {
+    it('should successfully read members from a set', () => {
+      expect(memoryService.smembers('testSet')).toStrictEqual(testSet);
     });
   });
 
