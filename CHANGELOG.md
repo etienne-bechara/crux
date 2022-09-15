@@ -1,3 +1,10 @@
+## [4.24.1](https://github.com/etienne-bechara/crux/compare/v4.24.0...v4.24.1) (2022-09-15)
+
+
+### Bug Fixes
+
+* invalidate bucket order ([34bcfbc](https://github.com/etienne-bechara/crux/commit/34bcfbcdebcfa923cf41108c94d864eeb895051b))
+
 # [4.24.0](https://github.com/etienne-bechara/crux/compare/v4.23.1...v4.24.0) (2022-09-15)
 
 
