@@ -55,12 +55,12 @@ export class CacheInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          if (buckets) {
-            this.cacheService.setBuckets(buckets(req, data));
-          }
-
           if (invalidate) {
             this.cacheService.invalidateBuckets(invalidate(req, data));
+          }
+
+          if (buckets) {
+            this.cacheService.setBuckets(buckets(req, data));
           }
 
           if (enabled) {
