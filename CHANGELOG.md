@@ -1,3 +1,10 @@
+## [4.24.2](https://github.com/etienne-bechara/crux/compare/v4.24.1...v4.24.2) (2022-09-16)
+
+
+### Bug Fixes
+
+* validate pipe super options ([6ac93ea](https://github.com/etienne-bechara/crux/commit/6ac93ea5e5ccd00836e58f95880e0bad364223e8))
+
 ## [4.24.1](https://github.com/etienne-bechara/crux/compare/v4.24.0...v4.24.1) (2022-09-15)
 
 
