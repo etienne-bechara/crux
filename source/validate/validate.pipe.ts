@@ -9,7 +9,12 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
   public constructor(
     private readonly contextService: ContextService,
   ) {
-    super({ transform: true });
+    super({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      always: true,
+      strictGroups: true,
+    });
   }
 
   /**
