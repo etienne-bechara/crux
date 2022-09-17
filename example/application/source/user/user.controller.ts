@@ -11,7 +11,7 @@ export class UserController {
     private readonly userService: UserService,
   ) { }
 
-  @Get({ response: { type: UserCollection } })
+  @Get({ schema: UserCollection })
   public getUser(): UserCollection {
     return this.userService.readUsers();
   }
@@ -19,12 +19,12 @@ export class UserController {
   @Cache<User>({
     buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
   })
-  @Get(':id', { response: { type: User } })
+  @Get(':id', { schema: User })
   public getUserById(@Param() params: UserIdDto): User {
     return this.userService.readUserById(params.id);
   }
 
-  @Post({ response: { type: User } })
+  @Post({ schema: User })
   public postUser(@Body() body: UserCreateDto): Promise<User> {
     return this.userService.createUser(body);
   }
@@ -32,7 +32,7 @@ export class UserController {
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  @Patch(':id', { response: { type: User } })
+  @Patch(':id', { schema: User })
   public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
     return this.userService.updateUserById(params.id, body);
   }
