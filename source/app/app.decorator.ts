@@ -1,4 +1,4 @@
-import { applyDecorators, Controller as NestController, Delete as NestDelete, Get as NestGet, Head as NestHead, HttpCode, HttpStatus, Options as NestOptions, Patch as NestPatch, Post as NestPost, Put as NestPut, RequestMethod } from '@nestjs/common';
+import { applyDecorators, Controller as NestController, Delete as NestDelete, Get as NestGet, Head as NestHead, Header, HttpCode, HttpStatus, Options as NestOptions, Patch as NestPatch, Post as NestPost, Put as NestPut, RequestMethod } from '@nestjs/common';
 import { ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AppControllerParams, AppMethodParams } from './app.interface';
@@ -50,8 +50,7 @@ export function Controller(prefix: string, params: AppControllerParams = { }): a
  * @param params
  */
 function buildMethodDecorators(method: RequestMethod, prefix: string, params: AppMethodParams): MethodDecorator[] {
-  const { tags, hidden, produces, response } = params;
-  const { status } = response || { };
+  const { deprecated, hidden, title, description, tags, status, contentType, schema } = params;
   const decorators = [ ];
   let defaultStatus: HttpStatus;
 
@@ -96,6 +95,10 @@ function buildMethodDecorators(method: RequestMethod, prefix: string, params: Ap
     decorators.push(HttpCode(status as number));
   }
 
+  if (contentType) {
+    decorators.push(Header('content-type', contentType));
+  }
+
   if (tags) {
     decorators.push(ApiTags(...tags));
   }
@@ -104,17 +107,13 @@ function buildMethodDecorators(method: RequestMethod, prefix: string, params: Ap
     decorators.push(ApiExcludeEndpoint());
   }
 
-  if (produces) {
-    decorators.push(ApiProduces(...produces));
+  if (contentType) {
+    decorators.push(ApiProduces(contentType));
   }
 
   decorators.push(
-    ApiOperation(params),
-    ApiResponse(
-      response
-        ? { status: defaultStatus, ...response }
-        : { status: defaultStatus || status },
-    ),
+    ApiOperation({ deprecated, operationId: title, description }),
+    ApiResponse({ status: defaultStatus, type: schema }),
   );
 
   return decorators;

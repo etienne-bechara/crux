@@ -14,18 +14,18 @@ export class AppController {
   ) { }
 
   @Get({
-    operationId: 'Health Check',
+    title: 'Health Check',
     description: 'Checks if application is running.',
-    response: { status: HttpStatus.NO_CONTENT },
+    status: HttpStatus.NO_CONTENT,
   })
   public get(): void {
     return;
   }
 
   @Get('status', {
-    operationId: 'Read Status',
+    title: 'Read Status',
     description: 'Acquire information regarding operating system, CPU, memory, and network.',
-    response: { type: AppStatus },
+    schema: AppStatus,
   })
   public getStatus(): Promise<AppStatus> {
     return this.appService.getStatus();

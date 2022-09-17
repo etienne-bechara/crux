@@ -25,9 +25,9 @@ export class DocController {
   }
 
   @Get('json', {
-    operationId: 'Read OpenAPI Spec',
+    title: 'Read OpenAPI Spec',
     description: 'Generate OpenAPI specification in JSON format, useful for importing at request clients.',
-    response: { type: DocSpecification },
+    schema: DocSpecification,
   })
   public getDocsJson(): DocSpecification {
     const document: string = this.memoryService.get('openApiSpecification');

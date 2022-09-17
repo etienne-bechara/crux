@@ -1,7 +1,5 @@
 import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { ApiResponseOptions } from '@nestjs/swagger';
-import { OperationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { ValidatorOptions } from 'class-validator';
 import http from 'http';
 
@@ -166,9 +164,21 @@ export interface AppControllerParams {
   hidden?: boolean;
 }
 
-export interface AppMethodParams extends Partial<OperationObject> {
-  tags?: string[];
+export interface AppMethodParams {
+  /** Sets endpoint as deprecated at documentation. */
+  deprecated?: boolean;
+  /** Omits endpoint at documentation. */
   hidden?: boolean;
-  produces?: string[];
-  response?: ApiResponseOptions;
+  /** Endpoint documentation title. */
+  title?: string;
+  /** Endpoint documentation description. */
+  description?: string;
+  /** Endpoint documentation tags. */
+  tags?: string[];
+  /** HTTP status to respond to client, documentation example will included provided code. */
+  status?: HttpStatus;
+  /** Content-Type to respond to client, documentation example will included provided code. */
+  contentType?: string;
+  /** Response DTO schema including typings decorators to generate documentation. */
+  schema?: any;
 }
