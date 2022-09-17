@@ -1,8 +1,9 @@
 {
   "rootDir": "../../source",
-  "coverageDirectory": "coverage",
+  "coverageDirectory": "../coverage",
   "testEnvironment": "node",
   "testRegex": ".spec.ts$",
+  "testResultsProcessor": "jest-sonar-reporter",
   "transform": {
     "ts$": "ts-jest"
   }

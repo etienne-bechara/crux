@@ -11,9 +11,14 @@ export interface CacheRouteOptions<T = unknown> extends CacheTtlOptions {
   /** Time in milliseconds to await for cache acquisition before processing regularly. */
   timeout?: number;
   /** Which buckets to automatically set based on current request and response data. */
-  buckets?: (req: AppRequest, data: T) => string[];
+  buckets?: (params: CacheRouteBucketParams<T>) => string[];
   /** Which buckets to immediately invalidate based on current request and response data. */
-  invalidate?: (req: AppRequest, data: T) => string[];
+  invalidate?: (params: CacheRouteBucketParams<T>) => string[];
+}
+
+export interface CacheRouteBucketParams<T> {
+  req: AppRequest;
+  data: T;
 }
 
 export interface CacheInterceptParams extends CacheRouteOptions{

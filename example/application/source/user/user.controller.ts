@@ -17,7 +17,7 @@ export class UserController {
   }
 
   @Cache<User>({
-    buckets: (req, data) => [ req.params.id, data.address.zip ],
+    buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
   })
   @Get(':id', { response: { type: User } })
   public getUserById(@Param() params: UserIdDto): User {
@@ -30,7 +30,7 @@ export class UserController {
   }
 
   @Cache({
-    invalidate: (req) => [ req.params.id ],
+    invalidate: ({ req }) => [ req.params.id ],
   })
   @Patch(':id', { response: { type: User } })
   public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
@@ -38,7 +38,7 @@ export class UserController {
   }
 
   @Cache({
-    invalidate: (req) => [ req.params.id ],
+    invalidate: ({ req }) => [ req.params.id ],
   })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

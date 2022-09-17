@@ -13,7 +13,7 @@ class CacheTestController {
 
   @Cache({
     ttl: 1000,
-    buckets: (req) => [ req.params.id, '10' ],
+    buckets: ({ req }) => [ req.params.id, '10' ],
   })
   @Get(':id')
   public getCacheById(): { rng: number } {
@@ -21,7 +21,7 @@ class CacheTestController {
   }
 
   @Cache({
-    invalidate: (req) => [ req.params.id ],
+    invalidate: ({ req }) => [ req.params.id ],
   })
   @Patch(':id')
   public patchCache(): void {
