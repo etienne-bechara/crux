@@ -79,7 +79,7 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
-            -Dsonar.organization=${{ github.event.repository.owner }}
+            -Dsonar.organization=${{ github.repository_owner }}
             -Dsonar.projectKey=${{ github.event.repository.name }}
             -Dsonar.pullrequest.key=${{ github.event.number }}
             -Dsonar.pullrequest.branch=${{ github.HEAD_REF }}
