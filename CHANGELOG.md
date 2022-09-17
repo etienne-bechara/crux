@@ -1,3 +1,11 @@
+## [4.24.3](https://github.com/etienne-bechara/crux/compare/v4.24.2...v4.24.3) (2022-09-17)
+
+
+### Bug Fixes
+
+* cache interface ([b698324](https://github.com/etienne-bechara/crux/commit/b69832481776d99e495bde36c1e6d56980dac376))
+* improve route doc decorator ([a35a4c5](https://github.com/etienne-bechara/crux/commit/a35a4c5df165919fee99c324fee74477828f0fc8))
+
 ## [4.24.2](https://github.com/etienne-bechara/crux/compare/v4.24.1...v4.24.2) (2022-09-16)
 
 
