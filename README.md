@@ -1,4 +1,9 @@
 # CRUX
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=crux&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=crux)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=crux&metric=coverage)](https://sonarcloud.io/summary/new_code?id=crux)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=crux&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=crux)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=crux&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=crux)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=crux&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=crux)
 
 A Node.js all-in-one opinionated package intended for backend projects.
 
