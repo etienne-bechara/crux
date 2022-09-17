@@ -1,6 +1,7 @@
+/coverage
 /dist
-/logs
 /node_modules
 
 .eslintcache
 .env
+test-report.xml
