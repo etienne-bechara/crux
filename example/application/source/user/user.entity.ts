@@ -1,6 +1,6 @@
 import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../../../source/override';
 import { OneOf } from '../../../../source/validate/validate.decorator';
-import { UserAddressState, UserGender, UserOneOf } from './user.enum';
+import { UserAddressState, UserOneOf } from './user.enum';
 
 export class UserEmployer {
 
@@ -76,10 +76,6 @@ export class User {
   @IsOptional()
   @Matches(/(?:\d{3}\.){2}\d{3}-\d{2}/)
   public taxId?: string;
-
-  @IsOptional()
-  @IsIn(Object.values(UserGender))
-  public gender?: UserGender;
 
   @IsOptional()
   @IsEmail()

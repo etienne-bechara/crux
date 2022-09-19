@@ -1,5 +1,6 @@
+import { v4 as uuidV4 } from 'uuid';
+
 import { AppModule } from '../app/app.module';
-import { uuidV4 } from '../override';
 import { RedisModule } from './redis.module';
 import { RedisService } from './redis.service';
 

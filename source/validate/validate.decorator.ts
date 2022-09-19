@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
+import { Type as SetType } from 'class-transformer';
 import {
   Contains as CvContains,
   Equals as CvEquals,
@@ -42,8 +43,6 @@ import {
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
-
-import { SetType } from '../override';
 
 const ValidateStorage: Map<string, any> = new Map();
 
