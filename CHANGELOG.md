@@ -1,3 +1,10 @@
+## [4.24.4](https://github.com/etienne-bechara/crux/compare/v4.24.3...v4.24.4) (2022-09-19)
+
+
+### Bug Fixes
+
+* overrides import ([e053d36](https://github.com/etienne-bechara/crux/commit/e053d36153ec2051167ea46dcc3afe0a327083af))
+
 ## [4.24.3](https://github.com/etienne-bechara/crux/compare/v4.24.2...v4.24.3) (2022-09-17)
 
 
