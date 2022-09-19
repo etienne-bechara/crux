@@ -28,16 +28,22 @@
   "scripts": {
     "prepare": "husky install .config/husky",
     "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./example/application/source/main.ts",
-    "example": "cd example && docker-compose up -d --build && tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./application/source/main.ts",
-    "build": "rimraf ./dist && pnpm run build:index && tsc -p tsconfig.build.json && pnpm run build:assets && pnpm run build:cleanup",
+    "example": "cd example && docker-compose up -d && cd .. && pnpm dev",
+    "build": "rimraf ./dist && pnpm build:index && tsc -p tsconfig.build.json && pnpm build:assets && pnpm build:cleanup",
     "build:index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source",
     "build:assets": "copyfiles -u 1 ./source/doc/doc.handlebars ./dist/",
     "build:cleanup": "rimraf ./source/index.ts",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
-    "test": "pnpm test:redis && jest --coverage --forceExit --verbose --testTimeout=30000 --config .config/jest/.jestrc.json",
-    "test:redis": "docker start redis-crux || docker run -d --name redis-crux -p 6379:6379 redis:7"
+    "test": "pnpm test:up && pnpm test:jest && pnpm test:down",
+    "test:up": "cd test && docker compose up -d",
+    "test:jest": "jest --forceExit --config .config/jest/.jestrc.json",
+    "test:down": "docker compose down && cd .."
   },
   "dependencies": {
+    "@mikro-orm/core": "5.3.1",
+    "@mikro-orm/mysql": "5.3.1",
+    "@mikro-orm/nestjs": "5.1.1",
+    "@mikro-orm/postgresql": "5.3.1",
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/platform-fastify": "8.4.4",
