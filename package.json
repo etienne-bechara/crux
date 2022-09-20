@@ -37,7 +37,7 @@
     "test": "pnpm test:up && pnpm test:jest && pnpm test:down",
     "test:up": "cd test && docker compose up -d",
     "test:jest": "jest --forceExit --config .config/jest/.jestrc.json",
-    "test:down": "docker compose down && cd .."
+    "test:down": "cd test && docker compose down"
   },
   "dependencies": {
     "@mikro-orm/core": "5.4.2",
