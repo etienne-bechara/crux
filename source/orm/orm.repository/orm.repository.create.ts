@@ -18,11 +18,10 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * @param data
    */
   public build(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Entity[] {
-    const dataArray = Array.isArray(data) ? data : [ data ];
+    if (!this.isValidData(data)) return [ ];
 
-    return data && dataArray.length > 0
-      ? dataArray.map((d) => this.entityManager.create(this.entityName, d))
-      : [ ];
+    const dataArray = Array.isArray(data) ? data : [ data ];
+    return dataArray.map((d) => this.entityManager.create(this.entityName, d));
   }
 
   /**
@@ -35,23 +34,13 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
   }
 
   /**
-   * Create multiple entities based on provided data, persist changes on next commit call.
-   * @param data
-   */
-  public createFromAsync(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Entity[] {
-    const newEntities = this.build(data);
-    this.commitAsync(newEntities);
-    return newEntities;
-  }
-
-  /**
    * Create multiple entities based on provided data.
    * @param data
    */
-  public createFrom(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Promise<Entity[]> {
-    return this.runWithinClearContextSpan('create', async () => {
-      const newEntities = this.createFromAsync(data);
-      await this.commit();
+  public create(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Promise<Entity[]> {
+    return this.runWithinSpan('create', async () => {
+      const newEntities = this.build(data);
+      await this.entityManager.persistAndFlush(newEntities);
       return newEntities;
     });
   }
@@ -60,21 +49,9 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * Create a single entity based on provided data, persist changes on next commit call.
    * @param data
    */
-  public createOneAsync(data: RequiredEntityData<Entity>): Entity {
-    const [ newEntity ] = this.createFromAsync(data);
+  public async createOne(data: RequiredEntityData<Entity>): Promise<Entity> {
+    const [ newEntity ] = await this.create(data);
     return newEntity;
-  }
-
-  /**
-   * Create a single entity based on provided data, persist changes on next commit call.
-   * @param data
-   */
-  public createOne(data: RequiredEntityData<Entity>): Promise<Entity> {
-    return this.runWithinClearContextSpan('create', async () => {
-      const newEntity = this.createOneAsync(data);
-      await this.commit();
-      return newEntity;
-    });
   }
 
 }

@@ -15,37 +15,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
     super(entityManager, entityName, repositoryOptions);
   }
 
-  public updateAsync(entities: Entity | Entity[], data: EntityData<Entity>): Entity[];
-  public updateAsync(params: OrmUpdateParams<Entity> | OrmUpdateParams<Entity>[]): Entity[];
-  /**
-   * Update target entities, data can be provided as an object that applies to all,
-   * or each entity may be combined with its own changeset, persist changes on next
-   * commit call.
-   * @param params
-   * @param data
-   */
-  public updateAsync(
-    params: Entity | Entity[] | OrmUpdateParams<Entity> | OrmUpdateParams<Entity>[],
-    data?: EntityData<Entity>,
-  ): Entity[] {
-    const paramsArray = Array.isArray(params) ? params : [ params ];
-    if (!params || paramsArray.length === 0) return [ ];
-
-    let assignedEntities: Entity[];
-
-    if (data) {
-      const entityArray: Entity[] = paramsArray as any;
-      assignedEntities = entityArray.map((e) => this.entityManager.assign(e, data));
-    }
-    else {
-      const comboArray: OrmUpdateParams<Entity>[] = paramsArray as any;
-      assignedEntities = comboArray.map(({ entity, data }) => this.entityManager.assign(entity, data));
-    }
-
-    this.commitAsync(assignedEntities);
-    return assignedEntities;
-  }
-
   public update(entities: Entity | Entity[], data: EntityData<Entity>): Promise<Entity[]>;
   public update(params: OrmUpdateParams<Entity> | OrmUpdateParams<Entity>[]): Promise<Entity[]>;
   /**
@@ -58,10 +27,10 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
     params: Entity | Entity[] | OrmUpdateParams<Entity> | OrmUpdateParams<Entity>[],
     data?: EntityData<Entity>,
   ): Promise<Entity[]> {
-    const paramsArray = Array.isArray(params) ? params : [ params ];
-    if (!params || paramsArray.length === 0) return new Promise((r) => r([ ]));
+    return this.runWithinSpan('update', async () => {
+      if (!this.isValidData(params)) return [ ];
 
-    return this.runWithinClearContextSpan('update', async () => {
+      const paramsArray = Array.isArray(params) ? params : [ params ];
       const assignedEntities: Entity[] = [ ];
       let comboArray: OrmUpdateParams<Entity>[];
 
@@ -83,12 +52,12 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
             }
           }
 
-          const [ assignedEntity ] = this.updateAsync({ entity, data });
+          const assignedEntity = this.entityManager.assign(entity, data);
           assignedEntities.push(assignedEntity);
         }),
       );
 
-      await this.commit();
+      await this.entityManager.persistAndFlush(assignedEntities);
       return assignedEntities;
     });
   }
@@ -109,17 +78,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
   }
 
   /**
-   * Update an entity by its ID based on provided data, persist changes on next commit call.
-   * @param id
-   * @param data
-   */
-  public updateByIdAsync(id: string | number, data: EntityData<Entity>): Entity {
-    const pk = this.getPrimaryKey();
-    const [ updatedEntity ] = this.updateAsync({ [pk]: id } as unknown as Entity, data);
-    return updatedEntity;
-  }
-
-  /**
    * Update an entity by its ID based on provided data.
    * @param id
    * @param data
@@ -127,16 +85,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
   public async updateById(id: string | number, data: EntityData<Entity>): Promise<Entity> {
     const entity = await this.readByIdOrFail(id);
     const [ updatedEntity ] = await this.update(entity, data);
-    return updatedEntity;
-  }
-
-  /**
-   * Updates a single entity based on provided data, persist changes on next commit call.
-   * @param entity
-   * @param data
-   */
-  public updateOneAsync(entity: Entity, data: EntityData<Entity>): Entity {
-    const [ updatedEntity ] = this.updateAsync(entity, data);
     return updatedEntity;
   }
 
@@ -160,11 +108,11 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
     data: EntityData<Entity> | EntityData<Entity>[],
     options: OrmUpsertOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    const dataArray = Array.isArray(data) ? data : [ data ];
-    if (!data || dataArray.length === 0) return new Promise((r) => r([ ]));
-
     // eslint-disable-next-line complexity
-    return this.runWithinClearContextSpan('upsert', async () => {
+    return this.runWithinSpan('upsert', async () => {
+      if (!this.isValidData(data)) return [ ];
+
+      const dataArray = Array.isArray(data) ? data : [ data ];
       const uniqueKey = this.getValidUniqueKey(options.uniqueKey);
       const nestedPks = this.getNestedPrimaryKeys();
       const pk = this.getPrimaryKey();
@@ -192,7 +140,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       const sampleData = dataArray[0];
 
       for (const key in sampleData) {
-        if (Array.isArray(sampleData[key]) && this.canPopulate(key)) {
+        if (Array.isArray(sampleData[key]) && this.entityManager.canPopulate(this.entityName, key)) {
           populate.push(key);
         }
       }
@@ -269,7 +217,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       // Allow a single retry to prevent this scenario unless `disallowRetry` is set
       try {
         createdEntities = createData.length > 0
-          ? await this.createFrom(createData)
+          ? await this.create(createData)
           : [ ];
       }
       catch (e) {

@@ -6,13 +6,14 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppConfig } from '../app/app.config';
 import { AppEnvironment } from '../app/app.enum';
 import { AppModule } from '../app/app.module';
+import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogStyle } from '../log/log.enum';
 import { LogService } from '../log/log.service';
 import { SchemaModuleOptions } from '../schema/schema.interface';
 import { SchemaModule } from '../schema/schema.module';
 import { OrmBaseEntity, OrmBigIntEntity, OrmBigIntTimestampEntity, OrmIntEntity, OrmIntTimestampEntity, OrmTimestampEntity, OrmUuidEntity, OrmUuidTimestampEntity } from './orm.entity';
-import { OrmInjectionToken, OrmStoreKey } from './orm.enum';
+import { OrmInjectionToken } from './orm.enum';
 import { OrmInterceptor } from './orm.interceptor';
 import { OrmAsyncModuleOptions, OrmModuleOptions } from './orm.interface';
 
@@ -51,7 +52,7 @@ export class OrmModule {
           useFactory: (mikroOrmOptions: OrmModuleOptions) => ({
             ...mikroOrmOptions,
             registerRequestContext: false,
-            context: (): EntityManager => ContextStorage.getStore()?.get(OrmStoreKey.ENTITY_MANAGER),
+            context: (): EntityManager => ContextStorage.getStore()?.get(ContextStorageKey.ORM_ENTITY_MANAGER),
           }),
         }),
 

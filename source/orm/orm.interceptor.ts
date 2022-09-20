@@ -2,9 +2,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { mergeMap } from 'rxjs';
 
+import { ContextStorageKey } from '../context/context.enum';
 import { ContextService } from '../context/context.service';
-import { OrmStoreKey } from './orm.enum';
-import { OrmBaseRepository } from './orm.repository/orm.repository.base';
 
 @Injectable()
 export class OrmInterceptor implements NestInterceptor {
@@ -26,40 +25,16 @@ export class OrmInterceptor implements NestInterceptor {
   public intercept(context: ExecutionContext, next: CallHandler): any {
     const store = this.contextService.getStore();
     const entityManager = this.mikroOrm.em.fork({ clear: true, useContext: true });
-    store.set(OrmStoreKey.ENTITY_MANAGER, entityManager);
+    store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
 
     return next
       .handle()
       .pipe(
+        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
-          await this.commitPendingChanges(store);
           return this.stringifyEntities(data);
         }),
       );
-  }
-
-  /**
-   * Checks if entity manager contains any pending changes,
-   * if so flushes them to database.
-   * @param store
-   * @param retries
-   */
-  private async commitPendingChanges(store: Map<string, any>, retries = 0): Promise<void> {
-    const commitPending = store.get(OrmStoreKey.COMMIT_PENDING);
-
-    if (commitPending) {
-      try {
-        const entityManager = store.get(OrmStoreKey.ENTITY_MANAGER);
-        await entityManager.flush();
-      }
-      catch (e) {
-        return OrmBaseRepository.handleException({
-          caller: (retries) => this.commitPendingChanges(store, retries),
-          retries,
-          error: e,
-        });
-      }
-    }
   }
 
   /**

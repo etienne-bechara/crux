@@ -1,4 +1,5 @@
 import { EntityManager, EntityName, FindOptions } from '@mikro-orm/core';
+import { AutoPath } from '@mikro-orm/core/typings';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { OrmPagination } from '../orm.dto';
@@ -16,41 +17,42 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
   }
 
   /**
+   * Populate chosen fields of target entities .
+   * @param entities
+   * @param populate
+   */
+  public populate<P extends string = never>(
+    entities: Entity | Entity[],
+    populate: AutoPath<Entity, P>[] | boolean,
+  ): Promise<Entity[]> {
+    return this.runWithinSpan('populate', async () => {
+      return this.entityManager.populate(entities, populate);
+    });
+  }
+
+  /**
    * Read entities matching given criteria, allowing pagination
    * and population options.
    * @param params
    * @param options
-   * @param retries
    */
   public async readBy<P extends string = never>(
     params: OrmReadParams<Entity>,
     options: OrmReadOptions<Entity, P> = { },
-    retries = 0,
   ): Promise<Entity[]> {
     return this.runWithinSpan('read', async () => {
-      if (!params || Array.isArray(params) && params.length === 0) return [ ];
-      let readEntities: Entity[];
+      if (!this.isValidData(params)) return [ ];
 
       options.populate ??= this.repositoryOptions.defaultPopulate as any ?? false;
       options.refresh ??= true;
 
-      try {
-        readEntities = await this.entityManager.find(this.entityName, params, options as FindOptions<Entity, P>);
-        readEntities ??= [ ];
-      }
-      catch (e) {
-        return OrmBaseRepository.handleException({
-          caller: (retries) => this.readBy(params, options, retries),
-          retries,
-          error: e,
-        });
-      }
+      const readEntities = await this.entityManager.find(this.entityName, params, options as FindOptions<Entity, P>);
 
-      if (!readEntities[0] && options.findOrFail) {
+      if (!readEntities?.[0] && options.findOrFail) {
         throw new NotFoundException('entity does not exist');
       }
 
-      return readEntities;
+      return readEntities || [ ];
     });
   }
 
@@ -119,21 +121,11 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
   /**
    * Count entities matching given criteria.
    * @param params
-   * @param retries
    */
-  public countBy(params: OrmReadParams<Entity>, retries = 0): Promise<number> {
+  public countBy(params: OrmReadParams<Entity>): Promise<number> {
     return this.runWithinSpan('count', async () => {
-      try {
-        if (!params || Array.isArray(params) && params.length === 0) return 0;
-        return this.entityManager.count(this.entityName, params);
-      }
-      catch (e) {
-        return OrmBaseRepository.handleException({
-          caller: (retries) => this.countBy(params, retries),
-          retries,
-          error: e,
-        });
-      }
+      if (!this.isValidData(params)) return 0;
+      return this.entityManager.count(this.entityName, params);
     });
   }
 

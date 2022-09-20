@@ -15,9 +15,10 @@ import { User } from '../../test/user/user.entity';
 import { UserModule } from '../../test/user/user.module';
 import { UserRepository } from '../../test/user/user.repository';
 import { AppModule } from '../app/app.module';
+import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { SchemaService } from '../schema/schema.service';
-import { OrmQueryOrder, OrmStoreKey } from './orm.enum';
+import { OrmQueryOrder } from './orm.enum';
 import { OrmModule } from './orm.module';
 
 it('should export orm repository tests', () => {
@@ -62,7 +63,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
 
       const mikroOrm = app.get(MikroORM);
       const entityManager = mikroOrm.em.fork({ clear: true, useContext: true });
-      ContextStorage.getStore().set(OrmStoreKey.ENTITY_MANAGER, entityManager);
+      ContextStorage.getStore().set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
 
       schemaService = app.get(SchemaService);
       addressRepository = app.get(AddressRepository);
@@ -88,24 +89,9 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
     });
 
-    describe('OrmBaseRepository', () => {
-      it('should rollback an asynchronously committed operation', async () => {
-        userRepository.createOneAsync({
-          name: 'ASYNC_CREATED',
-          age: 20,
-        });
-
-        userRepository.rollback();
-        await userRepository.commit();
-
-        const [ user ] = await userRepository.readBy({ name: 'ASYNC_CREATED' });
-        expect(user).toBeUndefined();
-      });
-    });
-
     describe('OrmSubscriber', () => {
       it('should apply beforeCreate hook', async () => {
-        await userRepository.createFrom({
+        await userRepository.create({
           name: 'After Create Hook',
           age: 10,
         });
@@ -163,8 +149,8 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         const persistFlow = async (i: number): Promise<void> => {
           await userRepository.createOne({ name: `PERSIST_CONCURRENT_${i}_0`, age: i });
           await userRepository.createOne({ name: `PERSIST_CONCURRENT_${i}_1`, age: i });
-          await userRepository.createFrom({ name: `PERSIST_CONCURRENT_${i}_2`, age: i });
-          await userRepository.createFrom({ name: `PERSIST_CONCURRENT_${i}_3`, age: i });
+          await userRepository.create({ name: `PERSIST_CONCURRENT_${i}_2`, age: i });
+          await userRepository.create({ name: `PERSIST_CONCURRENT_${i}_3`, age: i });
         };
 
         for (let i = 0; i < iterations; i++) {
@@ -211,7 +197,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should create entities with nested one-to-one relations', async () => {
-        await userRepository.createFrom([
+        await userRepository.create([
           {
             name: 'ONE_TO_ONE_NESTED_1',
             age: 30,
@@ -236,7 +222,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should create entities with nested one-to-many relations', async () => {
-        await userRepository.createFrom([
+        await userRepository.create([
           {
             name: 'ONE_TO_MANY_NESTED_1',
             age: 50,
@@ -276,12 +262,12 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should create entities with pivot many-to-many relations', async () => {
-        const [ createdUser1, createdUser2 ] = await userRepository.createFrom([
+        const [ createdUser1, createdUser2 ] = await userRepository.create([
           { name: 'MANY_TO_MANY_PIVOT_1', age: 70 },
           { name: 'MANY_TO_MANY_PIVOT_2', age: 80 },
         ]);
 
-        await relationRepository.createFrom({ child: createdUser1.id, parent: createdUser2.id });
+        await relationRepository.create({ child: createdUser1.id, parent: createdUser2.id });
 
         const populate = [ 'children', 'parents' ];
         const [ user1 ] = await userRepository.readBy({ name: 'MANY_TO_MANY_PIVOT_1' }, { populate });
@@ -301,7 +287,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
 
     describe('OrmReadRepository', () => {
       it('should read entities respecting order and sort', async () => {
-        await userRepository.createFrom([
+        await userRepository.create([
           { name: '0_SORT_1', age: 10 },
           { name: '0_SORT_2', age: 20 },
           { name: '0_SORT_3', age: 30 },
@@ -326,7 +312,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should read entities respecting order, sort, limit and offset', async () => {
-        await userRepository.createFrom([
+        await userRepository.create([
           { name: 'Z_SORT_1', age: 10 },
           { name: 'Z_SORT_2', age: 20 },
           { name: 'Z_SORT_3', age: 30 },
@@ -383,7 +369,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should upsert entities with one-to-many relationships accordingly', async () => {
-        await userRepository.createFrom([
+        await userRepository.create([
           {
             name: 'UPSERT_1M_USER_1',
             age: 10,
@@ -455,13 +441,13 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
 
       it('should upsert entities with many-to-many relationships accordingly', async () => {
-        const [ user1 ] = await userRepository.createFrom({ name: 'UPSERT_MN_USER_1', age: 10 });
-        const [ user2 ] = await userRepository.createFrom({ name: 'UPSERT_MN_USER_2', age: 20 });
-        const [ product1 ] = await productRepository.createFrom({ title: 'UPSERT_MN_PRODUCT_1', price: 1 });
-        const [ product2 ] = await productRepository.createFrom({ title: 'UPSERT_MN_PRODUCT_2', price: 2 });
-        const [ product3 ] = await productRepository.createFrom({ title: 'UPSERT_MN_PRODUCT_3', price: 3 });
+        const [ user1 ] = await userRepository.create({ name: 'UPSERT_MN_USER_1', age: 10 });
+        const [ user2 ] = await userRepository.create({ name: 'UPSERT_MN_USER_2', age: 20 });
+        const [ product1 ] = await productRepository.create({ title: 'UPSERT_MN_PRODUCT_1', price: 1 });
+        const [ product2 ] = await productRepository.create({ title: 'UPSERT_MN_PRODUCT_2', price: 2 });
+        const [ product3 ] = await productRepository.create({ title: 'UPSERT_MN_PRODUCT_3', price: 3 });
 
-        await orderRepository.createFrom([
+        await orderRepository.create([
           { id: 'UPSERT_MN_ORDER_1', user: user1, products: [ product1 ] },
           { id: 'UPSERT_MN_ORDER_2', user: user1, products: [ product1 ] },
         ]);

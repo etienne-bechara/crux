@@ -1,179 +1,45 @@
-import { AnyEntity, CountOptions, DeleteOptions, EntityData, EntityManager, EntityName, EntityRepository, FilterQuery, FindOneOptions, FindOneOrFailOptions, FindOptions, Loaded, Primary, RequiredEntityData, UpdateOptions } from '@mikro-orm/core';
+import { EntityManager, EntityName } from '@mikro-orm/core';
 import { QueryBuilder as MySqlQueryBuilder } from '@mikro-orm/mysql';
 import { QueryBuilder as PostgreSqlQueryBuilder } from '@mikro-orm/postgresql';
 import { BadRequestException, ConflictException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { setTimeout } from 'timers/promises';
 
+import { ContextStorageKey } from '../../context/context.enum';
 import { ContextStorage } from '../../context/context.storage';
 import { TraceService } from '../../trace/trace.service';
-import { OrmStoreKey } from '../orm.enum';
-import { OrmExceptionHandlerParams, OrmRepositoryOptions, OrmRunWithinContextParams } from '../orm.interface';
+import { OrmExceptionHandlerParams, OrmRepositoryOptions } from '../orm.interface';
 
-export abstract class OrmBaseRepository<Entity extends object> extends EntityRepository<Entity> {
+export abstract class OrmBaseRepository<Entity extends object> {
 
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
     protected readonly repositoryOptions: OrmRepositoryOptions<Entity>,
-  ) {
-    super(entityManager, entityName);
-  }
+  ) { }
 
   /**
-   * Acquires current request storage.
+   * Persist changes to provided entities.
+   * @param entities
    */
-  private getStore(): Map<string, any> {
-    return ContextStorage.getStore();
-  }
-
-  /**
-   * Sets pending commit flag.
-   */
-  private setCommitPending(): void {
-    this.getStore()?.set(OrmStoreKey.COMMIT_PENDING, true);
-  }
-
-  /**
-   * Clears pending commit flag.
-   */
-  private clearCommitPending(): void {
-    this.getStore()?.set(OrmStoreKey.COMMIT_PENDING, false);
-  }
-
-  /**
-   * Execute all pending entity changes.
-   * @param retries
-   */
-  private async sync(retries: number = 0): Promise<void> {
-    this.clearCommitPending();
-
-    try {
-      await this.entityManager.flush();
-      this.entityManager.clear();
-    }
-    catch (e) {
-      return OrmBaseRepository.handleException({
-        caller: (retries) => this.sync(retries),
-        retries,
-        error: e,
-      });
-    }
-  }
-
-  /**
-   * Executes target operation wrapped into a tracing span.
-   * In the event of an exception, register span as failed and rethrow.
-   * @param spanSuffix
-   * @param operation
-   */
-  protected runWithinSpan<T>(spanSuffix: string, operation: () => Promise<T>): Promise<T> {
-    return this.runWithinSpanHandler({
-      name: `${this.entityName}Repository.${spanSuffix}()`,
-      operation,
+  public commit(entities?: Entity | Entity[]): Promise<void> {
+    return this.runWithinSpan('commit', async () => {
+      await this.entityManager.persistAndFlush(entities);
     });
-  }
-
-  /**
-   * Executes target operation wrapped into a tracing span, as wll as
-   * clear entity manager.
-   * In the event of an exception, register span as failed and rethrow.
-   * @param spanSuffix
-   * @param operation
-   */
-  protected runWithinClearContextSpan<T>(spanSuffix: string, operation: () => Promise<T>): Promise<T> {
-    return this.runWithinSpanHandler({
-      name: `${this.entityName}Repository.${spanSuffix}()`,
-      clear: true,
-      operation,
-    });
-  }
-
-  /**
-   * Executes target operation wrapped into a tracing span, allow to
-   * optionally run in a clear context as well.
-   * In the event of an exception, register span as failed and rethrow.
-   * @param params
-   */
-  private runWithinSpanHandler<T>(params: OrmRunWithinContextParams<T>): Promise<T> {
-    const { name, clear, operation } = params;
-
-    return TraceService.startActiveSpan(name, { }, async (span) => {
-      try {
-        const result = !clear
-          ? await operation()
-          : await ContextStorage.run(new Map(), () => {
-            const store = ContextStorage.getStore();
-            const entityManager = this.entityManager.fork({ clear: true, useContext: true });
-            store.set(OrmStoreKey.ENTITY_MANAGER, entityManager);
-            return operation();
-          });
-
-        span.setStatus({ code: 1 });
-        return result;
-      }
-      catch (e) {
-        span.recordException(e as Error);
-        span.setStatus({ code: 2, message: e.message });
-        throw e;
-      }
-      finally {
-        span.end();
-      }
-    });
-  }
-
-  /**
-   * Validates if provided data is valid as single or multiple entities.
-   * @param entities
-   */
-  protected isValidEntity(entities: Entity | Entity[]): boolean {
-    return Array.isArray(entities) ? entities.length > 0 : !!entities;
-  }
-
-  /**
-   * Mark entities changes to be removed on the next commit call.
-   * @param entities
-   */
-  protected removeAsync(entities: Entity | Entity[]): void {
-    if (!this.isValidEntity(entities)) return;
-    this.entityManager.remove(entities);
-    this.setCommitPending();
-  }
-
-  /**
-   * Mark entities changes to be persisted on the next commit call.
-   * @param entities
-   */
-  public commitAsync(entities: Entity | Entity[]): void {
-    if (!this.isValidEntity(entities)) return;
-    this.entityManager.persist(entities);
-    this.setCommitPending();
-  }
-
-  /**
-   * Persist all entities changes, if any entity is provided
-   * mark it for persistance prior to committing.
-   * @param entities
-   */
-  public async commit(entities?: Entity | Entity[]): Promise<void> {
-    if (entities) {
-      this.commitAsync(entities);
-    }
-
-    await this.sync();
-  }
-
-  /**
-   * Clear all pending operations on entity manager.
-   */
-  public rollback(): void {
-    this.entityManager.clear();
   }
 
   /**
    * Creates a query builder instance .
    */
-  public createQueryBuilder<Entity extends object>(): MySqlQueryBuilder<Entity> | PostgreSqlQueryBuilder<Entity> {
+  public createQueryBuilder(): MySqlQueryBuilder<Entity> | PostgreSqlQueryBuilder<Entity> {
     return this.entityManager['createQueryBuilder'](this.entityName);
+  }
+
+  /**
+   * Checks if provided data is valid as single or multiple entities.
+   * @param data
+   */
+  protected isValidData(data: unknown | unknown[]): boolean {
+    return Array.isArray(data) ? data.length > 0 : !!data;
   }
 
   /**
@@ -215,6 +81,52 @@ export abstract class OrmBaseRepository<Entity extends object> extends EntityRep
   }
 
   /**
+   * Executes target operation wrapped into:
+   * - Shared exception handler to standardize erros as HTTP codes
+   * - A children tracing span
+   * - Clear entity manager context.
+   * @param spanSuffix
+   * @param operation
+   * @param retries
+   */
+  protected async runWithinSpan<T>(spanSuffix: string, operation: () => Promise<T>, retries = 0): Promise<T> {
+    const spanName = `${this.entityName}Repository.${spanSuffix}()`;
+
+    try {
+      const traceResult = await TraceService.startActiveSpan(spanName, { }, async (span) => {
+        try {
+          const result = await ContextStorage.run(new Map(), () => {
+            const store = ContextStorage.getStore();
+            const entityManager = this.entityManager.fork({ clear: true, useContext: true });
+            store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+            return operation();
+          });
+
+          span.setStatus({ code: 1 });
+          return result;
+        }
+        catch (e) {
+          span.recordException(e as Error);
+          span.setStatus({ code: 2, message: e.message });
+          throw e;
+        }
+        finally {
+          span.end();
+        }
+      });
+
+      return traceResult;
+    }
+    catch (e) {
+      return this.handleException({
+        caller: (retries) => this.runWithinSpan(spanSuffix, operation, retries),
+        retries,
+        error: e,
+      });
+    }
+  }
+
+  /**
    * Handle all query exceptions, check if retry is possible by comparing
    * known exceptions to the error.
    *
@@ -224,7 +136,7 @@ export abstract class OrmBaseRepository<Entity extends object> extends EntityRep
    * Finally, if no match, throw as internal error.
    * @param params
    */
-  public static async handleException(params: OrmExceptionHandlerParams): Promise<any> {
+  private async handleException(params: OrmExceptionHandlerParams): Promise<any> {
     const { caller, error, retries } = params;
     const { message } = error;
 
@@ -232,7 +144,7 @@ export abstract class OrmBaseRepository<Entity extends object> extends EntityRep
     const isRetryable = retryableExceptions.some((r) => message.includes(r));
 
     if (isRetryable && retries < 10) {
-      await new Promise((r) => setTimeout(r, 500));
+      await setTimeout(500);
       return caller(retries + 1);
     }
 
@@ -266,170 +178,6 @@ export abstract class OrmBaseRepository<Entity extends object> extends EntityRep
     }
 
     throw new InternalServerErrorException(error);
-  }
-
-  /**
-   * Use `update()`.
-   * @param entity
-   * @param data
-   * @deprecated
-   */
-  public assign(entity: Entity, data: EntityData<Entity>): Entity {
-    return super.assign(entity, data);
-  }
-
-  /**
-   * Use `countBy()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public count(where?: FilterQuery<Entity>, options?: CountOptions<Entity>): Promise<number> {
-    return super.count(where, options);
-  }
-
-  /**
-   * Use `createFrom()`.
-   * @param data
-   * @deprecated
-   */
-  public create(data: RequiredEntityData<Entity>): Entity {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return super.create(data);
-  }
-
-  /**
-   * Use `commit()`.
-   * @deprecated
-   */
-  public async flush(): Promise<void> {
-    return super.flush();
-  }
-
-  /**
-   * Use `readBy()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public find<P extends string = never>(
-    where: FilterQuery<Entity>, options?: FindOptions<Entity, P>,
-  ): Promise<Loaded<Entity, P>[]> {
-    // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
-    return super.find(where, options);
-  }
-
-  /**
-   * Use `readBy()`.
-   * @param options
-   * @deprecated
-   */
-  public findAll<P extends string = never>(options?: FindOptions<Entity, P>): Promise<Loaded<Entity, P>[]> {
-    return super.findAll(options);
-  }
-
-  /**
-   * Use `readOne()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public findOne<P extends string = never>(
-    where: FilterQuery<Entity>, options?: FindOneOptions<Entity, P>,
-  ): Promise<Loaded<Entity, P> | null> {
-    return super.findOne(where, options);
-  }
-
-  /**
-   * Use `readOneOrFail()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public findOneOrFail<P extends string = never>(
-    where: FilterQuery<Entity>, options?: FindOneOrFailOptions<Entity, P>,
-  ): Promise<Loaded<Entity, P>> {
-    return super.findOneOrFail(where, options);
-  }
-
-  /**
-   * Use `readPaginatedBy()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public findAndCount<P extends string = never>(
-    where: FilterQuery<Entity>, options?: FindOptions<Entity, P>,
-  ): Promise<[Loaded<Entity, P>[], number]> {
-    return super.findAndCount(where, options);
-  }
-
-  /**
-   * Use `deleteBy()`.
-   * @param where
-   * @param options
-   * @deprecated
-   */
-  public nativeDelete(where: FilterQuery<Entity>, options?: DeleteOptions<Entity>): Promise<number> {
-    return super.nativeDelete(where, options);
-  }
-
-  /**
-   * Use `createFrom()`.
-   * @param data
-   * @deprecated
-   */
-  public nativeInsert(data: EntityData<Entity>): Promise<Primary<Entity>> {
-    return super.nativeInsert(data);
-  }
-
-  /**
-   * Use `updateBy()`.
-   * @param where
-   * @param data
-   * @param options
-   * @deprecated
-   */
-  public nativeUpdate(
-    where: FilterQuery<Entity>, data: EntityData<Entity>, options?: UpdateOptions<Entity>,
-  ): Promise<number> {
-    return super.nativeUpdate(where, data, options);
-  }
-
-  /**
-   * Use `commitAsync()`.
-   * @param entity
-   * @deprecated
-   */
-  public persist(entity: AnyEntity | AnyEntity[]): EntityManager {
-    return super.persist(entity);
-  }
-
-  /**
-   * Use `commit()`.
-   * @param entity
-   * @deprecated
-   */
-  public async persistAndFlush(entity: AnyEntity | AnyEntity[]): Promise<void> {
-    return super.persistAndFlush(entity);
-  }
-
-  /**
-   * Use `deleteAsync()`.
-   * @param entity
-   * @deprecated
-   */
-  public remove(entity: AnyEntity | AnyEntity[]): EntityManager {
-    return super.remove(entity);
-  }
-
-  /**
-   * Use `delete()`.
-   * @param entity
-   * @deprecated
-   */
-  public async removeAndFlush(entity: AnyEntity | AnyEntity[]): Promise<void> {
-    return super.removeAndFlush(entity);
   }
 
 }
