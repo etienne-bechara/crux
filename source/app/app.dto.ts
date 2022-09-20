@@ -68,9 +68,6 @@ export class AppStatusCpu {
 
 export class AppStatusNetwork {
 
-  @IsString()
-  public publicIp: string;
-
   @IsObject({ }, { each: true })
   public interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>;
 

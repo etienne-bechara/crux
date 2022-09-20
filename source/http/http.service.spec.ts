@@ -1,13 +1,21 @@
 import { HttpStatus, Injectable, Module } from '@nestjs/common';
 
 import { AppModule } from '../app/app.module';
-import { AppService } from '../app/app.service';
 import { HttpRequestParams, HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
 
 @Injectable()
 class JsonService {
+
+  public constructor(
+    private readonly httpService: HttpService,
+  ) { }
+
+}
+
+@Injectable()
+class GoogleService {
 
   public constructor(
     private readonly httpService: HttpService,
@@ -32,18 +40,35 @@ class JsonService {
 })
 class JsonModule { }
 
+@Module({
+  imports: [
+    HttpModule.register({
+      prefixUrl: 'https://www.google.com',
+      resolveBodyOnly: false,
+      responseType: 'text',
+    }),
+  ],
+  providers: [
+    GoogleService,
+  ],
+  exports: [
+    GoogleService,
+  ],
+})
+class GoogleModule { }
+
 describe('HttpService', () => {
-  let appHttpService: HttpService;
+  let googleHttpService: HttpService;
   let jsonHttpService: HttpService;
 
   beforeAll(async () => {
     const app = await AppModule.compile({
       disableAll: true,
-      imports: [ JsonModule ],
+      imports: [ GoogleModule, JsonModule ],
     });
 
-    appHttpService = app.get(AppService)['httpService'];
     jsonHttpService = app.get(JsonService)['httpService'];
+    googleHttpService = app.get(GoogleService)['httpService'];
   });
 
   describe('get', () => {
@@ -161,10 +186,7 @@ describe('HttpService', () => {
 
   describe('parseCookies', () => {
     it('should parse cookies from response headers', async () => {
-      const res: HttpResponse<string> = await appHttpService.get('https://www.google.com', {
-        responseType: 'text',
-        resolveBodyOnly: false,
-      });
+      const res: HttpResponse<string> = await googleHttpService.get('');
 
       expect(res.cookies[0]).toBeDefined();
       expect(res.cookies[0].domain).toMatch(/google/g);
@@ -187,7 +209,7 @@ describe('HttpService', () => {
       };
 
       const expectation = 'string=string&stringArray=string|string&test=test1|test2|test3';
-      const result = appHttpService['buildRequestParams'](params);
+      const result = googleHttpService['buildRequestParams'](params);
 
       expect(result.searchParams).toStrictEqual(expectation);
     });

@@ -27,7 +27,7 @@ export class AppController {
     description: 'Acquire information regarding operating system, CPU, memory, and network.',
     schema: AppStatus,
   })
-  public getStatus(): Promise<AppStatus> {
+  public getStatus(): AppStatus {
     return this.appService.getStatus();
   }
 

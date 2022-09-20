@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
@@ -27,7 +27,9 @@ export class HttpService {
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly appConfig: AppConfig,
     private readonly logService?: LogService,
+    @Inject(forwardRef(() => MetricService))
     private readonly metricService?: MetricService,
+    @Inject(forwardRef(() => TraceService))
     private readonly traceService?: TraceService,
   ) {
     if (this.httpModuleOptions.disableTelemetry) {

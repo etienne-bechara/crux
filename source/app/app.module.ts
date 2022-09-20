@@ -59,6 +59,14 @@ export class AppModule {
   }
 
   /**
+   * Closes application instance.
+   */
+  public static async close(): Promise<void> {
+    await this.instance.close();
+    this.instance = undefined;
+  }
+
+  /**
    * Boots an instance of a Nest Application using Fastify, and listen
    * on desired port and hostname.
    *
