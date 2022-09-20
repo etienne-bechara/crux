@@ -4,8 +4,6 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import os from 'os';
 
 import { ContextService } from '../context/context.service';
-import { HttpService } from '../http/http.service';
-import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { AppStatus } from './app.dto';
 import { AppTraffic } from './app.enum';
@@ -13,44 +11,15 @@ import { AppTraffic } from './app.enum';
 @Injectable()
 export class AppService {
 
-  private publicIp: string;
-
   public constructor(
     private readonly contextService: ContextService,
-    private readonly httpService: HttpService,
-    private readonly logService: LogService,
     private readonly metricService: MetricService,
   ) { }
 
   /**
-   * Returns current server ip and caches result for future use.
-   * In case of error log an exception but do not throw.
-   */
-  public async getPublicIp(): Promise<string> {
-    if (!this.publicIp) {
-      this.publicIp = await this.httpService.get('https://api64.ipify.org', {
-        responseType: 'text',
-        timeout: 2500,
-      });
-    }
-
-    return this.publicIp;
-  }
-
-  /**
    * Reads data regarding current runtime and network.
-   * Let network acquisition fail if unable to fetch public IP.
    */
-  public async getStatus(): Promise<AppStatus> {
-    let publicIp: string;
-
-    try {
-      publicIp = await this.getPublicIp();
-    }
-    catch (e) {
-      this.logService.warning('Failed to acquire public IP', e as Error);
-    }
-
+  public getStatus(): AppStatus {
     return {
       system: {
         version: os.version(),
@@ -66,7 +35,6 @@ export class AppService {
       },
       cpus: os.cpus(),
       network: {
-        publicIp,
         interfaces: os.networkInterfaces(),
       },
     };
