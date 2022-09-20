@@ -1,3 +1,18 @@
+# [4.25.0](https://github.com/etienne-bechara/crux/compare/v4.24.4...v4.25.0) (2022-09-20)
+
+
+### Bug Fixes
+
+* bump orm to 5.4.2 ([cbc4655](https://github.com/etienne-bechara/crux/commit/cbc465521ba07b82a5606d993bebc3ec77d7bce4))
+* orm tests ([aa133ac](https://github.com/etienne-bechara/crux/commit/aa133ac91d2333af8f2906bd35077fd8d9594891))
+* remove app get client ip ([dc21231](https://github.com/etienne-bechara/crux/commit/dc21231548c4ef0d4bae46098b80a7ea988f6228))
+* remove unnecessary orm methods ([fb2c403](https://github.com/etienne-bechara/crux/commit/fb2c4036ae384065544db6c09be7db9d25120b5e))
+
+
+### Features
+
+* add ORM wip ([13d6a47](https://github.com/etienne-bechara/crux/commit/13d6a479e4d4819937fcc903acafcd26d718e023))
+
 ## [4.24.4](https://github.com/etienne-bechara/crux/compare/v4.24.3...v4.24.4) (2022-09-19)
 
 
