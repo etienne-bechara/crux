@@ -5,7 +5,7 @@ import { ConflictException } from '@nestjs/common';
 import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions, OrmUpdateParams, OrmUpsertOptions } from '../orm.interface';
 import { OrmCreateRepository } from './orm.repository.create';
 
-export abstract class OrmUpdateRepository<Entity> extends OrmCreateRepository<Entity> {
+export abstract class OrmUpdateRepository<Entity extends object> extends OrmCreateRepository<Entity> {
 
   public constructor(
     protected readonly entityManager: EntityManager,

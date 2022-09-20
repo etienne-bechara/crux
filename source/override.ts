@@ -13,10 +13,9 @@ export { EntityName, MetadataStorage, NotFoundError, Subscriber } from '@mikro-o
 export { EntityRepository as MySqlEntityRepository } from '@mikro-orm/mysql';
 export { EntityRepository as PostgreSqlEntityRepository } from '@mikro-orm/postgresql';
 export { HttpAdapterHost, Logger, ValidationError, Type } from '@nestjs/common';
-export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
-
 export { Type as SetType } from 'class-transformer';
 export { equals, isEmpty, min, max } from 'class-validator';
+export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
 
 export { Controller, Get, Post, Put, Patch, Delete, Head, Options } from './app/app.decorator';
 export { CacheInterceptor } from './cache/cache.interceptor';

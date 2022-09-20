@@ -3,7 +3,7 @@ import { EntityManager, EntityName } from '@mikro-orm/core';
 import { OrmDeleteOptions, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmUpdateRepository } from './orm.repository.update';
 
-export abstract class OrmDeleteRepository<Entity> extends OrmUpdateRepository<Entity> {
+export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpdateRepository<Entity> {
 
   public constructor(
     protected readonly entityManager: EntityManager,

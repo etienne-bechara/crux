@@ -5,7 +5,7 @@ import { OrmPagination } from '../orm.dto';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
-export abstract class OrmReadRepository<Entity> extends OrmBaseRepository<Entity> {
+export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRepository<Entity> {
 
   public constructor(
     protected readonly entityManager: EntityManager,

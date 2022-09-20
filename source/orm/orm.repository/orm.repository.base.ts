@@ -8,7 +8,7 @@ import { TraceService } from '../../trace/trace.service';
 import { OrmStoreKey } from '../orm.enum';
 import { OrmExceptionHandlerParams, OrmRepositoryOptions, OrmRunWithinContextParams } from '../orm.interface';
 
-export abstract class OrmBaseRepository<Entity> extends EntityRepository<Entity> {
+export abstract class OrmBaseRepository<Entity extends object> extends EntityRepository<Entity> {
 
   public constructor(
     protected readonly entityManager: EntityManager,

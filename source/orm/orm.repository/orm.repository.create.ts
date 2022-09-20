@@ -3,7 +3,7 @@ import { EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
 import { OrmRepositoryOptions } from '../orm.interface';
 import { OrmReadRepository } from './orm.repository.read';
 
-export abstract class OrmCreateRepository<Entity> extends OrmReadRepository<Entity> {
+export abstract class OrmCreateRepository<Entity extends object> extends OrmReadRepository<Entity> {
 
   public constructor(
     protected readonly entityManager: EntityManager,
