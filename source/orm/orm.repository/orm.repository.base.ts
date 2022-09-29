@@ -91,16 +91,21 @@ export abstract class OrmBaseRepository<Entity extends object> {
    */
   protected async runWithinSpan<T>(spanSuffix: string, operation: () => Promise<T>, retries = 0): Promise<T> {
     const spanName = `${this.entityName}Repository.${spanSuffix}()`;
+    const hasContext = !!ContextStorage.getStore();
+    const shareableContext = [ 'count', 'populate', 'read' ];
+    const cleanContext = !hasContext || !shareableContext.includes(spanSuffix);
 
     try {
       const traceResult = await TraceService.startActiveSpan(spanName, { }, async (span) => {
         try {
-          const result = await ContextStorage.run(new Map(), () => {
-            const store = ContextStorage.getStore();
-            const entityManager = this.entityManager.fork({ clear: true, useContext: true });
-            store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
-            return operation();
-          });
+          const result = cleanContext
+            ? await ContextStorage.run(new Map(), () => {
+              const store = ContextStorage.getStore();
+              const entityManager = this.entityManager.fork({ clear: true, useContext: true });
+              store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+              return operation();
+            })
+            : await operation();
 
           span.setStatus({ code: 1 });
           return result;
