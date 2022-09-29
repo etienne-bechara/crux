@@ -1,9 +1,7 @@
 import { BadRequestException, Controller, Get, Param } from '../../../../source/override';
 import { RandomService } from './random.service';
 
-@Controller('random', {
-  hidden: true,
-})
+@Controller('random')
 export class RandomController {
 
   public constructor(

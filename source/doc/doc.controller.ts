@@ -1,6 +1,5 @@
-import { Header, Render } from '@nestjs/common';
+import { Controller, Get, Header, Render } from '@nestjs/common';
 
-import { Controller, Get } from '../app/app.decorator';
 import { MemoryService } from '../memory/memory.service';
 import { DocSpecification } from './doc.dto';
 import { DocOptions } from './doc.interface';
@@ -17,18 +16,14 @@ export class DocController {
     private readonly memoryService: MemoryService,
   ) { }
 
-  @Get({ hidden: true })
+  @Get()
   @Render('doc.handlebars')
   @Header('Content-Security-Policy', securityPolicy)
   public getDocs(): DocOptions {
     return this.documentService.buildRenderOptions();
   }
 
-  @Get('json', {
-    title: 'Read OpenAPI Spec',
-    description: 'Generate OpenAPI specification in JSON format, useful for importing at request clients.',
-    schema: DocSpecification,
-  })
+  @Get('json')
   public getDocsJson(): DocSpecification {
     const document: string = this.memoryService.get('openApiSpecification');
     return JSON.parse(document);

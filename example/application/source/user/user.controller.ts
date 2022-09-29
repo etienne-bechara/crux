@@ -1,9 +1,10 @@
 import { Cache } from '../../../../source/cache/cache.decorator';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../../source/override';
+import { ApiTags, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../../source/override';
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
 
@@ -11,7 +12,7 @@ export class UserController {
     private readonly userService: UserService,
   ) { }
 
-  @Get({ schema: UserCollection })
+  @Get()
   public getUser(): UserCollection {
     return this.userService.readUsers();
   }
@@ -19,12 +20,12 @@ export class UserController {
   @Cache<User>({
     buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
   })
-  @Get(':id', { schema: User })
+  @Get(':id')
   public getUserById(@Param() params: UserIdDto): User {
     return this.userService.readUserById(params.id);
   }
 
-  @Post({ schema: User })
+  @Post()
   public postUser(@Body() body: UserCreateDto): Promise<User> {
     return this.userService.createUser(body);
   }
@@ -32,7 +33,7 @@ export class UserController {
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  @Patch(':id', { schema: User })
+  @Patch(':id')
   public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
     return this.userService.updateUserById(params.id, body);
   }

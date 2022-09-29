@@ -26,6 +26,11 @@ void AppModule.boot({
     url: 'http://127.0.0.1:55681/v1/traces',
     pushInterval: 5000,
   },
+  docs: {
+    tagGroups: [
+      { name: 'User', tags: [ 'user' ] },
+    ],
+  },
 
   // Since we are running using files from package source we must disable the
   // module scanning and manually import example modules

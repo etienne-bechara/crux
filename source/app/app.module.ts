@@ -34,7 +34,6 @@ import { TransformInterceptor } from '../transform/transform.interceptor';
 import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
-import { TagStorage } from './app.decorator';
 import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
 import { AppOptions } from './app.interface';
@@ -248,26 +247,10 @@ export class AppModule {
       },
     });
 
-    // Standardize tag grouping
-    const appTagGroups = [
-      ...tagGroups || [ ],
-      { name: 'Application', tags: [ 'Docs', 'Metrics', 'Status' ] },
-    ];
-
-    const appTags = new Set(appTagGroups.flatMap((t) => t.tags));
-    const ungroupedTags = TagStorage.filter((t) => !appTags.has(t));
-
-    if (ungroupedTags.length > 0) {
-      appTagGroups.push({ name: 'API', tags: ungroupedTags });
-    }
-
-    appTagGroups.sort((a, b) => a.name > b.name ? 1 : -1);
-    for (const t of appTagGroups) t.tags.sort();
-
     // Saves specification to memory
     memoryService.set('openApiSpecification', JSON.stringify(document));
 
-    document['x-tagGroups'] = appTagGroups;
+    document['x-tagGroups'] = tagGroups;
     document.info['x-logo'] = logo;
 
     SwaggerModule.setup('openapi', this.instance, document, {
