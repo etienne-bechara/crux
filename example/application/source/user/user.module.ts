@@ -1,4 +1,5 @@
-import { Module } from '../../../../source/override';
+import { Module } from '@bechara/crux';
+
 import { ZipModule } from '../zip/zip.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';

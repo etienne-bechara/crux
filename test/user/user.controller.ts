@@ -1,6 +1,5 @@
-import { Body, Param, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 
-import { Controller, Delete, Get, Patch, Post, Put } from '../../source/app/app.decorator';
 import { UserCreateDto, UserPagination, UserReadDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -12,52 +11,38 @@ export class UserController {
     private readonly userRepository: UserRepository,
   ) { }
 
-  @Get({
-    schema: UserPagination,
-  })
+  @Get()
   public get(@Query() query: UserReadDto): Promise<UserPagination> {
     return this.userRepository.readPaginatedBy(query);
   }
 
-  @Get(':id', {
-    schema: User,
-  })
+  @Get(':id')
   public getById(@Param('id') id: string): Promise<User> {
     const populate = [ 'address' ];
     return this.userRepository.readByIdOrFail(id, { populate });
   }
 
-  @Post({
-    schema: User,
-  })
+  @Post()
   public post(@Body() body: UserCreateDto): Promise<User> {
     return this.userRepository.createOne(body);
   }
 
-  @Put({
-    schema: User,
-  })
+  @Put()
   public put(@Body() body: UserCreateDto): Promise<User> {
     return this.userRepository.upsertOne(body);
   }
 
-  @Put(':id', {
-    schema: User,
-  })
+  @Put(':id')
   public putById(@Param('id') id: string, @Body() body: UserCreateDto): Promise<User> {
     return this.userRepository.updateById(id, body);
   }
 
-  @Patch(':id', {
-    schema: User,
-  })
+  @Patch(':id')
   public patchById(@Param('id') id: string, @Body() body: UserUpdateDto): Promise<User> {
     return this.userRepository.updateById(id, body);
   }
 
-  @Delete(':id', {
-    schema: User,
-  })
+  @Delete(':id')
   public deleteById(@Param('id') id: string): Promise<User> {
     return this.userRepository.deleteById(id);
   }

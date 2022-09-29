@@ -1,4 +1,5 @@
-import { HttpModule, Module } from '../../../../source/override';
+import { HttpModule, Module } from '@bechara/crux';
+
 import { RandomController } from './random.controller';
 import { RandomService } from './random.service';
 

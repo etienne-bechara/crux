@@ -1,0 +1,8 @@
+/coverage
+/crux
+/dist
+/node_modules
+
+.eslintcache
+.env
+test-report.xml

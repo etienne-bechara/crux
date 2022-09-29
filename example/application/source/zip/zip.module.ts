@@ -1,4 +1,5 @@
-import { HttpModule, Module } from '../../../../source/override';
+import { HttpModule, Module } from '@bechara/crux';
+
 import { ZipConfig } from './zip.config';
 import { ZipController } from './zip.controller';
 import { ZipService } from './zip.service';

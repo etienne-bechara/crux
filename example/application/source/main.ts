@@ -1,29 +1,25 @@
-import { AppModule } from '../../../source/app/app.module';
-import { BucketModule } from './bucket/bucket.module';
-import { RandomModule } from './random/random.module';
-import { UserModule } from './user/user.module';
-import { ZipModule } from './zip/zip.module';
+import { AppModule } from '@bechara/crux';
 
 /**
- * Run with `pnpm dev`.
+ * Run with `pnpm example`.
  * Boots application with full functionalities.
  */
 void AppModule.boot({
   name: 'crux',
   cache: {
-    host: 'localhost',
+    host: 'redis',
     port: 6379,
   },
   loki: {
-    url: 'http://localhost:3100/loki/api/v1/push',
+    url: 'http://loki:3100/loki/api/v1/push',
     pushInterval: 5000,
   },
   metrics: {
-    url: 'http://127.0.0.1:9090/api/v1/write',
+    url: 'http://prometheus:9090/api/v1/write',
     pushInterval: 5000,
   },
   traces: {
-    url: 'http://127.0.0.1:55681/v1/traces',
+    url: 'http://tempo:55681/v1/traces',
     pushInterval: 5000,
   },
   docs: {
@@ -31,14 +27,4 @@ void AppModule.boot({
       { name: 'User', tags: [ 'user' ] },
     ],
   },
-
-  // Since we are running using files from package source we must disable the
-  // module scanning and manually import example modules
-  disableScan: true,
-  imports: [
-    BucketModule,
-    RandomModule,
-    UserModule,
-    ZipModule,
-  ],
 });

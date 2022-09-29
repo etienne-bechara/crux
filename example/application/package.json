@@ -1,0 +1,17 @@
+{
+  "name": "application",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "cd crux && pnpm i --ignore-scripts",
+    "build": "nest build",
+    "start": "node ./source/main.js || (cd dist && node ./source/main.js)"
+  },
+  "dependencies": {
+    "@bechara/crux": "./crux"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "9.1.4",
+    "@types/node": "18.7.23",
+    "typescript": "4.8.4"
+  }
+}

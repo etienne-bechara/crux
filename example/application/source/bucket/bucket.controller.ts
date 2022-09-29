@@ -1,8 +1,5 @@
+import { Cache, CacheService, Controller, Delete, Get, Param } from '@bechara/crux';
 import crypto from 'crypto';
-
-import { Cache } from '../../../../source/cache/cache.decorator';
-import { CacheService } from '../../../../source/cache/cache.service';
-import { Controller, Delete, Get, Param } from '../../../../source/override';
 
 @Controller('bucket')
 export class BucketController {

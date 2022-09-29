@@ -1,4 +1,5 @@
-import { BadRequestException, Controller, Get, Param } from '../../../../source/override';
+import { BadRequestException, Controller, Get, Param } from '@bechara/crux';
+
 import { RandomService } from './random.service';
 
 @Controller('random')

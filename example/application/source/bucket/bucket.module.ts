@@ -1,4 +1,5 @@
-import { Module } from '../../../../source/override';
+import { Module } from '@bechara/crux';
+
 import { BucketController } from './bucket.controller';
 
 @Module({

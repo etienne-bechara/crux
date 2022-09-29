@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": [ "es2020", "dom" ],
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "outDir": "dist",
+    "sourceMap": true,
+    "sourceRoot": "/app",
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

@@ -1,10 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable jsdoc/require-jsdoc */
-import { Body, CallHandler, ExecutionContext, HttpStatus, INestApplication, Injectable, Module, NestInterceptor, ParseArrayPipe, Put, UseInterceptors } from '@nestjs/common';
+import { Body, CallHandler, Controller, ExecutionContext, HttpStatus, INestApplication, Injectable, Module, NestInterceptor, ParseArrayPipe, Post, Put, UseInterceptors } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import supertest from 'supertest';
 
-import { Controller, Post } from '../app/app.decorator';
 import { AppModule } from '../app/app.module';
 import { ContextService } from '../context/context.service';
 import { ToNumber } from '../transform/transform.decorator';

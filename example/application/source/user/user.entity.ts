@@ -1,5 +1,5 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../../../source/override';
-import { OneOf } from '../../../../source/validate/validate.decorator';
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, OneOf } from '@bechara/crux';
+
 import { UserAddressState, UserOneOf } from './user.enum';
 
 export class UserEmployer {

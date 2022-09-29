@@ -1,5 +1,5 @@
-import { Cache } from '../../../../source/cache/cache.decorator';
-import { ApiTags, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../../../source/override';
+import { ApiTags, Body, Cache, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@bechara/crux';
+
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';

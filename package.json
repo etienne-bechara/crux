@@ -27,8 +27,9 @@
   },
   "scripts": {
     "prepare": "husky install .config/husky",
-    "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./example/application/source/main.ts",
-    "example": "cd example && docker-compose up -d && cd .. && pnpm dev",
+    "example": "pnpm example:build && cd example && docker-compose up --build",
+    "example:build": "rimraf ./example/application/crux && pnpm build && pnpm example:assets",
+    "example:assets": "copyfiles -u 1 ./dist/**/* ./example/application/crux/ && copyfiles ./package.json ./pnpm-lock.yaml ./example/application/crux/",
     "build": "rimraf ./dist && pnpm build:index && tsc -p tsconfig.build.json && pnpm build:assets && pnpm build:cleanup",
     "build:index": "rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source",
     "build:assets": "copyfiles -u 1 ./source/doc/doc.handlebars ./dist/",

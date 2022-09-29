@@ -1,5 +1,5 @@
-import { Cache } from '../../../../source/cache/cache.decorator';
-import { Controller, Get, Param } from '../../../../source/override';
+import { Cache, Controller, Get, Param } from '@bechara/crux';
+
 import { Zip } from './zip.interface';
 import { ZipService } from './zip.service';
 

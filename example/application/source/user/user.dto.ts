@@ -1,4 +1,5 @@
-import { ApiProperty, IsNumber, Min, OmitType, PickType, SetType, ValidateNested } from '../../../../source/override';
+import { ApiProperty, IsNumber, Min, OmitType, PickType, SetType, ValidateNested } from '@bechara/crux';
+
 import { User } from './user.entity';
 
 export class UserIdDto extends PickType(User, [ 'id' ]) { }

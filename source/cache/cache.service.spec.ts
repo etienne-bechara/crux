@@ -1,10 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable jsdoc/require-jsdoc */
-import { Get, HttpStatus, INestApplication, Module, Patch } from '@nestjs/common';
+import { Controller, Get, HttpStatus, INestApplication, Module, Patch } from '@nestjs/common';
 import supertest from 'supertest';
 import { setTimeout } from 'timers/promises';
 
-import { Controller } from '../app/app.decorator';
 import { AppModule } from '../app/app.module';
 import { Cache } from './cache.decorator';
 
