@@ -1,3 +1,16 @@
+# [4.26.0](https://github.com/etienne-bechara/crux/compare/v4.25.1...v4.26.0) (2022-09-30)
+
+
+### Bug Fixes
+
+* open api remove controller overrides ([1504bab](https://github.com/etienne-bechara/crux/commit/1504bab27ea911b4944f201f706218252f3f7e74))
+
+
+### Features
+
+* improve open api doc generation ([f0ab27e](https://github.com/etienne-bechara/crux/commit/f0ab27e75c6fd6e31ae2c65fdb6d9d17fbd3d296))
+* support to build sample application ([518ec4b](https://github.com/etienne-bechara/crux/commit/518ec4b52f0d17b321256a0e11e514c65c7ba2b6))
+
 ## [4.25.1](https://github.com/etienne-bechara/crux/compare/v4.25.0...v4.25.1) (2022-09-29)
 
 
