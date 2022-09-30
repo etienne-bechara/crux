@@ -158,27 +158,3 @@ export interface AppExceptionResponse extends Record<string, any> {
   code: number;
   message: string;
 }
-
-export interface AppControllerParams {
-  tags?: string[];
-  hidden?: boolean;
-}
-
-export interface AppMethodParams {
-  /** Sets endpoint as deprecated at documentation. */
-  deprecated?: boolean;
-  /** Omits endpoint at documentation. */
-  hidden?: boolean;
-  /** Endpoint documentation title. */
-  title?: string;
-  /** Endpoint documentation description. */
-  description?: string;
-  /** Endpoint documentation tags. */
-  tags?: string[];
-  /** HTTP status to respond to client, documentation example will included provided code. */
-  status?: HttpStatus;
-  /** Content-Type to respond to client, documentation example will included provided code. */
-  contentType?: string;
-  /** Response DTO schema including typings decorators to generate documentation. */
-  schema?: any;
-}

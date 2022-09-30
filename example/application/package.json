@@ -2,7 +2,7 @@
   "name": "application",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd crux && pnpm i --ignore-scripts",
+    "postinstall": "cd crux && pnpm i --ignore-scripts --prod",
     "build": "nest build",
     "start": "node ./source/main.js || (cd dist && node ./source/main.js)"
   },
