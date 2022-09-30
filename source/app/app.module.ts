@@ -17,6 +17,7 @@ import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
+import { DocTagStorage } from '../doc/doc.decorator';
 import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
 import { LogInterceptor } from '../log/log.interceptor';
@@ -220,6 +221,11 @@ export class AppModule {
         : proxyPrefix || globalPrefix;
 
       builder.addServer(`/${server}`);
+    }
+
+    for (const tag of DocTagStorage) {
+      const { name, description, externalDocs } = tag;
+      builder.addTag(name, description, externalDocs);
     }
 
     // Standardize operation ID names

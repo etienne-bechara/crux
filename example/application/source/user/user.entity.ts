@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, OneOf } from '@bechara/crux';
+import { IsBoolean, IsEmail, IsIn, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength, OneOf } from '@bechara/crux';
 
 import { UserAddressState, UserOneOf } from './user.enum';
 
@@ -60,14 +60,18 @@ export class User {
   public name: string;
 
   @OneOf(UserOneOf.USER_AGE_BIRTH_YEAR)
-  @IsNumber() @Min(0)
+  @IsInt() @Min(0)
   public age?: number;
 
   @OneOf(UserOneOf.USER_AGE_BIRTH_YEAR)
-  @IsNumber()
+  @IsInt()
   @Min(new Date().getFullYear() - 100)
   @Max(new Date().getFullYear())
   public birthYear?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  public alive?: boolean;
 
   @IsOptional()
   @IsString() @MinLength(3)

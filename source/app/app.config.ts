@@ -1,16 +1,36 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-len */
 import { HttpStatus } from '@nestjs/common';
 import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
 import { Config, InjectConfig } from '../config/config.decorator';
+import { DocTheme } from '../doc/doc.interface';
 import { HttpMethod } from '../http/http.enum';
 import { LogSeverity } from '../log/log.enum';
 import { MetricHttpStrategy } from '../metric/metric.enum';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+/**
+ * Builds upon default theme available at:
+ * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
+ */
+export const APP_DEFAULT_DOC_THEME: DocTheme = {
+  logo: {
+    gutter: '25px',
+  },
+  typography: {
+    fontFamily: 'Segoe UI',
+    headings: {
+      fontFamily: 'Segoe UI',
+    },
+    code: {
+      fontFamily: 'Consolas',
+    },
+  },
+};
+
 export const APP_DEFAULT_OPTIONS: AppOptions = {
   name: 'unknown',
   instance: crypto.randomBytes(8).toString('hex'),
@@ -105,31 +125,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     logo: {
       url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png',
     },
-    description: 'This API documentation is automatically generated based on `@nestjs/swagger` decorators.\n'
-      + '\n'
-      + 'For further instructions on how to annotate your models and endpoints check [NestJS - OpenAPI Introduction](https://docs.nestjs.com/openapi/introduction).\n'
-      + '\n'
-      + 'To customize logo, title, description and other layout options, configure the `docs` property during application initialization:\n'
-      + '\n```ts\n'
-      + 'void AppModule.boot({\n'
-      + '  docs: {\n'
-      + '    title: \'User API\',\n'
-      + '    description: \'Manipulate user related data.\',\n'
-      + '    // ...\n'
-      + '  }\n'
-      + '});\n'
-      + '```',
-    theme: {
-      logo: {
-        gutter: '25px',
-      },
-      typography: {
-        fontFamily: 'Lato',
-        headings: {
-          fontFamily: 'Lato',
-        },
-      },
-    },
+    theme: APP_DEFAULT_DOC_THEME,
   },
 };
 

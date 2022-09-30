@@ -195,7 +195,7 @@ export function NotEquals(comparison: any, validationOptions?: ValidationOptions
 export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsEmpty(validationOptions),
-    ApiProperty(),
+    ApiProperty({ pattern: 'empty' }),
   );
 }
 
@@ -206,7 +206,7 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsNotEmpty(validationOptions),
-    ApiProperty(),
+    ApiProperty({ pattern: 'not empty' }),
   );
 }
 
@@ -230,7 +230,7 @@ export function IsIn(values: any[], validationOptions?: ValidationOptions): Prop
 export function IsNotIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsNotIn(values, validationOptions),
-    ApiProperty(),
+    ApiProperty({ pattern: `not in ${values.join(', ')}` }),
   );
 }
 
@@ -245,7 +245,7 @@ export function IsBoolean(validationOptions?: ValidationOptions): PropertyDecora
 
   return applyDecorators(
     CvIsBoolean(validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -258,7 +258,7 @@ export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator
 
   return applyDecorators(
     CvIsDate(validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -271,7 +271,7 @@ export function IsString(validationOptions?: ValidationOptions): PropertyDecorat
 
   return applyDecorators(
     CvIsString(validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -285,7 +285,7 @@ export function IsNumber(options: IsNumberOptions = { }, validationOptions?: Val
 
   return applyDecorators(
     CvIsNumber(options, validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty({ ...propertyOptions, pattern: 'float' }),
   );
 }
 
@@ -298,7 +298,7 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
 
   return applyDecorators(
     CvIsInt(validationOptions),
-    ApiProperty({ ...propertyOptions }),
+    ApiProperty({ ...propertyOptions, pattern: 'integer' }),
   );
 }
 
@@ -321,7 +321,7 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsEnum(entity, validationOptions),
-    ApiProperty(),
+    ApiProperty({ enum: Object.values(entity) }),
   );
 }
 
@@ -379,7 +379,7 @@ export function IsNumberString(options?: any, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsNumberString(options, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be numeric' }),
+    ApiProperty({ ...propertyOptions, pattern: 'numeric' }),
   );
 }
 
@@ -396,7 +396,7 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, description: `Must contain: \`${seed}\`` }),
+    ApiProperty({ ...propertyOptions, pattern: `contains '${seed}'` }),
   );
 }
 
@@ -411,11 +411,10 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 
   return applyDecorators(
     CvNotContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, description: `Must not contain: \`${seed}\`` }),
+    ApiProperty({ ...propertyOptions, pattern: `not contains '${seed}'` }),
   );
 }
 
-// @NotContains(seed: string)	Checks if the string not contains the seed.
 // @IsAlpha()	Checks if the string contains only letters (a-zA-Z).
 // @IsAlphanumeric()	Checks if the string contains only letters and numbers.
 // @IsDecimal(options?: IsDecimalOptions)	Checks if the string is a valid decimal value. Default IsDecimalOptions are force_decimal=False, decimal_digits: '1,', locale: 'en-US'
@@ -441,7 +440,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be an e-mail address' }),
+    ApiProperty({ ...propertyOptions, pattern: 'e-mail' }),
   );
 }
 
@@ -477,7 +476,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 
   return applyDecorators(
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must obey ISO8601: `YYYY-MM-DD`' }),
+    ApiProperty({ ...propertyOptions, pattern: 'ISO8601' }),
   );
 }
 
@@ -490,7 +489,7 @@ export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator
 
   return applyDecorators(
     CvIsJSON(validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be in JSON format' }),
+    ApiProperty({ ...propertyOptions, pattern: 'JSON' }),
   );
 }
 
@@ -503,7 +502,7 @@ export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator 
 
   return applyDecorators(
     CvIsJWT(validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be a JWT' }),
+    ApiProperty({ ...propertyOptions, pattern: 'JWT' }),
   );
 }
 
@@ -559,7 +558,7 @@ export function IsUrl(options?: any, validationOptions?: ValidationOptions): Pro
 
   return applyDecorators(
     CvIsUrl(options, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be an URL' }),
+    ApiProperty({ ...propertyOptions, pattern: 'URL' }),
   );
 }
 
@@ -575,7 +574,7 @@ export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions, description: 'Must be an UUID' }),
+    ApiProperty({ ...propertyOptions, pattern: 'UUID' }),
   );
 }
 
@@ -636,7 +635,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, description: `Must match regex: \`/${regexPattern.source}/\`` }),
+    ApiProperty({ ...propertyOptions, pattern: `matches /${regexPattern.source}/` }),
   );
 }
 

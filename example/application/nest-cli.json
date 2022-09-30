@@ -12,13 +12,5 @@
       "pnpm-lock.yaml",
       "source"
     ]
-  },
-  "plugins": [
-    {
-      "name": "@nestjs/swagger",
-      "options": {
-        "introspectComments": true
-      }
-    }
-  ]
+  }
 }
