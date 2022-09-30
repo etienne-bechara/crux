@@ -1,3 +1,10 @@
+## [4.25.1](https://github.com/etienne-bechara/crux/compare/v4.25.0...v4.25.1) (2022-09-29)
+
+
+### Bug Fixes
+
+* add shareable read context support to ORM ([207048f](https://github.com/etienne-bechara/crux/commit/207048fd88c32a23046f40b8d4da41d7f6a65ccb))
+
 # [4.25.0](https://github.com/etienne-bechara/crux/compare/v4.24.4...v4.25.0) (2022-09-20)
 
 
