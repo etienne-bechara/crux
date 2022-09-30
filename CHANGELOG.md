@@ -1,3 +1,10 @@
+## [4.26.1](https://github.com/etienne-bechara/crux/compare/v4.26.0...v4.26.1) (2022-09-30)
+
+
+### Bug Fixes
+
+* remove unused interface ([5e8146d](https://github.com/etienne-bechara/crux/commit/5e8146d7157dae387e20e660eb2d4ff8f00d120c))
+
 # [4.26.0](https://github.com/etienne-bechara/crux/compare/v4.25.1...v4.26.0) (2022-09-30)
 
 
