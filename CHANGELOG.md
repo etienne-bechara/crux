@@ -1,3 +1,10 @@
+## [4.26.2](https://github.com/etienne-bechara/crux/compare/v4.26.1...v4.26.2) (2022-10-01)
+
+
+### Bug Fixes
+
+* add orm swagger descriptions ([f4d9a84](https://github.com/etienne-bechara/crux/commit/f4d9a848ae061e49fb8631fc1efcd2c93be5483b))
+
 ## [4.26.1](https://github.com/etienne-bechara/crux/compare/v4.26.0...v4.26.1) (2022-09-30)
 
 
