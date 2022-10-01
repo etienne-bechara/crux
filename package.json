@@ -27,6 +27,7 @@
   },
   "scripts": {
     "prepare": "husky install .config/husky",
+    "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./dev/main.ts",
     "example": "pnpm example:build && cd example && docker-compose up --build",
     "example:build": "rimraf ./example/application/crux && pnpm build && pnpm example:assets",
     "example:assets": "copyfiles -u 1 ./dist/**/* ./example/application/crux/ && copyfiles ./package.json ./pnpm-lock.yaml ./example/application/crux/",

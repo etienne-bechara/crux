@@ -18,7 +18,7 @@ export class RandomService {
     const promises = [ ];
 
     for (let i = 0; i < amount; i++) {
-      promises.push(this.httpService.get('http://127.0.0.1:8080/random'));
+      promises.push(this.httpService.get('http://localhost:8080/random'));
     }
 
     return Promise.allSettled(promises);

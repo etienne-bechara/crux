@@ -2,7 +2,12 @@ import { AppModule } from '@bechara/crux';
 
 /**
  * Run with `pnpm example`.
- * Boots application with full functionalities.
+ *
+ * Boots an example application with full functionalities,
+ * including distributed caching and observability platform.
+ *
+ * Useful to debug behaviour at end product and interactions
+ * with other technologies.
  */
 void AppModule.boot({
   name: 'crux',
