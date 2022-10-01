@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiNoContentResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
 import { ApiTag } from '../doc/doc.decorator';
@@ -14,6 +14,7 @@ export class AppController {
   ) { }
 
   @Get()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse()
   @ApiOperation({
     operationId: 'Health Check',
