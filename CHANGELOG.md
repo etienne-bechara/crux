@@ -1,3 +1,11 @@
+## [4.26.3](https://github.com/etienne-bechara/crux/compare/v4.26.2...v4.26.3) (2022-10-01)
+
+
+### Bug Fixes
+
+* bump redoc ([f4eceac](https://github.com/etienne-bechara/crux/commit/f4eceacbf6dffa4206eda3547f799e6977d33a1f))
+* doc hash support ([5faaa56](https://github.com/etienne-bechara/crux/commit/5faaa5698eb84eb183225357c75f8242244e6fe9))
+
 ## [4.26.2](https://github.com/etienne-bechara/crux/compare/v4.26.1...v4.26.2) (2022-10-01)
 
 
