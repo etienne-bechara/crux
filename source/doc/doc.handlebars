@@ -11,8 +11,6 @@
   <link rel="shortcut icon" type="image/x-icon" href="{{ favicon }}" />
   {{/if}}
 
-  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Montserrat:300,400,700" rel="stylesheet">
-
   <style>
     body { margin: 0; padding: 0; }
   </style>
@@ -20,14 +18,18 @@
 
 <body>
   <div id="redoc-container"></div>
-  <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.55/bundles/redoc.standalone.min.js"> </script>
-  <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.0/dist/try.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0/bundles/redoc.standalone.js"> </script>
+  <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.1/dist/try.js"></script>
   <script>
+    // Tag anchoring does not work, remove hash from URL in order to prevent error while loading
+    history.pushState('', document.title, `${window.location.pathname}${window.location.search}`);
+
+    // Initialize ReDoc with try plugin
     initTry({
       openApi: '{{ openApiUrl }}' || window.location.href.replace(/\/docs$/, '/openapi/json'),
       tryText: '⯈',
       redocOptions: JSON.parse('{{{ options }}}'),
-    })
+    });
   </script>
 </body>
 

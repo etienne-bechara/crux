@@ -195,7 +195,7 @@ export function NotEquals(comparison: any, validationOptions?: ValidationOptions
 export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsEmpty(validationOptions),
-    ApiProperty({ pattern: 'empty' }),
+    ApiProperty({ format: 'empty' }),
   );
 }
 
@@ -206,7 +206,7 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsNotEmpty(validationOptions),
-    ApiProperty({ pattern: 'not empty' }),
+    ApiProperty({ format: 'not empty' }),
   );
 }
 
@@ -230,7 +230,7 @@ export function IsIn(values: any[], validationOptions?: ValidationOptions): Prop
 export function IsNotIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsNotIn(values, validationOptions),
-    ApiProperty({ pattern: `not in ${values.join(', ')}` }),
+    ApiProperty({ format: `not in ${values.join(', ')}` }),
   );
 }
 
@@ -285,7 +285,7 @@ export function IsNumber(options: IsNumberOptions = { }, validationOptions?: Val
 
   return applyDecorators(
     CvIsNumber(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'float' }),
+    ApiProperty({ ...propertyOptions, format: 'float' }),
   );
 }
 
@@ -298,7 +298,7 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
 
   return applyDecorators(
     CvIsInt(validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'integer' }),
+    ApiProperty({ ...propertyOptions, format: 'integer' }),
   );
 }
 
@@ -379,7 +379,7 @@ export function IsNumberString(options?: any, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsNumberString(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'numeric' }),
+    ApiProperty({ ...propertyOptions, format: 'numeric' }),
   );
 }
 
@@ -396,7 +396,7 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `contains '${seed}'` }),
+    ApiProperty({ ...propertyOptions, format: `contains '${seed}'` }),
   );
 }
 
@@ -411,7 +411,7 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 
   return applyDecorators(
     CvNotContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `not contains '${seed}'` }),
+    ApiProperty({ ...propertyOptions, format: `not contains '${seed}'` }),
   );
 }
 
@@ -440,7 +440,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
 
   return applyDecorators(
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'e-mail' }),
+    ApiProperty({ ...propertyOptions, format: 'e-mail' }),
   );
 }
 
@@ -476,7 +476,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 
   return applyDecorators(
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'ISO8601' }),
+    ApiProperty({ ...propertyOptions, format: 'ISO8601' }),
   );
 }
 
@@ -489,7 +489,7 @@ export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator
 
   return applyDecorators(
     CvIsJSON(validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'JSON' }),
+    ApiProperty({ ...propertyOptions, format: 'JSON' }),
   );
 }
 
@@ -502,7 +502,7 @@ export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator 
 
   return applyDecorators(
     CvIsJWT(validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'JWT' }),
+    ApiProperty({ ...propertyOptions, format: 'JWT' }),
   );
 }
 
@@ -558,7 +558,7 @@ export function IsUrl(options?: any, validationOptions?: ValidationOptions): Pro
 
   return applyDecorators(
     CvIsUrl(options, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'URL' }),
+    ApiProperty({ ...propertyOptions, format: 'URL' }),
   );
 }
 
@@ -574,7 +574,7 @@ export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: 'UUID' }),
+    ApiProperty({ ...propertyOptions, format: 'UUID' }),
   );
 }
 
@@ -635,7 +635,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `matches /${regexPattern.source}/` }),
+    ApiProperty({ ...propertyOptions, format: `matches /${regexPattern.source}/` }),
   );
 }
 
