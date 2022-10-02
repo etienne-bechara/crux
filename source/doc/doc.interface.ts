@@ -3,6 +3,8 @@ import { DocumentBuilder } from '@nestjs/swagger';
 import { ExternalDocumentationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { RedocOptions } from 'nestjs-redoc';
 
+import { DocCodeSampleClient } from './doc.enum';
+
 export interface DocRenderOptions {
   title: string;
   favicon: string;
@@ -16,12 +18,18 @@ export interface DocTag {
   externalDocs?: ExternalDocumentationObject;
 }
 
+export interface DocCodeSample {
+  label: string;
+  client: DocCodeSampleClient;
+}
+
 export interface DocOptions extends RedocOptions {
   documentBuilder?: DocumentBuilder;
   openApiUrl?: string;
   version?: string;
   description?: string;
   theme?: DocTheme;
+  codeSamples?: DocCodeSample[];
 }
 
 export interface DocThemeColors {

@@ -5,6 +5,7 @@ import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
 import { Config, InjectConfig } from '../config/config.decorator';
+import { DocCodeSampleClient } from '../doc/doc.enum';
 import { DocTheme } from '../doc/doc.interface';
 import { HttpMethod } from '../http/http.enum';
 import { LogSeverity } from '../log/log.enum';
@@ -119,13 +120,18 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     pushInterval: 60_000,
   },
   docs: {
-    title: 'OpenAPI UI',
-    version: '1.0.0',
+    hideLoading: true,
+    title: 'API Reference | OpenAPI',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
-    logo: {
-      url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png',
-    },
+    logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png' },
     theme: APP_DEFAULT_DOC_THEME,
+    codeSamples: [
+      { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },
+      { label: 'Node.js', client: DocCodeSampleClient.NODE_AXIOS },
+      { label: 'Python', client: DocCodeSampleClient.PYTHON_REQUESTS },
+      { label: 'Java', client: DocCodeSampleClient.JAVA_OKHTTP },
+      { label: '.NET', client: DocCodeSampleClient.CSHARP_RESTSHARP },
+    ],
   },
 };
 

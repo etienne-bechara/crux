@@ -4,11 +4,8 @@ import 'reflect-metadata';
 import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
-import handlebars from 'handlebars';
-import path from 'path';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -17,7 +14,6 @@ import { ContextStorageKey } from '../context/context.enum';
 import { ContextModule } from '../context/context.module';
 import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
-import { DocTagStorage } from '../doc/doc.decorator';
 import { DocModule } from '../doc/doc.module';
 import { HttpModule } from '../http/http.module';
 import { LogInterceptor } from '../log/log.interceptor';
@@ -25,7 +21,6 @@ import { LogModule } from '../log/log.module';
 import { LogService } from '../log/log.service';
 import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
-import { MemoryService } from '../memory/memory.service';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
 import { SlackModule } from '../slack/slack.module';
@@ -97,7 +92,7 @@ export class AppModule {
     await this.configureAdapter();
 
     if (!this.options.disableDocs) {
-      this.configureDocumentation();
+      DocModule.configureDocumentation(this.instance, this.options);
     }
 
     return this.instance;
@@ -193,75 +188,6 @@ export class AppModule {
 
     this.instance.setGlobalPrefix(globalPrefix);
     this.instance.enableCors(cors);
-  }
-
-  /**
-   * Configures static documentation, adding logo and better API
-   * endpoint naming.
-   */
-  private static configureDocumentation(): void {
-    const { globalPrefix, proxyPrefix, docs } = this.options;
-    const { title, description, version, logo, tagGroups, documentBuilder } = docs;
-    const memoryService: MemoryService = this.instance.get(MemoryService);
-
-    this.instance['setViewEngine']({
-      engine: { handlebars },
-      // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'doc'),
-    });
-
-    const builder = documentBuilder || new DocumentBuilder()
-      .setTitle(title)
-      .setDescription(description)
-      .setVersion(version);
-
-    if (proxyPrefix || globalPrefix) {
-      const server = proxyPrefix && globalPrefix
-        ? `${proxyPrefix}/${globalPrefix}`
-        : proxyPrefix || globalPrefix;
-
-      builder.addServer(`/${server}`);
-    }
-
-    for (const tag of DocTagStorage) {
-      const { name, description, externalDocs } = tag;
-      builder.addTag(name, description, externalDocs);
-    }
-
-    // Standardize operation ID names
-    const document = SwaggerModule.createDocument(this.instance, builder.build(), {
-      ignoreGlobalPrefix: true,
-      operationIdFactory: (controllerKey: string, methodKey: string) => {
-        const entityName = controllerKey.replace('Controller', '');
-        const defaultId = `${controllerKey}_${methodKey}`;
-        let operationId: string;
-
-        switch (methodKey.slice(0, 3)) {
-          case 'get' : operationId = `Read ${entityName}`; break;
-          case 'pos' : operationId = `Create ${entityName}`; break;
-          case 'put' : operationId = `Replace ${entityName}`; break;
-          case 'pat' : operationId = `Update ${entityName}`; break;
-          case 'del' : operationId = `Delete ${entityName}`; break;
-          default: operationId = defaultId;
-        }
-
-        if (methodKey.includes('Id')) {
-          operationId = `${operationId} by ID`;
-        }
-
-        return entityName ? operationId : defaultId;
-      },
-    });
-
-    // Saves specification to memory
-    memoryService.set('openApiSpecification', JSON.stringify(document));
-
-    document['x-tagGroups'] = tagGroups;
-    document.info['x-logo'] = logo;
-
-    SwaggerModule.setup('openapi', this.instance, document, {
-      useGlobalPrefix: true,
-    });
   }
 
   /**

@@ -1,6 +1,6 @@
 import { IsIn, IsNumberString, IsString } from '@bechara/crux';
 
-import { UserAddressState } from '../../../../dev/user/user.enum';
+import { UserAddressState } from '../user/user.enum';
 
 export class Zip {
 
