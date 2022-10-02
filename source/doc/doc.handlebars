@@ -12,7 +12,29 @@
   {{/if}}
 
   <style>
-    body { margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    * {
+      scrollbar-width: auto;
+      scrollbar-color: #192226 #263238;
+    }
+
+    *::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: #263238;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: #192226;
+      border-radius: 0px;
+      border: 0px none #ffffff;
+    }
   </style>
 </head>
 
