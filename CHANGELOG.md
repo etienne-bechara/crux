@@ -1,3 +1,17 @@
+# [4.28.0](https://github.com/etienne-bechara/crux/compare/v4.27.0...v4.28.0) (2022-10-02)
+
+
+### Bug Fixes
+
+* add enum to memory key ([5c07935](https://github.com/etienne-bechara/crux/commit/5c07935dd7ea5e80f54e3768ee3b10440636a8c4))
+* add webkit scrollbars ([111b1fa](https://github.com/etienne-bechara/crux/commit/111b1fa67cd5aa95cbe125149a4dfc15d97dc955))
+
+
+### Features
+
+* add generate code samples ([a95ad41](https://github.com/etienne-bechara/crux/commit/a95ad411d8564dbe929a4c30fc3fb6c5dcf94138))
+* add support to generate url in code samples ([f8e0c7b](https://github.com/etienne-bechara/crux/commit/f8e0c7bca977651525ca3b98ec7c7e1a6cefe302))
+
 # [4.27.0](https://github.com/etienne-bechara/crux/compare/v4.26.3...v4.27.0) (2022-10-01)
 
 
