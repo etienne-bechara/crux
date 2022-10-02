@@ -1,3 +1,15 @@
+# [4.27.0](https://github.com/etienne-bechara/crux/compare/v4.26.3...v4.27.0) (2022-10-01)
+
+
+### Bug Fixes
+
+* redoc version ([61f9190](https://github.com/etienne-bechara/crux/commit/61f919085ed487c943cab0c78fba6ba20e181f96))
+
+
+### Features
+
+* add dev live reload ([2bf24ff](https://github.com/etienne-bechara/crux/commit/2bf24ffb389e40260c3727257babb4a7bfa52614))
+
 ## [4.26.3](https://github.com/etienne-bechara/crux/compare/v4.26.2...v4.26.3) (2022-10-01)
 
 
