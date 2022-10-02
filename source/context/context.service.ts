@@ -95,6 +95,13 @@ export class ContextService<Metadata = Record<string, any>> {
   }
 
   /**
+   * Acquire request protocol.
+   */
+  public getRequestProtocol(): string {
+    return this.getRequest()?.protocol;
+  }
+
+  /**
    * Acquire request host.
    */
   public getRequestHost(): string {

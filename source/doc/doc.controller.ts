@@ -35,8 +35,7 @@ export class DocController {
     description: 'Generate OpenAPI specification in JSON format, useful for importing at request clients',
   })
   public getDocsJson(): DocSpecification {
-    const document: string = this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
-    return JSON.parse(document);
+    return this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
   }
 
 }
