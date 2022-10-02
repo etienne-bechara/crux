@@ -14,3 +14,7 @@ export enum AppTraffic {
   INBOUND = 'inbound',
   OUTBOUND = 'outbound',
 }
+
+export enum AppMemoryKey {
+  OPEN_API_SPECIFICATION = 'OPEN_API_SPECIFICATION',
+}

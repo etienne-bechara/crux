@@ -5,6 +5,7 @@ import handlebars from 'handlebars';
 import HTTPSnippet from 'httpsnippet';
 import path from 'path';
 
+import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
@@ -43,7 +44,7 @@ export class DocModule {
     document.info['x-logo'] = logo;
 
     const memoryService: MemoryService = instance.get(MemoryService);
-    memoryService.set('openApiSpecification', JSON.stringify(document));
+    memoryService.set(AppMemoryKey.OPEN_API_SPECIFICATION, JSON.stringify(document));
 
     SwaggerModule.setup('openapi', instance, document, { useGlobalPrefix: true });
   }

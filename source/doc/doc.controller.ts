@@ -1,6 +1,7 @@
 import { Controller, Get, Header, Render } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
+import { AppMemoryKey } from '../app/app.enum';
 import { MemoryService } from '../memory/memory.service';
 import { ApiTag } from './doc.decorator';
 import { DocSpecification } from './doc.dto';
@@ -34,7 +35,7 @@ export class DocController {
     description: 'Generate OpenAPI specification in JSON format, useful for importing at request clients',
   })
   public getDocsJson(): DocSpecification {
-    const document: string = this.memoryService.get('openApiSpecification');
+    const document: string = this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
     return JSON.parse(document);
   }
 
