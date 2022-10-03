@@ -25,8 +25,7 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
    */
   protected validate(object: object): Promise<ValidationError[]> | ValidationError[] {
     const options = this.contextService.getValidatorOptions();
-
-    return TraceService.startManagedSpan('Validate | Validation Pipe', { }, () => super.validate(object, options));
+    return TraceService.startManagedSpan('App | Validation Pipe', { }, () => super.validate(object, options));
   }
 
 }

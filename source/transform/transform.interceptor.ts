@@ -19,7 +19,7 @@ export class TransformInterceptor extends ClassSerializerInterceptor implements 
       .handle()
       .pipe(
         map((res: PlainLiteralObject | PlainLiteralObject[]) => {
-          return TraceService.startManagedSpan('Transform | Serializer Interceptor', { }, () => {
+          return TraceService.startManagedSpan('App | Serialization Interceptor', { }, () => {
             return this.serialize(res, options);
           });
         }),

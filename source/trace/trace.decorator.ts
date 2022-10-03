@@ -11,7 +11,7 @@ import { TraceService } from './trace.service';
  */
 export function Span(name?: string, options?: SpanOptions) {
   return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor): void => {
-    const spanName = name || `${target.constructor.name}.${propertyKey}()`;
+    const spanName = name || `${target.constructor.name.replace('Service', '')} | ${propertyKey}`;
     const sourceMethod = propertyDescriptor.value;
     const isAsync = sourceMethod.constructor.name === 'AsyncFunction';
 

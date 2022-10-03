@@ -3,6 +3,7 @@ import cycle from 'cycle';
 
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
+import { TraceService } from '../trace/trace.service';
 import { AppConfig } from './app.config';
 import { AppEnvironment } from './app.enum';
 import { AppException, AppExceptionDetails, AppExceptionResponse } from './app.interface';
@@ -24,16 +25,22 @@ export class AppFilter implements ExceptionFilter {
    */
   public catch(exception: HttpException | Error): void {
     try {
-      const appException: AppException = {
-        exception,
-        code: this.getCode(exception),
-        message: this.getMessage(exception),
-        details: this.getDetails(exception),
-      };
+      let appExceptionResponse: AppExceptionResponse;
 
-      this.logException(appException);
-      this.appService.collectInboundTelemetry(appException.code, exception);
-      this.sendResponse(appException);
+      TraceService.startManagedSpan('App | Exception Handler', { }, () => {
+        const appException: AppException = {
+          exception,
+          code: this.buildCode(exception),
+          message: this.buildMessage(exception),
+          details: this.buildDetails(exception),
+        };
+
+        this.logException(appException);
+        appExceptionResponse = this.buildResponse(appException);
+      });
+
+      this.appService.collectInboundTelemetry(appExceptionResponse.code, exception);
+      this.sendResponse(appExceptionResponse);
     }
     catch (e) {
       this.logService.error('Failed to handle exception', e as Error);
@@ -44,7 +51,7 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  private getCode(exception: HttpException | Error): HttpStatus {
+  private buildCode(exception: HttpException | Error): HttpStatus {
     return exception?.['getStatus']?.()
       || exception?.['statusCode']
       || HttpStatus.INTERNAL_SERVER_ERROR;
@@ -54,7 +61,7 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, extracts a detailing message.
    * @param exception
    */
-  private getMessage(exception: HttpException | Error): string {
+  private buildMessage(exception: HttpException | Error): string {
     let message;
 
     if (exception instanceof HttpException) {
@@ -82,7 +89,7 @@ export class AppFilter implements ExceptionFilter {
    * Ensures that circular references are eliminated.
    * @param exception
    */
-  private getDetails(exception: HttpException | Error): AppExceptionDetails {
+  private buildDetails(exception: HttpException | Error): AppExceptionDetails {
     let details: AppExceptionDetails;
 
     if (exception instanceof HttpException) {
@@ -106,6 +113,39 @@ export class AppFilter implements ExceptionFilter {
     }
 
     return cycle.decycle(details) || { };
+  }
+
+  /**
+   * Build exception response to be sent to client.
+   * @param params
+   */
+  private buildResponse(params: AppException): AppExceptionResponse {
+    const { details, message, code } = params;
+    const { enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
+
+    const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
+    const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const filteredResponse: AppExceptionResponse = {
+      code,
+      message: isProduction && isInternalError ? 'unexpected error' : message,
+      ...isProduction && isInternalError ? { } : details,
+    };
+
+    const { proxyExceptions, outboundResponse } = details;
+    const exceptionBody = outboundResponse?.body;
+
+    const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
+      ? exceptionBody
+      : filteredResponse;
+
+    this.logService.http(this.contextService.getRequestDescription('out'), {
+      duration: this.contextService.getRequestDuration(),
+      code,
+      body: enableResponseBody ? clientResponse : undefined,
+    });
+
+    return clientResponse;
   }
 
   /**
@@ -139,36 +179,13 @@ export class AppFilter implements ExceptionFilter {
    * Sends client response for given exception.
    * @param params
    */
-  private sendResponse(params: AppException): void {
-    const { details, message, code } = params;
-    const { enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
+  private sendResponse(params: AppExceptionResponse): void {
     const res = this.contextService.getResponse();
-
-    const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
-    const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const filteredResponse: AppExceptionResponse = {
-      code,
-      message: isProduction && isInternalError ? 'unexpected error' : message,
-      ...isProduction && isInternalError ? { } : details,
-    };
-
-    const { proxyExceptions, outboundResponse } = details;
-    const exceptionBody = outboundResponse?.body;
-
-    const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
-      ? exceptionBody
-      : filteredResponse;
-
-    this.logService.http(this.contextService.getRequestDescription('out'), {
-      duration: this.contextService.getRequestDuration(),
-      code,
-      body: enableResponseBody ? clientResponse : undefined,
-    });
+    const { code } = params;
 
     res.code(code);
     res.header('Content-Type', 'application/json');
-    res.send(clientResponse);
+    res.send(params);
   }
 
 }
