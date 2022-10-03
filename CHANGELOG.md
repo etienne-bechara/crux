@@ -1,3 +1,12 @@
+# [4.29.0](https://github.com/etienne-bechara/crux/compare/v4.28.0...v4.29.0) (2022-10-03)
+
+
+### Features
+
+* add db connection example ([caa944c](https://github.com/etienne-bechara/crux/commit/caa944c1f7ea06253c3ff2a646e6b80243457e72))
+* add filter tracing and minor tracing adjustiments ([1e07def](https://github.com/etienne-bechara/crux/commit/1e07defeaa01a9e305ffa1f7cdc1fca7b176b306))
+* improve tracing support ([1c74a3c](https://github.com/etienne-bechara/crux/commit/1c74a3c4a1f0e27a47bd2fe4f9706e58fc134a7e))
+
 # [4.28.0](https://github.com/etienne-bechara/crux/compare/v4.27.0...v4.28.0) (2022-10-02)
 
 
