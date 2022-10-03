@@ -2,7 +2,7 @@ import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, 
 
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
-import { UserService } from './user.service';
+import { UserRepository } from './user.repository';
 
 @Controller('user')
 @ApiTag({
@@ -15,31 +15,31 @@ nickname and handle, which is derived from the identical citizens band radio ter
 export class UserController {
 
   public constructor(
-    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
   ) { }
 
   @Get()
   @ApiOkResponse({ type: UserCollection })
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
-  public getUser(): UserCollection {
-    return this.userService.readUsers();
+  public getUser(): Promise<UserCollection> {
+    return this.userRepository.readPaginatedBy({ });
   }
 
   @Get(':id')
   @ApiOkResponse({ type: User })
   @ApiOperation({ description: 'Reads a single user by its ID' })
   @Cache<User>({
-    buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
+    buckets: ({ req }) => [ req.params.id ],
   })
-  public getUserById(@Param() params: UserIdDto): User {
-    return this.userService.readUserById(params.id);
+  public getUserById(@Param() params: UserIdDto): Promise<User> {
+    return this.userRepository.readById(params.id);
   }
 
   @Post()
   @ApiCreatedResponse({ type: User })
   @ApiOperation({ description: 'Creates a new user' })
   public postUser(@Body() body: UserCreateDto): Promise<User> {
-    return this.userService.createUser(body);
+    return this.userRepository.createOne(body);
   }
 
   @Patch(':id')
@@ -48,8 +48,8 @@ export class UserController {
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): User {
-    return this.userService.updateUserById(params.id, body);
+  public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): Promise<User> {
+    return this.userRepository.updateById(params.id, body);
   }
 
   @Delete(':id')
@@ -59,8 +59,8 @@ export class UserController {
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  public deleteUserById(@Param() params: UserIdDto): void {
-    return this.userService.deleteUserById(params.id);
+  public async deleteUserById(@Param() params: UserIdDto): Promise<void> {
+    await this.userRepository.deleteById(params.id);
   }
 
 }

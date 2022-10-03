@@ -1,8 +1,4 @@
-export enum UserOneOf {
-  USER_AGE_BIRTH_YEAR = 'USER_AGE_BIRTH_YEAR'
-}
-
-export enum UserAddressState {
+export enum ZipState {
   AC = 'AC',
   AL = 'AL',
   AM = 'AM',

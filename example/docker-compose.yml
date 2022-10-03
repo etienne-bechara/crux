@@ -80,3 +80,15 @@ services:
       - 6379:6379
     networks:
       - internal
+
+  # Postgres - Relational Database
+  postgres:
+    container_name: crux-postgres
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=crux
+    ports:
+      - 5432:5432
+    networks:
+      - internal

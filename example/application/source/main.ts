@@ -1,4 +1,4 @@
-import { AppModule } from '@bechara/crux';
+import { AppModule, OrmModule } from '@bechara/crux';
 
 /**
  * Run with `pnpm example`.
@@ -34,4 +34,20 @@ void AppModule.boot({
       { name: 'ZIP Code', tags: [ 'ZIP' ] },
     ],
   },
+  imports: [
+    OrmModule.registerAsync({
+      useFactory: () => ({
+        type: 'postgresql',
+        host: 'postgres',
+        port: 5432,
+        dbName: 'crux',
+        user: 'postgres',
+        password: 'password',
+        sync: { auto: true },
+      }),
+    }),
+  ],
+  exports: [
+    OrmModule,
+  ],
 });

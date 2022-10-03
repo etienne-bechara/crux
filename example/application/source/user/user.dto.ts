@@ -1,17 +1,14 @@
-import { ApiProperty, IsNumber, Min, OmitType, PickType, SetType, ValidateNested } from '@bechara/crux';
+import { ApiProperty, OmitType, OrmPagination, PartialType, PickType, SetType, ValidateNested } from '@bechara/crux';
 
 import { User } from './user.entity';
 
 export class UserIdDto extends PickType(User, [ 'id' ]) { }
 
-export class UserCreateDto extends OmitType(User, [ 'id', 'originId' ]) { }
+export class UserCreateDto extends OmitType(User, [ 'id', 'created', 'updated' ]) { }
 
-export class UserUpdateDto extends PickType(User, [ 'email', 'phone' ]) { }
+export class UserUpdateDto extends PartialType(UserCreateDto) { }
 
-export class UserCollection {
-
-  @IsNumber() @Min(0)
-  public count: number;
+export class UserCollection extends OrmPagination<User> {
 
   @ApiProperty({ type: [ User ] })
   @ValidateNested({ each: true })
