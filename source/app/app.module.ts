@@ -168,9 +168,10 @@ export class AppModule {
         if (traceEnabled) {
           const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
           const description = contextService.getRequestDescription('in');
+          const spanName = `Http | ${description}`;
 
           context.with(ctx, () => {
-            trace.getTracer(name).startActiveSpan(description, { }, (span) => {
+            trace.getTracer(name).startActiveSpan(spanName, { }, (span) => {
               const traceId = span.spanContext().traceId;
 
               res.header('trace-id', traceId);

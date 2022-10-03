@@ -22,7 +22,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
     entities: Entity | Entity[],
     options: OrmDeleteOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    return this.runWithinSpan('delete', async () => {
+    return this.runWithinSpan('Delete', async () => {
       if (!this.isValidData(entities)) return [ ];
 
       const { populate } = options;

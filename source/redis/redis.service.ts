@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { CacheProvider } from '../cache/cache.interface';
 import { LogService } from '../log/log.service';
 import { PromiseService } from '../promise/promise.service';
+import { TraceService } from '../trace/trace.service';
 import { RedisInjectionToken } from './redis.enum';
 import { RedisLockOptions, RedisModuleOptions, RedisSetOptions, RedisTtlOptions } from './redis.interface';
 
@@ -88,28 +89,34 @@ export class RedisService implements CacheProvider {
    * @param key
    * @param ttl
    */
-  public async expire(key: string, ttl: number): Promise<void> {
-    this.logService.trace(`EXPIRE ${key} ${ttl}`);
-    await this.getClient().expire(key, ttl / 1000);
+  public expire(key: string, ttl: number): Promise<void> {
+    return TraceService.startManagedSpan(`Redis | EXPIRE ${key}`, { }, async () => {
+      this.logService.trace(`EXPIRE ${key} ${ttl}`);
+      await this.getClient().expire(key, ttl / 1000);
+    });
   }
 
   /**
    * Reads given key and parse its value.
    * @param key
    */
-  public async get<T>(key: string): Promise<T> {
-    this.logService.trace(`GET ${key}`);
-    const value = await this.getClient().get(key);
-    return JSON.parse(value);
+  public get<T>(key: string): Promise<T> {
+    return TraceService.startManagedSpan(`Redis | GET ${key}`, { }, async () => {
+      this.logService.trace(`GET ${key}`);
+      const value = await this.getClient().get(key);
+      return JSON.parse(value);
+    });
   }
 
   /**
    * Reads given key as buffer.
    * @param key
    */
-  public async getBuffer(key: string): Promise<Buffer> {
-    this.logService.trace(`GET ${key}`);
-    return this.getClient().getBuffer(key);
+  public getBuffer(key: string): Promise<Buffer> {
+    return TraceService.startManagedSpan(`Redis | GET ${key}`, { }, async () => {
+      this.logService.trace(`GET ${key}`);
+      return this.getClient().getBuffer(key);
+    });
   }
 
   /**
@@ -118,40 +125,44 @@ export class RedisService implements CacheProvider {
    * @param value
    * @param options
    */
-  public async set<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
-    this.logService.trace(`SET ${key}`);
-    options.ttl ??= this.redisModuleOptions.defaultTtl;
+  public set<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
+    return TraceService.startManagedSpan(`Redis | SET ${key}`, { }, async () => {
+      this.logService.trace(`SET ${key}`);
+      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
-    const { skip, get, keepTtl, ttl } = options;
-    const data = Buffer.isBuffer(value) ? value : JSON.stringify(value);
-    const extraParams: string[] = [ ];
+      const { skip, get, keepTtl, ttl } = options;
+      const data = Buffer.isBuffer(value) ? value : JSON.stringify(value);
+      const extraParams: string[] = [ ];
 
-    if (skip === 'IF_EXIST') {
-      extraParams.push('NX');
-    }
-    else if (skip === 'IF_NOT_EXIST') {
-      extraParams.push('XX');
-    }
+      if (skip === 'IF_EXIST') {
+        extraParams.push('NX');
+      }
+      else if (skip === 'IF_NOT_EXIST') {
+        extraParams.push('XX');
+      }
 
-    if (keepTtl) {
-      extraParams.push('KEEPTTL');
-    }
-    else if (ttl) {
-      extraParams.push('PX', ttl.toString());
-    }
+      if (keepTtl) {
+        extraParams.push('KEEPTTL');
+      }
+      else if (ttl) {
+        extraParams.push('PX', ttl.toString());
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await this.getClient().set(key, data, ...extraParams as any);
-    return get ? this.get(key) : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      await this.getClient().set(key, data, ...extraParams as any);
+      return get ? this.get(key) : undefined;
+    });
   }
 
   /**
    * Deletes desired key.
    * @param key
    */
-  public async del(key: string): Promise<void> {
-    this.logService.trace(`DEL ${key}`);
-    await this.getClient().del(key);
+  public del(key: string): Promise<void> {
+    return TraceService.startManagedSpan(`Redis | DEL ${key}`, { }, async () => {
+      this.logService.trace(`DEL ${key}`);
+      await this.getClient().del(key);
+    });
   }
 
   /**
@@ -161,18 +172,20 @@ export class RedisService implements CacheProvider {
    * @param amount
    * @param options
    */
-  public async incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
-    this.logService.trace(`INCRBYFLOAT ${key} ${amount >= 0 ? '+' : ''}${amount}`);
-    options.ttl ??= this.redisModuleOptions.defaultTtl;
+  public incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
+    return TraceService.startManagedSpan(`Redis | INCRBYFLOAT ${key}`, { }, async () => {
+      this.logService.trace(`INCRBYFLOAT ${key} ${amount >= 0 ? '+' : ''}${amount}`);
+      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
-    const stringValue = await this.getClient().incrbyfloat(key, amount);
-    const numberValue = Number.parseFloat(stringValue);
+      const stringValue = await this.getClient().incrbyfloat(key, amount);
+      const numberValue = Number.parseFloat(stringValue);
 
-    if (numberValue === amount) {
-      await this.expire(key, options.ttl);
-    }
+      if (numberValue === amount) {
+        await this.expire(key, options.ttl);
+      }
 
-    return numberValue;
+      return numberValue;
+    });
   }
 
   /**
@@ -180,8 +193,10 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public smembers(key: string): Promise<string[]> {
-    this.logService.trace(`SMEMBERS ${key}`);
-    return this.getClient().smembers(key);
+    return TraceService.startManagedSpan(`Redis | SMEMBERS ${key}`, { }, async () => {
+      this.logService.trace(`SMEMBERS ${key}`);
+      return this.getClient().smembers(key);
+    });
   }
 
   /**
@@ -190,15 +205,17 @@ export class RedisService implements CacheProvider {
    * @param value
    * @param options
    */
-  public async sadd(key: string, value: string, options: RedisTtlOptions = { }): Promise<void> {
-    this.logService.trace(`SADD ${key} ${value}`);
-    options.ttl ??= this.redisModuleOptions.defaultTtl;
+  public sadd(key: string, value: string, options: RedisTtlOptions = { }): Promise<void> {
+    return TraceService.startManagedSpan(`Redis | SADD ${key}`, { }, async () => {
+      this.logService.trace(`SADD ${key} ${value}`);
+      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
-    const setLength = await this.getClient().sadd(key, value);
+      const setLength = await this.getClient().sadd(key, value);
 
-    if (setLength === 1) {
-      await this.expire(key, options.ttl);
-    }
+      if (setLength === 1) {
+        await this.expire(key, options.ttl);
+      }
+    });
   }
 
   /**

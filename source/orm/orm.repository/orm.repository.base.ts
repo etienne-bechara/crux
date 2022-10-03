@@ -22,7 +22,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * @param entities
    */
   public commit(entities?: Entity | Entity[]): Promise<void> {
-    return this.runWithinSpan('commit', async () => {
+    return this.runWithinSpan('Commit', async () => {
       await this.entityManager.persistAndFlush(entities);
     });
   }
@@ -90,34 +90,21 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * @param retries
    */
   protected async runWithinSpan<T>(spanSuffix: string, operation: () => Promise<T>, retries = 0): Promise<T> {
-    const spanName = `${this.entityName}Repository.${spanSuffix}()`;
+    const spanName = `Orm | ${spanSuffix} ${this.entityName}`;
     const hasContext = !!ContextStorage.getStore();
     const shareableContext = [ 'count', 'populate', 'read' ];
     const cleanContext = !hasContext || !shareableContext.includes(spanSuffix);
 
     try {
-      const traceResult = await TraceService.startActiveSpan(spanName, { }, async (span) => {
-        try {
-          const result = cleanContext
-            ? await ContextStorage.run(new Map(), () => {
-              const store = ContextStorage.getStore();
-              const entityManager = this.entityManager.fork({ clear: true, useContext: true });
-              store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
-              return operation();
-            })
-            : await operation();
-
-          span.setStatus({ code: 1 });
-          return result;
-        }
-        catch (e) {
-          span.recordException(e as Error);
-          span.setStatus({ code: 2, message: e.message });
-          throw e;
-        }
-        finally {
-          span.end();
-        }
+      const traceResult = await TraceService.startManagedSpan(spanName, { }, async () => {
+        return cleanContext
+          ? await ContextStorage.run(new Map(), () => {
+            const store = ContextStorage.getStore();
+            const entityManager = this.entityManager.fork({ clear: true, useContext: true });
+            store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+            return operation();
+          })
+          : await operation();
       });
 
       return traceResult;

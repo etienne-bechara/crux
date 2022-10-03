@@ -119,7 +119,7 @@ export class LokiService implements LogTransport {
           'content-type': 'application/vnd.google.protobuf',
         },
         body: await compress(buffer),
-        // retryLimit: 2,
+        retryLimit: 2,
       });
     }
     catch (e) {

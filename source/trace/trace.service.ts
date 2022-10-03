@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-import-assign */
 import { Injectable } from '@nestjs/common';
-import { Context, context, Span, SpanOptions, trace } from '@opentelemetry/api';
+import { Context, context, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';
 import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import { CompressionAlgorithm, OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import * as OTLPUtil from '@opentelemetry/exporter-trace-otlp-http/build/src/platform/node/util';
@@ -218,6 +218,62 @@ export class TraceService {
    */
   public static startActiveSpan(name: string, options: SpanOptions, fn: any): any {
     return trace.getTracer(this.job).startActiveSpan(name, options, fn);
+  }
+
+  /**
+   * Starts a new Span setting it in context which is activated for the
+   * duration of the function call. Automatically manages span closure
+   * by identified if the underlying function finished successfully.
+   * @param name
+   * @param options
+   * @param fn
+   */
+  public startManagedSpan(name: string, options: SpanOptions, fn: any): any {
+    return TraceService.startManagedSpan(name, options, fn);
+  }
+
+  /**
+   * Starts a new Span setting it in context which is activated for the
+   * duration of the function call. Automatically manages span closure
+   * by identified if the underlying function finished successfully.
+   * @param name
+   * @param options
+   * @param fn
+   */
+  public static startManagedSpan(name: string, options: SpanOptions, fn: any): any {
+    const isAsync = fn.constructor.name === 'AsyncFunction';
+
+    return isAsync
+      ? TraceService.startActiveSpan(name, options, async (span: Span) => {
+        try {
+          const result = await fn();
+          span.setStatus({ code: SpanStatusCode.OK });
+          return result;
+        }
+        catch (e) {
+          span.recordException(e as Error);
+          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          throw e;
+        }
+        finally {
+          span.end();
+        }
+      })
+      : TraceService.startActiveSpan(name, options, (span: Span) => {
+        try {
+          const result = fn();
+          span.setStatus({ code: SpanStatusCode.OK });
+          return result;
+        }
+        catch (e) {
+          span.recordException(e as Error);
+          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          throw e;
+        }
+        finally {
+          span.end();
+        }
+      });
   }
 
 }

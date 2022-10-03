@@ -25,7 +25,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     entities: Entity | Entity[],
     populate: AutoPath<Entity, P>[] | boolean,
   ): Promise<Entity[]> {
-    return this.runWithinSpan('populate', async () => {
+    return this.runWithinSpan('Populate', async () => {
       return this.entityManager.populate(entities, populate);
     });
   }
@@ -40,7 +40,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     params: OrmReadParams<Entity>,
     options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    return this.runWithinSpan('read', async () => {
+    return this.runWithinSpan('Read', async () => {
       if (!this.isValidData(params)) return [ ];
 
       options.populate ??= this.repositoryOptions.defaultPopulate as any ?? false;
@@ -123,7 +123,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * @param params
    */
   public countBy(params: OrmReadParams<Entity>): Promise<number> {
-    return this.runWithinSpan('count', async () => {
+    return this.runWithinSpan('Count', async () => {
       if (!this.isValidData(params)) return 0;
       return this.entityManager.count(this.entityName, params);
     });

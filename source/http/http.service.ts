@@ -254,7 +254,7 @@ export class HttpService {
       const { attempt } = retry;
 
       try {
-        const spanName = `⯅ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
+        const spanName = `Http | ⯅ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
         const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.REQUEST_TIMED_OUT) && url !== 'v1/traces';
         if (isTimedOut) throw new Error(contextTimeoutMsg);
 

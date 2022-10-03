@@ -38,7 +38,7 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * @param data
    */
   public create(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Promise<Entity[]> {
-    return this.runWithinSpan('create', async () => {
+    return this.runWithinSpan('Create', async () => {
       const newEntities = this.build(data);
       await this.entityManager.persistAndFlush(newEntities);
       return newEntities;
