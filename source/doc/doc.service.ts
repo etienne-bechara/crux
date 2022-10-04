@@ -39,7 +39,17 @@ export class DocService {
       this.codeSamplesGenerated = true;
     }
 
-    return { disableTryIt, title, favicon, openApiUrl, scrollbar, options: JSON.stringify(docs) };
+    const options = { ...docs };
+    delete options.disableTryIt;
+    delete options.documentBuilder;
+    delete options.openApiUrl;
+    delete options.version;
+    delete options.description;
+    delete options.security;
+    delete options.theme.scrollbar;
+    delete options.codeSamples;
+
+    return { disableTryIt, openApiUrl, title, favicon, scrollbar, options: JSON.stringify(options) };
   }
 
   /**
