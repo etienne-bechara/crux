@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { DocumentBuilder } from '@nestjs/swagger';
-import { ExternalDocumentationObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ExternalDocumentationObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { RedocOptions } from 'nestjs-redoc';
 
 import { DocCodeSampleClient } from './doc.enum';
@@ -20,6 +20,11 @@ export interface DocTag {
   externalDocs?: ExternalDocumentationObject;
 }
 
+export interface DocSecurity {
+  name: string;
+  options: SecuritySchemeObject;
+}
+
 export interface DocCodeSample {
   label: string;
   client: DocCodeSampleClient;
@@ -31,6 +36,7 @@ export interface DocOptions extends RedocOptions {
   openApiUrl?: string;
   version?: string;
   description?: string;
+  security?: DocSecurity[];
   theme?: DocTheme;
   codeSamples?: DocCodeSample[];
 }

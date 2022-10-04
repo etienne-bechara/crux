@@ -65,7 +65,7 @@ export class DocModule {
    */
   private static configureBuilder(options: AppOptions): DocumentBuilder {
     const { globalPrefix, proxyPrefix, docs } = options;
-    const { title, description, version, documentBuilder } = docs;
+    const { title, description, version, documentBuilder, security } = docs;
 
     const builder = documentBuilder || new DocumentBuilder()
       .setTitle(title)
@@ -78,6 +78,12 @@ export class DocModule {
         : proxyPrefix || globalPrefix;
 
       builder.addServer(`/${server}`);
+    }
+
+    if (security) {
+      for (const { name, options } of security) {
+        builder.addSecurity(name, options);
+      }
     }
 
     for (const tag of DocTagStorage) {
