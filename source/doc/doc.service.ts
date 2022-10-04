@@ -30,10 +30,7 @@ export class DocService {
    */
   public buildRenderOptions(): DocRenderOptions {
     const { docs } = this.appConfig.APP_OPTIONS;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { openApiUrl, version, description, ...options } = docs;
-    const { title, favicon } = options;
+    const { disableTryIt, openApiUrl, title, favicon } = docs;
 
     if (!this.codeSamplesGenerated) {
       const document: OpenAPIObject = this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
@@ -41,7 +38,7 @@ export class DocService {
       this.codeSamplesGenerated = true;
     }
 
-    return { title, favicon, openApiUrl, options: JSON.stringify(options) };
+    return { disableTryIt, title, favicon, openApiUrl, options: JSON.stringify(docs) };
   }
 
   /**

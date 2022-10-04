@@ -45,12 +45,12 @@
   <script>
     const currentUrl = window.location.href.split(/[?#]/)[0];
     const currentOpenApiUrl = currentUrl.replace(/\/docs$/, '/openapi/json');
+    const openApi = '{{ openApiUrl }}' || currentOpenApiUrl;
+    const redocOptions = JSON.parse('{{{ options }}}');
 
-    initTry({
-      openApi: '{{ openApiUrl }}' || currentOpenApiUrl,
-      tryText: '⯈',
-      redocOptions: JSON.parse('{{{ options }}}'),
-    });
+    {{ disableTryIt }}
+      ? Redoc.init(openApi, redocOptions, document.getElementById('redoc-container'))
+      : initTry({ openApi, redocOptions, tryText: '⯈' });
   </script>
 </body>
 

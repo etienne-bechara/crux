@@ -6,6 +6,7 @@ import { RedocOptions } from 'nestjs-redoc';
 import { DocCodeSampleClient } from './doc.enum';
 
 export interface DocRenderOptions {
+  disableTryIt: boolean;
   title: string;
   favicon: string;
   openApiUrl: string;
@@ -24,6 +25,7 @@ export interface DocCodeSample {
 }
 
 export interface DocOptions extends RedocOptions {
+  disableTryIt?: boolean;
   documentBuilder?: DocumentBuilder;
   openApiUrl?: string;
   version?: string;

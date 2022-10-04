@@ -120,6 +120,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     pushInterval: 60_000,
   },
   docs: {
+    disableTryIt: false,
     hideLoading: true,
     title: 'API Reference | OpenAPI',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
