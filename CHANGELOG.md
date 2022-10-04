@@ -1,3 +1,16 @@
+# [4.30.0](https://github.com/etienne-bechara/crux/compare/v4.29.0...v4.30.0) (2022-10-04)
+
+
+### Bug Fixes
+
+* allow customizing scrollbar ([5f68a02](https://github.com/etienne-bechara/crux/commit/5f68a028473f380ee6efca8bf81cae04f4f1f357))
+
+
+### Features
+
+* add security support ([543282f](https://github.com/etienne-bechara/crux/commit/543282fff42ab6f01459bd827ef804b4da2df9f6))
+* allow disable try it in docs ([fe8ad8d](https://github.com/etienne-bechara/crux/commit/fe8ad8df0b62a756fa55d21339258e605544248d))
+
 # [4.29.0](https://github.com/etienne-bechara/crux/compare/v4.28.0...v4.29.0) (2022-10-03)
 
 
