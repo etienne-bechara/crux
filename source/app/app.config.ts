@@ -19,7 +19,7 @@ import { AppOptions } from './app.interface';
  */
 export const APP_DEFAULT_DOC_THEME: DocTheme = {
   logo: {
-    gutter: '25px',
+    gutter: '35px',
   },
   typography: {
     fontFamily: 'Segoe UI',

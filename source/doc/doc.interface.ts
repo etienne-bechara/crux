@@ -11,6 +11,7 @@ export interface DocRenderOptions {
   favicon: string;
   openApiUrl: string;
   options: string;
+  backgroundColor: string;
   scrollbar: DocThemeScrollbar;
 }
 
@@ -79,6 +80,7 @@ export interface DocThemeScrollbar {
 }
 
 export interface DocTheme extends DocBaseTheme {
+  backgroundColor?: string;
   scrollbar?: DocThemeScrollbar;
 }
 
