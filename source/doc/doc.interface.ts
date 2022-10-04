@@ -11,6 +11,7 @@ export interface DocRenderOptions {
   favicon: string;
   openApiUrl: string;
   options: string;
+  scrollbar: DocThemeScrollbar;
 }
 
 export interface DocTag {
@@ -65,7 +66,21 @@ export interface DocServers {
   };
 }
 
-export interface DocTheme {
+export interface DocThemeScrollbar {
+  width?: string;
+  thumbColor?: string;
+  trackColor?: string;
+}
+
+export interface DocTheme extends DocBaseTheme {
+  scrollbar?: DocThemeScrollbar;
+}
+
+/**
+ * Base ReDoc theme options
+ * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
+ */
+export interface DocBaseTheme {
   spacing?: {
     unit?: number;
     sectionHorizontal?: number;

@@ -30,6 +30,11 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
       fontFamily: 'Consolas',
     },
   },
+  scrollbar: {
+    width: '12px',
+    thumbColor: '#263238',
+    trackColor: '#192226',
+  },
 };
 
 export const APP_DEFAULT_OPTIONS: AppOptions = {

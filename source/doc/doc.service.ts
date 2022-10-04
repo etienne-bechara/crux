@@ -30,7 +30,8 @@ export class DocService {
    */
   public buildRenderOptions(): DocRenderOptions {
     const { docs } = this.appConfig.APP_OPTIONS;
-    const { disableTryIt, openApiUrl, title, favicon } = docs;
+    const { disableTryIt, openApiUrl, title, favicon, theme } = docs;
+    const { scrollbar } = theme;
 
     if (!this.codeSamplesGenerated) {
       const document: OpenAPIObject = this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
@@ -38,7 +39,7 @@ export class DocService {
       this.codeSamplesGenerated = true;
     }
 
-    return { disableTryIt, title, favicon, openApiUrl, options: JSON.stringify(docs) };
+    return { disableTryIt, title, favicon, openApiUrl, scrollbar, options: JSON.stringify(docs) };
   }
 
   /**
