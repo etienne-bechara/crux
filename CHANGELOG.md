@@ -1,3 +1,10 @@
+## [4.30.1](https://github.com/etienne-bechara/crux/compare/v4.30.0...v4.30.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* docs render options ([ebefcdd](https://github.com/etienne-bechara/crux/commit/ebefcdd74728acc50099c101702277167b319553))
+
 # [4.30.0](https://github.com/etienne-bechara/crux/compare/v4.29.0...v4.30.0) (2022-10-04)
 
 
