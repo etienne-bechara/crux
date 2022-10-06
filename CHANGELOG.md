@@ -1,3 +1,10 @@
+## [4.30.2](https://github.com/etienne-bechara/crux/compare/v4.30.1...v4.30.2) (2022-10-04)
+
+
+### Bug Fixes
+
+* allow configuring back color ([d9fab5c](https://github.com/etienne-bechara/crux/commit/d9fab5ccae41648ca9527824a4702d44923c5f9d))
+
 ## [4.30.1](https://github.com/etienne-bechara/crux/compare/v4.30.0...v4.30.1) (2022-10-04)
 
 
