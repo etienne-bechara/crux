@@ -11,8 +11,7 @@ export interface DocRenderOptions {
   favicon: string;
   openApiUrl: string;
   options: string;
-  backgroundColor: string;
-  scrollbar: DocThemeScrollbar;
+  theme: DocTheme;
 }
 
 export interface DocTag {
@@ -32,6 +31,7 @@ export interface DocCodeSample {
 }
 
 export interface DocOptions extends RedocOptions {
+  enumSkipQuotes?: boolean;
   disableTryIt?: boolean;
   documentBuilder?: DocumentBuilder;
   openApiUrl?: string;

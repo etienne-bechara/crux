@@ -31,7 +31,6 @@ export class DocService {
   public buildRenderOptions(): DocRenderOptions {
     const { docs } = this.appConfig.APP_OPTIONS;
     const { disableTryIt, openApiUrl, title, favicon, theme } = docs;
-    const { backgroundColor, scrollbar } = theme;
 
     if (!this.codeSamplesGenerated) {
       const document: OpenAPIObject = this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
@@ -39,7 +38,7 @@ export class DocService {
       this.codeSamplesGenerated = true;
     }
 
-    const options = { ...docs };
+    const options = JSON.parse(JSON.stringify(docs));
     delete options.disableTryIt;
     delete options.documentBuilder;
     delete options.openApiUrl;
@@ -55,8 +54,7 @@ export class DocService {
       openApiUrl,
       title,
       favicon,
-      backgroundColor,
-      scrollbar,
+      theme,
       options: JSON.stringify(options),
     };
   }

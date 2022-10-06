@@ -12,27 +12,57 @@
   {{/if}}
 
   <style>
+    /* Enables ReDoc component to fill whole page and to have a configurable background */
     body {
       margin: 0;
       padding: 0;
-      background-color: {{ backgroundColor }};
+      background-color: {{ theme.backgroundColor }};
     }
 
+    /* Fix being unable to apply theming to request params, query and body titles */
+    .sc-iqAclL, .iupIzr, .sc-jcwpoC, .kyvWZW {
+      color: {{ theme.colors.text.secondary }} !important
+    }
+
+    /* Fix being unable to apply theming to bottom border of mentioned titles  */
+    .iupIzr {
+      border-bottom-color: {{ theme.colors.text.secondary }}4C !important
+    }
+
+    /* Fix being unable to apply theming to payload and code samples selected text */
+    .react-tabs__tab--selected:not(.tab-success) {
+      color: {{ theme.sidebar.activeTextColor }} !important
+    }
+
+    /* Add style to try it button */
+    .tryBtn {
+      border-radius: 5px;
+      border-style: none;
+      box-sizing: border-box;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 0px 14px 0px -4px;
+      padding: 5px 10px;
+      background-color: {{ theme.rightPanel.backgroundColor }};
+      color: {{ theme.rightPanel.textColor }};
+    }
+
+    /* Add webkit scrollbar support */
     * {
       scrollbar-width: auto;
-      scrollbar-color: {{ scrollbar.trackColor }} {{ scrollbar.thumbColor }};
+      scrollbar-color: {{ theme.scrollbar.trackColor }} {{ theme.scrollbar.thumbColor }};
     }
 
     *::-webkit-scrollbar {
-      width: {{ scrollbar.width }};
+      width: {{ theme.scrollbar.width }};
     }
 
     *::-webkit-scrollbar-track {
-      background: {{ scrollbar.thumbColor }};
+      background: {{ theme.scrollbar.thumbColor }};
     }
 
     *::-webkit-scrollbar-thumb {
-      background-color: {{ scrollbar.trackColor }};
+      background-color: {{ theme.scrollbar.trackColor }};
     }
   </style>
 </head>

@@ -16,22 +16,31 @@ import { AppOptions } from './app.interface';
 /**
  * Builds upon default theme available at:
  * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
+ *
+ * Theming sandbox is available at:
+ * https://pointnet.github.io/redoc-editor.
  */
 export const APP_DEFAULT_DOC_THEME: DocTheme = {
   logo: {
     gutter: '35px',
   },
   typography: {
+    smoothing: 'subpixel-antialiased',
     fontFamily: 'Segoe UI',
     headings: {
       fontFamily: 'Segoe UI',
     },
     code: {
+      wrap: true,
       fontFamily: 'Consolas',
     },
   },
+  rightPanel: {
+    backgroundColor: '#263238',
+    textColor: '#FFFFFF',
+  },
   scrollbar: {
-    width: '12px',
+    width: '16px',
     thumbColor: '#263238',
     trackColor: '#192226',
   },
@@ -127,6 +136,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   docs: {
     disableTryIt: false,
     hideLoading: true,
+    enumSkipQuotes: true,
     title: 'API Reference | OpenAPI',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
     logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png' },
