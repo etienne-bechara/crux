@@ -1,3 +1,10 @@
+## [4.30.5](https://github.com/etienne-bechara/crux/compare/v4.30.4...v4.30.5) (2022-10-10)
+
+
+### Bug Fixes
+
+* sever colors ([5092761](https://github.com/etienne-bechara/crux/commit/509276197edef3235c72bcdb7362764bd218d3be))
+
 ## [4.30.4](https://github.com/etienne-bechara/crux/compare/v4.30.3...v4.30.4) (2022-10-10)
 
 
