@@ -1,3 +1,10 @@
+## [4.30.3](https://github.com/etienne-bechara/crux/compare/v4.30.2...v4.30.3) (2022-10-06)
+
+
+### Bug Fixes
+
+* redoc theming ([1bd670b](https://github.com/etienne-bechara/crux/commit/1bd670b4d76b588314986b233e1969505fc22851))
+
 ## [4.30.2](https://github.com/etienne-bechara/crux/compare/v4.30.1...v4.30.2) (2022-10-04)
 
 
