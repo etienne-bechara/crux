@@ -1,3 +1,10 @@
+## [4.30.4](https://github.com/etienne-bechara/crux/compare/v4.30.3...v4.30.4) (2022-10-10)
+
+
+### Bug Fixes
+
+* swagger try theme ([095ef8f](https://github.com/etienne-bechara/crux/commit/095ef8f1a25fb3dd663e55a8549c5ceb8d936201))
+
 ## [4.30.3](https://github.com/etienne-bechara/crux/compare/v4.30.2...v4.30.3) (2022-10-06)
 
 
