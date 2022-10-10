@@ -25,6 +25,11 @@ export interface DocSecurity {
   options: SecuritySchemeObject;
 }
 
+export interface DocServer {
+  url: string;
+  description?: string;
+}
+
 export interface DocCodeSample {
   label: string;
   client: DocCodeSampleClient;
@@ -37,6 +42,7 @@ export interface DocOptions extends RedocOptions {
   openApiUrl?: string;
   version?: string;
   description?: string;
+  servers?: DocServer[];
   security?: DocSecurity[];
   theme?: DocTheme;
   codeSamples?: DocCodeSample[];

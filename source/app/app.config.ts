@@ -35,9 +35,17 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
       fontFamily: 'Consolas',
     },
   },
+  colors: {
+    primary: {
+      main: '#32329f',
+    },
+  },
   rightPanel: {
     backgroundColor: '#263238',
-    textColor: '#FFFFFF',
+    textColor: '#ffffff',
+  },
+  codeBlock: {
+    backgroundColor: '#11171a',
   },
   scrollbar: {
     width: '16px',
@@ -138,15 +146,13 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     hideLoading: true,
     enumSkipQuotes: true,
     title: 'API Reference | OpenAPI',
+    version: 'v1',
     favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
     logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png' },
     theme: APP_DEFAULT_DOC_THEME,
     codeSamples: [
       { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },
-      { label: 'Node.js', client: DocCodeSampleClient.NODE_AXIOS },
-      { label: 'Python', client: DocCodeSampleClient.PYTHON_REQUESTS },
-      { label: 'Java', client: DocCodeSampleClient.JAVA_OKHTTP },
-      { label: '.NET', client: DocCodeSampleClient.CSHARP_RESTSHARP },
+      { label: 'PowerShell', client: DocCodeSampleClient.POWERSHELL_WEBREQUEST },
     ],
   },
 };

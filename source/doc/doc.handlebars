@@ -34,7 +34,7 @@
       color: {{ theme.sidebar.activeTextColor }} !important
     }
 
-    /* Add style to try it button */
+    /* Add theme to try it button */
     .tryBtn {
       border-radius: 5px;
       border-style: none;
@@ -45,6 +45,51 @@
       padding: 5px 10px;
       background-color: {{ theme.rightPanel.backgroundColor }};
       color: {{ theme.rightPanel.textColor }};
+    }
+
+    /* Add theme to try it frame */
+    .swagger-ui p, h4, h5 {
+      font-family: {{ theme.typography.fontFamily }} !important;
+    }
+
+    .swagger-ui input {
+      border-style: none !important;
+      background: {{ theme.rightPanel.backgroundColor }} !important;
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    .opblock {
+      border-style: none !important;
+    }
+
+    .opblock-body {
+      background: {{ theme.codeBlock.backgroundColor }} !important;
+    }
+
+    .opblock-body p, h4, h5 {
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    .response-col_status, .response-col_description, .parameter__name, .parameter__type, .parameter__in, .prop-format {
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    .btn.execute, .download-contents {
+      background-color: {{ theme.colors.primary.main }} !important;
+      border-color: {{ theme.colors.primary.main }} !important;
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    .btn-clear {
+      border-width: 1px !important;
+      border-color: {{ theme.rightPanel.textColor }} !important;
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    .body-param__text, .highlight-code, .microlight {
+      background: {{ theme.rightPanel.backgroundColor }} !important;
+      color: {{ theme.rightPanel.textColor }} !important;
+      font-family: {{ theme.typography.code.fontFamily }} !important;
     }
 
     /* Add webkit scrollbar support */
@@ -79,7 +124,7 @@
 
     {{ disableTryIt }}
       ? Redoc.init(openApi, redocOptions, document.getElementById('redoc-container'))
-      : initTry({ openApi, redocOptions, tryText: '⯈' });
+      : initTry({ openApi, redocOptions, tryText: '⯈', pure: true });
   </script>
 </body>
 
