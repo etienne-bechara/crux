@@ -36,6 +36,9 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
     },
   },
   colors: {
+    text: {
+      primary: '#333333',
+    },
     primary: {
       main: '#32329f',
     },
@@ -43,6 +46,14 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
   rightPanel: {
     backgroundColor: '#263238',
     textColor: '#ffffff',
+    servers: {
+      overlay: {
+        backgroundColor: '#11171a',
+      },
+      url: {
+        backgroundColor: '#263238',
+      },
+    },
   },
   codeBlock: {
     backgroundColor: '#11171a',
