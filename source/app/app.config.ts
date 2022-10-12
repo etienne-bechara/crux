@@ -26,13 +26,13 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
   },
   typography: {
     smoothing: 'subpixel-antialiased',
-    fontFamily: 'Segoe UI',
+    fontFamily: 'Segoe WP',
     headings: {
-      fontFamily: 'Segoe UI',
+      fontFamily: 'Segoe WP',
     },
     code: {
       wrap: true,
-      fontFamily: 'Consolas',
+      fontFamily: 'Code New Roman',
     },
   },
   colors: {

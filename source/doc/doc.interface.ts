@@ -9,6 +9,7 @@ export interface DocRenderOptions {
   disableTryIt: boolean;
   title: string;
   favicon: string;
+  fontsHtml: string;
   openApiUrl: string;
   options: string;
   theme: DocTheme;
@@ -61,12 +62,36 @@ export interface DocHttpResponseColors {
   tabTextColor?: string;
 }
 
-export interface DocFontSettings {
+export interface DocTypography {
   fontSize?: string;
-  fontWeight?: string;
-  fontFamily?: string;
   lineHeight?: string;
-  color?: string;
+  fontWeightLight?: string;
+  fontWeightRegular?: string;
+  fontWeightBold?: string;
+  fontFamily?: string;
+  smoothing?: string;
+  optimizeSpeed?: boolean;
+  code?: {
+    fontSize?: string;
+    fontWeight?: string;
+    fontFamily?: string;
+    lineHeight?: string;
+    color?: string;
+    backgroundColor?: string;
+    wrap?: boolean;
+  };
+  headings?: {
+    fontFamily?: string;
+    fontWeight?: string;
+    lineHeight?: string;
+  };
+  links?: {
+    color?: string;
+    visited?: string;
+    hover?: string;
+    textDecoration?: string;
+    hoverTextDecoration?: string;
+  };
 }
 
 export interface DocServers {
@@ -155,32 +180,7 @@ export interface DocBaseTheme {
       color?: string;
     };
   };
-  typography?: {
-    fontSize?: string;
-    lineHeight?: string;
-    fontWeightLight?: string;
-    fontWeightRegular?: string;
-    fontWeightBold?: string;
-    fontFamily?: string;
-    smoothing?: string;
-    optimizeSpeed?: boolean;
-    code?: DocFontSettings & {
-      backgroundColor?: string;
-      wrap?: boolean;
-    };
-    headings?: {
-      fontFamily?: string;
-      fontWeight?: string;
-      lineHeight?: string;
-    };
-    links?: {
-      color?: string;
-      visited?: string;
-      hover?: string;
-      textDecoration?: string;
-      hoverTextDecoration?: string;
-    };
-  };
+  typography?: DocTypography;
   sidebar?: {
     width?: string;
     backgroundColor?: string;

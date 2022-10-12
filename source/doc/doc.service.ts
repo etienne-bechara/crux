@@ -5,7 +5,7 @@ import { AppConfig } from '../app/app.config';
 import { AppMemoryKey } from '../app/app.enum';
 import { ContextService } from '../context/context.service';
 import { MemoryService } from '../memory/memory.service';
-import { DocRenderOptions } from './doc.interface';
+import { DocOptions, DocRenderOptions, DocTypography } from './doc.interface';
 import { DocModule } from './doc.module';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class DocService {
       this.addContextServer();
     }
 
-    const options = JSON.parse(JSON.stringify(docs));
+    const options: DocOptions = JSON.parse(JSON.stringify(docs));
     delete options.disableTryIt;
     delete options.documentBuilder;
     delete options.openApiUrl;
@@ -49,6 +49,7 @@ export class DocService {
       openApiUrl,
       title,
       favicon,
+      fontsHtml: this.buildFontsHtml(theme.typography),
       theme,
       options: JSON.stringify(options),
     };
@@ -70,6 +71,30 @@ export class DocService {
 
     DocModule.generateCodeSamples(document, this.appConfig.APP_OPTIONS);
     DocModule.hasServers = true;
+  }
+
+  /**
+   * Builds html links to fetch desired fonts remotely.
+   * @param typography
+   */
+  private buildFontsHtml(typography: DocTypography): string {
+    const { fontFamily, code, headings } = typography;
+    const fontIds: string[] = [ ];
+
+    if (fontFamily) {
+      fontIds.push(fontFamily.toLowerCase().replace(/\s+/g, '-'));
+    }
+
+    if (code?.fontFamily) {
+      fontIds.push(code.fontFamily.toLowerCase().replace(/\s+/g, '-'));
+    }
+
+    if (headings?.fontFamily) {
+      fontIds.push(headings.fontFamily.toLowerCase().replace(/\s+/g, '-'));
+    }
+
+    const uniqueIs = [ ...new Set(fontIds) ];
+    return uniqueIs.map((f) => `<link href="http://fonts.cdnfonts.com/css/${f}" rel="stylesheet">`).join('\n');
   }
 
 }

@@ -11,6 +11,8 @@
   <link rel="shortcut icon" type="image/x-icon" href="{{ favicon }}" />
   {{/if}}
 
+  {{{ fontsHtml }}}
+
   <style>
     /* Enables ReDoc component to fill whole page and to have a configurable background */
     body {
@@ -19,31 +21,32 @@
       background-color: {{ theme.backgroundColor }};
     }
 
-    /* Fix being unable to apply theming to request params, query and body titles */
+    /* Fix request headings font and bottom border color */
     .sc-iqAclL, .sc-jcwpoC {
       color: {{ theme.colors.text.primary }} !important;
     }
-
-    /* Fix being unable to apply theming to bottom border of params, query and body titles  */
     .sc-iqAclL {
       border-bottom-color: {{ theme.colors.text.primary }}4C !important;
     }
 
-    /* Fix being unable to apply right panel server theme */
+    /* Fix right panel code font */
+    .redoc-json code {
+      font-family: {{ theme.typography.code.fontFamily }} !important;
+    }
+
+    /* Fix right panel servers overlay background and font color */
     .sc-EZqKI {
       background-color: {{ theme.rightPanel.servers.overlay.backgroundColor }} !important;
     }
-
     .sc-jXcxbT {
       border-style: none !important;
       background-color: {{ theme.rightPanel.servers.url.backgroundColor }} !important;
     }
-
-    .sc-iBzEeX, .sc-jXcxbT, .sc-jXcxbT > span {
+    .sc-jXcxbT, .sc-jXcxbT > span {
       color: {{ theme.rightPanel.textColor }} !important;
     }
 
-    /* Fix being unable to apply selected code or payload theme */
+    /* Fix selected tab theme */
     .react-tabs__tab, .tab-success {
       border-top: 0px !important;
       border-left: 0px !important;
@@ -53,13 +56,12 @@
       border-color: {{ theme.codeBlock.backgroundColor }} !important;
       background-color: {{ theme.rightPanel.backgroundColor }} !important;
     }
-
     .react-tabs__tab--selected {
       border-color: {{ theme.rightPanel.textColor }} !important;
       color: {{ theme.rightPanel.textColor }} !important;
     }
 
-    /* Add theme to try it button */
+    /* Add try it button theme */
     .tryBtn {
       border-radius: 5px;
       border-style: none;
@@ -72,45 +74,37 @@
       color: {{ theme.rightPanel.textColor }};
     }
 
-    /* Add theme to try it frame */
+    /* Add try it swagger frame theme */
     .swagger-ui p, h4, h5 {
       font-family: {{ theme.typography.fontFamily }} !important;
     }
-
     .swagger-ui input {
       border-style: none !important;
       background: {{ theme.rightPanel.backgroundColor }} !important;
       color: {{ theme.rightPanel.textColor }} !important;
     }
-
     .opblock {
       border-style: none !important;
     }
-
     .opblock-body {
       background: {{ theme.codeBlock.backgroundColor }} !important;
     }
-
     .opblock-body p, h4, h5 {
       color: {{ theme.rightPanel.textColor }} !important;
     }
-
     .response-col_status, .response-col_description, .parameter__name, .parameter__type, .parameter__in, .prop-format {
       color: {{ theme.rightPanel.textColor }} !important;
     }
-
     .btn.execute, .download-contents {
       background-color: {{ theme.colors.primary.main }} !important;
       border-color: {{ theme.colors.primary.main }} !important;
       color: {{ theme.rightPanel.textColor }} !important;
     }
-
     .btn-clear {
       border-width: 1px !important;
       border-color: {{ theme.rightPanel.textColor }} !important;
       color: {{ theme.rightPanel.textColor }} !important;
     }
-
     .body-param__text, .highlight-code, .microlight {
       background: {{ theme.rightPanel.backgroundColor }} !important;
       color: {{ theme.rightPanel.textColor }} !important;
