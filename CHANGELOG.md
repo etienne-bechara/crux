@@ -1,3 +1,11 @@
+## [4.30.6](https://github.com/etienne-bechara/crux/compare/v4.30.5...v4.30.6) (2022-10-12)
+
+
+### Bug Fixes
+
+* font size and alignment ([40e00a8](https://github.com/etienne-bechara/crux/commit/40e00a8c3eaab884796b5b249f9d4fa367879b54))
+* fonts cdn ([fd487e6](https://github.com/etienne-bechara/crux/commit/fd487e6c7800e97a6edeaa23e814b23045e3776a))
+
 ## [4.30.5](https://github.com/etienne-bechara/crux/compare/v4.30.4...v4.30.5) (2022-10-10)
 
 
