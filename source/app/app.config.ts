@@ -26,6 +26,7 @@ export const APP_DEFAULT_DOC_THEME: DocTheme = {
   },
   typography: {
     smoothing: 'subpixel-antialiased',
+    fontSize: '15px',
     fontFamily: 'Segoe WP',
     headings: {
       fontFamily: 'Segoe WP',

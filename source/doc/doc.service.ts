@@ -78,7 +78,7 @@ export class DocService {
    * @param typography
    */
   private buildFontsHtml(typography: DocTypography): string {
-    const { fontFamily, code, headings } = typography;
+    const { fontFamily, code, headings } = typography || { };
     const fontIds: string[] = [ ];
 
     if (fontFamily) {
