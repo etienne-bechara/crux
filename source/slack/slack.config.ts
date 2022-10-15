@@ -2,6 +2,12 @@ import { IsIn, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 import { Config, InjectConfig } from '../config/config.decorator';
 import { LogSeverity } from '../log/log.enum';
+import { SlackOptions } from './slack.interface';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const SLACK_DEFAULT_OPTIONS: SlackOptions = {
+  severity: LogSeverity.WARNING,
+};
 
 @Config()
 export class SlackConfig {

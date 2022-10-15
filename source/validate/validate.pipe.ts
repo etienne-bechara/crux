@@ -3,6 +3,7 @@ import { ValidationError } from 'class-validator';
 
 import { ContextService } from '../context/context.service';
 import { TraceService } from '../trace/trace.service';
+import { VALIDATOR_DEFAULT_OPTIONS } from './validate.config';
 
 @Injectable()
 export class ValidatePipe extends ValidationPipe implements PipeTransform {
@@ -10,12 +11,7 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
   public constructor(
     private readonly contextService: ContextService,
   ) {
-    super({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      always: true,
-      strictGroups: true,
-    });
+    super(VALIDATOR_DEFAULT_OPTIONS);
   }
 
   /**
