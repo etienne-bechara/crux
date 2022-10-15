@@ -1,3 +1,18 @@
+# [4.31.0](https://github.com/etienne-bechara/crux/compare/v4.30.6...v4.31.0) (2022-10-15)
+
+
+### Bug Fixes
+
+* hide required tag on responses ([d256d2c](https://github.com/etienne-bechara/crux/commit/d256d2c5b9e4403b74952ff100e6a6517a90793c))
+* refactor config structure ([8f8d607](https://github.com/etienne-bechara/crux/commit/8f8d6070f3fc6a7e397dd0733ddd9559ca49935f))
+* samples theme ([ce808fe](https://github.com/etienne-bechara/crux/commit/ce808fedd730e25a36ca0b5934cdeb101419fb03))
+* swagger auth theme ([c3fa19f](https://github.com/etienne-bechara/crux/commit/c3fa19f209350345e725e7bdba47ac5799e580d1))
+
+
+### Features
+
+* add theme generator ([1cb8db4](https://github.com/etienne-bechara/crux/commit/1cb8db4ec03253e7fa42eaa523db4da4353f5336))
+
 ## [4.30.6](https://github.com/etienne-bechara/crux/compare/v4.30.5...v4.30.6) (2022-10-12)
 
 
