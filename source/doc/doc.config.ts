@@ -1,59 +1,99 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { DocCodeSampleClient } from './doc.enum';
-import { DocOptions, DocTheme } from './doc.interface';
+import { DocOptions, DocTheme, DocThemeGeneratorParams } from './doc.interface';
 
 /**
- * Builds upon default theme available at:
+ * Generates documentation theme based on simplified inputs.
+ *
+ * Builds upon default interface available at:
  * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
  *
  * Theming sandbox is available at:
  * https://pointnet.github.io/redoc-editor.
+ * @param params
  */
-export const DOC_DEFAULT_THEME: DocTheme = {
-  logo: {
-    gutter: '35px',
-  },
-  typography: {
-    smoothing: 'subpixel-antialiased',
-    fontSize: '15px',
-    fontFamily: 'Segoe WP',
-    headings: {
-      fontFamily: 'Segoe WP',
-    },
-    code: {
-      wrap: true,
-      fontFamily: 'Code New Roman',
-    },
+export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => ({
+  backgroundColor: params.backgroundColor,
+  scrollbar: {
+    width: '16px',
+    thumbColor: params.rightPanelColor,
+    trackColor: params.sidebarColor,
   },
   colors: {
-    text: {
-      primary: '#333333',
-    },
     primary: {
-      main: '#32329f',
+      main: params.accentColor,
+    },
+    success: {
+      main: params.successColor,
+    },
+    warning: {
+      main: params.warningColor,
+    },
+    error: {
+      main: params.errorColor,
+    },
+    text: {
+      primary: params.textColor,
+    },
+    http: {
+      get: params.successColor,
+      post: params.warningColor,
+      put: params.accentColor,
+      options: params.successColor,
+      patch: params.accentColor,
+      delete: params.errorColor,
+      basic: params.successColor,
+      link: params.successColor,
+      head: params.successColor,
     },
   },
+  schema: {
+    nestedBackground: params.rightPanelColor,
+  },
+  typography: {
+    fontSize: params.fontSize,
+    fontFamily: params.fontFamily,
+    smoothing: 'subpixel-antialiased',
+    headings: {
+      fontFamily: params.fontFamily,
+      fontWeight: params.headingsFontWeight,
+    },
+    code: {
+      fontFamily: params.codeFontFamily,
+      fontSize: params.codeFontSize,
+      color: params.textColor,
+      backgroundColor: params.sidebarColor,
+      wrap: true,
+    },
+  },
+  sidebar: {
+    backgroundColor: params.sidebarColor,
+    textColor: params.textColor,
+  },
+  logo: {
+    gutter: params.logoGutter,
+  },
   rightPanel: {
-    backgroundColor: '#263238',
-    textColor: '#ffffff',
+    backgroundColor: params.rightPanelColor,
+    textColor: params.textColor,
     servers: {
       overlay: {
-        backgroundColor: '#11171a',
+        backgroundColor: params.sidebarColor,
+        textColor: params.textColor,
       },
       url: {
-        backgroundColor: '#263238',
+        backgroundColor: params.rightPanelColor,
       },
     },
   },
   codeBlock: {
-    backgroundColor: '#11171a',
+    backgroundColor: params.sidebarColor,
   },
-  scrollbar: {
-    width: '16px',
-    thumbColor: '#263238',
-    trackColor: '#192226',
+  fab: {
+    backgroundColor: params.sidebarColor,
+    color: params.textColor,
   },
-};
+});
 
 export const DOC_DEFAULT_OPTIONS: DocOptions = {
   disableTryIt: false,
@@ -62,8 +102,24 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   title: 'API Reference | OpenAPI',
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
-  logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/10/OpenAPI_Pantone.png' },
-  theme: DOC_DEFAULT_THEME,
+  logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png' },
+  theme: docThemeGenerator({
+    logoGutter: '35px',
+    sidebarColor: '#21252b',
+    rightPanelColor: '#282c34',
+    backgroundColor: '#2f333d',
+    textColor: '#ffffff',
+    accentColor: '#61afef',
+    successColor: '#98c379',
+    warningColor: '#e5c07b',
+    errorColor: '#e06c75',
+    fontFamily: 'Segoe WP',
+    fontSize: '15px',
+    headingsFontFamily: 'Segoe WP',
+    headingsFontWeight: '600',
+    codeFontFamily: 'Code New Roman',
+    codeFontSize: '13px',
+  }),
   codeSamples: [
     { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },
     { label: 'PowerShell', client: DocCodeSampleClient.POWERSHELL_WEBREQUEST },

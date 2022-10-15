@@ -49,6 +49,24 @@ export interface DocOptions extends RedocOptions {
   codeSamples?: DocCodeSample[];
 }
 
+export interface DocThemeGeneratorParams {
+  logoGutter: string;
+  sidebarColor: string;
+  rightPanelColor: string;
+  backgroundColor: string;
+  textColor: string;
+  accentColor: string;
+  successColor: string;
+  warningColor: string;
+  errorColor: string;
+  fontFamily: string;
+  fontSize: string;
+  headingsFontFamily: string;
+  headingsFontWeight: string;
+  codeFontFamily: string;
+  codeFontSize: string;
+}
+
 export interface DocThemeColors {
   main?: string;
   light?: string;
