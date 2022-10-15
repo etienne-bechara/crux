@@ -54,6 +54,7 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     fontSize: params.fontSize,
     fontFamily: params.fontFamily,
     smoothing: 'subpixel-antialiased',
+    optimizeSpeed: false,
     headings: {
       fontFamily: params.fontFamily,
       fontWeight: params.headingsFontWeight,

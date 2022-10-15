@@ -57,18 +57,17 @@
     }
 
     /* Fix selected tab theme */
-    .react-tabs__tab, .tab-success {
+    .react-tabs__tab, .tab-success, .tab-redirect, .tab-error {
       border-top: 0px !important;
       border-left: 0px !important;
       border-right: 0px !important;
       border-radius: 0px !important;
-      border-width: 4px !important;
+      border-width: 2px !important;
       border-color: {{ theme.codeBlock.backgroundColor }} !important;
       background-color: {{ theme.rightPanel.backgroundColor }} !important;
     }
     .react-tabs__tab--selected {
       border-color: {{ theme.rightPanel.textColor }} !important;
-      color: {{ theme.rightPanel.textColor }} !important;
     }
 
     /* Add try it button theme */
