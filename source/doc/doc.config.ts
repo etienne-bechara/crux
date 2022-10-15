@@ -16,8 +16,8 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
   backgroundColor: params.backgroundColor,
   scrollbar: {
     width: '16px',
-    thumbColor: params.rightPanelColor,
-    trackColor: params.sidebarColor,
+    thumbColor: params.rightPanelBackgroundColor,
+    trackColor: params.sidebarBackgroundColor,
   },
   colors: {
     primary: {
@@ -48,7 +48,7 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     },
   },
   schema: {
-    nestedBackground: params.rightPanelColor,
+    nestedBackground: params.rightPanelBackgroundColor,
   },
   typography: {
     fontSize: params.fontSize,
@@ -62,37 +62,37 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     code: {
       fontFamily: params.codeFontFamily,
       fontSize: params.codeFontSize,
-      color: params.textColor,
-      backgroundColor: params.sidebarColor,
+      color: params.rightPanelTextColor,
+      backgroundColor: params.sidebarBackgroundColor,
       wrap: true,
     },
   },
   sidebar: {
-    backgroundColor: params.sidebarColor,
-    textColor: params.textColor,
+    backgroundColor: params.sidebarBackgroundColor,
+    textColor: params.sidebarTextColor,
   },
   logo: {
     gutter: params.logoGutter,
   },
   rightPanel: {
-    backgroundColor: params.rightPanelColor,
-    textColor: params.textColor,
+    backgroundColor: params.rightPanelBackgroundColor,
+    textColor: params.rightPanelTextColor,
     servers: {
       overlay: {
-        backgroundColor: params.sidebarColor,
-        textColor: params.textColor,
+        backgroundColor: params.sidebarBackgroundColor,
+        textColor: params.sidebarTextColor,
       },
       url: {
-        backgroundColor: params.rightPanelColor,
+        backgroundColor: params.rightPanelBackgroundColor,
       },
     },
   },
   codeBlock: {
-    backgroundColor: params.sidebarColor,
+    backgroundColor: params.sidebarBackgroundColor,
   },
   fab: {
-    backgroundColor: params.sidebarColor,
-    color: params.textColor,
+    backgroundColor: params.sidebarBackgroundColor,
+    color: params.sidebarTextColor,
   },
 });
 
@@ -107,8 +107,10 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png' },
   theme: docThemeGenerator({
     logoGutter: '35px',
-    sidebarColor: '#21252b',
-    rightPanelColor: '#282c34',
+    sidebarBackgroundColor: '#21252b',
+    sidebarTextColor: '#ffffff',
+    rightPanelBackgroundColor: '#282c34',
+    rightPanelTextColor: '#ffffff',
     backgroundColor: '#2f333d',
     textColor: '#ffffff',
     accentColor: '#61afef',

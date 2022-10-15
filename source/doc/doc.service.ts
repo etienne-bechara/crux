@@ -94,7 +94,7 @@ export class DocService {
     }
 
     const uniqueIs = [ ...new Set(fontIds) ];
-    return uniqueIs.map((f) => `<link href="http://fonts.cdnfonts.com/css/${f}" rel="stylesheet">`).join('\n');
+    return uniqueIs.map((f) => `<link href="https://fonts.cdnfonts.com/css/${f}" rel="stylesheet">`).join('\n');
   }
 
 }

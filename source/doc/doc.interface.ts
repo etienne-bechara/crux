@@ -51,8 +51,10 @@ export interface DocOptions extends RedocOptions {
 
 export interface DocThemeGeneratorParams {
   logoGutter: string;
-  sidebarColor: string;
-  rightPanelColor: string;
+  sidebarBackgroundColor: string;
+  sidebarTextColor: string;
+  rightPanelBackgroundColor: string;
+  rightPanelTextColor: string;
   backgroundColor: string;
   textColor: string;
   accentColor: string;
