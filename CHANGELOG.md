@@ -1,3 +1,10 @@
+## [4.31.1](https://github.com/etienne-bechara/crux/compare/v4.31.0...v4.31.1) (2022-10-15)
+
+
+### Bug Fixes
+
+* fonts and colors ([943dae4](https://github.com/etienne-bechara/crux/commit/943dae4da3bea009d074c329b8241ab86a0a24f5))
+
 # [4.31.0](https://github.com/etienne-bechara/crux/compare/v4.30.6...v4.31.0) (2022-10-15)
 
 
