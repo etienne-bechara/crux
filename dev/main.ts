@@ -23,5 +23,15 @@ void AppModule.boot({
       { name: 'User Management', tags: [ 'User' ] },
       { name: 'ZIP Code', tags: [ 'ZIP' ] },
     ],
+    security: [
+      {
+        name: 'API Key',
+        options: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'authorization',
+        },
+      },
+    ],
   },
 });

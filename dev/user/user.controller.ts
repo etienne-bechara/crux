@@ -1,11 +1,12 @@
 import { Cache } from '../../source/cache/cache.decorator';
 import { ApiTag } from '../../source/doc/doc.decorator';
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../source/override';
+import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../source/override';
 import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
+@ApiSecurity('API Key')
 @ApiTag({
   name: 'User',
   description: `A user is a person who utilizes a computer or network service.

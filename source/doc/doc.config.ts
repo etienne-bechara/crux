@@ -100,6 +100,7 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   disableTryIt: false,
   hideLoading: true,
   enumSkipQuotes: true,
+  noAutoAuth: true,
   title: 'API Reference | OpenAPI',
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
