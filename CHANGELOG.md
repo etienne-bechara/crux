@@ -1,3 +1,10 @@
+## [4.31.4](https://github.com/etienne-bechara/crux/compare/v4.31.3...v4.31.4) (2022-10-17)
+
+
+### Bug Fixes
+
+* examples background color ([8e2930a](https://github.com/etienne-bechara/crux/commit/8e2930a73721cb28efc2cf0d61ef5e375210325f))
+
 ## [4.31.3](https://github.com/etienne-bechara/crux/compare/v4.31.2...v4.31.3) (2022-10-17)
 
 
