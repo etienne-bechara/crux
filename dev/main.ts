@@ -19,7 +19,6 @@ void AppModule.boot({
   ],
   docs: {
     tagGroups: [
-      { name: 'Application', tags: [ 'Docs', 'Metrics', 'Status' ] },
       { name: 'User Management', tags: [ 'User' ] },
       { name: 'ZIP Code', tags: [ 'ZIP' ] },
     ],
