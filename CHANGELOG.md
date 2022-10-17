@@ -1,3 +1,10 @@
+## [4.31.3](https://github.com/etienne-bechara/crux/compare/v4.31.2...v4.31.3) (2022-10-17)
+
+
+### Bug Fixes
+
+* hide private endpoints in documentation ([4101e0c](https://github.com/etienne-bechara/crux/commit/4101e0c1174b33a1ccda1b5e8b344427b6e89f28))
+
 ## [4.31.2](https://github.com/etienne-bechara/crux/compare/v4.31.1...v4.31.2) (2022-10-17)
 
 
