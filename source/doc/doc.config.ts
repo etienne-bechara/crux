@@ -51,17 +51,17 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     nestedBackground: params.rightPanelBackgroundColor,
   },
   typography: {
-    fontSize: params.fontSize,
+    fontSize: params.fontSize || '15px',
     fontFamily: params.fontFamily,
     smoothing: 'subpixel-antialiased',
     optimizeSpeed: false,
     headings: {
       fontFamily: params.fontFamily,
-      fontWeight: params.headingsFontWeight,
+      fontWeight: params.headingsFontWeight || '700',
     },
     code: {
       fontFamily: params.codeFontFamily,
-      fontSize: params.codeFontSize,
+      fontSize: params.codeFontSize || '13px',
       color: params.rightPanelTextColor,
       backgroundColor: params.sidebarBackgroundColor,
       wrap: true,
@@ -72,7 +72,7 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     textColor: params.sidebarTextColor,
   },
   logo: {
-    gutter: params.logoGutter,
+    gutter: params.logoGutter || '35px',
   },
   rightPanel: {
     backgroundColor: params.rightPanelBackgroundColor,
@@ -106,7 +106,6 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
   logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png' },
   theme: docThemeGenerator({
-    logoGutter: '35px',
     sidebarBackgroundColor: '#21252b',
     sidebarTextColor: '#ffffff',
     rightPanelBackgroundColor: '#282c34',
@@ -118,11 +117,8 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
     warningColor: '#e5c07b',
     errorColor: '#e06c75',
     fontFamily: 'Segoe WP',
-    fontSize: '15px',
     headingsFontFamily: 'Segoe WP',
-    headingsFontWeight: '600',
     codeFontFamily: 'Code New Roman',
-    codeFontSize: '13px',
   }),
   codeSamples: [
     { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },

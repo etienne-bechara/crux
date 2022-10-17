@@ -2,7 +2,7 @@ import { ContextService } from '../../source/context/context.service';
 import { Injectable, NotFoundException, uuidV4 } from '../../source/override';
 import { Span } from '../../source/trace/trace.decorator';
 import { ZipService } from '../zip/zip.service';
-import { UserCollection, UserCreateDto, UserUpdateDto } from './user.dto';
+import { UserCreateDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserAddressState } from './user.enum';
 
@@ -18,10 +18,15 @@ export class UserService {
 
   /**
    * Read all users.
+   * @param params
    */
   @Span()
-  public readUsers(): UserCollection {
+  public readUsers(params?: UserReadDto): UserPageDto {
+    const { limit, offset } = params;
+
     return {
+      limit,
+      offset,
       count: this.USER_DATABASE.length,
       records: this.USER_DATABASE,
     };

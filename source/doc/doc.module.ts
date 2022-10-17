@@ -10,6 +10,8 @@ import { AppOptions } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
 import { DocTagStorage } from './doc.decorator';
+import { DocCodeSampleClient } from './doc.enum';
+import { DocHttpSnippetParams } from './doc.interface';
 import { DocService } from './doc.service';
 
 @Module({
@@ -146,35 +148,65 @@ export class DocModule {
 
     for (const path in paths) {
       for (const method in paths[path]) {
-        const jsonType = 'application/json';
-        const bodySchema: ReferenceObject = paths[path][method].requestBody?.content[jsonType]?.schema;
-
-        const snippetBaseUrl = servers[0].url;
-        const snippetPath = path.replace('{', ':').replace('}', '');
         const snippetOptions = { indent: ' ' };
-
-        const httpSnippet = new HTTPSnippet({
-          method: method.toUpperCase(),
-          url: `${snippetBaseUrl}${snippetPath}`,
-          headers: bodySchema
-            ? [ { name: 'Content-Type', value: jsonType } ]
-            : undefined,
-          postData: bodySchema
-            ? { mimeType: jsonType, text: JSON.stringify(this.schemaToSample(bodySchema, document)) }
-            : undefined,
-        } as HTTPSnippet.Data);
+        const httpSnippet = this.buildHttpSnippet({ document, servers, path, method });
 
         paths[path][method]['x-codeSamples'] = codeSamples.map((s) => {
           const [ target, ...clientParts ] = s.client.toLowerCase().split('_');
           const snippet = httpSnippet.convert(target, clientParts.join('_'), snippetOptions) as string;
 
           // Fix PowerShell not printing response
-          const source = snippet.replace('$response = Invoke-WebRequest', 'Invoke-WebRequest');
+          const source = s.client === DocCodeSampleClient.POWERSHELL_WEBREQUEST
+            ? `${snippet}\nWrite-Output $response`
+            : snippet;
 
           return { lang: s.label, source };
         });
       }
     }
+  }
+
+  /**
+   * Builds an instance of the HTTP snippets generator.
+   * @param params
+   */
+  private static buildHttpSnippet(params: DocHttpSnippetParams): HTTPSnippet {
+    const { document, servers, path, method: rawMethod } = params;
+    const { paths } = document;
+
+    const jsonType = 'application/json';
+    const snippetBaseUrl = servers[0].url;
+    const snippetPath = path.replace('{', ':').replace('}', '');
+    const queryParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'query');
+    const bodySchema: ReferenceObject = paths[path][rawMethod].requestBody?.content[jsonType]?.schema;
+
+    const httpSnippetOptions = {
+      method: rawMethod.toUpperCase(),
+      url: `${snippetBaseUrl}${snippetPath}`,
+    } as any;
+
+    if (queryParameters.length > 0) {
+      httpSnippetOptions.queryString = queryParameters.map((p) => ({
+        name: p.name,
+        value: String(this.schemaToSample(p.schema as ReferenceObject, document)),
+      }));
+    }
+
+    if (bodySchema) {
+      httpSnippetOptions.headers = [
+        {
+          name: 'Content-Type',
+          value: jsonType,
+        },
+      ];
+
+      httpSnippetOptions.postData = {
+        mimeType: jsonType,
+        text: JSON.stringify(this.schemaToSample(bodySchema, document)),
+      };
+    }
+
+    return new HTTPSnippet(httpSnippetOptions as HTTPSnippet.Data);
   }
 
   /**

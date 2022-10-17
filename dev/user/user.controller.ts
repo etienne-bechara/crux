@@ -1,7 +1,7 @@
 import { Cache } from '../../source/cache/cache.decorator';
 import { ApiTag } from '../../source/doc/doc.decorator';
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '../../source/override';
-import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
+import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '../../source/override';
+import { UserCreateDto, UserIdDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -21,10 +21,10 @@ export class UserController {
   ) { }
 
   @Get()
-  @ApiOkResponse({ type: UserCollection })
+  @ApiOkResponse({ type: UserPageDto })
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
-  public getUser(): UserCollection {
-    return this.userService.readUsers();
+  public getUser(@Query() query: UserReadDto): UserPageDto {
+    return this.userService.readUsers(query);
   }
 
   @Get(':id')

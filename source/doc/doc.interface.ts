@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { DocumentBuilder } from '@nestjs/swagger';
-import { ExternalDocumentationObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ExternalDocumentationObject, OpenAPIObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { RedocOptions } from 'nestjs-redoc';
 
 import { DocCodeSampleClient } from './doc.enum';
+
+export interface DocHttpSnippetParams {
+  document: OpenAPIObject;
+  servers: DocServer[];
+  path: string;
+  method: string;
+}
 
 export interface DocRenderOptions {
   disableTryIt: boolean;
@@ -50,7 +57,7 @@ export interface DocOptions extends RedocOptions {
 }
 
 export interface DocThemeGeneratorParams {
-  logoGutter: string;
+  logoGutter?: string;
   sidebarBackgroundColor: string;
   sidebarTextColor: string;
   rightPanelBackgroundColor: string;
@@ -62,11 +69,11 @@ export interface DocThemeGeneratorParams {
   warningColor: string;
   errorColor: string;
   fontFamily: string;
-  fontSize: string;
+  fontSize?: string;
   headingsFontFamily: string;
-  headingsFontWeight: string;
+  headingsFontWeight?: string;
   codeFontFamily: string;
-  codeFontSize: string;
+  codeFontSize?: string;
 }
 
 export interface DocThemeColors {
