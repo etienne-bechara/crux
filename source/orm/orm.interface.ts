@@ -4,11 +4,11 @@ import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { ModuleMetadata } from '@nestjs/common';
 
 import { SchemaModuleOptions } from '../schema/schema.interface';
-import { OrmPaginationDto } from './orm.dto';
+import { OrmPageReadDto } from './orm.dto';
 
 export type OrmReadParams<T> = FilterQuery<T>;
 
-export type OrmReadPaginatedParams<T> = FilterQuery<T> & OrmPaginationDto;
+export type OrmReadPaginatedParams<T> = FilterQuery<T> & OrmPageReadDto;
 
 export type OrmSubscriberParams<Entity> = EventArgs<Entity>;
 

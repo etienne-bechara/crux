@@ -2,7 +2,7 @@ import { EntityManager, EntityName, FindOptions } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
-import { OrmPagination } from '../orm.dto';
+import { OrmPageDto } from '../orm.dto';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
@@ -134,7 +134,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * limit, offset and whether to include total count or not.
    * @param params
    */
-  public async readPaginatedBy(params: OrmReadPaginatedParams<Entity>): Promise<OrmPagination<Entity>> {
+  public async readPaginatedBy(params: OrmReadPaginatedParams<Entity>): Promise<OrmPageDto<Entity>> {
     const { limit: bLimit, offset: bOffset, count: hasCount, sort, order, populate, ...remainder } = params;
 
     const limit = bLimit ?? 100;

@@ -181,7 +181,7 @@ Example:
 
 ```ts
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@bechara/nestjs-core';
-import { OrmController, OrmPagination } from '@bechara/nestjs-orm';
+import { OrmController, OrmPageDto } from '@bechara/nestjs-orm';
 
 // These DTOs are validations customized with class-validator and class-transformer
 import { UserCreateDto, UserReadDto, UserUpdateDto } from './user.dto';
@@ -196,7 +196,7 @@ export class UserController {
   ) { }
 
   @Get()
-  public async get(@Query() query: UserReadDto): Promise<OrmPagination<User>> {
+  public async get(@Query() query: UserReadDto): Promise<OrmPageDto<User>> {
     return this.userRepository.readPaginatedBy(query);
   }
 

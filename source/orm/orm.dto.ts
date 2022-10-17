@@ -4,7 +4,7 @@ import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decor
 import { IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
-export class OrmPaginationDto {
+export class OrmPageReadDto {
 
   @IsOptional()
   @ToNumber()
@@ -57,7 +57,7 @@ export class OrmPaginationDto {
 
 }
 
-export class OrmPagination<Entity> {
+export class OrmPageDto<T> {
 
   @IsInt() @Min(1) @Max(1000)
   @ApiProperty({
@@ -96,6 +96,6 @@ export class OrmPagination<Entity> {
 
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
-  public records: Entity[];
+  public records: T[];
 
 }
