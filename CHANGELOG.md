@@ -1,3 +1,12 @@
+## [4.31.5](https://github.com/etienne-bechara/crux/compare/v4.31.4...v4.31.5) (2022-10-17)
+
+
+### Bug Fixes
+
+* add query string to code sample ([05b49f0](https://github.com/etienne-bechara/crux/commit/05b49f02019e470b8d63106c88b4ac7a7d070b0d))
+* http snippets props ([a94cb37](https://github.com/etienne-bechara/crux/commit/a94cb376b846facb15e554579d8bf1768084d55a))
+* orm page dto name ([bae2a30](https://github.com/etienne-bechara/crux/commit/bae2a30dee75efa328bd84faf7ba7f5d86b2dd22))
+
 ## [4.31.4](https://github.com/etienne-bechara/crux/compare/v4.31.3...v4.31.4) (2022-10-17)
 
 
