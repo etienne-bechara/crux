@@ -11,6 +11,8 @@
   <link rel="shortcut icon" type="image/x-icon" href="{{ favicon }}" />
   {{/if}}
 
+  <base target="_blank">
+
   {{{ fontsHtml }}}
 
   <style>
@@ -26,6 +28,11 @@
       margin-top: 5px !important;
     }
 
+    /* Hide powered by (MIT license allows) */
+    .sc-ikXwFM {
+      display: none !important;
+    }
+
     /* Fix request headings font and bottom border color */
     .sc-iqAclL, .sc-jcwpoC {
       color: {{ theme.colors.text.primary }} !important;
@@ -36,7 +43,12 @@
 
     /* Hide required tag on responses */
     .sc-fmdNqN .sc-TtZnY {
-      color: rgb(0, 0, 0, 0) !important;
+      display: none !important;
+    }
+
+    /* Fix 3rd nested schema background color */
+    .sc-dIvrsQ .sc-dIvrsQ {
+      background-color: {{ theme.backgroundColor }} !important;
     }
 
     /* Fix right panel code font */
