@@ -56,7 +56,7 @@ export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => 
     smoothing: 'subpixel-antialiased',
     optimizeSpeed: false,
     headings: {
-      fontFamily: params.fontFamily,
+      fontFamily: params.headingsFontFamily,
       fontWeight: params.headingsFontWeight || '700',
     },
     code: {
