@@ -174,36 +174,46 @@ export class DocModule {
     const { document, servers, path, method: rawMethod } = params;
     const { paths } = document;
 
-    const jsonType = 'application/json';
-    const snippetBaseUrl = servers[0].url;
-    const snippetPath = path.replace('{', ':').replace('}', '');
+    const pathParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'path');
     const queryParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'query');
-    const bodySchema: ReferenceObject = paths[path][rawMethod].requestBody?.content[jsonType]?.schema;
+    const requestBody = paths[path][rawMethod].requestBody;
 
     const httpSnippetOptions = {
       method: rawMethod.toUpperCase(),
-      url: `${snippetBaseUrl}${snippetPath}`,
+      url: `${servers[0].url}${path}`,
     } as any;
 
-    if (queryParameters.length > 0) {
-      httpSnippetOptions.queryString = queryParameters.map((p) => ({
-        name: p.name,
-        value: String(this.schemaToSample(p.schema as ReferenceObject, document)),
-      }));
+    if (pathParameters.length > 0) {
+      for (const pathParameter of pathParameters) {
+        const { name, example, schema } = pathParameter;
+        const ref = { ...schema, example };
+
+        const value = this.schemaToSample(ref as ReferenceObject, document);
+        httpSnippetOptions.url = httpSnippetOptions.url.replace(`{${name}}`, value);
+      }
     }
 
-    if (bodySchema) {
-      httpSnippetOptions.headers = [
-        {
-          name: 'Content-Type',
-          value: jsonType,
-        },
-      ];
+    if (queryParameters.length > 0) {
+      httpSnippetOptions.queryString = queryParameters.map((p) => {
+        const { name, example, schema } = p;
+        const ref = { ...schema, example };
 
-      httpSnippetOptions.postData = {
-        mimeType: jsonType,
-        text: JSON.stringify(this.schemaToSample(bodySchema, document)),
-      };
+        const value = String(this.schemaToSample(ref as ReferenceObject, document));
+        return { name, value };
+      });
+    }
+
+    if (requestBody) {
+      const jsonSchema: ReferenceObject = requestBody?.content['application/json']?.schema;
+
+      if (jsonSchema) {
+        httpSnippetOptions.headers = [ { name: 'Content-Type', value: 'application/json' } ];
+
+        httpSnippetOptions.postData = {
+          mimeType: 'application/json',
+          text: JSON.stringify(this.schemaToSample(jsonSchema, document)),
+        };
+      }
     }
 
     return new HTTPSnippet(httpSnippetOptions as HTTPSnippet.Data);
@@ -219,7 +229,7 @@ export class DocModule {
       ? document.components.schemas[schema['$ref'].split('/')[3]] as SchemaObject
       : schema as SchemaObject;
 
-    const { type, items, properties } = schemaObject;
+    const { type, items, properties, required } = schemaObject;
 
     switch (type) {
       case 'boolean':
@@ -238,6 +248,7 @@ export class DocModule {
         const obj = { };
 
         for (const property in properties) {
+          if (!required?.includes(property)) continue;
           obj[property] = this.schemaToSample(properties[property], document);
         }
 
