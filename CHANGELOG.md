@@ -1,3 +1,10 @@
+## [4.31.2](https://github.com/etienne-bechara/crux/compare/v4.31.1...v4.31.2) (2022-10-17)
+
+
+### Bug Fixes
+
+* external docs in new windows and nested schema background ([f3a1d06](https://github.com/etienne-bechara/crux/commit/f3a1d0664d3d46722438250a37448739b254f1e5))
+
 ## [4.31.1](https://github.com/etienne-bechara/crux/compare/v4.31.0...v4.31.1) (2022-10-15)
 
 
