@@ -41,6 +41,11 @@
       border-bottom-color: {{ theme.colors.text.primary }}4C !important;
     }
 
+    /* Fix examples button background color */
+    .sc-fKgJPI.jRgSCj {
+      background-color: {{ theme.backgroundColor }} !important;
+    }
+
     /* Hide required tag on responses */
     .sc-fmdNqN .sc-TtZnY {
       display: none !important;
@@ -66,6 +71,18 @@
     }
     .sc-jXcxbT, .sc-jXcxbT > span {
       color: {{ theme.rightPanel.textColor }} !important;
+    }
+
+    /* Fix right panel example dropdown background and font color */
+    .sc-kLojOw {
+      background-color: {{ theme.codeBlock.backgroundColor }} !important;
+    }
+    .sc-gXfVKN {
+      background-color: {{ theme.rightPanel.backgroundColor }} !important;
+      color: {{ theme.rightPanel.textColor }} !important;
+    }
+    .sc-gXfVKN:hover {
+      background-color: {{ theme.codeBlock.backgroundColor }} !important;
     }
 
     /* Fix selected tab theme */
