@@ -7,6 +7,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import handlebars from 'handlebars';
+import path from 'path';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -144,7 +145,7 @@ export class AppModule {
    * adding a hook for async local storage support.
    */
   private static async configureAdapter(): Promise<void> {
-    const { name, fastify, globalPrefix, cors } = this.options;
+    const { name, fastify, globalPrefix, assetsPrefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -190,6 +191,12 @@ export class AppModule {
 
     this.instance.setGlobalPrefix(globalPrefix);
     this.instance.enableCors(cors);
+
+    this.instance.getHttpAdapter().useStaticAssets({
+      // eslint-disable-next-line unicorn/prefer-module
+      root: path.join(process.cwd(), assetsPrefix),
+      prefix: `/${assetsPrefix}/`,
+    });
 
     this.instance.getHttpAdapter().setViewEngine({
       engine: { handlebars },

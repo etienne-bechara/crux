@@ -10,8 +10,8 @@ import { DocService } from './doc.service';
 
 // eslint-disable-next-line max-len
 const securityPolicy = "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; child-src * 'unsafe-inline' 'unsafe-eval' blob:; worker-src * 'unsafe-inline' 'unsafe-eval' blob:; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';";
-const sourcePath = 'source/doc/doc.hbs';
-const renderPath = fs.existsSync(sourcePath) ? sourcePath : '../node_modules/@bechara/crux/dist/doc/doc.hbs';
+const sourcePath = 'source/doc/doc.view.hbs';
+const renderPath = fs.existsSync(sourcePath) ? sourcePath : '../node_modules/@bechara/crux/dist/doc/doc.view.hbs';
 
 @Controller('docs')
 export class DocController {
