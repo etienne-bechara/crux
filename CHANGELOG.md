@@ -1,3 +1,10 @@
+## [4.31.6](https://github.com/etienne-bechara/crux/compare/v4.31.5...v4.31.6) (2022-10-17)
+
+
+### Bug Fixes
+
+* headingsFontFamily ([e78a247](https://github.com/etienne-bechara/crux/commit/e78a247dac9a67221c52d09ecbeef0eeb990adac))
+
 ## [4.31.5](https://github.com/etienne-bechara/crux/compare/v4.31.4...v4.31.5) (2022-10-17)
 
 
