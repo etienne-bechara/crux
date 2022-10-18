@@ -7,7 +7,6 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import handlebars from 'handlebars';
-import path from 'path';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -194,7 +193,7 @@ export class AppModule {
 
     this.instance.getHttpAdapter().useStaticAssets({
       // eslint-disable-next-line unicorn/prefer-module
-      root: path.join(process.cwd(), assetsPrefix),
+      root: `${process.cwd()}/${assetsPrefix}`,
       prefix: `/${assetsPrefix}/`,
     });
 

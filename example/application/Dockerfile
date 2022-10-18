@@ -9,6 +9,12 @@ COPY . /app/
 RUN npm i -g pnpm
 RUN pnpm i --frozen-lockfile
 
-# Build and run application
+# Build application
 RUN pnpm build
+
+# Copy distributable files to root
+RUN cp -a /app/dist/. /app/
+RUN rm -rf /app/dist
+
+# Run application
 CMD [ "pnpm", "start" ]

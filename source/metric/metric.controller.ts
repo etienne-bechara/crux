@@ -1,10 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiExcludeEndpoint, ApiProduces } from '@nestjs/swagger';
+import { ApiExcludeController, ApiProduces } from '@nestjs/swagger';
 
 import { MetricData } from './metric.dto';
 import { MetricService } from './metric.service';
 
 @Controller('metrics')
+@ApiExcludeController()
 export class MetricController {
 
   public constructor(
@@ -13,13 +14,11 @@ export class MetricController {
 
   @Get()
   @ApiProduces('text/plain')
-  @ApiExcludeEndpoint()
   public getMetrics(): Promise<string> {
     return this.metricService.readMetrics();
   }
 
   @Get('json')
-  @ApiExcludeEndpoint()
   public getMetricsJson(): Promise<MetricData[]> {
     return this.metricService.readMetricsJson();
   }
