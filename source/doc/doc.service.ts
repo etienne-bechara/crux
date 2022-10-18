@@ -40,8 +40,8 @@ export class DocService {
     delete options.version;
     delete options.description;
     delete options.security;
-    delete options.theme.backgroundColor;
-    delete options.theme.scrollbar;
+    delete options.theme?.backgroundColor;
+    delete options.theme?.scrollbar;
     delete options.codeSamples;
 
     return {
@@ -49,7 +49,7 @@ export class DocService {
       openApiUrl,
       title,
       favicon,
-      fontsHtml: this.buildFontsHtml(theme.typography),
+      fontsHtml: this.buildFontsHtml(theme?.typography),
       theme,
       options: JSON.stringify(options),
     };

@@ -1,6 +1,7 @@
 import { INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import fs from 'fs';
 import handlebars from 'handlebars';
 import HTTPSnippet from 'httpsnippet';
 import path from 'path';
@@ -11,7 +12,7 @@ import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
 import { DocTagStorage } from './doc.decorator';
 import { DocCodeSampleClient } from './doc.enum';
-import { DocHttpSnippetParams } from './doc.interface';
+import { DocHttpSnippetParams, DocTheme, DocThemeGeneratorParams } from './doc.interface';
 import { DocService } from './doc.service';
 
 @Module({
@@ -268,6 +269,114 @@ export class DocModule {
     return type === 'string'
       ? examples?.[0] ?? example ?? enumValue?.[0] ?? defaultValue ?? format ?? fallback
       : examples?.[0] ?? example ?? enumValue?.[0] ?? defaultValue ?? fallback;
+  }
+
+  /**
+   * Reads a markdown file relative to project root.
+   * @param path
+   */
+  public static readFile(path: string): string {
+    if (!path.endsWith('.md')) {
+      throw new Error('documentation file should be in markdown format');
+    }
+
+    return fs.readFileSync(path).toString();
+  }
+
+  /**
+   * Generates documentation theme based on simplified inputs.
+   *
+   * Builds upon default interface available at:
+   * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
+   *
+   * Theming sandbox is available at:
+   * https://pointnet.github.io/redoc-editor.
+   * @param params
+   */
+  public static generateTheme(params: DocThemeGeneratorParams): DocTheme {
+    return {
+      backgroundColor: params.backgroundColor,
+      scrollbar: {
+        width: '16px',
+        thumbColor: params.rightPanelBackgroundColor,
+        trackColor: params.sidebarBackgroundColor,
+      },
+      colors: {
+        primary: {
+          main: params.accentColor,
+        },
+        success: {
+          main: params.successColor,
+        },
+        warning: {
+          main: params.warningColor,
+        },
+        error: {
+          main: params.errorColor,
+        },
+        text: {
+          primary: params.textColor,
+        },
+        http: {
+          get: params.successColor,
+          post: params.warningColor,
+          put: params.accentColor,
+          options: params.successColor,
+          patch: params.accentColor,
+          delete: params.errorColor,
+          basic: params.successColor,
+          link: params.successColor,
+          head: params.successColor,
+        },
+      },
+      schema: {
+        nestedBackground: params.rightPanelBackgroundColor,
+      },
+      typography: {
+        fontSize: params.fontSize || '15px',
+        fontFamily: params.fontFamily,
+        smoothing: 'subpixel-antialiased',
+        optimizeSpeed: false,
+        headings: {
+          fontFamily: params.headingsFontFamily,
+          fontWeight: params.headingsFontWeight || '700',
+        },
+        code: {
+          fontFamily: params.codeFontFamily,
+          fontSize: params.codeFontSize || '13px',
+          color: params.rightPanelTextColor,
+          backgroundColor: params.sidebarBackgroundColor,
+          wrap: true,
+        },
+      },
+      sidebar: {
+        backgroundColor: params.sidebarBackgroundColor,
+        textColor: params.sidebarTextColor,
+      },
+      logo: {
+        gutter: params.logoGutter || '35px',
+      },
+      rightPanel: {
+        backgroundColor: params.rightPanelBackgroundColor,
+        textColor: params.rightPanelTextColor,
+        servers: {
+          overlay: {
+            backgroundColor: params.sidebarBackgroundColor,
+            textColor: params.sidebarTextColor,
+          },
+          url: {
+            backgroundColor: params.rightPanelBackgroundColor,
+          },
+        },
+      },
+      codeBlock: {
+        backgroundColor: params.sidebarBackgroundColor,
+      },
+      fab: {
+        backgroundColor: params.sidebarBackgroundColor,
+        color: params.sidebarTextColor,
+      },
+    };
   }
 
 }

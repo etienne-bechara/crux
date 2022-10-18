@@ -1,100 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { DocCodeSampleClient } from './doc.enum';
-import { DocOptions, DocTheme, DocThemeGeneratorParams } from './doc.interface';
-
-/**
- * Generates documentation theme based on simplified inputs.
- *
- * Builds upon default interface available at:
- * https://github.com/Redocly/redoc/blob/main/src/theme.ts.
- *
- * Theming sandbox is available at:
- * https://pointnet.github.io/redoc-editor.
- * @param params
- */
-export const docThemeGenerator = (params: DocThemeGeneratorParams): DocTheme => ({
-  backgroundColor: params.backgroundColor,
-  scrollbar: {
-    width: '16px',
-    thumbColor: params.rightPanelBackgroundColor,
-    trackColor: params.sidebarBackgroundColor,
-  },
-  colors: {
-    primary: {
-      main: params.accentColor,
-    },
-    success: {
-      main: params.successColor,
-    },
-    warning: {
-      main: params.warningColor,
-    },
-    error: {
-      main: params.errorColor,
-    },
-    text: {
-      primary: params.textColor,
-    },
-    http: {
-      get: params.successColor,
-      post: params.warningColor,
-      put: params.accentColor,
-      options: params.successColor,
-      patch: params.accentColor,
-      delete: params.errorColor,
-      basic: params.successColor,
-      link: params.successColor,
-      head: params.successColor,
-    },
-  },
-  schema: {
-    nestedBackground: params.rightPanelBackgroundColor,
-  },
-  typography: {
-    fontSize: params.fontSize || '15px',
-    fontFamily: params.fontFamily,
-    smoothing: 'subpixel-antialiased',
-    optimizeSpeed: false,
-    headings: {
-      fontFamily: params.headingsFontFamily,
-      fontWeight: params.headingsFontWeight || '700',
-    },
-    code: {
-      fontFamily: params.codeFontFamily,
-      fontSize: params.codeFontSize || '13px',
-      color: params.rightPanelTextColor,
-      backgroundColor: params.sidebarBackgroundColor,
-      wrap: true,
-    },
-  },
-  sidebar: {
-    backgroundColor: params.sidebarBackgroundColor,
-    textColor: params.sidebarTextColor,
-  },
-  logo: {
-    gutter: params.logoGutter || '35px',
-  },
-  rightPanel: {
-    backgroundColor: params.rightPanelBackgroundColor,
-    textColor: params.rightPanelTextColor,
-    servers: {
-      overlay: {
-        backgroundColor: params.sidebarBackgroundColor,
-        textColor: params.sidebarTextColor,
-      },
-      url: {
-        backgroundColor: params.rightPanelBackgroundColor,
-      },
-    },
-  },
-  codeBlock: {
-    backgroundColor: params.sidebarBackgroundColor,
-  },
-  fab: {
-    backgroundColor: params.sidebarBackgroundColor,
-    color: params.sidebarTextColor,
-  },
-});
+import { DocOptions } from './doc.interface';
 
 export const DOC_DEFAULT_OPTIONS: DocOptions = {
   disableTryIt: false,
@@ -105,21 +11,89 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
   logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png' },
-  theme: docThemeGenerator({
-    sidebarBackgroundColor: '#21252b',
-    sidebarTextColor: '#ffffff',
-    rightPanelBackgroundColor: '#282c34',
-    rightPanelTextColor: '#ffffff',
+  theme: {
     backgroundColor: '#2f333d',
-    textColor: '#ffffff',
-    accentColor: '#61afef',
-    successColor: '#98c379',
-    warningColor: '#e5c07b',
-    errorColor: '#e06c75',
-    fontFamily: 'Segoe WP',
-    headingsFontFamily: 'Segoe WP',
-    codeFontFamily: 'Code New Roman',
-  }),
+    scrollbar: {
+      width: '16px',
+      thumbColor: '#282c34',
+      trackColor: '#21252b',
+    },
+    colors: {
+      primary: {
+        main: '#61afef',
+      },
+      success: {
+        main: '#98c379',
+      },
+      warning: {
+        main: '#e5c07b',
+      },
+      error: {
+        main: '#e06c75',
+      },
+      text: {
+        primary: '#ffffff',
+      },
+      http: {
+        get: '#98c379',
+        post: '#e5c07b',
+        put: '#61afef',
+        options: '#98c379',
+        patch: '#61afef',
+        delete: '#e06c75',
+        basic: '#98c379',
+        link: '#98c379',
+        head: '#98c379',
+      },
+    },
+    schema: {
+      nestedBackground: '#282c34',
+    },
+    typography: {
+      fontSize: '15px',
+      fontFamily: 'Segoe WP',
+      smoothing: 'subpixel-antialiased',
+      optimizeSpeed: false,
+      headings: {
+        fontFamily: 'Segoe WP',
+        fontWeight: '700',
+      },
+      code: {
+        fontFamily: 'Code New Roman',
+        fontSize: '13px',
+        color: '#ffffff',
+        backgroundColor: '#21252b',
+        wrap: true,
+      },
+    },
+    sidebar: {
+      backgroundColor: '#21252b',
+      textColor: '#ffffff',
+    },
+    logo: {
+      gutter: '35px',
+    },
+    rightPanel: {
+      backgroundColor: '#282c34',
+      textColor: '#ffffff',
+      servers: {
+        overlay: {
+          backgroundColor: '#21252b',
+          textColor: '#ffffff',
+        },
+        url: {
+          backgroundColor: '#282c34',
+        },
+      },
+    },
+    codeBlock: {
+      backgroundColor: '#21252b',
+    },
+    fab: {
+      backgroundColor: '#21252b',
+      color: '#ffffff',
+    },
+  },
   codeSamples: [
     { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },
     { label: 'PowerShell', client: DocCodeSampleClient.POWERSHELL_WEBREQUEST },
