@@ -1,3 +1,10 @@
+## [4.32.1](https://github.com/etienne-bechara/crux/compare/v4.32.0...v4.32.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* doc and assets path ([8a1df59](https://github.com/etienne-bechara/crux/commit/8a1df59934831974150a45ad12128a6bb80d4733))
+
 # [4.32.0](https://github.com/etienne-bechara/crux/compare/v4.31.8...v4.32.0) (2022-10-18)
 
 
