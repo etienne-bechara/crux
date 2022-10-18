@@ -2,9 +2,7 @@ import { INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import fs from 'fs';
-import handlebars from 'handlebars';
 import HTTPSnippet from 'httpsnippet';
-import path from 'path';
 
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
@@ -40,7 +38,6 @@ export class DocModule {
     const { docs } = options;
     const { logo, tagGroups, servers } = docs;
 
-    this.configureViewEngine(instance);
     const builder = this.configureBuilder(options);
     const document = this.buildOpenApiObject(instance, builder);
 
@@ -56,18 +53,6 @@ export class DocModule {
     memoryService.set(AppMemoryKey.OPEN_API_SPECIFICATION, document);
 
     SwaggerModule.setup('openapi', instance, document, { useGlobalPrefix: true });
-  }
-
-  /**
-   * Configures view engine to support handlebars.
-   * @param instance
-   */
-  private static configureViewEngine(instance: INestApplication): void {
-    instance['setViewEngine']({
-      engine: { handlebars },
-      // eslint-disable-next-line unicorn/prefer-module
-      templates: path.join(__dirname, '..', 'doc'),
-    });
   }
 
   /**

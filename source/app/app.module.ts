@@ -6,6 +6,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
+import handlebars from 'handlebars';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -189,6 +190,10 @@ export class AppModule {
 
     this.instance.setGlobalPrefix(globalPrefix);
     this.instance.enableCors(cors);
+
+    this.instance.getHttpAdapter().setViewEngine({
+      engine: { handlebars },
+    });
   }
 
   /**
