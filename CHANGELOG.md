@@ -1,3 +1,11 @@
+## [4.31.7](https://github.com/etienne-bechara/crux/compare/v4.31.6...v4.31.7) (2022-10-18)
+
+
+### Bug Fixes
+
+* add doc utilities to module ([d7a654d](https://github.com/etienne-bechara/crux/commit/d7a654d91e576aad117efedd09cd25d6fbcb7e71))
+* add extra doc tags support ([e0a4735](https://github.com/etienne-bechara/crux/commit/e0a47353157d08e459cc051757bfe850282f9fdb))
+
 ## [4.31.6](https://github.com/etienne-bechara/crux/compare/v4.31.5...v4.31.6) (2022-10-17)
 
 
