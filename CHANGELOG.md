@@ -1,3 +1,15 @@
+# [4.32.0](https://github.com/etienne-bechara/crux/compare/v4.31.8...v4.32.0) (2022-10-18)
+
+
+### Bug Fixes
+
+* allow dynamic render path ([cea9b26](https://github.com/etienne-bechara/crux/commit/cea9b267484fd578def56edacd505b1205128a36))
+
+
+### Features
+
+* add static assets support ([62d5b2b](https://github.com/etienne-bechara/crux/commit/62d5b2b8b866be660124bc6b31df0a135ad7bcb1))
+
 ## [4.31.8](https://github.com/etienne-bechara/crux/compare/v4.31.7...v4.31.8) (2022-10-18)
 
 
