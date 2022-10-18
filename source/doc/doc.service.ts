@@ -35,7 +35,6 @@ export class DocService {
 
     const options: DocOptions = JSON.parse(JSON.stringify(docs));
     delete options.disableTryIt;
-    delete options.documentBuilder;
     delete options.openApiUrl;
     delete options.version;
     delete options.description;

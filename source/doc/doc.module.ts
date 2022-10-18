@@ -77,9 +77,9 @@ export class DocModule {
    */
   private static configureBuilder(options: AppOptions): DocumentBuilder {
     const { docs } = options;
-    const { title, description, version, documentBuilder, servers, security } = docs;
+    const { title, description, version, servers, security, tags } = docs;
 
-    const builder = documentBuilder || new DocumentBuilder()
+    const builder = new DocumentBuilder()
       .setTitle(title)
       .setDescription(description)
       .setVersion(version);
@@ -94,6 +94,12 @@ export class DocModule {
     if (security) {
       for (const { name, options } of security) {
         builder.addSecurity(name, options);
+      }
+    }
+
+    if (tags) {
+      for (const { name, description } of tags) {
+        builder.addTag(name, description);
       }
     }
 
