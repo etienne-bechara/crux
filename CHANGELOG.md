@@ -1,3 +1,10 @@
+## [4.31.8](https://github.com/etienne-bechara/crux/compare/v4.31.7...v4.31.8) (2022-10-18)
+
+
+### Bug Fixes
+
+* delete custom tags ([fc8d396](https://github.com/etienne-bechara/crux/commit/fc8d396864f13dbee204e7bc978515f03d7aa844))
+
 ## [4.31.7](https://github.com/etienne-bechara/crux/compare/v4.31.6...v4.31.7) (2022-10-18)
 
 
