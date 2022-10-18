@@ -39,6 +39,7 @@ export class DocService {
     delete options.version;
     delete options.description;
     delete options.security;
+    delete options.tags;
     delete options.theme?.backgroundColor;
     delete options.theme?.scrollbar;
     delete options.codeSamples;

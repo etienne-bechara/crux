@@ -98,9 +98,7 @@ export class DocModule {
     }
 
     if (tags) {
-      for (const { name, description } of tags) {
-        builder.addTag(name, description);
-      }
+      DocTagStorage.push(...tags);
     }
 
     for (const tag of DocTagStorage) {
