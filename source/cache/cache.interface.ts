@@ -1,4 +1,17 @@
+import { AppTraffic } from '../app/app.enum';
 import { AppRequest } from '../app/app.interface';
+
+export interface CacheGetParams {
+  traffic?: AppTraffic;
+  host?: string;
+  method?: string;
+  path?: string;
+  query?: Record<string, any>;
+}
+
+export interface CacheSetParams extends CacheGetParams {
+  ttl?: number;
+}
 
 export interface CacheTtlOptions {
   /** Time to live in milliseconds. */

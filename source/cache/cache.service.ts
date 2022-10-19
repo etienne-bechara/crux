@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
+import { AppTraffic } from '../app/app.enum';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
 import { MemoryService } from '../memory/memory.service';
 import { PromiseService } from '../promise/promise.service';
 import { RedisService } from '../redis/redis.service';
-import { CacheProvider, CacheTtlOptions } from './cache.interface';
+import { CacheGetParams, CacheProvider, CacheSetParams } from './cache.interface';
 
 @Injectable()
 export class CacheService {
@@ -37,15 +38,32 @@ export class CacheService {
 
   /**
    * Builds caching key for current request.
+   * @param params
    */
-  private buildCacheDataKey(): string {
-    const { name } = this.appConfig.APP_OPTIONS;
-    const method = this.contextService.getRequestMethod();
-    const path = this.contextService.getRequest().url.split('?')[0];
-    const query = this.contextService.getRequestQuery();
+  private buildCacheDataKey(params: CacheGetParams = { }): string {
+    const { traffic: baseTraffic, host: baseHost, method: baseMethod, path: basePath, query: baseQuery } = params;
+    const traffic = baseTraffic || AppTraffic.INBOUND;
+
+    const host = traffic === AppTraffic.INBOUND
+      ? this.contextService.getRequestHost()
+      : baseHost;
+
+    const method = traffic === AppTraffic.INBOUND
+      ? this.contextService.getRequestMethod()
+      : baseMethod;
+
+    const path = traffic === AppTraffic.INBOUND
+      ? this.contextService.getRequest().url.split('?')[0]
+      : basePath;
+
+    const query = traffic === AppTraffic.INBOUND
+      ? this.contextService.getRequestQuery()
+      : baseQuery;
+
     const sortedQueryObject = Object.fromEntries(Object.entries(query || { }).sort());
     const sortedQuery = new URLSearchParams(sortedQueryObject).toString();
-    return `cache:data:${name}:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
+
+    return `cache:data:${host}:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
   }
 
   /**
@@ -60,10 +78,11 @@ export class CacheService {
    * Acquire cached data for current request, for any route decorated
    * with `@Cache()` this method will be automatically called before
    * the request reaches the controller.
+   * @param params
    */
-  public async getCache<T>(): Promise<T> {
+  public async getCache<T>(params: CacheGetParams = { }): Promise<T> {
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
-    const dataKey = this.buildCacheDataKey();
+    const dataKey = this.buildCacheDataKey(params);
 
     let value: any = disableCompression
       ? await this.cacheProvider.get(dataKey)
@@ -87,20 +106,21 @@ export class CacheService {
    * decorated with `@Cache()` this method will be automatically called\
    * before the response is sent to client.
    * @param value
-   * @param options
+   * @param params
    */
-  public setCache(value: any, options: CacheTtlOptions = { }): void {
-    void this.setCacheHandler(value, options);
+  public setCache(value: any, params: CacheSetParams = { }): void {
+    void this.setCacheHandler(value, params);
   }
 
   /**
    * Handler of setCache().
    * @param value
-   * @param options
+   * @param params
    */
-  private async setCacheHandler(value: any, options: CacheTtlOptions = { }): Promise<void> {
+  private async setCacheHandler(value: any, params: CacheSetParams = { }): Promise<void> {
+    const { ttl, ...getParams } = params;
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
-    const dataKey = this.buildCacheDataKey();
+    const dataKey = this.buildCacheDataKey(getParams);
     let data = value;
 
     try {
@@ -110,7 +130,7 @@ export class CacheService {
         });
       }
 
-      await this.cacheProvider.set(dataKey, data, options);
+      await this.cacheProvider.set(dataKey, data, { ttl });
     }
     catch (e) {
       this.logService.error('Failed to set cache data', e as Error, { data });
@@ -121,16 +141,18 @@ export class CacheService {
    * Asynchronously ties cached data for current request with
    * target buckets which can be individually invalidated.
    * @param buckets
+   * @param params
    */
-  public setBuckets(buckets: string[]): void {
-    void this.setBucketsHandler(buckets);
+  public setBuckets(buckets: string[], params: CacheGetParams = { }): void {
+    void this.setBucketsHandler(buckets, params);
   }
 
   /**
    * Handler of setBuckets().
    * @param buckets
+   * @param params
    */
-  private async setBucketsHandler(buckets: string[]): Promise<void> {
+  private async setBucketsHandler(buckets: string[], params: CacheGetParams = { }): Promise<void> {
     const { bucketTtl: ttl } = this.appConfig.APP_OPTIONS.cache || { };
 
     try {
@@ -139,7 +161,7 @@ export class CacheService {
         limit: 1000,
         promise: async (b) => {
           const bucketKey = this.buildCacheBucketKey(b);
-          const dataKey = this.buildCacheDataKey();
+          const dataKey = this.buildCacheDataKey(params);
           await this.cacheProvider.sadd(bucketKey, dataKey, { ttl });
         },
       });
