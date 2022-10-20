@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
@@ -21,6 +21,7 @@ export class CacheService {
     private readonly logService: LogService,
     private readonly memoryService: MemoryService,
     private readonly promiseService: PromiseService,
+    @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
   ) {
     this.setupProvider();

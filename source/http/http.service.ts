@@ -4,17 +4,19 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 import { stringify } from 'query-string';
+import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
 import { CacheStatus } from '../cache/cache.enum';
+import { CacheService } from '../cache/cache.service';
 import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod } from './http.enum';
-import { HttpCookie, HttpExceptionParams, HttpModuleOptions, HttpOptions, HttpRequestParams, HttpRequestSendParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
+import { HttpCookie, HttpModuleOptions, HttpOptions, HttpRequestFlowParams, HttpRequestParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -31,6 +33,7 @@ export class HttpService {
     private readonly metricService?: MetricService,
     @Inject(forwardRef(() => TraceService))
     private readonly traceService?: TraceService,
+    private readonly cacheService?: CacheService,
   ) {
     if (this.httpModuleOptions.disableTelemetry) {
       this.logService = undefined;
@@ -158,21 +161,7 @@ export class HttpService {
   }
 
   /**
-   * Build log message for outbound request.
-   * @param step
-   * @param params
-   */
-  private buildLogMessage(step: 'up' | 'down', params: Partial<HttpTelemetryParams>): string {
-    const { method, host, path } = params;
-
-    return step === 'down'
-      ? `⯆ ${method} ${host}${path}`
-      : `⯅ ${method} ${host}${path}`;
-  }
-
-  /**
-   * Build all necessary variables for telemetry as well as start
-   * upstream request span.
+   * Build all necessary variables for telemetry.
    * @param url
    * @param params
    */
@@ -183,10 +172,7 @@ export class HttpService {
     const finalUrl = url.startsWith('http') ? new URL(url) : new URL(`${finalPrefix}/${url}`);
 
     const { host, pathname: path } = finalUrl;
-    const start = Date.now();
     const body = rawBody || json || form;
-
-    const spanName = this.buildLogMessage('up', { method, host, path });
 
     const spanOptions: SpanOptions = {
       attributes: {
@@ -196,7 +182,7 @@ export class HttpService {
       },
     };
 
-    return { start, method, host, path, replacements, query, body, headers, spanName, spanOptions };
+    return { method, host, path, replacements, query, body, headers, spanOptions };
   }
 
   /**
@@ -205,7 +191,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  private buildRequestSendParams(url: string, params: HttpRequestParams): HttpRequestSendParams {
+  private buildRequestSendParams(url: string, params: HttpRequestParams): HttpRequestFlowParams {
     const { ignoreExceptions, resolveBodyOnly } = params;
 
     return {
@@ -230,7 +216,7 @@ export class HttpService {
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
-    const response: any = await this.sendRetryableRequest(sendParams);
+    const response: any = await this.sendRequestLoopHandler(sendParams);
 
     return sendParams.resolveBodyOnly
       ? response?.body
@@ -238,47 +224,15 @@ export class HttpService {
   }
 
   /**
-   * Orchestrates HTTP request sending retry loop.
+   * Orchestrates HTTP request sending retry loop, upon succeeding
+   * parses response cookies and returns acquired data.
    * @param params
    */
-  private async sendRetryableRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
-    const contextTimeoutMsg = 'context request timed out';
-    const { telemetry, retry, request } = params;
-    const { method, host, path, spanOptions } = telemetry;
-    const { retryLimit, retryCodes, retryDelay } = retry;
-    const { url } = request;
+  private async sendRequestLoopHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
     let response: any;
 
     while (!response) {
-      retry.attempt++;
-      const { attempt } = retry;
-
-      try {
-        const spanName = `Http | ⯅ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
-        const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.REQUEST_TIMED_OUT) && url !== 'v1/traces';
-        if (isTimedOut) throw new Error(contextTimeoutMsg);
-
-        response = this.traceService
-          ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span) => {
-            return this.sendRequest({ ...params, span });
-          })
-          : await this.sendRequest(params);
-      }
-      catch (e) {
-        const attemptResponse = e.response?.outboundResponse;
-        const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
-        const attemptsLeft = retryLimit - attempt;
-
-        if (!attemptsLeft || !isRetryableCode || e.message === contextTimeoutMsg) {
-          this.collectOutboundTelemetry('result', { ...telemetry, response: attemptResponse, error: e });
-          throw e;
-        }
-
-        const delay = retryDelay(attempt);
-        this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, e as Error);
-
-        await new Promise((r) => setTimeout(r, delay));
-      }
+      response = await this.sendRequestExceptionHandler(params);
     }
 
     if (response) {
@@ -286,52 +240,132 @@ export class HttpService {
       response.cookies = this.parseCookies(headers);
     }
 
-    this.collectOutboundTelemetry('result', { ...telemetry, response });
     return response;
   }
 
   /**
-   * Executes a request ensuring log and metrics collection.
+   * Orchestrates HTTP request exception handler, upon failure
+   * check if there are attempts left, in which case do not
+   * throw so the loop handler may try again.
    * @param params
    */
-  private async sendRequest<T>(params: HttpRequestSendParams): Promise<HttpResponse<T>> {
-    const { url, request, telemetry, ignoreExceptions, span } = params;
-    const { method, host, path, replacements, query, body: reqBody, headers } = telemetry;
-    const logMessage = this.buildLogMessage('up', { method, host, path });
-    const start = Date.now();
+  private async sendRequestExceptionHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+    const contextTimeoutMsg = 'context request timed out';
+    const { retry, request } = params;
+    const { retryLimit, retryCodes, retryDelay } = retry;
+    const { url } = request;
+    let response: any;
+
+    retry.attempt++;
+
+    const { attempt } = retry;
+
+    try {
+      const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.REQUEST_TIMED_OUT) && url !== 'v1/traces';
+      if (isTimedOut) throw new Error(contextTimeoutMsg);
+
+      response = await this.sendRequestSpanHandler(params);
+    }
+    catch (e) {
+      const attemptResponse = e.response?.outboundResponse;
+      const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
+      const attemptsLeft = retryLimit - attempt;
+
+      if (!attemptsLeft || !isRetryableCode || e.message === contextTimeoutMsg) {
+        throw e;
+      }
+
+      const delay = retryDelay(attempt);
+      this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, e as Error);
+
+      await setTimeout(delay);
+    }
+
+    return response;
+  }
+
+  /**
+   * Orchestrates HTTP request sending within tracing span,
+   * builds its name based on parameters.
+   * @param params
+   */
+  private async sendRequestSpanHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+    const { telemetry, retry } = params;
+    const { method, host, path, spanOptions } = telemetry;
+    const { retryLimit, attempt } = retry;
+
+    const spanName = `Http | ⯅ ${method} ${host}${path} | #${attempt}/${retryLimit}`;
+
+    return this.traceService
+      ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span) => {
+        return this.sendRequestClientHandler({ ...params, span });
+      })
+      : await this.sendRequestClientHandler(params);
+  }
+
+  /**
+   * Orchestrates HTTP request sending with GOT instance, which
+   * also includes adding propagation headers. Upon failure calls
+   * the client exception handler.
+   * @param params
+   */
+  private async sendRequestClientHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+    const { url, request, telemetry, ignoreExceptions } = params;
     let response: HttpResponse<T>;
+
+    telemetry.start = Date.now();
+
+    this.injectPropagationHeaders(params);
+    this.logHttpMessage(params);
+
+    try {
+      response = await this.instance(url, request) as HttpResponse<T>;
+    }
+    catch (e) {
+      const isTimeout = /timeout/i.test(e.message as string);
+      response = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
+
+      params.response = response;
+      params.error = e;
+
+      if (!isTimeout && !e.response) {
+        throw e;
+      }
+      else if (!ignoreExceptions) {
+        this.handleRequestException(params);
+      }
+    }
+    finally {
+      this.collectOutboundTelemetry(params);
+    }
+
+    return response;
+  }
+
+  /**
+   * Adds tracing propagation headers to HTTP request.
+   * @param params
+   */
+  private injectPropagationHeaders(params: HttpRequestFlowParams): void {
+    const { request, span } = params;
 
     if (span && !this.httpModuleOptions.disablePropagation) {
       request.headers ??= { };
       const ctx = this.traceService.getContextBySpan(span);
       propagation.inject(ctx, request.headers);
     }
+  }
 
-    try {
-      const body = this.appConfig.APP_OPTIONS.logs?.enableRequestBody ? reqBody : undefined;
-      this.logService?.http(logMessage, { method, host, path, replacements, query, body, headers });
-      response = await this.instance(url, request) as HttpResponse<T>;
+  /**
+   * Create log record of outbound http request.
+   * @param params
+   */
+  private logHttpMessage(params: HttpRequestFlowParams): void {
+    const { telemetry } = params;
+    const { method, host, path, replacements, query, body: reqBody, headers } = telemetry;
+    const body = this.appConfig.APP_OPTIONS.logs?.enableRequestBody ? reqBody : undefined;
 
-      this.collectOutboundTelemetry('iteration', { ...telemetry, start, response, span });
-    }
-    catch (e) {
-      const isTimeout = /timeout/i.test(e.message as string);
-      const errorResponse = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
-
-      this.collectOutboundTelemetry('iteration', { ...telemetry, start, response: errorResponse, span, error: e });
-
-      if (!isTimeout && !e.response) {
-        throw e;
-      }
-      else if (ignoreExceptions) {
-        response = errorResponse;
-      }
-      else {
-        this.handleRequestException({ ...telemetry, error: e, request });
-      }
-    }
-
-    return response;
+    this.logService?.http(`⯅ ${method} ${host}${path}`, { method, host, path, replacements, query, body, headers });
   }
 
   /**
@@ -365,25 +399,22 @@ export class HttpService {
 
   /**
    * Register logs, metrics and tracing of outbound request.
-   * @param step
    * @param params
    */
-  private collectOutboundTelemetry(step: 'result' | 'iteration', params: HttpTelemetryParams): void {
-    const { start, method, host, path, response, span, error } = params;
+  private collectOutboundTelemetry(params: HttpRequestFlowParams): void {
+    const { telemetry, span, response, error } = params;
+    const { start, method, host, path } = telemetry;
     const { statusCode, body: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
-    if (step === 'iteration') {
-      const strCode = statusCode?.toString() || '';
-      const body = this.appConfig.APP_OPTIONS.logs?.enableResponseBody ? resBody || undefined : undefined;
-      const logData = { duration, code: strCode, body, headers };
-      this.logService?.http(this.buildLogMessage('down', params), logData);
+    const strCode = statusCode?.toString() || '';
+    const body = this.appConfig.APP_OPTIONS.logs?.enableResponseBody ? resBody || undefined : undefined;
+    this.logService?.http(`⯆ ${method} ${host}${path}`, { duration, code: strCode, body, headers });
 
-      const httpMetric = this.metricService?.getHttpMetric();
+    const httpMetric = this.metricService?.getHttpMetric();
 
-      if (httpMetric) {
-        httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode, CacheStatus.DISABLED).observe(duration);
-      }
+    if (httpMetric) {
+      httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode, CacheStatus.DISABLED).observe(duration);
     }
 
     if (span) {
@@ -412,17 +443,16 @@ export class HttpService {
    * exception with matching code.
    * @param params
    */
-  private handleRequestException(params: HttpExceptionParams): void {
-    const { method, host, path, request, error } = params;
-    const { message, response } = error;
+  private handleRequestException(params: HttpRequestFlowParams): void {
+    const { telemetry, request, response, error } = params;
+    const { method, host, path } = telemetry;
+    const { message } = error;
     const { proxyExceptions, body } = request;
     const isProxyExceptions = proxyExceptions ?? this.httpModuleOptions.proxyExceptions;
 
     const code: HttpStatus = isProxyExceptions && response?.statusCode
       ? response?.statusCode
       : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    delete request.url;
 
     throw new HttpException({
       message: `⯆ ${method} ${host}${path} | ${message}`,
@@ -433,6 +463,7 @@ export class HttpService {
         path,
         ...request,
         body,
+        url: undefined,
       },
       outboundResponse: {
         code: response?.statusCode,

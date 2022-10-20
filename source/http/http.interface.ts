@@ -30,11 +30,17 @@ export interface HttpSharedOptions extends HttpOptions {
   query?: Record<string, any>;
   /** Query stringify options. */
   queryOptions?: StringifyOptions;
-  /** @deprecated Use `retryLimit` and `retryCodes`. */
-  retry?: never;
+  /** Time to live in milliseconds, cache is disable when zero. Default: 0. */
+  cacheTtl?: number;
+  /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
+  cacheMethods?: HttpMethod[];
+  /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 2000. */
+  cacheTimeout?: number;
 }
 
-export type HttpModuleOptionsBase = ExtendOptions & HttpSharedOptions;
+export type HttpModuleOptionsBase =
+  Omit<ExtendOptions, 'retry' | 'cache' | 'cacheOptions'>
+  & HttpSharedOptions;
 
 export interface HttpModuleOptions extends HttpModuleOptionsBase {
   /** Display name for logging. */
@@ -45,7 +51,9 @@ export interface HttpModuleOptions extends HttpModuleOptionsBase {
   disablePropagation?: boolean;
 }
 
-export type HttpRequestParamsBase = OptionsOfUnknownResponseBody & HttpSharedOptions;
+export type HttpRequestParamsBase =
+  Omit<OptionsOfUnknownResponseBody, 'retry' | 'cache' | 'cacheOptions'>
+  & Omit<HttpSharedOptions, 'retryMethods' | 'cacheMethods'>;
 
 export interface HttpRequestParams extends HttpRequestParamsBase {
   /** Object containing replacement string for path variables. */
@@ -64,14 +72,7 @@ export interface HttpCookie {
   expires: Date;
 }
 
-export interface HttpRetryParams {
-  retryLimit: number;
-  retryCodes: HttpStatus[];
-  retryDelay: (attempts: number) => number;
-  attempt: number;
-}
-
-export interface HttpRequestSendParams {
+export interface HttpRequestFlowParams {
   url: string;
   request: HttpRequestParams;
   ignoreExceptions: boolean;
@@ -79,10 +80,15 @@ export interface HttpRequestSendParams {
   telemetry: HttpTelemetryParams;
   retry: HttpRetryParams;
   span?: Span;
+  response?: HttpResponse<unknown>;
+  error?: Error;
+}
+
+export interface HttpRetryParams extends Omit<HttpOptions, 'retryMethod'> {
+  attempt: number;
 }
 
 export interface HttpTelemetryParams {
-  start: number;
   method: string;
   host: string;
   path: string;
@@ -90,14 +96,7 @@ export interface HttpTelemetryParams {
   query: Record<string, any>;
   body: any;
   headers: any;
-  spanName: string;
   spanOptions: SpanOptions;
+  start?: number;
   span?: Span;
-  response?: HttpResponse<unknown>;
-  error?: Error;
-}
-
-export interface HttpExceptionParams extends HttpTelemetryParams {
-  request: HttpRequestParams;
-  error: any;
 }

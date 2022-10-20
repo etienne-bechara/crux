@@ -11,7 +11,7 @@ export interface MetricOptions {
   defaultFilter?: string[];
   /** Data type strategy when collecting HTTP timeseries. Default: SUMMARY.*/
   httpStrategy?: MetricHttpStrategy;
-  /** [SUMMARY Strategy] Percentiles to measure for HTTP metrics. Default: [ 99, 95, 50 ]. */
+  /** [SUMMARY Strategy] Percentiles to measure for HTTP metrics. Default: [ 0.99, 0.95, 0.5 ]. */
   httpPercentiles?: number[];
   /**
    * [HISTOGRAM Strategy] Duration buckets to distribute HTTP metrics.

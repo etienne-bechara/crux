@@ -8,7 +8,7 @@ import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 import handlebars from 'handlebars';
 
-import { CacheModule } from '../cache/cache.module';
+import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { ConsoleModule } from '../console/console.module';
 import { ContextStorageKey } from '../context/context.enum';
@@ -266,6 +266,9 @@ export class AppModule {
 
     if (!disableCache) {
       defaultModules.push(CacheModule);
+    }
+    else {
+      defaultModules.push(CacheDisabledModule);
     }
 
     if (!disableLogs) {

@@ -27,3 +27,13 @@ import { CacheService } from './cache.service';
   ],
 })
 export class CacheModule { }
+
+@Module({
+  providers: [
+    { provide: CacheService, useValue: null },
+  ],
+  exports: [
+    { provide: CacheService, useValue: null },
+  ],
+})
+export class CacheDisabledModule { }
