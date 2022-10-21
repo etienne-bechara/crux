@@ -16,7 +16,7 @@ export class ZipController {
   ) { }
 
   @Get(':code')
-  @Cache()
+  @Cache({ ttl: 10_000 })
   @ApiOkResponse({ type: Zip })
   public getZipCode(@Param('code') code: string): Promise<Zip> {
     return this.zipService.readZip(code);

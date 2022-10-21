@@ -13,7 +13,7 @@ import { ZipService } from './zip.service';
         prefixUrl: zipConfig.ZIP_HOST,
         resolveBodyOnly: true,
         responseType: 'json',
-        cacheTtl: 10_000,
+        cacheTtl: 60_000,
       }),
     }),
   ],

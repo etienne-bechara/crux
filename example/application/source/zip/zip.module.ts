@@ -14,6 +14,7 @@ import { ZipService } from './zip.service';
         prefixUrl: zipConfig.ZIP_HOST,
         resolveBodyOnly: true,
         responseType: 'json',
+        cacheTtl: 60_000,
       }),
     }),
   ],

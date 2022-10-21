@@ -1,3 +1,4 @@
+import { Cache } from '../../source/cache/cache.decorator';
 import { ApiTag } from '../../source/doc/doc.decorator';
 import { ApiOkResponse, Controller, Get, Param } from '../../source/override';
 import { ZipCodeDto } from './zip.dto';
@@ -17,6 +18,7 @@ export class ZipController {
   ) { }
 
   @Get(':code')
+  @Cache({ ttl: 10_000 })
   @ApiOkResponse({ type: Zip })
   public getZipCode(@Param() params: ZipCodeDto): Promise<Zip> {
     return this.zipService.readZip(params.code);

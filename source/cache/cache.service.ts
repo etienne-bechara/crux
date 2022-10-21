@@ -64,7 +64,7 @@ export class CacheService {
     const sortedQueryObject = Object.fromEntries(Object.entries(query || { }).sort());
     const sortedQuery = new URLSearchParams(sortedQueryObject).toString();
 
-    return `cache:data:${host}:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
+    return `cache:${traffic}:${host}:${method}:${path}${sortedQuery ? `:${sortedQuery}` : ''}`;
   }
 
   /**
