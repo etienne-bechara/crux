@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { IsIn, IsNumber, IsObject } from 'class-validator';
-
 import { AppEnvironment } from '../app/app.enum';
 import { ToNumber } from '../transform/transform.decorator';
+import { IsEnum, IsNumber, IsObject } from '../validate/validate.decorator';
 import { Config, InjectConfig } from './config.decorator';
 import { ConfigModule } from './config.module';
 
@@ -10,7 +9,7 @@ import { ConfigModule } from './config.module';
 class TestConfig {
 
   @InjectConfig()
-  @IsIn(Object.values(AppEnvironment))
+  @IsEnum(AppEnvironment)
   public readonly NODE_ENV: AppEnvironment;
 
   @InjectConfig({ fallback: 'config_fallback' })

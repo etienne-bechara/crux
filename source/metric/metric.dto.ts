@@ -1,4 +1,4 @@
-import { IsIn, IsNumber, IsObject, IsString } from '../validate/validate.decorator';
+import { IsEnum, IsNumber, IsObject, IsString } from '../validate/validate.decorator';
 import { MetricAggregator, MetricDataType } from './metric.enum';
 
 export class MetricValue {
@@ -22,10 +22,10 @@ export class MetricData {
   @IsString()
   public help: string;
 
-  @IsIn(Object.values(MetricDataType))
+  @IsEnum(MetricDataType)
   public type: MetricDataType;
 
-  @IsIn(Object.values(MetricAggregator))
+  @IsEnum(MetricAggregator)
   public aggregator: MetricAggregator;
 
   @IsObject(MetricValue, { each: true })

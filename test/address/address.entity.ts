@@ -1,7 +1,7 @@
 import { Entity, Enum, OneToOne, Property } from '@mikro-orm/core';
 
 import { OrmBaseEntity } from '../../source/orm/orm.entity';
-import { IsIn, IsNumberString } from '../../source/validate/validate.decorator';
+import { IsEnum, IsNumberString } from '../../source/validate/validate.decorator';
 import { User } from '../user/user.entity';
 import { AddressState } from './address.enum';
 import { AddressRepository } from './address.repository';
@@ -17,7 +17,7 @@ export class Address extends OrmBaseEntity {
   public zip: string;
 
   @Enum(() => AddressState)
-  @IsIn(Object.values(AddressState))
+  @IsEnum(AddressState)
   public state: AddressState;
 
 }

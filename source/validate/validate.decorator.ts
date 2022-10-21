@@ -7,12 +7,12 @@ import {
   Contains as CvContains,
   Equals as CvEquals,
   IsArray as CvIsArray,
+  IsBase64 as CvIsBase64,
   IsBoolean as CvIsBoolean,
   IsDate as CvIsDate,
   IsDefined as CvIsDefined,
   IsEmail as CvIsEmail,
   IsEmpty as CvIsEmpty,
-  IsEnum as CvIsEnum,
   IsIn as CvIsIn,
   IsInt as CvIsInt,
   IsISO8601 as CvIsISO8601,
@@ -319,10 +319,18 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(
-    CvIsEnum(entity, validationOptions),
-    ApiProperty({ enum: Object.values(entity) }),
-  );
+  const isNumeric = Object.keys(entity).find((k) => /\d+/.test(k));
+  const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
+
+  return isNumeric
+    ? applyDecorators(
+      CvIsIn(numericValues, validationOptions),
+      ApiProperty({ enum: numericValues }),
+    )
+    : applyDecorators(
+      CvIsIn(Object.values(entity), validationOptions),
+      ApiProperty({ enum: Object.values(entity) }),
+    );
 }
 
 // --- Number validation decorators
@@ -420,7 +428,20 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 // @IsDecimal(options?: IsDecimalOptions)	Checks if the string is a valid decimal value. Default IsDecimalOptions are force_decimal=False, decimal_digits: '1,', locale: 'en-US'
 // @IsAscii()	Checks if the string contains ASCII chars only.
 // @IsBase32()	Checks if a string is base32 encoded.
-// @IsBase64()	Checks if a string is base64 encoded.
+
+/**
+ * Checks if a string is base64 encoded. If given value is not a string, then it returns false.
+ * @param validationOptions
+ */
+export function IsBase64(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = getPropertyOptions(String, validationOptions);
+
+  return applyDecorators(
+    CvIsBase64(validationOptions),
+    ApiProperty({ ...propertyOptions, format: 'base64' }),
+  );
+}
+
 // @IsIBAN()	Checks if a string is a IBAN (International Bank Account Number).
 // @IsBIC()	Checks if a string is a BIC (Bank Identification Code) or SWIFT code.
 // @IsByteLength(min: number, max?: number)	Checks if the string's length (in bytes) falls in a range.

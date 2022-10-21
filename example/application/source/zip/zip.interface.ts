@@ -1,4 +1,4 @@
-import { IsIn, IsNumberString, IsString } from '@bechara/crux';
+import { IsEnum, IsNumberString, IsString } from '@bechara/crux';
 
 import { ZipState } from './zip.enum';
 
@@ -19,7 +19,7 @@ export class Zip {
   @IsString()
   public localidade: string;
 
-  @IsIn(Object.values(ZipState))
+  @IsEnum(ZipState)
   public uf: string;
 
   @IsNumberString()

@@ -1,4 +1,4 @@
-import { IsIn, IsNumberString, IsString } from '../../source/override';
+import { IsEnum, IsNumberString, IsString } from '../../source/override';
 import { UserAddressState } from '../user/user.enum';
 
 export class Zip {
@@ -18,7 +18,7 @@ export class Zip {
   @IsString()
   public localidade: string;
 
-  @IsIn(Object.values(UserAddressState))
+  @IsEnum(UserAddressState)
   public uf: string;
 
   @IsNumberString()

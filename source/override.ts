@@ -28,6 +28,7 @@ export {
   Contains,
   Equals,
   IsArray,
+  IsBase64,
   IsBoolean,
   IsDate,
   IsDefined,

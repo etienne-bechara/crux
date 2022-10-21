@@ -1,6 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
-
 import { Config, InjectConfig } from '../config/config.decorator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { MetricHttpStrategy } from './metric.enum';
 import { MetricOptions } from './metric.interface';
 

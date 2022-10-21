@@ -1,7 +1,6 @@
-import { IsIn, IsOptional } from 'class-validator';
-
 import { Config, InjectConfig } from '../config/config.decorator';
 import { LogSeverity } from '../log/log.enum';
+import { IsEnum, IsOptional } from '../validate/validate.decorator';
 import { ConsoleOptions } from './console.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +13,7 @@ export class ConsoleConfig {
 
   @InjectConfig()
   @IsOptional()
-  @IsIn(Object.values(LogSeverity))
+  @IsEnum(LogSeverity)
   public readonly CONSOLE_SEVERITY: LogSeverity;
 
 }

@@ -1,15 +1,13 @@
-import { IsBase64 } from 'class-validator';
-
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
+import { IsBase64, IsEnum, IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
 
 @Config()
 export class OrmConfig {
 
   @IsOptional()
   @InjectConfig()
-  @IsIn(Object.values(AppEnvironment))
+  @IsEnum(AppEnvironment)
   public readonly NODE_ENV: AppEnvironment;
 
   @IsOptional()

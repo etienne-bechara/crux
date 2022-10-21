@@ -2,7 +2,6 @@
 /* eslint-disable max-len */
 import { HttpStatus } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { IsIn } from 'class-validator';
 import crypto from 'crypto';
 
 import { CACHE_DEFAULT_OPTIONS } from '../cache/cache.config';
@@ -16,6 +15,7 @@ import { METRIC_DEFAULT_OPTIONS } from '../metric/metric.config';
 import { SLACK_DEFAULT_OPTIONS } from '../slack/slack.config';
 import { TRACE_DEFAULT_OPTIONS } from '../trace/trace.config';
 import { VALIDATOR_DEFAULT_OPTIONS } from '../validate/validate.config';
+import { IsEnum } from '../validate/validate.decorator';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
@@ -64,7 +64,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
 export class AppConfig {
 
   @InjectConfig()
-  @IsIn(Object.values(AppEnvironment))
+  @IsEnum(AppEnvironment)
   public readonly NODE_ENV: AppEnvironment;
 
   @InjectConfig()

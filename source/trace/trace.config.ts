@@ -1,6 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
-
 import { Config, InjectConfig } from '../config/config.decorator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { TraceOptions } from './trace.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

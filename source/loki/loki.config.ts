@@ -1,7 +1,6 @@
-import { IsIn, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
-
 import { Config, InjectConfig } from '../config/config.decorator';
 import { LogSeverity } from '../log/log.enum';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { LokiOptions } from './loki.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -31,7 +30,7 @@ export class LokiConfig {
 
   @InjectConfig()
   @IsOptional()
-  @IsIn(Object.values(LogSeverity))
+  @IsEnum(LogSeverity)
   public readonly LOKI_SEVERITY: LogSeverity;
 
 }

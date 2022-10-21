@@ -1,7 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-
 import { Config, InjectConfig } from '../config/config.decorator';
 import { ToNumber } from '../transform/transform.decorator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from '../validate/validate.decorator';
 import { CacheOptions } from './cache.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

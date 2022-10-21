@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsIn, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
+import { IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
 import { OneOf } from '../../source/validate/validate.decorator';
 import { UserAddressState, UserOneOf } from './user.enum';
 
@@ -41,7 +41,7 @@ export class UserAddress {
 
   /** Address state, populated through ZIP enrichment. */
   @IsOptional()
-  @IsIn(Object.values(UserAddressState))
+  @IsEnum(UserAddressState)
   public state?: UserAddressState;
 
 }

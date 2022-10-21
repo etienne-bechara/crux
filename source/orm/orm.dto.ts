@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decorator';
-import { IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from '../validate/validate.decorator';
+import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageReadDto {
@@ -41,7 +41,7 @@ export class OrmPageReadDto {
   public sort?: string;
 
   @IsOptional()
-  @IsIn(Object.values(OrmQueryOrder))
+  @IsEnum(OrmQueryOrder)
   @ApiProperty({
     description: 'Order to sort resulting records',
   })
@@ -90,7 +90,7 @@ export class OrmPageDto<T> {
   public sort?: string;
 
   @IsOptional()
-  @IsIn(Object.values(OrmQueryOrder))
+  @IsEnum(OrmQueryOrder)
   @ApiProperty({ description: 'Sorting order of resulting records' })
   public order?: OrmQueryOrder;
 
