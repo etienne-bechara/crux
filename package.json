@@ -38,7 +38,7 @@
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
     "test": "pnpm test:up && pnpm test:jest && pnpm test:down",
     "test:up": "cd test && docker compose up -d",
-    "test:jest": "jest --forceExit --config .config/jest/.jestrc.json -- http",
+    "test:jest": "jest --forceExit --config .config/jest/.jestrc.json",
     "test:down": "cd test && docker compose down"
   },
   "dependencies": {
