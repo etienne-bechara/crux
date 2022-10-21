@@ -34,6 +34,7 @@ export class HttpService {
     private readonly metricService?: MetricService,
     @Inject(forwardRef(() => TraceService))
     private readonly traceService?: TraceService,
+    @Inject(forwardRef(() => CacheService))
     private readonly cacheService?: CacheService,
   ) {
     if (this.httpModuleOptions.disableTelemetry) {
