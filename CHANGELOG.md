@@ -1,3 +1,21 @@
+# [4.33.0](https://github.com/etienne-bechara/crux/compare/v4.32.1...v4.33.0) (2022-10-21)
+
+
+### Bug Fixes
+
+* better organize http flow ([fe429aa](https://github.com/etienne-bechara/crux/commit/fe429aabbac2c91d00023a7f46191fa6b0995f39))
+* cache traffic key ([5dcf0bd](https://github.com/etienne-bechara/crux/commit/5dcf0bd9b206fcb5db7e8b6c7c8626dc660e2793))
+* cacheService forwardRef ([dd29237](https://github.com/etienne-bechara/crux/commit/dd2923709d87d3067f20032af787c30a3e0e0246))
+* isEnum override ([7693bb5](https://github.com/etienne-bechara/crux/commit/7693bb520e5671e5ba2822da88ccc4e5a801c6c0))
+* make cache get/set agnostic ([abffa95](https://github.com/etienne-bechara/crux/commit/abffa9586fcf55e1e72168ca5343aac7d41115e8))
+* test script ([07ef1fb](https://github.com/etienne-bechara/crux/commit/07ef1fbdedaf346237f2a73ed1ed39a58b726349))
+
+
+### Features
+
+* add array min/max ([3a396c5](https://github.com/etienne-bechara/crux/commit/3a396c5ff2a6328415ef8580ab6ccdda0a84be22))
+* add outbound cache support ([5e4a9aa](https://github.com/etienne-bechara/crux/commit/5e4a9aac4e62a29378cd3c70937d8f15ef7b592d))
+
 ## [4.32.1](https://github.com/etienne-bechara/crux/compare/v4.32.0...v4.32.1) (2022-10-18)
 
 
