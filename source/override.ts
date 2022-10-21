@@ -27,6 +27,8 @@ export { LogService as LoggerService } from './log/log.service';
 export {
   Contains,
   Equals,
+  ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsBase64,
   IsBoolean,

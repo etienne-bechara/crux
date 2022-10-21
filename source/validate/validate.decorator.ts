@@ -4,6 +4,8 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 import { Type as SetType } from 'class-transformer';
 import {
+  ArrayMaxSize as CvArrayMaxSize,
+  ArrayMinSize as CvArrayMinSize,
   Contains as CvContains,
   Equals as CvEquals,
   IsArray as CvIsArray,
@@ -206,7 +208,7 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsNotEmpty(validationOptions),
-    ApiProperty({ format: 'not empty' }),
+    ApiProperty({ minLength: 1 }),
   );
 }
 
@@ -656,7 +658,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, format: `matches /${regexPattern.source}/` }),
+    ApiProperty({ ...propertyOptions, pattern: `/${regexPattern.source}/` }),
   );
 }
 
@@ -672,8 +674,32 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 // @ArrayContains(values: any[])	Checks if array contains all values from the given array of values.
 // @ArrayNotContains(values: any[])	Checks if array does not contain any of the given values.
 // @ArrayNotEmpty()	Checks if given array is not empty.
-// @ArrayMinSize(min: number)	Checks if the array's length is greater than or equal to the specified number.
-// @ArrayMaxSize(max: number)	Checks if the array's length is less or equal to the specified number.
+
+/**
+ * Checks if the array's length is greater than or equal to the specified number.
+ * If null or undefined is given then this function returns false.
+ * @param min
+ * @param validationOptions
+ */
+export function ArrayMinSize(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
+  return applyDecorators(
+    CvArrayMinSize(min, validationOptions),
+    ApiProperty({ minItems: min }),
+  );
+}
+
+/**
+ * Checks if the array's length is less than or equal to the specified number.
+ * If null or undefined is given then this function returns false.
+ * @param max
+ * @param validationOptions
+ */
+export function ArrayMaxSize(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
+  return applyDecorators(
+    CvArrayMaxSize(max, validationOptions),
+    ApiProperty({ maxItems: max }),
+  );
+}
 // @ArrayUnique(identifier?: (o) => any)	Checks if all array's values are unique. Comparison for objects is reference-based. Optional function can be speciefied which return value will be used for the comparsion.
 
 // --- Object validation decorators

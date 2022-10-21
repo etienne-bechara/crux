@@ -1,5 +1,7 @@
+import { ArrayMaxSize } from 'class-validator';
+
 import { IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
-import { OneOf } from '../../source/validate/validate.decorator';
+import { ArrayMinSize, OneOf } from '../../source/validate/validate.decorator';
 import { UserAddressState, UserOneOf } from './user.enum';
 
 export class UserEmployer {
@@ -94,6 +96,7 @@ export class User {
 
   @IsOptional()
   @IsObject(UserEmployer, { each: true })
+  @ArrayMinSize(1) @ArrayMaxSize(5)
   public employers: UserEmployer[];
 
 }
