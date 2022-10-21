@@ -1,3 +1,10 @@
+## [4.33.1](https://github.com/etienne-bechara/crux/compare/v4.33.0...v4.33.1) (2022-10-21)
+
+
+### Bug Fixes
+
+* remove unnecessary padding ([19b699f](https://github.com/etienne-bechara/crux/commit/19b699fab2ad11eabf0222409464793adeebc98f))
+
 # [4.33.0](https://github.com/etienne-bechara/crux/compare/v4.32.1...v4.33.0) (2022-10-21)
 
 
