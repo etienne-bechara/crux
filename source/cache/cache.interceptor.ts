@@ -40,11 +40,11 @@ export class CacheInterceptor implements NestInterceptor {
         cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
       }
       catch {
-        this.logService.warning('Failed to acquire cached data within timeout', { timeout });
+        this.logService.warning('Failed to acquire inbound cached data within timeout', { timeout });
       }
 
       if (cache) {
-        this.logService.debug('Resolving with cached data');
+        this.logService.debug('Resolving inbound request with cached data');
         this.contextService.setCacheStatus(CacheStatus.HIT);
         return of(cache);
       }

@@ -1,5 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { HttpStatus } from '@nestjs/common';
+import { setTimeout } from 'timers/promises';
 
 import { Address } from '../../test/address/address.entity';
 import { AddressState } from '../../test/address/address.enum';
@@ -38,6 +39,8 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
     let userRepository: UserRepository;
 
     beforeAll(async () => {
+      await setTimeout(10_000);
+
       const app = await AppModule.compile({
         disableScan: true,
         disableLogs: true,

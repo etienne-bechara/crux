@@ -5,6 +5,12 @@ import { HttpOptions } from './http.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const HTTP_DEFAULT_OPTIONS: HttpOptions = {
+  cacheTtl: 0,
+  cacheTimeout: 2000,
+  cacheMethods: [
+    HttpMethod.GET,
+    HttpMethod.HEAD,
+  ],
   retryLimit: 2,
   retryMethods: [
     HttpMethod.GET,

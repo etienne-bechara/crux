@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable, Module } from '@nestjs/common';
+import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
 import { HttpRequestParams, HttpResponse } from './http.interface';
@@ -29,6 +30,7 @@ class GoogleService {
       prefixUrl: 'https://jsonplaceholder.typicode.com',
       resolveBodyOnly: true,
       responseType: 'json',
+      cacheTtl: 1000,
     }),
   ],
   providers: [
@@ -63,7 +65,8 @@ describe('HttpService', () => {
 
   beforeAll(async () => {
     const app = await AppModule.compile({
-      disableAll: true,
+      disableScan: true,
+      disableLogs: true,
       imports: [ GoogleModule, JsonModule ],
     });
 
@@ -73,17 +76,49 @@ describe('HttpService', () => {
 
   describe('get', () => {
     it('should read a placeholder resource', async () => {
-      const mockPost = {
+      const data = await jsonHttpService.get('posts/:id', {
+        replacements: { id: '1' },
+      });
+
+      expect(data).toMatchObject({
         userId: 1,
         id: 1,
         title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
-      };
+      });
+    });
+
+    it('should read a cached resource', async () => {
+      await setTimeout(100);
+      const start = Date.now();
 
       const data = await jsonHttpService.get('posts/:id', {
         replacements: { id: '1' },
       });
 
-      expect(data).toMatchObject(mockPost);
+      expect(Date.now() - start).toBeLessThan(10);
+
+      expect(data).toMatchObject({
+        userId: 1,
+        id: 1,
+        title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
+      });
+    });
+
+    it('should read in real time a previously cached resource', async () => {
+      await setTimeout(1000);
+      const start = Date.now();
+
+      const data = await jsonHttpService.get('posts/:id', {
+        replacements: { id: '1' },
+      });
+
+      expect(Date.now() - start).toBeGreaterThan(10);
+
+      expect(data).toMatchObject({
+        userId: 1,
+        id: 1,
+        title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
+      });
     });
   });
 

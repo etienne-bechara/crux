@@ -3,6 +3,7 @@ import { Span, SpanOptions } from '@opentelemetry/api';
 import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
 import { StringifyOptions } from 'query-string';
 
+import { CacheStatus } from '../cache/cache.enum';
 import { HttpMethod } from './http.enum';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
@@ -19,6 +20,12 @@ export interface HttpOptions {
   retryCodes?: HttpStatus[];
   /** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
   retryDelay?: (attempts: number) => number;
+  /** Time to live in milliseconds, cache is disable when zero. Default: 0. */
+  cacheTtl?: number;
+  /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
+  cacheMethods?: HttpMethod[];
+  /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 2000. */
+  cacheTimeout?: number;
 }
 
 export interface HttpSharedOptions extends HttpOptions {
@@ -30,12 +37,6 @@ export interface HttpSharedOptions extends HttpOptions {
   query?: Record<string, any>;
   /** Query stringify options. */
   queryOptions?: StringifyOptions;
-  /** Time to live in milliseconds, cache is disable when zero. Default: 0. */
-  cacheTtl?: number;
-  /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
-  cacheMethods?: HttpMethod[];
-  /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 2000. */
-  cacheTimeout?: number;
 }
 
 export type HttpModuleOptionsBase =
@@ -79,14 +80,17 @@ export interface HttpRequestFlowParams {
   resolveBodyOnly: boolean;
   telemetry: HttpTelemetryParams;
   retry: HttpRetryParams;
+  cache: HttpCacheParams;
   span?: Span;
   response?: HttpResponse<unknown>;
   error?: Error;
 }
 
-export interface HttpRetryParams extends Omit<HttpOptions, 'retryMethod'> {
+export interface HttpRetryParams extends Pick<HttpSharedOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
   attempt: number;
 }
+
+export type HttpCacheParams = Pick<HttpSharedOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
 
 export interface HttpTelemetryParams {
   method: string;
@@ -99,4 +103,5 @@ export interface HttpTelemetryParams {
   spanOptions: SpanOptions;
   start?: number;
   span?: Span;
+  cacheStatus?: CacheStatus;
 }

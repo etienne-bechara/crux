@@ -8,6 +8,7 @@ import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
+import { PromiseService } from '../promise/promise.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
 import { MetricDataType, MetricHttpStrategy } from './metric.enum';
@@ -23,6 +24,7 @@ export class MetricService {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly promiseService: PromiseService,
     private readonly logService: LogService,
     private readonly metricConfig: MetricConfig,
   ) {
@@ -96,7 +98,7 @@ export class MetricService {
       name: 'MetricModule',
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
-    }, this.appConfig);
+    }, this.appConfig, this.promiseService);
 
     while (true) {
       await setTimeout(pushInterval);

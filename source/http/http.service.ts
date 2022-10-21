@@ -4,7 +4,6 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got } from 'got';
 import { IncomingHttpHeaders } from 'http';
 import { stringify } from 'query-string';
-import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
@@ -14,9 +13,10 @@ import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
+import { PromiseService } from '../promise/promise.service';
 import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod } from './http.enum';
-import { HttpCookie, HttpModuleOptions, HttpOptions, HttpRequestFlowParams, HttpRequestParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
+import { HttpCacheParams, HttpCookie, HttpModuleOptions, HttpOptions, HttpRequestFlowParams, HttpRequestParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -28,6 +28,7 @@ export class HttpService {
     @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly appConfig: AppConfig,
+    private readonly promiseService: PromiseService,
     private readonly logService?: LogService,
     @Inject(forwardRef(() => MetricService))
     private readonly metricService?: MetricService,
@@ -82,35 +83,12 @@ export class HttpService {
   }
 
   /**
-   * Merge request retry options with module level and calculate
-   * maximum limit as well as return allowed codes and delay.
-   * @param params
-   */
-  private buildRetryParams(params: HttpRequestParams): HttpRetryParams {
-    const { method: paramsMethod, retryLimit: paramsLimit, retryCodes: paramsCode, retryDelay: paramsDelay } = params;
-    const { retryLimit: defaultRetryLimit, retryCodes: defaultRetryCodes } = this.defaultOptions;
-    const { retryMethods: defaultRetryMethods, retryDelay: defaultRetryDelay } = this.defaultOptions;
-
-    const retryLimitBase = paramsLimit ?? this.httpModuleOptions.retryLimit ?? defaultRetryLimit;
-    const retryMethods = this.httpModuleOptions.retryMethods ?? defaultRetryMethods;
-    const retryCodes = paramsCode ?? this.httpModuleOptions.retryCodes ?? defaultRetryCodes;
-    const retryDelay = paramsDelay ?? this.httpModuleOptions.retryDelay ?? defaultRetryDelay;
-
-    const method: HttpMethod = paramsMethod as any || HttpMethod.GET;
-    const isRetryable = !!paramsLimit || paramsLimit === 0 || retryMethods.includes(method);
-    const retryLimit = isRetryable ? retryLimitBase + 1 : 1;
-
-    return { retryLimit, retryCodes, retryDelay, attempt: 0 };
-  }
-
-  /**
-   * Given a request configuration, replace URL variables that matches
-   * :param_name to its equivalent at replacements property.
+   * Replace url placeholder in the format :param_name
+   * which its equivalent target value.
    * @param url
-   * @param params
+   * @param replacements
    */
-  private buildRequestUrl(url: string, params: HttpRequestParams): string {
-    const { replacements } = params;
+  private replaceUrlPlaceholders(url: string, replacements: Record<string, string | number>): string {
     let replacedUrl = url;
 
     if (replacements) {
@@ -186,37 +164,81 @@ export class HttpService {
   }
 
   /**
+   * Merge request retry options with module level and calculate
+   * maximum limit as well as return allowed codes and delay.
+   * @param params
+   */
+  private buildRetryParams(params: HttpRequestParams): HttpRetryParams {
+    const { method: paramsMethod, retryLimit: paramsLimit, retryCodes: paramsCodes, retryDelay: paramsDelay } = params;
+    const { retryLimit: moduleLimit, retryCodes: moduleCodes } = this.httpModuleOptions;
+    const { retryMethods: moduleMethods, retryDelay: moduleDelay } = this.httpModuleOptions;
+    const { retryLimit: defaultLimit, retryCodes: defaultCodes } = this.defaultOptions;
+    const { retryMethods: defaultMethods, retryDelay: defaultDelay } = this.defaultOptions;
+
+    const retryLimitBase = paramsLimit ?? moduleLimit ?? defaultLimit;
+    const retryMethods = moduleMethods ?? defaultMethods;
+    const retryCodes = paramsCodes ?? moduleCodes ?? defaultCodes;
+    const retryDelay = paramsDelay ?? moduleDelay ?? defaultDelay;
+
+    const method: HttpMethod = paramsMethod as any || HttpMethod.GET;
+    const isRetryable = !!paramsLimit || paramsLimit === 0 || retryMethods.includes(method);
+    const retryLimit = isRetryable ? retryLimitBase + 1 : 1;
+
+    return { retryLimit, retryCodes, retryDelay, attempt: 0 };
+  }
+
+  /**
+   * Merge cache options with module level.
+   * @param params
+   */
+  private buildCacheParams(params: HttpRequestParams): HttpCacheParams {
+    const { method: paramsMethod, cacheTtl: paramsTtl, cacheTimeout: paramsTimeout } = params;
+    const { cacheTtl: moduleTtl, cacheTimeout: moduleTimeout, cacheMethods: moduleMethods } = this.httpModuleOptions;
+    const { cacheTtl: defaultTtl, cacheTimeout: defaultTimeout, cacheMethods: defaultMethods } = this.defaultOptions;
+
+    const cacheTtlBase = paramsTtl ?? moduleTtl ?? defaultTtl;
+    const cacheTimeout = paramsTimeout ?? moduleTimeout ?? defaultTimeout;
+    const cacheMethods = moduleMethods ?? defaultMethods;
+
+    const method: HttpMethod = paramsMethod as any || HttpMethod.GET;
+    const isCacheable = cacheTtlBase > 0 && cacheMethods.includes(method);
+    const cacheTtl = isCacheable ? cacheTtlBase : 0;
+
+    return { cacheTtl, cacheTimeout, cacheMethods };
+  }
+
+  /**
    * Build all manipulated parameters including retry and telemetry data
    * to start a request flow.
    * @param url
    * @param params
    */
   private buildRequestSendParams(url: string, params: HttpRequestParams): HttpRequestFlowParams {
-    const { ignoreExceptions, resolveBodyOnly } = params;
+    const { ignoreExceptions, resolveBodyOnly, replacements } = params;
 
     return {
-      url: this.buildRequestUrl(url, params),
+      url: this.replaceUrlPlaceholders(url, replacements),
       request: this.buildRequestParams(params),
       ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
       resolveBodyOnly: resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly,
       telemetry: this.buildTelemetryParams(url, params),
       retry: this.buildRetryParams(params),
+      cache: this.buildCacheParams(params),
     };
   }
 
   /**
    * Sends an HTTP request, extending GOT functionality with:
-   * - Path variables replacement
-   * - Search param array joining
-   * - Improved exception logging containing response
-   * - Response exception proxying to client.
-   * - Response cookie parsing.
+   * - Path variables replacement and search param array joining
+   * - Full observability with logs, metrics and tracing
+   * - Configurable retry conditions and outbound caching
+   * - Response exception proxying and cookie parsing.
    * @param url
    * @param params
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
-    const response: any = await this.sendRequestLoopHandler(sendParams);
+    const response: any = await this.sendRequestLoopHandler<T>(sendParams);
 
     return sendParams.resolveBodyOnly
       ? response?.body
@@ -229,10 +251,10 @@ export class HttpService {
    * @param params
    */
   private async sendRequestLoopHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
-    let response: any;
+    let response: HttpResponse<T>;
 
     while (!response) {
-      response = await this.sendRequestExceptionHandler(params);
+      response = await this.sendRequestRetryHandler(params);
     }
 
     if (response) {
@@ -244,17 +266,17 @@ export class HttpService {
   }
 
   /**
-   * Orchestrates HTTP request exception handler, upon failure
-   * check if there are attempts left, in which case do not
-   * throw so the loop handler may try again.
+   * Orchestrates HTTP request retry exception handler, upon failure
+   * check if there are attempts left, in which case do not throw
+   * the loop handler may try again.
    * @param params
    */
-  private async sendRequestExceptionHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+  private async sendRequestRetryHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
     const contextTimeoutMsg = 'context request timed out';
     const { retry, request } = params;
     const { retryLimit, retryCodes, retryDelay } = retry;
     const { url } = request;
-    let response: any;
+    let response: HttpResponse<T>;
 
     retry.attempt++;
 
@@ -278,7 +300,7 @@ export class HttpService {
       const delay = retryDelay(attempt);
       this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, e as Error);
 
-      await setTimeout(delay);
+      await this.promiseService.sleep(delay);
     }
 
     return response;
@@ -310,7 +332,7 @@ export class HttpService {
    * @param params
    */
   private async sendRequestClientHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
-    const { url, request, telemetry, ignoreExceptions } = params;
+    const { telemetry, ignoreExceptions } = params;
     let response: HttpResponse<T>;
 
     telemetry.start = Date.now();
@@ -319,7 +341,7 @@ export class HttpService {
     this.logHttpMessage(params);
 
     try {
-      response = await this.instance(url, request) as HttpResponse<T>;
+      response = await this.sendRequestCacheHandler(params);
     }
     catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
@@ -337,6 +359,50 @@ export class HttpService {
     }
     finally {
       this.collectOutboundTelemetry(params);
+    }
+
+    return response;
+  }
+
+  /**
+   * Orchestrates HTTP request sending with distributed cache support.
+   * @param params
+   */
+  private async sendRequestCacheHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+    const { url, request, telemetry, cache } = params;
+    const { host, method, path: rawPath, query } = telemetry;
+    const { cacheTtl: ttl, cacheTimeout: timeout } = cache;
+    const { replacements } = request;
+    let response: HttpResponse<T>;
+
+    const traffic = AppTraffic.OUTBOUND;
+    const path = this.replaceUrlPlaceholders(rawPath, replacements);
+    const cacheParams = { traffic, host, method, path, query };
+    telemetry.cacheStatus = CacheStatus.DISABLED;
+
+    if (ttl) {
+      try {
+        response = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(cacheParams), timeout);
+      }
+      catch {
+        this.logService.warning('Failed to acquire outbound cached data within timeout', { timeout });
+      }
+
+      if (response) {
+        this.logService.debug('Resolving outbound request with cached data');
+        telemetry.cacheStatus = CacheStatus.HIT;
+        return response;
+      }
+    }
+
+    response = await this.instance(url, request) as HttpResponse<T>;
+
+    if (ttl) {
+      telemetry.cacheStatus = CacheStatus.MISS;
+      const { statusCode, headers, body } = response;
+      const data = { statusCode, headers, body };
+
+      this.cacheService.setCache(data, { ...cacheParams, ttl });
     }
 
     return response;
@@ -403,7 +469,7 @@ export class HttpService {
    */
   private collectOutboundTelemetry(params: HttpRequestFlowParams): void {
     const { telemetry, span, response, error } = params;
-    const { start, method, host, path } = telemetry;
+    const { start, method, host, path, cacheStatus } = telemetry;
     const { statusCode, body: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
@@ -414,7 +480,7 @@ export class HttpService {
     const httpMetric = this.metricService?.getHttpMetric();
 
     if (httpMetric) {
-      httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode, CacheStatus.DISABLED).observe(duration);
+      httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode, cacheStatus).observe(duration);
     }
 
     if (span) {

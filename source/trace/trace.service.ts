@@ -14,6 +14,7 @@ import zlib from 'zlib';
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
+import { PromiseService } from '../promise/promise.service';
 import { TraceConfig } from './trace.config';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class TraceService {
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly logService: LogService,
+    private readonly promiseService: PromiseService,
     private readonly traceConfig: TraceConfig,
   ) {
     this.setupTracer();
@@ -85,7 +87,7 @@ export class TraceService {
       name: 'TraceModule',
       username: this.traceConfig.TRACE_USERNAME ?? username,
       password: this.traceConfig.TRACE_PASSWORD ?? password,
-    }, this.appConfig);
+    }, this.appConfig, this.promiseService);
 
     // @ts-ignore
     OTLPUtil.sendWithHttp = (collector, data: string, contentType, onSuccess, onError): Promise<void> => {
