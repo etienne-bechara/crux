@@ -110,6 +110,12 @@
       border-color: {{ theme.rightPanel.textColor }} !important;
     }
 
+    /* Fix Authenticate button margins */
+    .setAuth {
+      margin-left: 0px !important;
+      margin-bottom: 20px !important;
+    }
+
     /* Add try it button theme */
     .tryBtn {
       border-radius: 5px;
@@ -197,10 +203,12 @@
     const currentOpenApiUrl = currentUrl.replace(/\/docs$/, '/openapi/json');
     const openApi = '{{ openApiUrl }}' || currentOpenApiUrl;
     const redocOptions = JSON.parse('{{{ options }}}');
+    const { authBtnText, authBtnPosSelector } = redocOptions;
 
     {{ disableTryIt }}
       ? Redoc.init(openApi, redocOptions, document.getElementById('redoc-container'))
-      : initTry({ openApi, redocOptions, tryText: '⯈', pure: true });
+      : initTry({ openApi, redocOptions, tryText: '⯈', pure: true, authBtnText, authBtnPosSelector });
+ 
   </script>
 </body>
 

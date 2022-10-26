@@ -38,6 +38,13 @@ export class CacheService {
   }
 
   /**
+   * Acquires the underlying cache provider.
+   */
+  public getProvider(): CacheProvider {
+    return this.cacheProvider;
+  }
+
+  /**
    * Builds caching key for current request.
    * @param params
    */

@@ -45,6 +45,8 @@ export interface DocCodeSample {
 export interface DocOptions extends RedocOptions {
   enumSkipQuotes?: boolean;
   disableTryIt?: boolean;
+  authBtnText?: string;
+  authBtnPosSelector?: string;
   openApiUrl?: string;
   version?: string;
   description?: string;

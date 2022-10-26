@@ -288,7 +288,7 @@ export class DocModule {
       scrollbar: {
         width: '16px',
         thumbColor: params.rightPanelBackgroundColor,
-        trackColor: params.sidebarBackgroundColor,
+        trackColor: params.backgroundColor,
       },
       colors: {
         primary: {

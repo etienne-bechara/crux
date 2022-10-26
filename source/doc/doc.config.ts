@@ -7,6 +7,8 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   hideLoading: true,
   enumSkipQuotes: true,
   noAutoAuth: true,
+  authBtnText: 'Authenticate',
+  authBtnPosSelector: '.sc-dFRpbK:eq(0)',
   title: 'API Reference | OpenAPI',
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
@@ -16,7 +18,7 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
     scrollbar: {
       width: '16px',
       thumbColor: '#282c34',
-      trackColor: '#21252b',
+      trackColor: '#2f333d',
     },
     colors: {
       primary: {
