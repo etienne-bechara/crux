@@ -1,3 +1,11 @@
+## [4.33.2](https://github.com/etienne-bechara/crux/compare/v4.33.1...v4.33.2) (2022-10-26)
+
+
+### Bug Fixes
+
+* add small delay to cache invalidation ([9ae013d](https://github.com/etienne-bechara/crux/commit/9ae013d24141c60cee54147f2229543f7d2d14c4))
+* auth button location, scrollbar color ([b460316](https://github.com/etienne-bechara/crux/commit/b4603160abae362fb79b6ed4a2bf011bcb1af75c))
+
 ## [4.33.1](https://github.com/etienne-bechara/crux/compare/v4.33.0...v4.33.1) (2022-10-21)
 
 
