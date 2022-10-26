@@ -81,7 +81,10 @@ describe('CacheService', () => {
 
     it('should invalidate cache using id as bucket', async () => {
       const res1 = await supertest(httpServer).get('/cache/3').send();
+
       await supertest(httpServer).patch('/cache/3').send();
+      await setTimeout(200);
+
       const res2 = await supertest(httpServer).get('/cache/3').send();
 
       expect(res1.statusCode).toBe(HttpStatus.OK);
