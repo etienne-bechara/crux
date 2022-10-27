@@ -1,3 +1,10 @@
+## [4.33.3](https://github.com/etienne-bechara/crux/compare/v4.33.2...v4.33.3) (2022-10-27)
+
+
+### Bug Fixes
+
+* doc auth position and rgx pattern ([743fe4c](https://github.com/etienne-bechara/crux/commit/743fe4c0eb44e3928dc8f54c073d7b4c31321add))
+
 ## [4.33.2](https://github.com/etienne-bechara/crux/compare/v4.33.1...v4.33.2) (2022-10-26)
 
 
