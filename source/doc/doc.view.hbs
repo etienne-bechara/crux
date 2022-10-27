@@ -57,6 +57,19 @@
       background-color: {{ theme.backgroundColor }} !important;
     }
 
+    /* Fix response description alignment */
+    .sc-eEVmNe {
+      display: flex !important;
+    }
+    .sc-dTSzeu {
+      margin-top: 1px !important;
+      margin-left: 2px !important;
+    }
+    .sc-Arkif {
+      margin-left: 5px !important;
+      margin-bottom: 1px !important;
+    }
+
     /* Hide required tag on responses */
     .sc-fmdNqN .sc-TtZnY {
       display: none !important;
@@ -130,7 +143,7 @@
     }
 
     /* Add try it swagger frame theme */
-    .swagger-ui p, h4, h5 {
+    .swagger-ui p, .swagger-ui h4, .swagger-ui h5 {
       font-family: {{ theme.typography.fontFamily }} !important;
     }
     .swagger-ui input {
@@ -144,7 +157,7 @@
     .opblock-body {
       background: {{ theme.codeBlock.backgroundColor }} !important;
     }
-    .opblock-body p, h4, h5 {
+    .opblock-body p, .opblock-body h4, .opblock-body h5 {
       color: {{ theme.rightPanel.textColor }} !important;
     }
     .response-col_status, .response-col_description, .parameter__name, .parameter__type, .parameter__in, .prop-format {
@@ -170,7 +183,7 @@
     .modal-ux {
       background: {{ theme.sidebar.backgroundColor }} !important;
     }
-    .modal-ux h3, p, label {
+    .modal-ux h3, .modal-ux p, .modal-ux label {
       color: {{ theme.sidebar.textColor }} !important;
     }
 
