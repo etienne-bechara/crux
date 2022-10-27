@@ -8,11 +8,14 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   enumSkipQuotes: true,
   noAutoAuth: true,
   authBtnText: 'Authenticate',
-  authBtnPosSelector: '.sc-dFRpbK:eq(0)',
+  authBtnPosSelector: '.sc-gIvpjk:eq(0)',
   title: 'API Reference | OpenAPI',
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',
-  logo: { url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png' },
+  logo: {
+    url: 'https://www.openapis.org/wp-content/uploads/sites/3/2018/02/OpenAPI_Logo_White.png',
+    href: 'https://www.openapis.org/',
+  },
   theme: {
     backgroundColor: '#2f333d',
     scrollbar: {

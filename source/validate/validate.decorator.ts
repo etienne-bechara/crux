@@ -658,7 +658,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: `/${regexPattern.source}/` }),
+    ApiProperty({ ...propertyOptions, pattern: regexPattern.source }),
   );
 }
 
