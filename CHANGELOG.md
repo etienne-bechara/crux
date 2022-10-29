@@ -1,3 +1,11 @@
+## [4.33.4](https://github.com/etienne-bechara/crux/compare/v4.33.3...v4.33.4) (2022-10-27)
+
+
+### Bug Fixes
+
+* **doc:** modal header color ([9c6bf0b](https://github.com/etienne-bechara/crux/commit/9c6bf0b2c2ee48bad0d10dca384b7eff70adf92f))
+* **doc:** response color and alignment ([c09047d](https://github.com/etienne-bechara/crux/commit/c09047d5cb8339146cb42446a48461965807fadc))
+
 ## [4.33.3](https://github.com/etienne-bechara/crux/compare/v4.33.2...v4.33.3) (2022-10-27)
 
 
