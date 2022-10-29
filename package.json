@@ -69,7 +69,7 @@
     "httpsnippet": "2.0.0",
     "ioredis": "5.2.3",
     "nestjs-redoc": "2.2.2",
-    "point-of-view": "5.2.0",
+    "point-of-view": "6.3.0",
     "prom-client": "14.1.0",
     "protobufjs": "7.1.2",
     "query-string": "7.1.1",
