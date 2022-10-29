@@ -6,9 +6,11 @@ export interface RedisAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'>
   useFactory?: (...args: any[]) => Promise<RedisModuleOptions> | RedisModuleOptions;
 }
 
-export interface RedisModuleOptions extends RedisOptions {
+export interface RedisModuleOptions extends Omit<RedisOptions, 'keepAlive'> {
   /** Default TTL when using wrapped commands, does not direct commands through `.getClient()`. Default: 60s. */
   defaultTtl?: number;
+  /** Keep alive delay. */
+  keepAlive?: number;
 }
 
 export interface RedisTtlOptions {

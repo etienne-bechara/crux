@@ -1,5 +1,5 @@
 import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import Redis from 'ioredis';
+import Redis, { RedisOptions } from 'ioredis';
 import { v4 } from 'uuid';
 
 import { CacheProvider } from '../cache/cache.interface';
@@ -56,7 +56,7 @@ export class RedisService implements CacheProvider {
       return 2;
     };
 
-    this.redisClient = new Redis(this.redisModuleOptions);
+    this.redisClient = new Redis(this.redisModuleOptions as RedisOptions);
 
     this.redisClient.on('connect', () => {
       this.logService.info(`Redis connected at ${this.redisModuleOptions.host}`);
