@@ -213,7 +213,7 @@
   <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.1/dist/try.js"></script>
   <script>
     const currentUrl = window.location.href.split(/[?#]/)[0];
-    const currentOpenApiUrl = currentUrl.replace(/\/docs$/, '/openapi/json');
+    const currentOpenApiUrl = currentUrl.replace(/\/docs$/, '/docs/json');
     const openApi = '{{ openApiUrl }}' || currentOpenApiUrl;
     const redocOptions = JSON.parse('{{{ options }}}');
     const { authBtnText, authBtnPosSelector } = redocOptions;
