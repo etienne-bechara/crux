@@ -1,3 +1,14 @@
+## [4.33.5](https://github.com/etienne-bechara/crux/compare/v4.33.4...v4.33.5) (2022-10-29)
+
+
+### Bug Fixes
+
+* bump got ([9844b73](https://github.com/etienne-bechara/crux/commit/9844b734ed8b7ac6c333196bbc8a19094e8c1678))
+* bump minor verions ([5938f5b](https://github.com/etienne-bechara/crux/commit/5938f5b3c25f7f2806484d425750c72978c0299a))
+* bump nestjs major ([5b36f1f](https://github.com/etienne-bechara/crux/commit/5b36f1f89498c0948fb47cc509811657ff852ffa))
+* bump point-of-view ([786b8b9](https://github.com/etienne-bechara/crux/commit/786b8b988d2f8727d6b0253da5e1f8aeb27ec149))
+* getRequestPath() ([1f098c6](https://github.com/etienne-bechara/crux/commit/1f098c6f216ed005f614647d9c7fe84fc33b55be))
+
 ## [4.33.4](https://github.com/etienne-bechara/crux/compare/v4.33.3...v4.33.4) (2022-10-27)
 
 
