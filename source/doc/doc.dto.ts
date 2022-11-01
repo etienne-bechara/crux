@@ -1,23 +1,8 @@
-import { IsObject, IsString } from '../validate/validate.decorator';
-
-export class DocSpecification {
-
-  @IsString()
-  public openapi: string;
-
-  @IsObject()
-  public paths: Record<string, any>;
-
-  @IsObject()
-  public info: Record<string, any>;
-
-  @IsString({ each: true })
-  public tags: string[];
-
-  @IsString({ each: true })
-  public servers: string[];
-
-  @IsObject()
-  public components: Record<string, any>;
-
+export interface DocSpecification {
+  openapi: string;
+  paths: Record<string, any>;
+  info: Record<string, any>;
+  tags: string[];
+  servers: string[];
+  components: Record<string, any>;
 }
