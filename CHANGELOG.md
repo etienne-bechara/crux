@@ -1,3 +1,10 @@
+## [4.33.6](https://github.com/etienne-bechara/crux/compare/v4.33.5...v4.33.6) (2022-11-01)
+
+
+### Bug Fixes
+
+* remove unnecessary dto decorations ([9851117](https://github.com/etienne-bechara/crux/commit/9851117474843ec8a9affceaaf20991c32b5f7fa))
+
 ## [4.33.5](https://github.com/etienne-bechara/crux/compare/v4.33.4...v4.33.5) (2022-10-29)
 
 
