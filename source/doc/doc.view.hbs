@@ -178,6 +178,14 @@
       color: {{ theme.rightPanel.textColor }} !important;
       font-family: {{ theme.typography.code.fontFamily }} !important;
     }
+    .opblock-tag-section {
+      background: {{ theme.codeBlock.backgroundColor }} !important;
+    }
+
+    /* Hide unnecessary swagger response details */
+    .response-col_status, .responses-header {
+      display: none !important;
+    }
 
     /* Add swagger auth theme */
     .modal-ux {
