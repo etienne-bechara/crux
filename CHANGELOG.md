@@ -1,3 +1,10 @@
+## [4.33.8](https://github.com/etienne-bechara/crux/compare/v4.33.7...v4.33.8) (2022-11-05)
+
+
+### Bug Fixes
+
+* remove context service dependency of app config ([870f187](https://github.com/etienne-bechara/crux/commit/870f18752c5c5d0643749e8da6ac1aa28f98e1ad))
+
 ## [4.33.7](https://github.com/etienne-bechara/crux/compare/v4.33.6...v4.33.7) (2022-11-04)
 
 
