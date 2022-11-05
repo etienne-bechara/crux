@@ -1,6 +1,7 @@
 import { Injectable, PipeTransform, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 
+import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
 import { TraceService } from '../trace/trace.service';
 import { VALIDATOR_DEFAULT_OPTIONS } from './validate.config';
@@ -9,6 +10,7 @@ import { VALIDATOR_DEFAULT_OPTIONS } from './validate.config';
 export class ValidatePipe extends ValidationPipe implements PipeTransform {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
   ) {
     super(VALIDATOR_DEFAULT_OPTIONS);
@@ -20,7 +22,8 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
    * @param object
    */
   protected validate(object: object): Promise<ValidationError[]> | ValidationError[] {
-    const options = this.contextService.getValidatorOptions();
+    const defaultOptions = this.appConfig.APP_OPTIONS.validator;
+    const options = this.contextService.getValidatorOptions() || defaultOptions;
     return TraceService.startManagedSpan('App | Validation Pipe', { }, () => super.validate(object, options));
   }
 
