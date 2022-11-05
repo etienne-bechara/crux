@@ -1,3 +1,10 @@
+## [4.33.9](https://github.com/etienne-bechara/crux/compare/v4.33.8...v4.33.9) (2022-11-05)
+
+
+### Bug Fixes
+
+* remove unused http module ([339da30](https://github.com/etienne-bechara/crux/commit/339da308c176f519ac67bae94ce51c565a0d7e26))
+
 ## [4.33.8](https://github.com/etienne-bechara/crux/compare/v4.33.7...v4.33.8) (2022-11-05)
 
 
