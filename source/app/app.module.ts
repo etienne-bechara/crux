@@ -298,17 +298,17 @@ export class AppModule {
     if (type === 'imports') {
       preloadedModules.push(
         ConfigModule.registerAsync({ envPath }),
-        ...importedModules,
-        ...sourceModules,
         ...defaultModules,
+        ...sourceModules,
+        ...importedModules,
       );
     }
     else {
       preloadedModules.push(
         ConfigModule,
-        ...exportedModules,
-        ...sourceModules,
         ...defaultModules,
+        ...sourceModules,
+        ...exportedModules,
       );
     }
 
