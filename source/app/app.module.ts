@@ -16,7 +16,6 @@ import { ContextModule } from '../context/context.module';
 import { ContextService } from '../context/context.service';
 import { ContextStorage } from '../context/context.storage';
 import { DocModule } from '../doc/doc.module';
-import { HttpModule } from '../http/http.module';
 import { LogInterceptor } from '../log/log.interceptor';
 import { LogModule } from '../log/log.module';
 import { LogService } from '../log/log.service';
@@ -248,7 +247,7 @@ export class AppModule {
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
     const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
-    const { envPath, imports, exports } = this.options;
+    const { envPath, imports: importedModules, exports: exportedModules } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
@@ -257,11 +256,6 @@ export class AppModule {
       LogModule,
       MemoryModule,
       PromiseModule,
-      HttpModule.register({
-        name: 'AppModule',
-        responseType: 'json',
-        resolveBodyOnly: true,
-      }),
     ];
 
     if (!disableCache) {
@@ -304,17 +298,17 @@ export class AppModule {
     if (type === 'imports') {
       preloadedModules.push(
         ConfigModule.registerAsync({ envPath }),
-        ...defaultModules,
+        ...importedModules,
         ...sourceModules,
-        ...imports,
+        ...defaultModules,
       );
     }
     else {
       preloadedModules.push(
         ConfigModule,
-        ...defaultModules,
+        ...exportedModules,
         ...sourceModules,
-        ...exports,
+        ...defaultModules,
       );
     }
 
