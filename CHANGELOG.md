@@ -1,3 +1,10 @@
+## [4.33.7](https://github.com/etienne-bechara/crux/compare/v4.33.6...v4.33.7) (2022-11-04)
+
+
+### Bug Fixes
+
+* theme ([23d0aa0](https://github.com/etienne-bechara/crux/commit/23d0aa0667daa2cd2a5f7a0d1d4cea0a1242f528))
+
 ## [4.33.6](https://github.com/etienne-bechara/crux/compare/v4.33.5...v4.33.6) (2022-11-01)
 
 
