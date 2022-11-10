@@ -499,7 +499,7 @@ export function IsISO8601(options?: any, validationOptions?: ValidationOptions):
 
   return applyDecorators(
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'ISO8601' }),
+    ApiProperty({ ...propertyOptions, format: 'iso8601' }),
   );
 }
 
@@ -512,7 +512,7 @@ export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator
 
   return applyDecorators(
     CvIsJSON(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'JSON' }),
+    ApiProperty({ ...propertyOptions, format: 'json' }),
   );
 }
 
@@ -525,7 +525,7 @@ export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator 
 
   return applyDecorators(
     CvIsJWT(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'JWT' }),
+    ApiProperty({ ...propertyOptions, format: 'jwt' }),
   );
 }
 
@@ -581,7 +581,7 @@ export function IsUrl(options?: any, validationOptions?: ValidationOptions): Pro
 
   return applyDecorators(
     CvIsUrl(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'URL' }),
+    ApiProperty({ ...propertyOptions, format: 'url' }),
   );
 }
 
@@ -597,7 +597,7 @@ export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOpti
 
   return applyDecorators(
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'UUID' }),
+    ApiProperty({ ...propertyOptions, format: 'uuid' }),
   );
 }
 
