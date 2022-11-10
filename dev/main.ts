@@ -28,7 +28,7 @@ void AppModule.boot({
         options: {
           type: 'apiKey',
           in: 'header',
-          name: 'authorization',
+          name: 'Authorization',
         },
       },
     ],

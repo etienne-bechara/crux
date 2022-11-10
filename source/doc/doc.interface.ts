@@ -7,6 +7,7 @@ import { DocCodeSampleClient } from './doc.enum';
 export interface DocHttpSnippetParams {
   document: OpenAPIObject;
   servers: DocServer[];
+  security: DocSecurity[];
   path: string;
   method: string;
 }

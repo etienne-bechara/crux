@@ -134,12 +134,12 @@ export class DocModule {
   public static generateCodeSamples(document: OpenAPIObject, options: AppOptions): void {
     const { paths } = document;
     const { docs } = options;
-    const { servers, codeSamples } = docs;
+    const { servers, security, codeSamples } = docs;
 
     for (const path in paths) {
       for (const method in paths[path]) {
         const snippetOptions = { indent: ' ' };
-        const httpSnippet = this.buildHttpSnippet({ document, servers, path, method });
+        const httpSnippet = this.buildHttpSnippet({ document, servers, security, path, method });
 
         paths[path][method]['x-codeSamples'] = codeSamples.map((s) => {
           const [ target, ...clientParts ] = s.client.toLowerCase().split('_');
@@ -161,9 +161,10 @@ export class DocModule {
    * @param params
    */
   private static buildHttpSnippet(params: DocHttpSnippetParams): HTTPSnippet {
-    const { document, servers, path, method: rawMethod } = params;
+    const { document, servers, security, path, method: rawMethod } = params;
     const { paths } = document;
 
+    const authOptions = security?.[0]?.options;
     const pathParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'path');
     const queryParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'query');
     const requestBody = paths[path][rawMethod].requestBody;
@@ -171,7 +172,12 @@ export class DocModule {
     const httpSnippetOptions = {
       method: rawMethod.toUpperCase(),
       url: `${servers[0].url}${path}`,
+      headers: [ ],
     } as any;
+
+    if (authOptions?.in === 'header') {
+      httpSnippetOptions.headers.push({ name: authOptions.name, value: 'your_authorization' });
+    }
 
     if (pathParameters.length > 0) {
       for (const pathParameter of pathParameters) {
@@ -197,7 +203,7 @@ export class DocModule {
       const jsonSchema: ReferenceObject = requestBody?.content['application/json']?.schema;
 
       if (jsonSchema) {
-        httpSnippetOptions.headers = [ { name: 'Content-Type', value: 'application/json' } ];
+        httpSnippetOptions.headers.push({ name: 'Content-Type', value: 'application/json' });
 
         httpSnippetOptions.postData = {
           mimeType: 'application/json',
