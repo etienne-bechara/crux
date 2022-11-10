@@ -1,3 +1,10 @@
+## [4.33.11](https://github.com/etienne-bechara/crux/compare/v4.33.10...v4.33.11) (2022-11-10)
+
+
+### Bug Fixes
+
+* case in validator ([c908ebb](https://github.com/etienne-bechara/crux/commit/c908ebbc0b98ec041df8c7a3d2298acbaf18af31))
+
 ## [4.33.10](https://github.com/etienne-bechara/crux/compare/v4.33.9...v4.33.10) (2022-11-05)
 
 
