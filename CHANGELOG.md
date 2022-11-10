@@ -1,3 +1,10 @@
+# [4.34.0](https://github.com/etienne-bechara/crux/compare/v4.33.11...v4.34.0) (2022-11-10)
+
+
+### Features
+
+* add authorization header in http snippet ([836c5f9](https://github.com/etienne-bechara/crux/commit/836c5f9233774a2468f43648346056ffa20abe1f))
+
 ## [4.33.11](https://github.com/etienne-bechara/crux/compare/v4.33.10...v4.33.11) (2022-11-10)
 
 
