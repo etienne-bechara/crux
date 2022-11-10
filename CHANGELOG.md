@@ -1,3 +1,10 @@
+## [4.33.10](https://github.com/etienne-bechara/crux/compare/v4.33.9...v4.33.10) (2022-11-05)
+
+
+### Bug Fixes
+
+* module order ([830d25b](https://github.com/etienne-bechara/crux/commit/830d25b5dcad2e8fb221b69fd11341734c356c34))
+
 ## [4.33.9](https://github.com/etienne-bechara/crux/compare/v4.33.8...v4.33.9) (2022-11-05)
 
 
