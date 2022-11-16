@@ -23,6 +23,12 @@
       background-color: {{ theme.backgroundColor }};
     }
 
+    /* Lower sidebar items distances */
+    .sc-dkQUaI {
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
+    }
+
     /* Fix sidebar operation badge unaligned with text */
     .sc-euEtCV {
       margin-top: 5px !important;
@@ -50,6 +56,14 @@
     .sc-jOFryr {
       margin-left: 5px !important;
       margin-right: 5px !important;
+    }
+
+    /* Fix discriminators dropdown color */
+    .sc-cxNHIi:not(.sc-eirqVv) {
+      background-color: {{ theme.rightPanel.backgroundColor }} !important;
+    }
+    .sc-cxNHIi:not(.sc-eirqVv) .sc-giAqHp {
+      color: {{ theme.rightPanel.textColor }} !important;
     }
 
     /* Fix examples button background color */
