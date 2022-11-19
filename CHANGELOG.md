@@ -1,3 +1,11 @@
+## [4.34.1-beta.1](https://github.com/etienne-bechara/crux/compare/v4.34.0...v4.34.1-beta.1) (2022-11-19)
+
+
+### Bug Fixes
+
+* doc page css adjustments ([cfc74ea](https://github.com/etienne-bechara/crux/commit/cfc74eae936ab3be5d0c67ba786b278171bd8db9))
+* make core module global ([6759a57](https://github.com/etienne-bechara/crux/commit/6759a5744aff505c93ba3c5e7fb7ee4650d8d920))
+
 # [4.34.0](https://github.com/etienne-bechara/crux/compare/v4.33.11...v4.34.0) (2022-11-10)
 
 
