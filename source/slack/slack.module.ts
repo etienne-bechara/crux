@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { HttpModule } from '../http/http.module';
 import { SlackConfig } from './slack.config';
 import { SlackService } from './slack.service';
 
+@Global()
 @Module({
   imports: [
     HttpModule.registerAsync({

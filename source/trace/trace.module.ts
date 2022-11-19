@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { TraceConfig } from './trace.config';
 import { TraceService } from './trace.service';
 
+@Global()
 @Module({
   providers: [
     TraceConfig,
@@ -15,6 +16,7 @@ import { TraceService } from './trace.service';
 })
 export class TraceModule { }
 
+@Global()
 @Module({
   providers: [
     { provide: TraceService, useValue: null },

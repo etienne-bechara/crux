@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { MemoryService } from './memory.service';
 
+@Global()
 @Module({
   providers: [
     MemoryService,

@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { RedisModule } from '../redis/redis.module';
 import { CacheConfig } from './cache.config';
 import { CacheService } from './cache.service';
 
+@Global()
 @Module({
   imports: [
     RedisModule.registerAsync({
@@ -28,6 +29,7 @@ import { CacheService } from './cache.service';
 })
 export class CacheModule { }
 
+@Global()
 @Module({
   providers: [
     { provide: CacheService, useValue: null },

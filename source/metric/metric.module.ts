@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { MetricConfig } from './metric.config';
 import { MetricController } from './metric.controller';
 import { MetricService } from './metric.service';
 
+@Global()
 @Module({
   controllers: [
     MetricController,
@@ -19,6 +20,7 @@ import { MetricService } from './metric.service';
 })
 export class MetricModule { }
 
+@Global()
 @Module({
   providers: [
     { provide: MetricService, useValue: null },

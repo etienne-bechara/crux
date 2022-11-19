@@ -1,6 +1,6 @@
 import { EntityManager, MikroORMOptions } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppConfig } from '../app/app.config';
@@ -17,6 +17,7 @@ import { OrmInjectionToken } from './orm.enum';
 import { OrmInterceptor } from './orm.interceptor';
 import { OrmAsyncModuleOptions, OrmModuleOptions } from './orm.interface';
 
+@Global()
 @Module({ })
 export class OrmModule {
 

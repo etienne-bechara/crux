@@ -1,4 +1,4 @@
-import { INestApplication, Module } from '@nestjs/common';
+import { Global, INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import fs from 'fs';
@@ -13,6 +13,7 @@ import { DocCodeSampleClient } from './doc.enum';
 import { DocHttpSnippetParams, DocTheme, DocThemeGeneratorParams } from './doc.interface';
 import { DocService } from './doc.service';
 
+@Global()
 @Module({
   controllers: [
     DocController,

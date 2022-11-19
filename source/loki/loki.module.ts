@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { HttpModule } from '../http/http.module';
 import { LokiConfig } from './loki.config';
 import { LokiService } from './loki.service';
 
+@Global()
 @Module({
   imports: [
     HttpModule.registerAsync({

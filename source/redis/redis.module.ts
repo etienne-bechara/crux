@@ -1,10 +1,11 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import crypto from 'crypto';
 
 import { RedisInjectionToken } from './redis.enum';
 import { RedisAsyncModuleOptions, RedisModuleOptions } from './redis.interface';
 import { RedisService } from './redis.service';
 
+@Global()
 @Module({
   providers: [
     RedisService,

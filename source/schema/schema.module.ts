@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import crypto from 'crypto';
 
 import { LogModule } from '../log/log.module';
@@ -6,6 +6,7 @@ import { SchemaInjectionToken } from './schema.enum';
 import { SchemaAsyncModuleOptions, SchemaModuleOptions } from './schema.interface';
 import { SchemaService } from './schema.service';
 
+@Global()
 @Module({
   imports: [
     LogModule,

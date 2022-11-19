@@ -1,4 +1,4 @@
-import { DynamicModule, Module, ValidationError } from '@nestjs/common';
+import { DynamicModule, Global, Module, ValidationError } from '@nestjs/common';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import dotenv from 'dotenv';
@@ -9,6 +9,7 @@ import { LogSeverity } from '../log/log.enum';
 import { LogParams } from '../log/log.interface';
 import { ConfigModuleOptions, ConfigRecord } from './config.interface';
 
+@Global()
 @Module({ })
 export class ConfigModule {
 

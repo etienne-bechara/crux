@@ -1,10 +1,11 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import crypto from 'crypto';
 
 import { HttpInjectionToken } from './http.enum';
 import { HttpAsyncModuleOptions, HttpModuleOptions } from './http.interface';
 import { HttpService } from './http.service';
 
+@Global()
 @Module({
   providers: [
     HttpService,
