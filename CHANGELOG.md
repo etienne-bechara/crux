@@ -1,3 +1,10 @@
+## [4.34.2](https://github.com/etienne-bechara/crux/compare/v4.34.1...v4.34.2) (2022-11-19)
+
+
+### Bug Fixes
+
+* response filter when proxying ([8733459](https://github.com/etienne-bechara/crux/commit/87334598d1236b351b28afc41576b8ba4d5aaec9))
+
 ## [4.34.1](https://github.com/etienne-bechara/crux/compare/v4.34.0...v4.34.1) (2022-11-16)
 
 
