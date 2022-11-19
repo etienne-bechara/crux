@@ -1,3 +1,10 @@
+## [4.34.1](https://github.com/etienne-bechara/crux/compare/v4.34.0...v4.34.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* doc page css adjustments ([cfc74ea](https://github.com/etienne-bechara/crux/commit/cfc74eae936ab3be5d0c67ba786b278171bd8db9))
+
 # [4.34.0](https://github.com/etienne-bechara/crux/compare/v4.33.11...v4.34.0) (2022-11-10)
 
 
