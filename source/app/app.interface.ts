@@ -154,7 +154,7 @@ export interface AppExceptionDetails extends Record<string, any> {
   constraints?: string[];
 }
 
-export interface AppExceptionResponse extends Record<string, any> {
+export interface AppExceptionResponse {
   code: number;
-  message: string;
+  body: unknown;
 }

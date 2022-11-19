@@ -126,7 +126,7 @@ export class AppFilter implements ExceptionFilter {
     const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
     const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const filteredResponse: AppExceptionResponse = {
+    const filteredResponse = {
       code,
       message: isProduction && isInternalError ? 'unexpected error' : message,
       ...isProduction && isInternalError ? { } : details,
@@ -136,13 +136,13 @@ export class AppFilter implements ExceptionFilter {
     const exceptionBody = outboundResponse?.body;
 
     const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
-      ? exceptionBody
-      : filteredResponse;
+      ? { code, body: exceptionBody }
+      : { code, body: filteredResponse };
 
     this.logService.http(this.contextService.getRequestDescription('out'), {
       duration: this.contextService.getRequestDuration(),
       code,
-      body: enableResponseBody ? clientResponse : undefined,
+      body: enableResponseBody ? clientResponse.body : undefined,
     });
 
     return clientResponse;
@@ -181,11 +181,11 @@ export class AppFilter implements ExceptionFilter {
    */
   private sendResponse(params: AppExceptionResponse): void {
     const res = this.contextService.getResponse();
-    const { code } = params;
+    const { code, body } = params;
 
     res.code(code);
     res.header('Content-Type', 'application/json');
-    res.send(params);
+    res.send(body);
   }
 
 }
