@@ -31,8 +31,8 @@ export class CacheInterceptor implements NestInterceptor {
    * @param next
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const { enabled, timeout, buckets, invalidate, ttl } = this.buildCacheInterceptParams(context);
-    const req = this.contextService.getRequest();
+    const params = this.buildCacheInterceptParams(context);
+    const { enabled, timeout } = params;
     let cache: unknown;
 
     if (enabled) {
@@ -54,22 +54,7 @@ export class CacheInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
-        mergeMap(async (data) => {
-          if (invalidate) {
-            this.cacheService.invalidateBuckets(invalidate({ req, data }));
-          }
-
-          if (buckets) {
-            this.cacheService.setBuckets(buckets({ req, data }));
-          }
-
-          if (enabled) {
-            this.contextService.setCacheStatus(CacheStatus.MISS);
-            this.cacheService.setCache(data, { ttl });
-          }
-
-          return data;
-        }),
+        mergeMap(async (data) => this.handleOutputData(data, params)),
       );
   }
 
@@ -89,6 +74,39 @@ export class CacheInterceptor implements NestInterceptor {
     const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
 
     return { enabled, timeout, buckets, invalidate, ttl };
+  }
+
+  /**
+   * Given output data, decided whether or not it should be cached,
+   * as well as apply any related buckets.
+   * @param data
+   * @param params
+   */
+  private handleOutputData(data: unknown, params: CacheInterceptParams): unknown {
+    const { enabled, buckets, invalidate, ttl } = params;
+    const req = this.contextService.getRequest();
+
+    if (invalidate) {
+      this.cacheService.invalidateBuckets(invalidate({ req, data }));
+    }
+
+    if (enabled) {
+      this.contextService.setCacheStatus(CacheStatus.MISS);
+
+      if (buckets) {
+        const bucketValues = buckets({ req, data });
+
+        if (bucketValues?.length > 0) {
+          this.cacheService.setBuckets(bucketValues);
+          this.cacheService.setCache(data, { ttl });
+        }
+      }
+      else {
+        this.cacheService.setCache(data, { ttl });
+      }
+    }
+
+    return data;
   }
 
 }

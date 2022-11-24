@@ -12,6 +12,15 @@ class CacheTestController {
 
   @Cache({
     ttl: 1000,
+    buckets: () => [ ],
+  })
+  @Get('no-buckets')
+  public getCacheNoBuckets(): { rng: number } {
+    return { rng: Math.random() };
+  }
+
+  @Cache({
+    ttl: 1000,
     buckets: ({ req }) => [ req.params.id, '10' ],
   })
   @Get(':id')
@@ -60,6 +69,15 @@ describe('CacheService', () => {
   });
 
   describe('GET /cache/:id', () => {
+    it('should not cache response when no buckets are specified', async () => {
+      const res1 = await supertest(httpServer).get('/cache/no-buckets').send();
+      const res2 = await supertest(httpServer).get('/cache/no-buckets').send();
+
+      expect(res1.statusCode).toBe(HttpStatus.OK);
+      expect(res2.statusCode).toBe(HttpStatus.OK);
+      expect(res1.body.rng === res2.body.rng).toBe(false);
+    });
+
     it('should cache response using id as bucket', async () => {
       const res1 = await supertest(httpServer).get('/cache/1').send();
       const res2 = await supertest(httpServer).get('/cache/1').send();
