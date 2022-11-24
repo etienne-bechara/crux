@@ -1,3 +1,15 @@
+# [4.35.0](https://github.com/etienne-bechara/crux/compare/v4.34.2...v4.35.0) (2022-11-24)
+
+
+### Bug Fixes
+
+* cache intercept readability ([5e4933c](https://github.com/etienne-bechara/crux/commit/5e4933c26dd97422e935d4b40b7b28aa907ff408))
+
+
+### Features
+
+* allow binned http metric collection ([1968ac4](https://github.com/etienne-bechara/crux/commit/1968ac4d8924a1146c588f587b47ebcb90f5ae41))
+
 ## [4.34.2](https://github.com/etienne-bechara/crux/compare/v4.34.1...v4.34.2) (2022-11-19)
 
 
