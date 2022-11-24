@@ -1,7 +1,7 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import got, { Got } from 'got';
+import got, { Got, Options } from 'got';
 import { IncomingHttpHeaders } from 'http';
 import { stringify } from 'query-string';
 
@@ -396,7 +396,7 @@ export class HttpService {
       }
     }
 
-    response = await this.instance(url, request) as HttpResponse<T>;
+    response = await this.instance(url, request as Options) as HttpResponse<T>;
 
     if (ttl) {
       telemetry.cacheStatus = CacheStatus.MISS;
@@ -470,23 +470,19 @@ export class HttpService {
    */
   private collectOutboundTelemetry(params: HttpRequestFlowParams): void {
     const { telemetry, span, response, error } = params;
-    const { start, method, host, path, cacheStatus } = telemetry;
-    const { statusCode, body: resBody, headers } = response || { };
+    const { start, method, host, path, cacheStatus: cache } = telemetry;
+    const { statusCode: code, body: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
-    const strCode = statusCode?.toString() || '';
+    const traffic = AppTraffic.OUTBOUND;
     const body = this.appConfig.APP_OPTIONS.logs?.enableResponseBody ? resBody || undefined : undefined;
-    this.logService?.http(`⯆ ${method} ${host}${path}`, { duration, code: strCode, body, headers });
 
-    const httpMetric = this.metricService?.getHttpMetric();
-
-    if (httpMetric) {
-      httpMetric.labels(AppTraffic.OUTBOUND, method, host, path, strCode, cacheStatus).observe(duration);
-    }
+    this.logService?.http(`⯆ ${method} ${host}${path}`, { duration, code, body, headers });
+    this.metricService?.observeHttpDuration({ traffic, method, host, path, code, cache, duration });
 
     if (span) {
       span.setAttributes({
-        [SemanticAttributes.HTTP_STATUS_CODE]: statusCode || undefined,
+        [SemanticAttributes.HTTP_STATUS_CODE]: String(code) || undefined,
         'http.duration': duration, // eslint-disable-line @typescript-eslint/naming-convention
       });
 

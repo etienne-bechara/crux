@@ -4,6 +4,7 @@ import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import os from 'os';
 
 import { ContextService } from '../context/context.service';
+import { HttpMethod } from '../http/http.enum';
 import { MetricService } from '../metric/metric.service';
 import { AppStatus } from './app.dto';
 import { AppTraffic } from './app.enum';
@@ -50,9 +51,9 @@ export class AppService {
    */
   public collectInboundTelemetry(code: HttpStatus, error?: Error): void {
     const span = this.contextService.getRequestSpan();
-    const httpMetric = this.metricService?.getHttpMetric();
 
-    const method = this.contextService.getRequestMethod();
+    const traffic = AppTraffic.INBOUND;
+    const method = this.contextService.getRequestMethod() as HttpMethod;
     const host = this.contextService.getRequestHost();
     const duration = this.contextService.getRequestDuration();
     const cache = this.contextService.getCacheStatus();
@@ -61,9 +62,7 @@ export class AppService {
       ? '/*'
       : this.contextService.getRequestPath();
 
-    if (httpMetric) {
-      httpMetric.labels(AppTraffic.INBOUND, method, host, path, code.toString(), cache).observe(duration);
-    }
+    this.metricService?.observeHttpDuration({ traffic, method, host, path, code, cache, duration });
 
     if (span) {
       span.setAttributes({

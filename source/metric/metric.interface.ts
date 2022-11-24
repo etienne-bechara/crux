@@ -1,3 +1,8 @@
+import { HttpStatus } from '@nestjs/common';
+
+import { AppTraffic } from '../app/app.enum';
+import { CacheStatus } from '../cache/cache.enum';
+import { HttpMethod } from '../http/http.enum';
 import { MetricHttpStrategy } from './metric.enum';
 
 export interface MetricOptions {
@@ -18,6 +23,8 @@ export interface MetricOptions {
    * Default: [ 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50 ].
    */
   httpBuckets?: number[];
+  /** Bin HTTP status codes to near hundred, therefore resulting in 2xx, 4xx, etc. Default: `false`. */
+  httpCodeBin?: boolean;
   /**
    * Prometheus API URL to publish metrics. Supports `:job` and `:instance`
    * for path replacements. Can be overridden by env `METRIC_URL`.
@@ -29,6 +36,16 @@ export interface MetricOptions {
   password?: string;
   /** Prometheus API push interval in milliseconds. Default: 60s. */
   pushInterval?: number;
+}
+
+export interface MetricHttpDurationParams {
+  traffic: AppTraffic;
+  method: HttpMethod;
+  host: string;
+  path: string;
+  code: HttpStatus;
+  cache: CacheStatus;
+  duration: number;
 }
 
 export interface MetricLabel {

@@ -12,7 +12,7 @@ import { PromiseService } from '../promise/promise.service';
 import { MetricConfig } from './metric.config';
 import { MetricData } from './metric.dto';
 import { MetricDataType, MetricHttpStrategy } from './metric.enum';
-import { MetricMessage } from './metric.interface';
+import { MetricHttpDurationParams, MetricMessage } from './metric.interface';
 import { MetricMessageProto } from './metric.proto';
 
 @Injectable()
@@ -220,10 +220,26 @@ export class MetricService {
   }
 
   /**
+   * Observes a new value into http metric.
+   * @param params
+   */
+  public observeHttpDuration(params: MetricHttpDurationParams): void {
+    const { traffic, method, host, path, code: rawCode, cache, duration } = params;
+    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { httpCodeBin } = metrics;
+
+    const code = rawCode && httpCodeBin
+      ? `${Math.floor(rawCode / 100)}xx`
+      : String(rawCode) || '';
+
+    this.getHttpMetric().labels(traffic, method, host, path, code, cache).observe(duration);
+  }
+
+  /**
    * Acquires the HTTP metric collector which might be either
    * a summary or histogram depending on app configuration.
    */
-  public getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code' | 'cache' >(
+  private getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code' | 'cache' >(
   ): Summary<T> | Histogram<T> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { httpStrategy } = metrics;

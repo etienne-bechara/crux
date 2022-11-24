@@ -56,7 +56,9 @@ export type HttpRequestParamsBase =
   Omit<OptionsOfUnknownResponseBody, 'retry' | 'cache' | 'cacheOptions'>
   & Omit<HttpSharedOptions, 'retryMethods' | 'cacheMethods'>;
 
-export interface HttpRequestParams extends HttpRequestParamsBase {
+export interface HttpRequestParams extends Omit<HttpRequestParamsBase, 'method'> {
+  /** HTTP Method. */
+  method?: HttpMethod;
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string | number>;
 }
@@ -93,7 +95,7 @@ export interface HttpRetryParams extends Pick<HttpSharedOptions, 'retryLimit' | 
 export type HttpCacheParams = Pick<HttpSharedOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
 
 export interface HttpTelemetryParams {
-  method: string;
+  method: HttpMethod;
   host: string;
   path: string;
   replacements: Record<string, string | number>;
