@@ -1,3 +1,10 @@
+## [4.35.1](https://github.com/etienne-bechara/crux/compare/v4.35.0...v4.35.1) (2022-12-02)
+
+
+### Bug Fixes
+
+* @IsEnum isNumeric regex ([54eab95](https://github.com/etienne-bechara/crux/commit/54eab9593d276ea383679333d654d432d059f8d3))
+
 # [4.35.0](https://github.com/etienne-bechara/crux/compare/v4.34.2...v4.35.0) (2022-11-24)
 
 
