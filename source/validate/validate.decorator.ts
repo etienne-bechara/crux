@@ -321,7 +321,7 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
-  const isNumeric = Object.keys(entity).find((k) => /\d+/.test(k));
+  const isNumeric = Object.keys(entity).some((k) => /^\d+$/.test(k));
   const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
 
   return isNumeric
