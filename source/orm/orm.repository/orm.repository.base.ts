@@ -7,6 +7,7 @@ import { setTimeout } from 'timers/promises';
 import { ContextStorageKey } from '../../context/context.enum';
 import { ContextStorage } from '../../context/context.storage';
 import { TraceService } from '../../trace/trace.service';
+import { OrmException } from '../orm.enum';
 import { OrmExceptionHandlerParams, OrmRepositoryOptions } from '../orm.interface';
 
 export abstract class OrmBaseRepository<Entity extends object> {
@@ -74,7 +75,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
     }
 
     if (!validKey) {
-      throw new NotImplementedException('missing default unique key implementation');
+      throw new NotImplementedException(OrmException.UNIQUE_KEY_MISSING);
     }
 
     return validKey;
@@ -132,6 +133,10 @@ export abstract class OrmBaseRepository<Entity extends object> {
     const { caller, error, retries } = params;
     const { message } = error;
 
+    if (message === OrmException.ENTITY_NOT_FOUND) {
+      throw error;
+    }
+
     const retryableExceptions = [ 'read ECONNRESET' ];
     const isRetryable = retryableExceptions.some((r) => message.includes(r));
 
@@ -149,19 +154,19 @@ export abstract class OrmBaseRepository<Entity extends object> {
 
     if (isDuplicateError) {
       throw new ConflictException({
-        message: 'entity already exists',
+        message: OrmException.ENTITY_CONFLICT,
         constraint,
       });
     }
     else if (isInsertFkError) {
       throw new ConflictException({
-        message: 'foreign key must reference an existing entity',
+        message: OrmException.FOREIGN_KEY_NOT_FOUND,
         constraint,
       });
     }
     else if (isDeleteFkError) {
       throw new ConflictException({
-        message: 'foreign key prevents cascade deletion',
+        message: OrmException.FOREIGN_KEY_FAIL,
         constraint,
       });
     }

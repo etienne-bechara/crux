@@ -3,6 +3,7 @@ import { AutoPath } from '@mikro-orm/core/typings';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { OrmPageDto } from '../orm.dto';
+import { OrmException } from '../orm.enum';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
@@ -49,7 +50,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
       const readEntities = await this.entityManager.find(this.entityName, params, options as FindOptions<Entity, P>);
 
       if (!readEntities?.[0] && options.findOrFail) {
-        throw new NotFoundException('entity does not exist');
+        throw new NotFoundException(OrmException.ENTITY_NOT_FOUND);
       }
 
       return readEntities || [ ];
@@ -96,7 +97,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     if (entities.length > 1) {
       throw new ConflictException({
-        message: 'unique constraint references more than one entity',
+        message: OrmException.UNIQUE_KEY_FAIL,
         params,
         entities,
       });

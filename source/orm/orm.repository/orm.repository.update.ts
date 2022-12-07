@@ -2,6 +2,7 @@
 import { EntityData, EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 
+import { OrmException } from '../orm.enum';
 import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions, OrmUpdateParams, OrmUpsertOptions } from '../orm.interface';
 import { OrmCreateRepository } from './orm.repository.create';
 
@@ -188,7 +189,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       // Conflict (error)
       if (match.entity.length > 1) {
         throw new ConflictException({
-          message: 'unique constraint references more than one entity',
+          message: OrmException.UNIQUE_KEY_FAIL,
           uniqueKey,
           matches: match.entity.map((e) => e[pk]),
         });
