@@ -333,28 +333,24 @@ export class HttpService {
    * @param params
    */
   private async sendRequestClientHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
-    const { telemetry, ignoreExceptions } = params;
-    let response: HttpResponse<T>;
-
-    telemetry.start = Date.now();
+    params.telemetry.start = Date.now();
 
     this.injectPropagationHeaders(params);
     this.logHttpMessage(params);
 
     try {
-      response = await this.sendRequestCacheHandler(params);
+      params.response = await this.sendRequestCacheHandler(params);
     }
     catch (e) {
       const isTimeout = /timeout/i.test(e.message as string);
-      response = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
 
-      params.response = response;
+      params.response = e.response || { statusCode: HttpStatus.GATEWAY_TIMEOUT };
       params.error = e;
 
       if (!isTimeout && !e.response) {
         throw e;
       }
-      else if (!ignoreExceptions) {
+      else if (!params.ignoreExceptions) {
         this.handleRequestException(params);
       }
     }
@@ -362,7 +358,7 @@ export class HttpService {
       this.collectOutboundTelemetry(params);
     }
 
-    return response;
+    return params.response as HttpResponse<T>;
   }
 
   /**
