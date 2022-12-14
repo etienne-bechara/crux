@@ -1,3 +1,11 @@
+## [4.35.2](https://github.com/etienne-bechara/crux/compare/v4.35.1...v4.35.2) (2022-12-07)
+
+
+### Bug Fixes
+
+* http metric collection ([3ea2044](https://github.com/etienne-bechara/crux/commit/3ea20442bbad6f339c9963030ca000f7ae8d724e))
+* improve orm exceptions ([6e87172](https://github.com/etienne-bechara/crux/commit/6e87172c587723bc4a6cc65952e54d4a6cff6ef0))
+
 ## [4.35.1](https://github.com/etienne-bechara/crux/compare/v4.35.0...v4.35.1) (2022-12-02)
 
 
