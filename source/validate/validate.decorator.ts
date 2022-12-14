@@ -77,7 +77,7 @@ export function OneOf(group: string, validationOptions?: ValidationOptions): Pro
     MutuallyExclusive(group, validationOptions),
     currentKeys.length === 0
       ? IsOptional()
-      : ValidateIf((o) => currentKeys.filter((k) => o[k] === undefined).length === currentKeys.length),
+      : ValidateIf((o) => currentKeys.filter((k) => o[k] === undefined).length === currentKeys.length, validationOptions),
   );
 }
 

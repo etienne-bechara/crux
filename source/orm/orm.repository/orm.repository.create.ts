@@ -1,5 +1,6 @@
 import { EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
 
+import { OrmSpanPrefix } from '../orm.enum';
 import { OrmRepositoryOptions } from '../orm.interface';
 import { OrmReadRepository } from './orm.repository.read';
 
@@ -38,7 +39,7 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * @param data
    */
   public create(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Promise<Entity[]> {
-    return this.runWithinSpan('Create', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.CREATE, async () => {
       const newEntities = this.build(data);
       await this.entityManager.persistAndFlush(newEntities);
       return newEntities;

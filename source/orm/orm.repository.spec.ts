@@ -104,6 +104,126 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
     });
 
+    describe('OrmBaseRepository', () => {
+      it('should build an entity and persist only after committing', async () => {
+        const user = userRepository.buildOne({
+          name: 'PERSIST_AFTER_COMMIT',
+          age: 20,
+        });
+
+        await userRepository.commit();
+
+        const softCommitCount = await userRepository.countBy({ name: 'PERSIST_AFTER_COMMIT' });
+        await userRepository.commit(user);
+
+        const [ john ] = await userRepository.readBy({ name: 'PERSIST_AFTER_COMMIT' });
+
+        expect(softCommitCount).toBe(0);
+        expect(john.name).toBe('PERSIST_AFTER_COMMIT');
+        expect(john.age).toBe(20);
+      });
+
+      it('should not update an existing entity when not committed', async () => {
+        await productRepository.createOne({ title: 'UPDATE_NOT_COMMITTED', price: 1.23 });
+        const [ product ] = await productRepository.readBy({ title: 'UPDATE_NOT_COMMITTED' });
+        const preUpdateCost = product.price;
+
+        product.price = 2.34;
+        await productRepository.commit();
+
+        const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_NOT_COMMITTED' });
+        const postUpdateCost = postUpdate.price;
+
+        expect(preUpdateCost).toBe(1.23);
+        expect(postUpdateCost).toBe(1.23);
+      });
+
+      it('should update an existing entity only after committing', async () => {
+        await productRepository.createOne({ title: 'UPDATE_COMMITTED', price: 1.23 });
+        const [ product ] = await productRepository.readBy({ title: 'UPDATE_COMMITTED' });
+        const preUpdateCost = product.price;
+
+        product.price = 2.34;
+        await productRepository.commit(product);
+
+        const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_COMMITTED' });
+        const postUpdateCost = postUpdate.price;
+
+        expect(preUpdateCost).toBe(1.23);
+        expect(postUpdateCost).toBe(2.34);
+      });
+
+      it('should add item to collection from owning side', async () => {
+        const user = await userRepository.createOne({ name: 'COLLECTION_ADD_USER_1', age: 1 });
+        const product = await productRepository.createOne({ title: 'COLLECTION_ADD_PRODUCT_1', price: 1.23 });
+        const order = await orderRepository.createOne({ id: 'COLLECTION_ADD_ORDER_1', user });
+
+        order.products.add(product);
+        await orderRepository.commit(order);
+
+        const postAdd = await orderRepository.readById(order.id, { populate: [ 'products' ] });
+
+        expect(postAdd.products[0].title).toBe('COLLECTION_ADD_PRODUCT_1');
+      });
+
+      it('should add item to collection from non-owning side', async () => {
+        const user = await userRepository.createOne({ name: 'COLLECTION_ADD_USER_2', age: 1 });
+        const product = await productRepository.createOne({ title: 'COLLECTION_ADD_PRODUCT_2', price: 1.23 });
+        const order = await orderRepository.createOne({ id: 'COLLECTION_ADD_ORDER_2', user });
+
+        product.orders.add(order);
+        await productRepository.commit(product);
+
+        const postAdd = await productRepository.readById(product.id, { populate: [ 'orders' ] });
+
+        expect(postAdd.orders[0].id).toBe('COLLECTION_ADD_ORDER_2');
+      });
+
+      it('should remove item from collection from owning side', async () => {
+        const user = await userRepository.createOne({ name: 'COLLECTION_REMOVE_USER_1', age: 1 });
+        const product1 = await productRepository.createOne({ title: 'COLLECTION_REMOVE_PRODUCT_1_1', price: 1.23 });
+        const product2 = await productRepository.createOne({ title: 'COLLECTION_REMOVE_PRODUCT_1_2', price: 4.56 });
+        const order = await orderRepository.createOne({ id: 'COLLECTION_REMOVE_ORDER_1', user });
+
+        order.products.add(product1, product2);
+        await orderRepository.commit(order);
+
+        const postAdd = await orderRepository.readById(order.id, { populate: [ 'products' ] });
+        const postAddLength = postAdd.products.length;
+
+        order.products.remove(product1);
+        await orderRepository.commit(order);
+
+        const postRemove = await orderRepository.readById(order.id, { populate: [ 'products' ] });
+
+        expect(postAddLength).toBe(2);
+        expect(postRemove.products.length).toBe(1);
+        expect(postRemove.products[0].title).toBe('COLLECTION_REMOVE_PRODUCT_1_2');
+      });
+
+      it('should remove item from collection from non-owning side', async () => {
+        const user = await userRepository.createOne({ name: 'COLLECTION_REMOVE_USER_2', age: 1 });
+        const product = await productRepository.createOne({ title: 'COLLECTION_REMOVE_PRODUCT_2', price: 1.23 });
+        const order1 = await orderRepository.createOne({ id: 'COLLECTION_REMOVE_ORDER_2_1', user });
+        const order2 = await orderRepository.createOne({ id: 'COLLECTION_REMOVE_ORDER_2_2', user });
+
+        product.orders.add(order1, order2);
+        await productRepository.commit(product);
+
+        const postAdd = await productRepository.readById(product.id, { populate: [ 'orders' ] });
+        const postAddLength = postAdd.orders.length;
+
+        product.orders.remove(order1);
+        await productRepository.commit(product);
+
+        const postRemove = await productRepository.readById(product.id, { populate: [ 'orders' ] });
+
+        expect(postAddLength).toBe(2);
+        expect(postRemove.orders.length).toBe(1);
+        expect(postRemove.orders[0].id).toBe('COLLECTION_REMOVE_ORDER_2_2');
+      });
+    });
+
     describe('OrmCreateRepository', () => {
       it('should disallow creating entity without mandatory property', async () => {
         let error: any;
@@ -164,24 +284,6 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         const userCount = await userRepository.countBy({ name: { $like: 'PERSIST_CONCURRENT%' } });
 
         expect(userCount).toBe(iterations * 4);
-      });
-
-      it('should build an entity and persist only after committing', async () => {
-        const user = userRepository.buildOne({
-          name: 'PERSIST_AFTER_COMMIT',
-          age: 20,
-        });
-
-        await userRepository.commit();
-
-        const softCommitCount = await userRepository.countBy({ name: 'PERSIST_AFTER_COMMIT' });
-        await userRepository.commit(user);
-
-        const [ john ] = await userRepository.readBy({ name: 'PERSIST_AFTER_COMMIT' });
-
-        expect(softCommitCount).toBe(0);
-        expect(john.name).toBe('PERSIST_AFTER_COMMIT');
-        expect(john.age).toBe(20);
       });
 
       it('should create an one-to-one relation to existing entity', async () => {
@@ -339,12 +441,12 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
 
     describe('OrmUpdateRepository', () => {
       it('should update an existing entity', async () => {
-        await productRepository.createOne({ title: 'UPDATE_TARGET', price: 1.23 });
-        const [ preUpdate ] = await productRepository.readBy({ title: 'UPDATE_TARGET' });
+        await productRepository.createOne({ title: 'UPDATE_TARGET_1', price: 1.23 });
+        const [ preUpdate ] = await productRepository.readBy({ title: 'UPDATE_TARGET_1' });
         const preUpdateCost = preUpdate.price;
 
         await productRepository.update(preUpdate, { price: 2.34 });
-        const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_TARGET' });
+        const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_TARGET_1' });
         const postUpdateCost = postUpdate.price;
 
         expect(preUpdateCost).toBe(1.23);

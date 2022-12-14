@@ -3,7 +3,7 @@ import { AutoPath } from '@mikro-orm/core/typings';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { OrmPageDto } from '../orm.dto';
-import { OrmException } from '../orm.enum';
+import { OrmException, OrmSpanPrefix } from '../orm.enum';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
@@ -26,7 +26,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     entities: Entity | Entity[],
     populate: AutoPath<Entity, P>[] | boolean,
   ): Promise<Entity[]> {
-    return this.runWithinSpan('Populate', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.POPULATE, async () => {
       return this.entityManager.populate(entities, populate);
     });
   }
@@ -41,7 +41,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     params: OrmReadParams<Entity>,
     options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    return this.runWithinSpan('Read', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.READ, async () => {
       if (!this.isValidData(params)) return [ ];
 
       options.populate ??= this.repositoryOptions.defaultPopulate as any ?? false;
@@ -124,7 +124,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * @param params
    */
   public countBy(params: OrmReadParams<Entity>): Promise<number> {
-    return this.runWithinSpan('Count', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.COUNT, async () => {
       if (!this.isValidData(params)) return 0;
       return this.entityManager.count(this.entityName, params);
     });

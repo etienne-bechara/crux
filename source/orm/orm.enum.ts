@@ -17,3 +17,13 @@ export enum OrmException {
   UNIQUE_KEY_MISSING = 'missing default unique key definition',
   UNIQUE_KEY_FAIL = 'unique constraint references more than one entity',
 }
+
+export enum OrmSpanPrefix {
+  COMMIT = 'Commit',
+  READ = 'Read',
+  COUNT = 'Count',
+  POPULATE = 'Populate',
+  CREATE = 'Create',
+  UPDATE = 'Update',
+  DELETE = 'Delete',
+}

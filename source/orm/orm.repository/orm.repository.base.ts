@@ -7,7 +7,7 @@ import { setTimeout } from 'timers/promises';
 import { ContextStorageKey } from '../../context/context.enum';
 import { ContextStorage } from '../../context/context.storage';
 import { TraceService } from '../../trace/trace.service';
-import { OrmException } from '../orm.enum';
+import { OrmException, OrmSpanPrefix } from '../orm.enum';
 import { OrmExceptionHandlerParams, OrmRepositoryOptions } from '../orm.interface';
 
 export abstract class OrmBaseRepository<Entity extends object> {
@@ -23,7 +23,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * @param entities
    */
   public commit(entities?: Entity | Entity[]): Promise<void> {
-    return this.runWithinSpan('Commit', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.COMMIT, async () => {
       await this.entityManager.persistAndFlush(entities);
     });
   }
@@ -86,15 +86,16 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * - Shared exception handler to standardize erros as HTTP codes
    * - A children tracing span
    * - Clear entity manager context.
-   * @param spanSuffix
+   * @param spanPrefix
    * @param operation
    * @param retries
    */
-  protected async runWithinSpan<T>(spanSuffix: string, operation: () => Promise<T>, retries = 0): Promise<T> {
-    const spanName = `Orm | ${spanSuffix} ${this.entityName}`;
+  protected async runWithinSpan<T>(spanPrefix: OrmSpanPrefix, operation: () => Promise<T>, retries = 0): Promise<T> {
+    const spanName = `Orm | ${spanPrefix} ${this.entityName}`;
     const hasContext = !!ContextStorage.getStore();
-    const shareableContext = [ 'count', 'populate', 'read' ];
-    const cleanContext = !hasContext || !shareableContext.includes(spanSuffix);
+    // FIXME: add read, count, populate to shareable context
+    const shareableContext = [ ];
+    const cleanContext = !hasContext || !shareableContext.includes(spanPrefix);
 
     try {
       const traceResult = await TraceService.startManagedSpan(spanName, { }, async () => {
@@ -112,7 +113,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
     }
     catch (e) {
       return this.handleException({
-        caller: (retries) => this.runWithinSpan(spanSuffix, operation, retries),
+        caller: (retries) => this.runWithinSpan(spanPrefix, operation, retries),
         retries,
         error: e,
       });

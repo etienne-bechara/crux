@@ -2,7 +2,7 @@
 import { EntityData, EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 
-import { OrmException } from '../orm.enum';
+import { OrmException, OrmSpanPrefix } from '../orm.enum';
 import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions, OrmUpdateParams, OrmUpsertOptions } from '../orm.interface';
 import { OrmCreateRepository } from './orm.repository.create';
 
@@ -28,7 +28,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
     params: Entity | Entity[] | OrmUpdateParams<Entity> | OrmUpdateParams<Entity>[],
     data?: EntityData<Entity>,
   ): Promise<Entity[]> {
-    return this.runWithinSpan('Update', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.UPDATE, async () => {
       if (!this.isValidData(params)) return [ ];
 
       const paramsArray = Array.isArray(params) ? params : [ params ];

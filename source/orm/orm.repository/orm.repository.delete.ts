@@ -1,5 +1,6 @@
 import { EntityManager, EntityName } from '@mikro-orm/core';
 
+import { OrmSpanPrefix } from '../orm.enum';
 import { OrmDeleteOptions, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmUpdateRepository } from './orm.repository.update';
 
@@ -22,7 +23,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
     entities: Entity | Entity[],
     options: OrmDeleteOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    return this.runWithinSpan('Delete', async () => {
+    return this.runWithinSpan(OrmSpanPrefix.DELETE, async () => {
       if (!this.isValidData(entities)) return [ ];
 
       const { populate } = options;
