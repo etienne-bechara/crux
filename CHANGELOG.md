@@ -1,3 +1,13 @@
+## [4.35.3](https://github.com/etienne-bechara/crux/compare/v4.35.2...v4.35.3) (2022-12-14)
+
+
+### Bug Fixes
+
+* bump orm to 5.6.0 ([ceb5e0e](https://github.com/etienne-bechara/crux/commit/ceb5e0ef1bb1f5d3bd2249099e26afded43175db))
+* orm tests ([8f53183](https://github.com/etienne-bechara/crux/commit/8f531833648c3a8a606013113faac62c54607ba7))
+* overrides ([ec8d556](https://github.com/etienne-bechara/crux/commit/ec8d556e296f045b56847206f3ee2081f8b82901))
+* run upsert within its own context ([df430f4](https://github.com/etienne-bechara/crux/commit/df430f4030bc9daeae7501195d5ec7482411f790))
+
 ## [4.35.2](https://github.com/etienne-bechara/crux/compare/v4.35.1...v4.35.2) (2022-12-07)
 
 
