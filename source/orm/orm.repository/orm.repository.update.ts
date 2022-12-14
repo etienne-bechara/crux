@@ -105,138 +105,140 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
    * @param data
    * @param options
    */
-  public async upsert<P extends string = never>(
+  public upsert<P extends string = never>(
     data: EntityData<Entity> | EntityData<Entity>[],
     options: OrmUpsertOptions<Entity, P> = { },
   ): Promise<Entity[]> {
-    if (!this.isValidData(data)) return [ ];
+    return this.runWithinSpan(OrmSpanPrefix.UPSERT, async () => {
+      if (!this.isValidData(data)) return [ ];
 
-    const dataArray = Array.isArray(data) ? data : [ data ];
-    const uniqueKey = this.getValidUniqueKey(options.uniqueKey);
-    const nestedPks = this.getNestedPrimaryKeys();
-    const pk = this.getPrimaryKey();
+      const dataArray = Array.isArray(data) ? data : [ data ];
+      const uniqueKey = this.getValidUniqueKey(options.uniqueKey);
+      const nestedPks = this.getNestedPrimaryKeys();
+      const pk = this.getPrimaryKey();
 
-    const resultMap: { index: number; target: 'read' | 'create' | 'update' }[] = [ ];
-    const updateParams: OrmUpdateParams<Entity>[] = [ ];
-    const createData: RequiredEntityData<Entity>[] = [ ];
-    const existingEntities: Entity[] = [ ];
-    let createdEntities: Entity[];
+      const resultMap: { index: number; target: 'read' | 'create' | 'update' }[] = [ ];
+      const updateParams: OrmUpdateParams<Entity>[] = [ ];
+      const createData: RequiredEntityData<Entity>[] = [ ];
+      const existingEntities: Entity[] = [ ];
+      let createdEntities: Entity[];
 
-    // Create clauses to match existing entities
-    const clauses = dataArray.map((data) => {
-      const clause: Record<keyof Entity, any> = { } as any;
+      // Create clauses to match existing entities
+      const clauses = dataArray.map((data) => {
+        const clause: Record<keyof Entity, any> = { } as any;
 
-      for (const key of uniqueKey) {
-        const stringKey = key as string;
-        clause[key] = data[stringKey];
-      }
-
-      return clause;
-    });
-
-    // Find matching data, ensure to populate array data that are 1:m or m:n relations
-    const populate = Array.isArray(options.populate) ? options.populate : [ ];
-    const sampleData = dataArray[0];
-
-    for (const key in sampleData) {
-      if (Array.isArray(sampleData[key]) && this.entityManager.canPopulate(this.entityName, key)) {
-        populate.push(key);
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const matchingEntities = await this.readBy({ $or: clauses } as any, { populate });
-
-    // Find matching entities for each item on original data
-    const matches = dataArray.map((data, i) => {
-      const entity = matchingEntities.filter((e: any) => {
-        // Iterate each clause of unique key definition
-        for (const key in clauses[i]) {
-          // Check if matching a nested entity
-          let isNestedEntity = false;
-          let matchingNestedPk: string;
-
-          for (const nestedPk of nestedPks) {
-            if (e[key]?.[nestedPk] || e[key]?.[nestedPk] === 0) {
-              matchingNestedPk = nestedPk;
-              isNestedEntity = true;
-              break;
-            }
-          }
-
-          // Match nested entities or direct values
-          if (isNestedEntity) {
-            if (clauses[i][key]?.[matchingNestedPk] || clauses[i][key]?.[matchingNestedPk] === 0) {
-              if (e[key][matchingNestedPk] !== clauses[i][key][matchingNestedPk]) return false;
-            }
-            else {
-              if (e[key][matchingNestedPk] !== clauses[i][key]) return false;
-            }
-          }
-          else {
-            if (e[key] !== clauses[i][key]) return false;
-          }
+        for (const key of uniqueKey) {
+          const stringKey = key as string;
+          clause[key] = data[stringKey];
         }
 
-        return true;
+        return clause;
       });
 
-      return { data, entity };
-    });
+      // Find matching data, ensure to populate array data that are 1:m or m:n relations
+      const populate = Array.isArray(options.populate) ? options.populate : [ ];
+      const sampleData = dataArray[0];
 
-    // Analyse resulting matches
-    for (const match of matches) {
-      // Conflict (error)
-      if (match.entity.length > 1) {
-        throw new ConflictException({
-          message: OrmException.UNIQUE_KEY_FAIL,
-          uniqueKey,
-          matches: match.entity.map((e) => e[pk]),
-        });
+      for (const key in sampleData) {
+        if (Array.isArray(sampleData[key]) && this.entityManager.canPopulate(this.entityName, key)) {
+          populate.push(key);
+        }
       }
 
-      // Match (create or update) or missing (create)
-      if (match.entity.length === 1) {
-        if (!options.disallowUpdate) {
-          resultMap.push({ index: updateParams.length, target: 'update' });
-          updateParams.push({ entity: match.entity[0], data: match.data });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const matchingEntities = await this.readBy({ $or: clauses } as any, { populate });
+
+      // Find matching entities for each item on original data
+      const matches = dataArray.map((data, i) => {
+        const entity = matchingEntities.filter((e: any) => {
+          // Iterate each clause of unique key definition
+          for (const key in clauses[i]) {
+            // Check if matching a nested entity
+            let isNestedEntity = false;
+            let matchingNestedPk: string;
+
+            for (const nestedPk of nestedPks) {
+              if (e[key]?.[nestedPk] || e[key]?.[nestedPk] === 0) {
+                matchingNestedPk = nestedPk;
+                isNestedEntity = true;
+                break;
+              }
+            }
+
+            // Match nested entities or direct values
+            if (isNestedEntity) {
+              if (clauses[i][key]?.[matchingNestedPk] || clauses[i][key]?.[matchingNestedPk] === 0) {
+                if (e[key][matchingNestedPk] !== clauses[i][key][matchingNestedPk]) return false;
+              }
+              else {
+                if (e[key][matchingNestedPk] !== clauses[i][key]) return false;
+              }
+            }
+            else {
+              if (e[key] !== clauses[i][key]) return false;
+            }
+          }
+
+          return true;
+        });
+
+        return { data, entity };
+      });
+
+      // Analyse resulting matches
+      for (const match of matches) {
+        // Conflict (error)
+        if (match.entity.length > 1) {
+          throw new ConflictException({
+            message: OrmException.UNIQUE_KEY_FAIL,
+            uniqueKey,
+            matches: match.entity.map((e) => e[pk]),
+          });
+        }
+
+        // Match (create or update) or missing (create)
+        if (match.entity.length === 1) {
+          if (!options.disallowUpdate) {
+            resultMap.push({ index: updateParams.length, target: 'update' });
+            updateParams.push({ entity: match.entity[0], data: match.data });
+          }
+          else {
+            resultMap.push({ index: existingEntities.length, target: 'read' });
+            existingEntities.push(match.entity[0]);
+          }
         }
         else {
-          resultMap.push({ index: existingEntities.length, target: 'read' });
-          existingEntities.push(match.entity[0]);
+          resultMap.push({ index: createData.length, target: 'create' });
+          createData.push(match.data as RequiredEntityData<Entity>);
         }
       }
-      else {
-        resultMap.push({ index: createData.length, target: 'create' });
-        createData.push(match.data as RequiredEntityData<Entity>);
-      }
-    }
 
-    // If two upsert operations run concurrently the second creation will likely fail
-    // Allow a single retry to prevent this scenario unless `disallowRetry` is set
-    try {
-      createdEntities = createData.length > 0
-        ? await this.create(createData)
+      // If two upsert operations run concurrently the second creation will likely fail
+      // Allow a single retry to prevent this scenario unless `disallowRetry` is set
+      try {
+        createdEntities = createData.length > 0
+          ? await this.create(createData)
+          : [ ];
+      }
+      catch (e) {
+        if (options.disallowRetry) throw e;
+        return this.upsert(data, { ...options, disallowRetry: true });
+      }
+
+      const updatedEntities = updateParams.length > 0
+        ? await this.update(updateParams)
         : [ ];
-    }
-    catch (e) {
-      if (options.disallowRetry) throw e;
-      return this.upsert(data, { ...options, disallowRetry: true });
-    }
 
-    const updatedEntities = updateParams.length > 0
-      ? await this.update(updateParams)
-      : [ ];
+      const resultEntities = resultMap.map((i) => {
+        switch (i.target) {
+          case 'read': return existingEntities[i.index];
+          case 'create': return createdEntities[i.index];
+          case 'update': return updatedEntities[i.index];
+        }
+      });
 
-    const resultEntities = resultMap.map((i) => {
-      switch (i.target) {
-        case 'read': return existingEntities[i.index];
-        case 'create': return createdEntities[i.index];
-        case 'update': return updatedEntities[i.index];
-      }
+      return resultEntities;
     });
-
-    return resultEntities;
   }
 
   /**

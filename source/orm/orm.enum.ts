@@ -25,5 +25,6 @@ export enum OrmSpanPrefix {
   POPULATE = 'Populate',
   CREATE = 'Create',
   UPDATE = 'Update',
+  UPSERT = 'Upsert',
   DELETE = 'Delete',
 }
