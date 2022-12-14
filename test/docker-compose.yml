@@ -16,7 +16,7 @@ services:
     image: mysql:8
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=crux
+      - MYSQL_DATABASE=test
     ports:
       - 3306:3306
 
@@ -25,6 +25,6 @@ services:
     image: postgres:14
     environment:
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=crux
+      - POSTGRES_DB=test
     ports:
       - 5432:5432

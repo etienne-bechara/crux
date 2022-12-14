@@ -9,7 +9,7 @@ import { AddressRepository } from './address.repository';
 @Entity({ customRepository: () => AddressRepository })
 export class Address extends OrmBaseEntity {
 
-  @OneToOne(() => User, null, { primary: true })
+  @OneToOne(() => User, 'address', { primary: true, owner: true })
   public user: User;
 
   @Property()

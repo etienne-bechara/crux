@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
 import { Address } from '../../test/address/address.entity';
@@ -31,6 +31,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
   describe(`OrmRepository - ${type}`, () => {
     ContextStorage.enterWith(new Map());
 
+    let app: INestApplication;
     let schemaService: SchemaService;
     let addressRepository: AddressRepository;
     let orderRepository: OrderRepository;
@@ -41,7 +42,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
     beforeAll(async () => {
       await setTimeout(10_000);
 
-      const app = await AppModule.compile({
+      app = await AppModule.compile({
         disableScan: true,
         disableLogs: true,
         imports: [
@@ -53,7 +54,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
               type: type as 'mysql' | 'postgresql',
               host: 'localhost',
               port,
-              dbName: 'crux',
+              dbName: 'test',
               user,
               password: 'password',
             }),
@@ -64,16 +65,18 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         ],
       });
 
-      const mikroOrm = app.get(MikroORM);
-      const entityManager = mikroOrm.em.fork({ clear: true, useContext: true });
-      ContextStorage.getStore().set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
-
       schemaService = app.get(SchemaService);
       addressRepository = app.get(AddressRepository);
       orderRepository = app.get(OrderRepository);
       productRepository = app.get(ProductRepository);
       relationRepository = app.get(RelationRepository);
       userRepository = app.get(UserRepository);
+    });
+
+    beforeEach(() => {
+      const mikroOrm = app.get(MikroORM);
+      const entityManager = mikroOrm.em.fork({ clear: true, useContext: true });
+      ContextStorage.getStore().set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
     });
 
     afterAll(async () => {
@@ -123,28 +126,13 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         expect(john.age).toBe(20);
       });
 
-      it('should not update an existing entity when not committed', async () => {
-        await productRepository.createOne({ title: 'UPDATE_NOT_COMMITTED', price: 1.23 });
-        const [ product ] = await productRepository.readBy({ title: 'UPDATE_NOT_COMMITTED' });
-        const preUpdateCost = product.price;
-
-        product.price = 2.34;
-        await productRepository.commit();
-
-        const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_NOT_COMMITTED' });
-        const postUpdateCost = postUpdate.price;
-
-        expect(preUpdateCost).toBe(1.23);
-        expect(postUpdateCost).toBe(1.23);
-      });
-
-      it('should update an existing entity only after committing', async () => {
+      it('should update a managed entity when committing', async () => {
         await productRepository.createOne({ title: 'UPDATE_COMMITTED', price: 1.23 });
         const [ product ] = await productRepository.readBy({ title: 'UPDATE_COMMITTED' });
         const preUpdateCost = product.price;
 
         product.price = 2.34;
-        await productRepository.commit(product);
+        await productRepository.commit();
 
         const [ postUpdate ] = await productRepository.readBy({ title: 'UPDATE_COMMITTED' });
         const postUpdateCost = postUpdate.price;
@@ -391,6 +379,20 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
     });
 
     describe('OrmReadRepository', () => {
+      it('should populate entities already read', async () => {
+        const user = await userRepository.createOne({ name: 'POPULATE', age: 10 });
+        await addressRepository.createOne({ user, state: AddressState.AC, zip: '00000000' });
+
+        const readUser = await userRepository.readById(user.id);
+        const readUserAddressZip = readUser?.address?.zip;
+
+        await userRepository.populate(readUser, [ 'address' ]);
+        const populatedUserAddressZip = readUser?.address?.zip;
+
+        expect(readUserAddressZip).toBe(undefined);
+        expect(populatedUserAddressZip).toBe('00000000');
+      });
+
       it('should read entities respecting order and sort', async () => {
         await userRepository.create([
           { name: '0_SORT_1', age: 10 },

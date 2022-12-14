@@ -93,8 +93,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
   protected async runWithinSpan<T>(spanPrefix: OrmSpanPrefix, operation: () => Promise<T>, retries = 0): Promise<T> {
     const spanName = `Orm | ${spanPrefix} ${this.entityName}`;
     const hasContext = !!ContextStorage.getStore();
-    // FIXME: add read, count, populate to shareable context
-    const shareableContext = [ ];
+    const shareableContext = [ OrmSpanPrefix.READ, OrmSpanPrefix.COUNT, OrmSpanPrefix.POPULATE ];
     const cleanContext = !hasContext || !shareableContext.includes(spanPrefix);
 
     try {
