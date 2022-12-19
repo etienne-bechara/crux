@@ -1,3 +1,10 @@
+# [4.36.0](https://github.com/etienne-bechara/crux/compare/v4.35.3...v4.36.0) (2022-12-19)
+
+
+### Features
+
+* **cache:** add failing state ([fa99757](https://github.com/etienne-bechara/crux/commit/fa99757f4c9fa57564bf67690bfb044ac4082222))
+
 ## [4.35.3](https://github.com/etienne-bechara/crux/compare/v4.35.2...v4.35.3) (2022-12-14)
 
 
