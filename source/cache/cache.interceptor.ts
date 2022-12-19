@@ -5,7 +5,6 @@ import { mergeMap, Observable, of } from 'rxjs';
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
-import { PromiseService } from '../promise/promise.service';
 import { CacheReflector, CacheStatus } from './cache.enum';
 import { CacheInterceptParams, CacheRouteOptions } from './cache.interface';
 import { CacheService } from './cache.service';
@@ -18,7 +17,6 @@ export class CacheInterceptor implements NestInterceptor {
     private readonly cacheService: CacheService,
     private readonly contextService: ContextService,
     private readonly logService: LogService,
-    private readonly promiseService: PromiseService,
     private readonly reflector: Reflector,
   ) { }
 
@@ -37,10 +35,10 @@ export class CacheInterceptor implements NestInterceptor {
 
     if (enabled) {
       try {
-        cache = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(), timeout);
+        cache = await this.cacheService.getCache({ timeout });
       }
-      catch {
-        this.logService.warning('Failed to acquire inbound cached data within timeout', { timeout });
+      catch (e) {
+        this.logService.warning('Failed to acquire inbound cached data', e as Error);
       }
 
       if (cache) {

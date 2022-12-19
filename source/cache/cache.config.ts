@@ -5,9 +5,11 @@ import { CacheOptions } from './cache.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const CACHE_DEFAULT_OPTIONS: CacheOptions = {
-  defaultTimeout: 2000,
+  defaultTimeout: 500,
   defaultTtl: 60_000,
   bucketTtl: 30 * 24 * 60 * 60 * 1000,
+  failureThreshold: 3,
+  failureTtl: 5000,
 };
 
 @Config()

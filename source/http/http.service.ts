@@ -374,15 +374,15 @@ export class HttpService {
 
     const traffic = AppTraffic.OUTBOUND;
     const path = this.replaceUrlPlaceholders(rawPath, replacements);
-    const cacheParams = { traffic, host, method, path, query };
+    const cacheParams = { traffic, host, method, path, query, timeout };
     telemetry.cacheStatus = CacheStatus.DISABLED;
 
     if (ttl) {
       try {
-        response = await this.promiseService.resolveOrTimeout(this.cacheService.getCache(cacheParams), timeout);
+        response = await this.cacheService.getCache(cacheParams);
       }
-      catch {
-        this.logService.warning('Failed to acquire outbound cached data within timeout', { timeout });
+      catch (e) {
+        this.logService.warning('Failed to acquire outbound cached data', e as Error);
       }
 
       if (response) {

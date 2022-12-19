@@ -24,7 +24,7 @@ export interface HttpOptions {
   cacheTtl?: number;
   /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
   cacheMethods?: HttpMethod[];
-  /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 2000. */
+  /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 500ms. */
   cacheTimeout?: number;
 }
 

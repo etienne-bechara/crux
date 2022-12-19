@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
@@ -14,6 +14,8 @@ import { CacheGetParams, CacheProvider, CacheSetParams } from './cache.interface
 export class CacheService {
 
   private cacheProvider: CacheProvider;
+  private failureCount = 0;
+  private failureStart: number;
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -83,12 +85,50 @@ export class CacheService {
   }
 
   /**
+   * Attempt to acquire cached data.
+   *
+   * In the event of a failure, blocks reading from cache for
+   * 10 times the timeout to prevent a burst decompression which
+   * might lead to a memory crash.
+   * @param params
+   */
+  public async getCache<T>(params: CacheGetParams = { }): Promise<T> {
+    const { failureThreshold, failureTtl } = this.appConfig.APP_OPTIONS.cache || { };
+    const { timeout } = params;
+    let data: T;
+
+    try {
+      if (this.failureStart && Date.now() > this.failureStart + failureTtl) {
+        this.failureCount = 0;
+        this.failureStart = undefined;
+      }
+
+      if (this.failureCount > failureThreshold) {
+        throw new Error('cache service is offline');
+      }
+
+      data = await this.promiseService.resolveOrTimeout(this.getCacheHandler(params), timeout);
+    }
+    catch (e) {
+      this.failureStart ??= Date.now();
+      this.failureCount++;
+
+      throw new InternalServerErrorException({
+        message: `failed to acquire cached data | ${e.message}`,
+        params,
+      });
+    }
+
+    return data;
+  }
+
+  /**
    * Acquire cached data for current request, for any route decorated
    * with `@Cache()` this method will be automatically called before
    * the request reaches the controller.
    * @param params
    */
-  public async getCache<T>(params: CacheGetParams = { }): Promise<T> {
+  private async getCacheHandler<T>(params: CacheGetParams = { }): Promise<T> {
     const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
     const dataKey = this.buildCacheDataKey(params);
 

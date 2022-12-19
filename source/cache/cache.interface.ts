@@ -2,6 +2,7 @@ import { AppTraffic } from '../app/app.enum';
 import { AppRequest } from '../app/app.interface';
 
 export interface CacheGetParams {
+  timeout?: number;
   traffic?: AppTraffic;
   host?: string;
   method?: string;
@@ -41,12 +42,16 @@ export interface CacheInterceptParams extends CacheRouteOptions{
 export interface CacheOptions {
   /** Disables gzip compression when storing cached data. */
   disableCompression?: boolean;
-  /** Default cache acquisition timeout in milliseconds when unspecified at controller. Default: 2s. */
+  /** Default cache acquisition timeout in milliseconds when unspecified at controller. Default: 500ms. */
   defaultTimeout?: number;
-  /** Default TTL in milliseconds when unspecified at controller. Default: 5m. */
+  /** Default TTL in milliseconds when unspecified at controller. Default: 1m. */
   defaultTtl?: number;
   /** Bucket TTL in milliseconds. Default: 30d. */
   bucketTtl?: number;
+  /** Amount of failed read attempts to trigger a failure state. Default: 3. */
+  failureThreshold?: number;
+  /** Duration of a failure state in milliseconds where all attempts to read cached data are ignored. Default: 5s. */
+  failureTtl?: number;
   /** Redis host to store cached data. Can be overridden by env `CACHE_HOST`. */
   host?: string;
   /** Redis port to store cached data. Can be overridden by env `CACHE_PORT`. */
