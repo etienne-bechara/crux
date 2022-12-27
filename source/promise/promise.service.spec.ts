@@ -52,6 +52,31 @@ describe('PromiseService', () => {
       const elapsed = Date.now() - start;
       expect(elapsed).toBeLessThan(500);
     });
+
+    it('should throw error if any resolution fails', async () => {
+      const errorMessage = 'RESOLVE_LIMITED_FAILED';
+      let counter = 0;
+      let err: Error;
+
+      const promise = (): Promise<void> => new Promise((r) => {
+        counter++;
+        if (counter > 50) throw new Error(errorMessage);
+        r();
+      });
+
+      try {
+        await promiseService.resolveLimited({
+          data: [ ...Array.from({ length: 100 }).keys() ],
+          promise,
+          limit: 10,
+        });
+      }
+      catch (e) {
+        err = e;
+      }
+
+      expect(err.message).toBe(errorMessage);
+    });
   });
 
   describe('retryOnException', () => {
