@@ -70,14 +70,16 @@ function getPropertyOptions(type: any, validationOptions: ValidationOptions): Ap
  */
 export function OneOf(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
   const key = `MUTUALLY_EXCLUSIVE_${group}`;
-  const propKeys: string[] = ValidateStorage.get(key) || [ ];
-  const currentKeys = [ ...propKeys ];
+  const currentKeyLength = ValidateStorage.get(key)?.length || 0;
 
   return applyDecorators(
     MutuallyExclusive(group, validationOptions),
-    currentKeys.length === 0
-      ? IsOptional()
-      : ValidateIf((o) => currentKeys.filter((k) => o[k] === undefined).length === currentKeys.length, validationOptions),
+    ValidateIf((o) => {
+      const propKeys: string[] = ValidateStorage.get(key);
+      const isCurrentDefined = o[propKeys[currentKeyLength]] !== undefined;
+      const isGroupUndefined = propKeys.map((k) => o[k]).filter((v) => v === undefined).length === propKeys.length;
+      return isCurrentDefined || isGroupUndefined;
+    }, validationOptions),
   );
 }
 
