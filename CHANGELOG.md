@@ -1,3 +1,10 @@
+## [4.36.2](https://github.com/etienne-bechara/crux/compare/v4.36.1...v4.36.2) (2023-03-14)
+
+
+### Bug Fixes
+
+* **orm:** improve nested recursive entity removal algorithm ([c954af1](https://github.com/etienne-bechara/crux/commit/c954af1058009f7b03c85495c1b701f2a536d72a))
+
 ## [4.36.1](https://github.com/etienne-bechara/crux/compare/v4.36.0...v4.36.1) (2023-03-14)
 
 
