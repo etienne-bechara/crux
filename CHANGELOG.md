@@ -1,3 +1,10 @@
+## [4.36.4](https://github.com/etienne-bechara/crux/compare/v4.36.3...v4.36.4) (2023-03-14)
+
+
+### Bug Fixes
+
+* skip delete recursion if no parent keys ([70c7bc4](https://github.com/etienne-bechara/crux/commit/70c7bc4bed0930319b12cacf658820b174ad5b7e))
+
 ## [4.36.3](https://github.com/etienne-bechara/crux/compare/v4.36.2...v4.36.3) (2023-03-14)
 
 
