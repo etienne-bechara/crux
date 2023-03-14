@@ -1,4 +1,4 @@
-import { AnyEntity, BaseEntity, EntityDTO, Index, PrimaryKey, Property } from '@mikro-orm/core';
+import { AnyEntity, BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
 
 import { IsInt, IsISO8601, IsUUID } from '../validate/validate.decorator';
@@ -10,7 +10,7 @@ export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
    * @param args
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public toJSON(...args: any[]): EntityDTO<this> {
+  public toJSON(...args: any[]): any {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const serializedObject = super.toJSON(...args);
     const primitiveClone: Record<string, unknown> = { };
