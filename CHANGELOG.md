@@ -1,3 +1,10 @@
+## [4.36.1](https://github.com/etienne-bechara/crux/compare/v4.36.0...v4.36.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* one of implementation ([0390c73](https://github.com/etienne-bechara/crux/commit/0390c739e0c0f0f18604316bcda0f3c834e146dd))
+
 # [4.36.0](https://github.com/etienne-bechara/crux/compare/v4.35.3...v4.36.0) (2022-12-19)
 
 
