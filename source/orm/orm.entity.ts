@@ -1,4 +1,4 @@
-import { AnyEntity, BaseEntity, Index, PrimaryKey, Property, wrap } from '@mikro-orm/core';
+import { AnyEntity, BaseEntity, EntityDTO, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
 
 import { IsInt, IsISO8601, IsUUID } from '../validate/validate.decorator';
@@ -6,22 +6,57 @@ import { IsInt, IsISO8601, IsUUID } from '../validate/validate.decorator';
 export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 
   /**
-   * Extendable hook to apply custom steps before serialization.
-   * @param object
-   */
-  protected beforeSerialization(object: any): any {
-    return object;
-  }
-
-  /**
-   * Overwrites built-in serialization method to add hook.
+   * During serialization eliminate recursion to self entity.
    * @param args
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public toJSON(...args: any[]): any {
+  public toJSON(...args: any[]): EntityDTO<this> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const object = wrap(this, true).toObject(...args);
-    return this.beforeSerialization(object);
+    const serializedObject = super.toJSON(...args);
+    const primitiveClone: Record<string, unknown> = { };
+
+    for (const key in serializedObject) {
+      if ([ 'string', 'number', 'boolean' ].includes(typeof serializedObject[key])) {
+        primitiveClone[key] = serializedObject[key];
+      }
+    }
+
+    return this.deleteRecursion(serializedObject, primitiveClone);
+  }
+
+  /**
+   * Delete nested occurrences of current entity.
+   * @param obj
+   * @param parent
+   */
+  private deleteRecursion(obj: any, parent: Record<string, unknown>): any {
+    const parentKeys = Object.keys(parent).length;
+
+    for (const objKey in obj) {
+      const value = obj[objKey];
+
+      if (Array.isArray(value)) {
+        obj[objKey] = value.map((i) => this.deleteRecursion(i, parent));
+      }
+      else if (typeof value === 'object') {
+        let matchingKeys = 0;
+
+        for (const parentKey in parent) {
+          if (obj[objKey]?.[parentKey] === parent[parentKey]) {
+            matchingKeys++;
+          }
+          else {
+            break;
+          }
+        }
+
+        if (parentKeys === matchingKeys) {
+          delete obj[objKey];
+        }
+      }
+    }
+
+    return obj;
   }
 
 }

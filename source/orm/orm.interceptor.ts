@@ -18,7 +18,7 @@ export class OrmInterceptor implements NestInterceptor {
    * manager for manipulation.
    *
    * After processing, if returning data contain entity classes, call
-   * their stringify method as well as remove reference recursion.
+   * their serialization method.
    * @param context
    * @param next
    */
@@ -45,62 +45,17 @@ export class OrmInterceptor implements NestInterceptor {
   private stringifyEntities(data: any): any {
     if (!data) return;
 
-    // Array of entities
     if (Array.isArray(data)) {
       data = data.map((d) => d?.toJSON ? d.toJSON() : d);
-
-      for (const dataItem of data) {
-        const dataId = dataItem['id'] as string | number;
-        this.eliminateRecursion(dataId, dataItem);
-      }
-
-    // Paginated entity
     }
     else if (data.records && Array.isArray(data.records)) {
       data.records = data.records.map((d) => d?.toJSON ? d.toJSON() : d);
-
-      for (const dataItem of data.records) {
-        const dataId = dataItem['id'] as string | number;
-        this.eliminateRecursion(dataId, dataItem);
-      }
-
-    // Single entity
     }
     else if (data.toJSON) {
       data = data.toJSON();
-      const dataId = data['id'] as string | number;
-      this.eliminateRecursion(dataId, data);
     }
 
     return data;
-  }
-
-  /**
-   * Given an object, eliminate properties that references its parent id.
-   * @param parentId
-   * @param data
-   */
-  private eliminateRecursion(parentId: string | number, data: any): void {
-    if (!data || !parentId || typeof data !== 'object') return;
-
-    if (Array.isArray(data)) {
-      for (const dataItem of data) {
-        this.eliminateRecursion(parentId, dataItem);
-      }
-
-      return;
-    }
-
-    for (const key in data) {
-      if (key === 'id') continue;
-
-      if (data[key] === parentId || data[key]?.id === parentId) {
-        delete data[key];
-      }
-      else if (typeof data[key] === 'object') {
-        this.eliminateRecursion(parentId, data[key]);
-      }
-    }
   }
 
 }
