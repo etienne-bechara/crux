@@ -1,3 +1,10 @@
+## [4.36.3](https://github.com/etienne-bechara/crux/compare/v4.36.2...v4.36.3) (2023-03-14)
+
+
+### Bug Fixes
+
+* remove type from toJSON ([80975b8](https://github.com/etienne-bechara/crux/commit/80975b881280b3e2ee3d62e5997dc40c54775296))
+
 ## [4.36.2](https://github.com/etienne-bechara/crux/compare/v4.36.1...v4.36.2) (2023-03-14)
 
 
