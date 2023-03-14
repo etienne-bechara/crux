@@ -31,6 +31,7 @@ export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
    */
   private deleteRecursion(obj: any, parent: Record<string, unknown>): any {
     const parentKeys = Object.keys(parent).length;
+    if (!parentKeys) return obj;
 
     for (const objKey in obj) {
       const value = obj[objKey];
