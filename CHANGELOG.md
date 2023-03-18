@@ -1,3 +1,10 @@
+## [4.36.5](https://github.com/etienne-bechara/crux/compare/v4.36.4...v4.36.5) (2023-03-18)
+
+
+### Bug Fixes
+
+* **cache:** allow acquiring underlying specific provider ([8472a76](https://github.com/etienne-bechara/crux/commit/8472a7647912c2bf2860dee41703b8cce2b50c05))
+
 ## [4.36.4](https://github.com/etienne-bechara/crux/compare/v4.36.3...v4.36.4) (2023-03-14)
 
 
