@@ -40,10 +40,24 @@ export class CacheService {
   }
 
   /**
-   * Acquires the underlying cache provider.
+   * Acquires the underlying chosen cache provider.
    */
   public getProvider(): CacheProvider {
     return this.cacheProvider;
+  }
+
+  /**
+   * Acquires the underlying memory cache provider.
+   */
+  public getMemory(): CacheProvider {
+    return this.memoryService;
+  }
+
+  /**
+   * Acquires the underlying redis cache provider.
+   */
+  public getRedis(): CacheProvider {
+    return this.redisService;
   }
 
   /**
