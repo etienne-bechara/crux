@@ -43,9 +43,10 @@ export class OrmInterceptor implements NestInterceptor {
    * @param data
    */
   private stringifyEntities(data: any): any {
-    if (!data) return;
-
-    if (Array.isArray(data)) {
+    if (!data || Buffer.isBuffer(data)) {
+      return data;
+    }
+    else if (Array.isArray(data)) {
       data = data.map((d) => d?.toJSON ? d.toJSON() : d);
     }
     else if (data.records && Array.isArray(data.records)) {
