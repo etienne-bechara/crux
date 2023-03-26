@@ -1,3 +1,10 @@
+## [4.36.6](https://github.com/etienne-bechara/crux/compare/v4.36.5...v4.36.6) (2023-03-18)
+
+
+### Bug Fixes
+
+* **cache:** provider typings ([13a9e41](https://github.com/etienne-bechara/crux/commit/13a9e419019eb51e2e188efeeeb17c9f05237932))
+
 ## [4.36.5](https://github.com/etienne-bechara/crux/compare/v4.36.4...v4.36.5) (2023-03-18)
 
 
