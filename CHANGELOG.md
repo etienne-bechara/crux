@@ -1,3 +1,10 @@
+## [4.36.7](https://github.com/etienne-bechara/crux/compare/v4.36.6...v4.36.7) (2023-03-26)
+
+
+### Bug Fixes
+
+* orm interceptor in case of buffers ([c202a60](https://github.com/etienne-bechara/crux/commit/c202a60606630b4cd9f67322ad1f8cab3c5707b8))
+
 ## [4.36.6](https://github.com/etienne-bechara/crux/compare/v4.36.5...v4.36.6) (2023-03-18)
 
 
