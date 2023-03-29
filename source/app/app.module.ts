@@ -32,7 +32,7 @@ import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
 import { AppInterceptor } from './app.interceptor';
-import { AppOptions } from './app.interface';
+import { AppOptions, AppRequest, AppResponse } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()
@@ -139,11 +139,16 @@ export class AppModule {
   }
 
   /**
-   * Creates NestJS instance and configures Fastify adapter
-   * adding a hook for async local storage support.
+   * Creates NestJS instance using Fastify as underlying adapter,
+   * then configures the following framework specific settings:
+   * - Add an on request hook which runs prior to all interceptors
+   * - Set the global path prefix if any
+   * - Enable cors if configured
+   * - Maps a local directory to serve static assets
+   * - Configures handlebars as view engine to support ReDoc.
    */
   private static async configureAdapter(): Promise<void> {
-    const { name, fastify, globalPrefix, assetsPrefix, cors } = this.options;
+    const { fastify, globalPrefix, assetsPrefix, cors } = this.options;
     const entryModule = this.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
@@ -152,39 +157,10 @@ export class AppModule {
     });
 
     const fastifyInstance = this.instance.getHttpAdapter().getInstance();
-    const contextService = this.instance.get(ContextService);
-    const traceService = this.instance.get(TraceService);
-    const traceEnabled = traceService?.isEnabled();
 
-    fastifyInstance.addHook('onRequest', (req, res, next) => {
-      req.time = Date.now();
-      res.header('request-id', req.id);
-
-      ContextStorage.run(new Map(), () => {
-        const store = ContextStorage.getStore();
-        store.set(ContextStorageKey.REQUEST, req);
-        store.set(ContextStorageKey.RESPONSE, res);
-
-        if (traceEnabled) {
-          const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
-          const description = contextService.getRequestDescription('in');
-          const spanName = `Http | ${description}`;
-
-          context.with(ctx, () => {
-            trace.getTracer(name).startActiveSpan(spanName, { }, (span) => {
-              const traceId = span.spanContext().traceId;
-
-              res.header('trace-id', traceId);
-              store.set(ContextStorageKey.REQUEST_SPAN, span);
-
-              next();
-            });
-          });
-        }
-        else {
-          next();
-        }
-      });
+    fastifyInstance.addHook('onRequest', (req: AppRequest, res: AppResponse, next: () => void) => {
+      this.sanitizeRequestHeaders(req);
+      return this.createRequestContext(req, res, next);
     });
 
     this.instance.setGlobalPrefix(globalPrefix);
@@ -198,6 +174,68 @@ export class AppModule {
 
     this.instance.getHttpAdapter().setViewEngine({
       engine: { handlebars },
+    });
+  }
+
+  /**
+   * Fastify will attempt to parse request body even if content length
+   * is set as zero, this leads to unintended bad requests for some
+   * common http clients.
+   * @param req
+   */
+  private static sanitizeRequestHeaders(req: AppRequest): void {
+    const { headers } = req;
+
+    if (headers['content-length'] === '0') {
+      delete headers['content-type'];
+    }
+  }
+
+  /**
+   * Implements a request hook intended to run prior to any NestJS
+   * component like guards and interceptors, which:
+   * - Adds starting time to request in order to control timeout
+   * - Set the automatically generated request id as response header
+   * - Wraps the request into a context managed by async local storage
+   * - Wraps the context into a trace span
+   * - Set the trace id as response header.
+   * @param req
+   * @param res
+   * @param next
+   */
+  private static createRequestContext(req: AppRequest, res: AppResponse, next: () => void): void {
+    const { name } = this.options;
+    const contextService = this.instance.get(ContextService);
+    const traceService = this.instance.get(TraceService);
+    const traceEnabled = traceService?.isEnabled();
+
+    req.time = Date.now();
+    res.header('request-id', req.id);
+
+    ContextStorage.run(new Map(), () => {
+      const store = ContextStorage.getStore();
+      store.set(ContextStorageKey.REQUEST, req);
+      store.set(ContextStorageKey.RESPONSE, res);
+
+      if (traceEnabled) {
+        const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
+        const description = contextService.getRequestDescription('in');
+        const spanName = `Http | ${description}`;
+
+        context.with(ctx, () => {
+          trace.getTracer(name).startActiveSpan(spanName, { }, (span) => {
+            const traceId = span.spanContext().traceId;
+
+            res.header('trace-id', traceId);
+            store.set(ContextStorageKey.REQUEST_SPAN, span);
+
+            next();
+          });
+        });
+      }
+      else {
+        next();
+      }
     });
   }
 
