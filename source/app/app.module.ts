@@ -108,6 +108,7 @@ export class AppModule {
       'console',
       'docs',
       'fastify',
+      'logs',
       'loki',
       'metrics',
       'slack',
