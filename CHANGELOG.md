@@ -1,3 +1,11 @@
+## [4.36.8](https://github.com/etienne-bechara/crux/compare/v4.36.7...v4.36.8) (2023-03-29)
+
+
+### Bug Fixes
+
+* **app:** add req header sanitization ([d5c8a60](https://github.com/etienne-bechara/crux/commit/d5c8a606c4f133dc3715ad1a0034473efe03b056))
+* lockfile ([966e4e0](https://github.com/etienne-bechara/crux/commit/966e4e0e64e613e941bca718d3f423c5ffeb5da5))
+
 ## [4.36.7](https://github.com/etienne-bechara/crux/compare/v4.36.6...v4.36.7) (2023-03-26)
 
 
