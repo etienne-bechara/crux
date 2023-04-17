@@ -1,3 +1,10 @@
+## [4.36.9](https://github.com/etienne-bechara/crux/compare/v4.36.8...v4.36.9) (2023-04-17)
+
+
+### Bug Fixes
+
+* **app:** add logs to deep merge ([28b1445](https://github.com/etienne-bechara/crux/commit/28b1445ec0b939cdb4f950b0d84af332160aacd3))
+
 ## [4.36.8](https://github.com/etienne-bechara/crux/compare/v4.36.7...v4.36.8) (2023-03-29)
 
 
