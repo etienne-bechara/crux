@@ -1,7 +1,7 @@
 import { AnyEntity, BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
 
-import { IsInt, IsISO8601, IsUUID } from '../validate/validate.decorator';
+import { OrmBigIntDto, OrmBigIntTimestampDto, OrmIntDto, OrmIntTimestampDto, OrmTimestampDto, OrmUuidDto, OrmUuidTimestampDto } from './orm.dto';
 
 export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 
@@ -62,64 +62,56 @@ export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 
 }
 
-export abstract class OrmIntEntity extends OrmBaseEntity {
+export abstract class OrmIntEntity extends OrmBaseEntity implements OrmIntDto {
 
   @PrimaryKey()
-  @IsInt()
   public id: number;
 
 }
 
-export abstract class OrmBigIntEntity extends OrmBaseEntity {
+export abstract class OrmBigIntEntity extends OrmBaseEntity implements OrmBigIntDto {
 
   @PrimaryKey({ columnType: 'bigint' })
-  @IsInt()
   public id: number;
 
 }
 
-export abstract class OrmUuidEntity extends OrmBaseEntity {
+export abstract class OrmUuidEntity extends OrmBaseEntity implements OrmUuidDto {
 
   @PrimaryKey({ length: 36 })
-  @IsUUID()
   public id: string = uuidV4();
 
 }
 
-export abstract class OrmTimestampEntity extends OrmBaseEntity {
+export abstract class OrmTimestampEntity extends OrmBaseEntity implements OrmTimestampDto {
 
   @Index()
   @Property({ columnType: 'timestamp', onUpdate: () => new Date(), nullable: true })
-  @IsISO8601()
   public updated: Date = new Date();
 
   @Index()
   @Property({ columnType: 'timestamp', nullable: true })
-  @IsISO8601()
   public created: Date = new Date();
 
 }
 
-export abstract class OrmIntTimestampEntity extends OrmTimestampEntity {
+export abstract class OrmIntTimestampEntity extends OrmTimestampEntity implements OrmIntTimestampDto {
 
   @PrimaryKey()
-  @IsInt()
   public id: number;
 
 }
 
-export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity {
+export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity implements OrmBigIntTimestampDto {
 
   @PrimaryKey({ columnType: 'bigint' })
-  @IsInt()
   public id: number;
 
 }
 
-export abstract class OrmUuidTimestampEntity extends OrmTimestampEntity {
+export abstract class OrmUuidTimestampEntity extends OrmTimestampEntity implements OrmUuidTimestampDto {
 
   @PrimaryKey({ length: 36 })
-  @IsUUID()
   public id: string = uuidV4();
 
 }

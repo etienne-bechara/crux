@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { uuidV4 } from '../override';
 import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decorator';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from '../validate/validate.decorator';
+import { IsArray, IsBoolean, IsEnum, IsInt, IsISO8601, IsNotEmpty, IsOptional, IsString, IsUUID, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageReadDto {
@@ -97,5 +98,89 @@ export class OrmPageDto<T> {
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
   public records: T[];
+
+}
+
+export abstract class OrmIntDto {
+
+  @IsInt()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 1,
+  })
+  public id: number;
+
+}
+
+export abstract class OrmBigIntDto {
+
+  @IsInt()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 1,
+  })
+  public id: number;
+
+}
+
+export abstract class OrmUuidDto {
+
+  @IsUUID()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: uuidV4(),
+  })
+  public id: string = uuidV4();
+
+}
+
+export abstract class OrmTimestampDto {
+
+  @IsISO8601()
+  @ApiProperty({
+    description: 'Date of last update',
+    example: new Date().toISOString(),
+  })
+  public updated: Date = new Date();
+
+  @IsISO8601()
+  @ApiProperty({
+    description: 'Date of creation',
+    example: new Date().toISOString(),
+  })
+  public created: Date = new Date();
+
+}
+
+export abstract class OrmIntTimestampDto extends OrmTimestampDto {
+
+  @IsInt()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 1,
+  })
+  public id: number;
+
+}
+
+export abstract class OrmBigIntTimestampDto extends OrmTimestampDto {
+
+  @IsInt()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 1,
+  })
+  public id: number;
+
+}
+
+export abstract class OrmUuidTimestampDto extends OrmTimestampDto {
+
+  @IsUUID()
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: uuidV4(),
+  })
+  public id: string = uuidV4();
 
 }
