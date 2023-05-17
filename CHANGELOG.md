@@ -1,3 +1,10 @@
+## [4.36.10](https://github.com/etienne-bechara/crux/compare/v4.36.9...v4.36.10) (2023-05-17)
+
+
+### Bug Fixes
+
+* add entity dtos ([8d36f82](https://github.com/etienne-bechara/crux/commit/8d36f82295f8cd0f378341ba34df2b25b53eca12))
+
 ## [4.36.9](https://github.com/etienne-bechara/crux/compare/v4.36.8...v4.36.9) (2023-04-17)
 
 
