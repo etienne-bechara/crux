@@ -1,3 +1,10 @@
+## [4.36.11](https://github.com/etienne-bechara/crux/compare/v4.36.10...v4.36.11) (2023-08-18)
+
+
+### Bug Fixes
+
+* allow all read options for delete ([e479c74](https://github.com/etienne-bechara/crux/commit/e479c74c5400cd6aac97c30fe2e84bb98ec190bb))
+
 ## [4.36.10](https://github.com/etienne-bechara/crux/compare/v4.36.9...v4.36.10) (2023-05-17)
 
 
