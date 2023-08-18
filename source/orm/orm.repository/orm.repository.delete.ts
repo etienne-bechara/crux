@@ -1,7 +1,7 @@
 import { EntityManager, EntityName } from '@mikro-orm/core';
 
 import { OrmSpanPrefix } from '../orm.enum';
-import { OrmDeleteOptions, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
+import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmUpdateRepository } from './orm.repository.update';
 
 export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpdateRepository<Entity> {
@@ -21,7 +21,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public delete<P extends string = never>(
     entities: Entity | Entity[],
-    options: OrmDeleteOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity[]> {
     return this.runWithinSpan(OrmSpanPrefix.DELETE, async () => {
       if (!this.isValidData(entities)) return [ ];
@@ -46,7 +46,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteBy<P extends string = never>(
     params: OrmReadParams<Entity>,
-    options: OrmDeleteOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity[]> {
     const entities = await this.readBy(params, options);
     return this.delete(entities, options);
@@ -59,7 +59,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteById<P extends string = never>(
     id: string | number,
-    options: OrmDeleteOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity> {
     const entity = await this.readByIdOrFail(id);
     await this.delete(entity, options);
@@ -73,7 +73,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteOne<P extends string = never>(
     entity: Entity,
-    options: OrmDeleteOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity> {
     const [ deletedEntity ] = await this.delete(entity, options);
     return deletedEntity;

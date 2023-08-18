@@ -66,7 +66,3 @@ export interface OrmUpsertOptions<Entity, P extends string> {
   disallowUpdate?: boolean;
   disallowRetry?: boolean;
 }
-
-export interface OrmDeleteOptions<Entity, P extends string> {
-  populate?: AutoPath<Entity, P>[] | boolean | string[];
-}
