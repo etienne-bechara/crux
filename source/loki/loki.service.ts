@@ -183,11 +183,11 @@ export class LokiService implements LogTransport {
    * @param log
    */
   private buildLokiEntries(log: LogParams): LokiEntry[] {
-    const { timestamp, caller, message, requestId, traceId, spanId, data } = log;
+    const { timestamp, message, caller, requestId, traceId, spanId, data } = log;
     const timeMs = new Date(timestamp).getTime();
 
     const entry: LokiEntry = {
-      line: JSON.stringify({ caller, message, requestId, traceId, spanId, data }),
+      line: JSON.stringify({ message, caller, requestId, traceId, spanId, data }),
       timestamp: {
         seconds: timeMs / 1000,
         nanos: timeMs % 1000 * 1e6,

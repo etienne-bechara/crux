@@ -62,7 +62,7 @@ export class SlackService implements LogTransport {
    */
   public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
-    const { severity, requestId, caller, message, data } = params;
+    const { severity, message, caller, requestId, data } = params;
 
     const maxCharacters = 3000;
     const separator = '  |  ';
