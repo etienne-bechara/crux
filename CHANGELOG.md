@@ -1,3 +1,10 @@
+## [4.36.12](https://github.com/etienne-bechara/crux/compare/v4.36.11...v4.36.12) (2023-08-19)
+
+
+### Bug Fixes
+
+* display message first in log entries ([e803d65](https://github.com/etienne-bechara/crux/commit/e803d6506fab150584c3b3c1d203a974e1fc78bf))
+
 ## [4.36.11](https://github.com/etienne-bechara/crux/compare/v4.36.10...v4.36.11) (2023-08-18)
 
 
