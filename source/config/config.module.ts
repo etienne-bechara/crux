@@ -130,8 +130,8 @@ export class ConfigModule {
       const logMessage: Partial<LogParams> = {
         timestamp: new Date().toISOString(),
         severity: LogSeverity.FATAL,
-        caller: 'config.module',
         message: 'Environment validation failed',
+        caller: 'config.module',
         data: { constraints: validationErrors },
       };
 

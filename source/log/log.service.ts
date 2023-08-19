@@ -64,8 +64,8 @@ export class LogService {
           params = {
             timestamp: new Date().toISOString(),
             severity,
-            caller: this.getCaller(...args),
             message,
+            caller: this.getCaller(...args),
             requestId: this.contextService.getRequestId(),
             traceId: this.contextService.getRequestTraceId(),
             spanId: trace.getSpan(context.active())?.spanContext().spanId,

@@ -16,8 +16,8 @@ export interface LogOptions {
 export interface LogParams {
   timestamp: string;
   severity: LogSeverity;
-  caller: string;
   message: string;
+  caller: string;
   requestId: string;
   traceId: string;
   spanId: string;
