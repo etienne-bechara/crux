@@ -125,10 +125,14 @@ export class AppFilter implements ExceptionFilter {
 
     const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
     const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
+    const isServerError = code >= HttpStatus.INTERNAL_SERVER_ERROR;
+    const traceId = this.contextService.getRequestTraceId();
 
     const filteredResponse = {
       code,
       message: isProduction && isInternalError ? 'unexpected error' : message,
+      traceId: !isServerError ? undefined : traceId,
+      requestId: !isServerError || traceId ? undefined : this.contextService.getRequestId(),
       ...isProduction && isInternalError ? { } : details,
     };
 
