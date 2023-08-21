@@ -1,3 +1,10 @@
+# [4.37.0](https://github.com/etienne-bechara/crux/compare/v4.36.13...v4.37.0) (2023-08-21)
+
+
+### Features
+
+* add trace id to server side response body exceptions ([df82887](https://github.com/etienne-bechara/crux/commit/df82887ba342c2afa62015254762b96ef2e943ff))
+
 ## [4.36.13](https://github.com/etienne-bechara/crux/compare/v4.36.12...v4.36.13) (2023-08-19)
 
 
