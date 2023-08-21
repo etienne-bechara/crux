@@ -1,3 +1,10 @@
+## [4.36.13](https://github.com/etienne-bechara/crux/compare/v4.36.12...v4.36.13) (2023-08-19)
+
+
+### Bug Fixes
+
+* log param ordering ([4202079](https://github.com/etienne-bechara/crux/commit/420207917f1103b91a46d6a0dbe423ba6f3acdc7))
+
 ## [4.36.12](https://github.com/etienne-bechara/crux/compare/v4.36.11...v4.36.12) (2023-08-19)
 
 
