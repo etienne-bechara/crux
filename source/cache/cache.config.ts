@@ -7,7 +7,7 @@ import { CacheOptions } from './cache.interface';
 export const CACHE_DEFAULT_OPTIONS: CacheOptions = {
   defaultTimeout: 500,
   defaultTtl: 60_000,
-  bucketTtl: 30 * 24 * 60 * 60 * 1000,
+  bucketTtl: 24 * 60 * 60 * 1000,
   failureThreshold: 3,
   failureTtl: 5000,
 };

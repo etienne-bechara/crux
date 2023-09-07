@@ -46,7 +46,7 @@ export interface CacheOptions {
   defaultTimeout?: number;
   /** Default TTL in milliseconds when unspecified at controller. Default: 1m. */
   defaultTtl?: number;
-  /** Bucket TTL in milliseconds. Default: 30d. */
+  /** Bucket TTL in milliseconds. Default: 1d. */
   bucketTtl?: number;
   /** Amount of failed read attempts to trigger a failure state. Default: 3. */
   failureThreshold?: number;
