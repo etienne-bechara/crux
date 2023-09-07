@@ -1,3 +1,10 @@
+## [4.37.1](https://github.com/etienne-bechara/crux/compare/v4.37.0...v4.37.1) (2023-09-07)
+
+
+### Bug Fixes
+
+* lower default bucket ttl ([054d613](https://github.com/etienne-bechara/crux/commit/054d6139afe3fc48f2cb6c02948fae75f6535d2e))
+
 # [4.37.0](https://github.com/etienne-bechara/crux/compare/v4.36.13...v4.37.0) (2023-08-21)
 
 
