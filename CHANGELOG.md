@@ -1,3 +1,11 @@
+## [4.37.2](https://github.com/etienne-bechara/crux/compare/v4.37.1...v4.37.2) (2023-09-14)
+
+
+### Bug Fixes
+
+* **app:** timeout not considering guard time ([7df7b1a](https://github.com/etienne-bechara/crux/commit/7df7b1a625d0a94ede9d6f3756e41196f3b1ddda))
+* **orm:** add low default acquire timeout ([cd917cc](https://github.com/etienne-bechara/crux/commit/cd917cc8a0b1f3ee50b84f18118915de6154694e))
+
 ## [4.37.1](https://github.com/etienne-bechara/crux/compare/v4.37.0...v4.37.1) (2023-09-07)
 
 
