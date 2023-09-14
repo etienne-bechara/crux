@@ -24,6 +24,7 @@ import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
 import { SlackModule } from '../slack/slack.module';
+import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
 import { TransformInterceptor } from '../transform/transform.interceptor';
@@ -31,7 +32,6 @@ import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
-import { AppInterceptor } from './app.interceptor';
 import { AppOptions, AppRequest, AppResponse } from './app.interface';
 import { AppService } from './app.service';
 
@@ -245,13 +245,16 @@ export class AppModule {
    * using and interceptor to manage configured timeout.
    */
   private static async listen(): Promise<void> {
-    const { instance, port, hostname } = this.options;
+    const { instance, port, hostname, timeout } = this.options;
 
     const app = this.getInstance();
     const logService = app.get(LogService);
 
     const httpServer = await app.listen(port, hostname);
-    httpServer.setTimeout(0);
+
+    // TimeoutInterceptor should take care of timeout, but set adapter level
+    // timeout as a failsafe in case a request is stuck at a guard
+    httpServer.setTimeout(timeout * 1.1);
 
     logService.info(`Instance ${instance} listening on port ${port}`);
   }
@@ -383,7 +386,7 @@ export class AppModule {
     if (timeout) {
       preloadedProviders.push({
         provide: APP_INTERCEPTOR,
-        useClass: AppInterceptor,
+        useClass: TimeoutInterceptor,
       });
     }
 
