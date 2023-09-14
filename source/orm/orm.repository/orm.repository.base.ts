@@ -133,15 +133,19 @@ export abstract class OrmBaseRepository<Entity extends object> {
     const { caller, error, retries } = params;
     const { message } = error;
 
+    const retryDelay = 500;
+    const retryMax = 4;
+
     if (message === OrmException.ENTITY_NOT_FOUND) {
       throw error;
     }
 
+    // Connection terminated by from DB side
     const retryableExceptions = [ 'read ECONNRESET' ];
     const isRetryable = retryableExceptions.some((r) => message.includes(r));
 
-    if (isRetryable && retries < 10) {
-      await setTimeout(500);
+    if (isRetryable && retries < retryMax) {
+      await setTimeout(retryDelay);
       return caller(retries + 1);
     }
 

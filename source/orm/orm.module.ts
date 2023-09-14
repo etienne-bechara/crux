@@ -1,6 +1,6 @@
-import { EntityManager, MikroORMOptions } from '@mikro-orm/core';
+import { EntityManager, EntityName, MikroORMOptions } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppConfig } from '../app/app.config';
@@ -15,23 +15,104 @@ import { SchemaModule } from '../schema/schema.module';
 import { OrmBaseEntity, OrmBigIntEntity, OrmBigIntTimestampEntity, OrmIntEntity, OrmIntTimestampEntity, OrmTimestampEntity, OrmUuidEntity, OrmUuidTimestampEntity } from './orm.entity';
 import { OrmInjectionToken } from './orm.enum';
 import { OrmInterceptor } from './orm.interceptor';
-import { OrmAsyncModuleOptions, OrmModuleOptions } from './orm.interface';
+import { OrmAsyncModuleOptions, OrmBuildMikroOrmOptionsParams, OrmModuleOptions } from './orm.interface';
 
 @Module({ })
 export class OrmModule {
 
   /**
-   * Configure the underlying ORM component with the following additions:
-   * - Adds built-in logger service for debugging (local only)
-   * - Adds programmatically schema sync.
+   * Configure the underlying ORM component.
    * @param options
    */
   public static registerAsync(options: OrmAsyncModuleOptions): DynamicModule {
-    const entities = options.disableEntityScan
+    const entities: EntityName<Partial<any>>[] = options.disableEntityScan
       ? options.entities || [ ]
       : AppModule.globRequire([ 's*rc*/**/*.entity.{js,ts}' ]);
 
-    const rootEntities = [
+    return {
+      module: OrmModule,
+      imports: this.buildImports(entities),
+      providers: this.buildProviders(options, entities),
+      exports: this.buildExports(entities),
+    };
+  }
+
+  /**
+   * Register the MikroORM with custom context to acquire entity manager
+   * through async local storage, as well as SchemaModule for automatic
+   * schema synchronization.
+   * @param entities
+   */
+  private static buildImports(entities: EntityName<Partial<any>>[]): DynamicModule[] {
+    return [
+      MikroOrmModule.forRootAsync({
+        inject: [ OrmInjectionToken.ORM_PROVIDER_OPTIONS ],
+        useFactory: (mikroOrmOptions: OrmModuleOptions) => ({
+          ...mikroOrmOptions,
+          registerRequestContext: false,
+          context: (): EntityManager => ContextStorage.getStore()?.get(ContextStorageKey.ORM_ENTITY_MANAGER),
+        }),
+      }),
+
+      SchemaModule.registerAsync({
+        inject: [ OrmInjectionToken.ORM_SCHEMA_OPTIONS ],
+        useFactory: (schemaModuleOptions: SchemaModuleOptions) => schemaModuleOptions,
+      }),
+
+      MikroOrmModule.forFeature({ entities }),
+    ];
+  }
+
+  /**
+   * Register the ORM serialization interceptor, and MikroORM options
+   * with custom assignments.
+   * @param options
+   * @param entities
+   */
+  private static buildProviders(options: OrmAsyncModuleOptions, entities: EntityName<Partial<any>>[]): Provider[] {
+    return [
+      AppConfig,
+      {
+        provide: APP_INTERCEPTOR,
+        useClass: OrmInterceptor,
+      },
+      {
+        provide: OrmInjectionToken.ORM_MODULE_OPTIONS,
+        inject: options.inject || [ ],
+        useFactory: options.useFactory,
+      },
+      {
+        provide: OrmInjectionToken.ORM_PROVIDER_OPTIONS,
+        inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS, LogService, AppConfig ],
+        useFactory: (
+          ormModuleOptions: OrmModuleOptions,
+          logService: LogService,
+          appConfig: AppConfig,
+        ): MikroORMOptions => this.buildMikroOrmOptions({
+          options: ormModuleOptions,
+          entities,
+          logService,
+          appConfig,
+        }),
+      },
+      {
+        provide: OrmInjectionToken.ORM_SCHEMA_OPTIONS,
+        inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS ],
+        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync,
+      },
+    ];
+  }
+
+  /**
+   * Builds MikroORM options from OrmModule options, assign default params for improved ORM performance.
+   * @param params
+   */
+  private static buildMikroOrmOptions(params: OrmBuildMikroOrmOptionsParams): MikroORMOptions {
+    const { options, entities, appConfig, logService } = params;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { sync, ...mikroOrmOptions } = options;
+
+    mikroOrmOptions.entities = [
       OrmBaseEntity,
       OrmTimestampEntity,
       OrmIntEntity,
@@ -43,71 +124,28 @@ export class OrmModule {
       ...entities,
     ];
 
-    return {
-      module: OrmModule,
+    mikroOrmOptions.debug ??= appConfig.NODE_ENV === AppEnvironment.LOCAL;
+    mikroOrmOptions.logger ??= (msg): void => logService.trace(msg.replace(/].+?m/, `] ${LogStyle.FG_BRIGHT_BLACK}`));
 
-      imports: [
-        MikroOrmModule.forRootAsync({
-          inject: [ OrmInjectionToken.ORM_PROVIDER_OPTIONS ],
-          useFactory: (mikroOrmOptions: OrmModuleOptions) => ({
-            ...mikroOrmOptions,
-            registerRequestContext: false,
-            context: (): EntityManager => ContextStorage.getStore()?.get(ContextStorageKey.ORM_ENTITY_MANAGER),
-          }),
-        }),
+    if (mikroOrmOptions.pool) {
+      mikroOrmOptions.pool.acquireTimeoutMillis ??= 2000;
+    }
 
-        SchemaModule.registerAsync({
-          inject: [ OrmInjectionToken.ORM_SCHEMA_OPTIONS ],
-          useFactory: (schemaModuleOptions: SchemaModuleOptions) => schemaModuleOptions,
-        }),
+    return mikroOrmOptions as MikroORMOptions;
+  }
 
-        MikroOrmModule.forFeature({ entities }),
-      ],
-
-      providers: [
-        AppConfig,
-        {
-          provide: APP_INTERCEPTOR,
-          useClass: OrmInterceptor,
-        },
-        {
-          provide: OrmInjectionToken.ORM_MODULE_OPTIONS,
-          inject: options.inject || [ ],
-          useFactory: options.useFactory,
-        },
-        {
-          provide: OrmInjectionToken.ORM_PROVIDER_OPTIONS,
-          inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS, LogService, AppConfig ],
-          useFactory: (
-            ormModuleOptions: OrmModuleOptions,
-            logService: LogService,
-            appConfig: AppConfig,
-          ): MikroORMOptions => {
-            const mikroOrmOptions: MikroORMOptions = { ...ormModuleOptions } as any;
-            delete mikroOrmOptions['sync'];
-
-            return {
-              debug: appConfig.NODE_ENV === AppEnvironment.LOCAL,
-              logger: (msg): void => logService.trace(msg.replace(/].+?m/, `] ${LogStyle.FG_BRIGHT_BLACK}`)),
-              entities: rootEntities,
-              ...mikroOrmOptions,
-            };
-          },
-        },
-        {
-          provide: OrmInjectionToken.ORM_SCHEMA_OPTIONS,
-          inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS ],
-          useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync,
-        },
-      ],
-
-      exports: [
-        OrmInjectionToken.ORM_PROVIDER_OPTIONS,
-        OrmInjectionToken.ORM_SCHEMA_OPTIONS,
-        MikroOrmModule.forFeature({ entities }),
-        SchemaModule,
-      ],
-    };
+  /**
+   * Export option tokens and MikroORM as well as SchemaModule for usage
+   * within application.
+   * @param entities
+   */
+  private static buildExports(entities: EntityName<Partial<any>>[]): (string | DynamicModule | Provider)[] {
+    return [
+      OrmInjectionToken.ORM_PROVIDER_OPTIONS,
+      OrmInjectionToken.ORM_SCHEMA_OPTIONS,
+      MikroOrmModule.forFeature({ entities }),
+      SchemaModule,
+    ];
   }
 
 }

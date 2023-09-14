@@ -1,8 +1,10 @@
 import { EntityData, EventArgs, FilterQuery, FindOptions } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
-import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+import { EntityName, MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { ModuleMetadata } from '@nestjs/common';
 
+import { AppConfig } from '../app/app.config';
+import { LogService } from '../log/log.service';
 import { SchemaModuleOptions } from '../schema/schema.interface';
 import { OrmPageReadDto } from './orm.dto';
 
@@ -21,6 +23,13 @@ export interface OrmAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
 
 export interface OrmModuleOptions extends MikroOrmModuleOptions {
   sync?: SchemaModuleOptions;
+}
+
+export interface OrmBuildMikroOrmOptionsParams {
+  options: OrmModuleOptions;
+  entities: EntityName<Partial<any>>[];
+  appConfig: AppConfig;
+  logService: LogService;
 }
 
 export interface OrmExceptionHandlerParams {
