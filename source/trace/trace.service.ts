@@ -1,32 +1,28 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-import-assign */
+import * as grpc from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
-import { Context, context, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';
+import { Context, context, diag, DiagLogLevel, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';
 import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
-import { CompressionAlgorithm, OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import * as OTLPUtil from '@opentelemetry/exporter-trace-otlp-http/build/src/platform/node/util';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import zlib from 'zlib';
 
 import { AppConfig } from '../app/app.config';
-import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
-import { PromiseService } from '../promise/promise.service';
 import { TraceConfig } from './trace.config';
+import { TraceDiagConsoleLogger } from './trace.diag';
 
 @Injectable()
 export class TraceService {
 
   private static job: string;
-  private httpService: HttpService;
 
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly logService: LogService,
-    private readonly promiseService: PromiseService,
     private readonly traceConfig: TraceConfig,
   ) {
     this.setupTracer();
@@ -66,7 +62,6 @@ export class TraceService {
 
   /**
    * Sets up the tracer client, which includes:
-   * - HTTP client override to send traces through built-in implementation
    * - Batch processor for trace publishing
    * - Trace provider stamping environment, job and instance
    * - Propagator using B3 standard headers
@@ -77,26 +72,21 @@ export class TraceService {
     const { username, password, pushInterval } = traces;
 
     const environment = this.appConfig.NODE_ENV;
-
     const contextManager = new AsyncHooksContextManager();
     const propagator = new B3Propagator();
+    const metadata = new grpc.Metadata();
+    const config: Record<string, unknown> = { url: this.buildTraceUrl() };
 
+    diag.setLogger(new TraceDiagConsoleLogger(this.logService), DiagLogLevel.WARN);
     TraceService.job = job;
 
-    this.httpService = new HttpService({
-      name: 'TraceModule',
-      username: this.traceConfig.TRACE_USERNAME ?? username,
-      password: this.traceConfig.TRACE_PASSWORD ?? password,
-    }, this.appConfig, this.promiseService);
+    if (username) {
+      metadata.set('authorization', `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`);
+      config.credentials = grpc.credentials.createSsl();
+      config.metadata = metadata;
+    }
 
-    // @ts-ignore
-    OTLPUtil.sendWithHttp = (collector, data: string, contentType, onSuccess, onError): Promise<void> => {
-      return this.publishTraces(data, onSuccess, onError);
-    };
-
-    const exporter = new OTLPTraceExporter({
-      compression: CompressionAlgorithm.GZIP,
-    });
+    const exporter = new OTLPTraceExporter(config);
 
     const processor = new BatchSpanProcessor(exporter, {
       scheduledDelayMillis: pushInterval,
@@ -115,35 +105,6 @@ export class TraceService {
 
     contextManager.enable();
     context.setGlobalContextManager(contextManager);
-  }
-
-  /**
-   * Overrides HTTP client with built-in including gzip compression and retry.
-   * @param data
-   * @param onSuccess
-   * @param onError
-   */
-  private async publishTraces(data: string, onSuccess: any, onError: any): Promise<void> {
-    const traceUrl = this.buildTraceUrl();
-    const buffer = Buffer.from(data);
-    const gzip: Buffer = await new Promise((res, rej) => zlib.gzip(buffer, (e, d) => e ? rej(e) : res(d)));
-
-    try {
-      await this.httpService.post(traceUrl, {
-        headers: {
-          'content-type': 'application/json', // eslint-disable-line @typescript-eslint/naming-convention
-          'content-encoding': 'gzip', // eslint-disable-line @typescript-eslint/naming-convention
-        },
-        body: gzip,
-        retryLimit: 2,
-      });
-
-      onSuccess();
-    }
-    catch (e) {
-      this.logService.error('Failed to push traces', e as Error);
-      onError(e);
-    }
   }
 
   /**
