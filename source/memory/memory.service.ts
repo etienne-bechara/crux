@@ -67,7 +67,7 @@ export class MemoryService implements CacheProvider {
    */
   public smembers(key: string): string[] {
     const set: Set<string> = this.get(key);
-    return [ ...set ];
+    return set ? [ ...set ] : [ ];
   }
 
   /**
