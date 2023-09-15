@@ -10,13 +10,13 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16.x
+        node-version: 18.x
 
     - name: Install PNPM
       uses: pnpm/action-setup@v2.0.1
       id: pnpm-install
       with:
-        version: 7
+        version: 8
         run_install: false
 
     - name: Get PNPM Cache Directory
