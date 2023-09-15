@@ -65,7 +65,7 @@ this.logService.error(a: string, b: Error, c: Record<string, any>, d: Record<str
 
 ## Transporters
 
-This package offers the following built-in transporters: Console, Loki and Slack.
+This package offers the following built-in transporters: Console and Loki.
 
 Configuration will be acquired from environment according to the following variables.
 
@@ -89,20 +89,6 @@ LOKI_URL      | Yes      | string |
 LOKI_USERNAME | No       | string |
 LOKI_PASSWORD | No       | string |
 LOKI_SEVERITY | No       | string | `debug`
-
-### Slack
-
-Publish logs to a [Slack](https://slack.com) channel through webhooks.
-
-To enable this integration provide `SLACK_WEBHOOK` and `SLACK_CHANNEL`, you may also customize the username and icon when publishing the message.
-
-Variable       | Required | Type   | Default
-:------------- | :------: | :----: | :---
-SLACK_WEBHOOK  | Yes      | string |
-SLACK_CHANNEL  | Yes      | string |
-SLACK_USERNAME | No       | string |
-SLACK_ICON_URL | No       | string |
-SLACK_SEVERITY | No       | string | `warning`
 
 ---
 

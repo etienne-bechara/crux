@@ -13,7 +13,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - Caching: [ioredis](https://www.npmjs.com/package/ioredis) (distributed) or in-memory (local)
 - ORM: [MikroORM](https://mikro-orm.io/docs/installation)
 - Swagger: [Redoc](https://github.com/mxarc/nestjs-redoc)
-- Logs: [Loki](https://grafana.com/docs/loki/latest/api/) and [Slack](https://api.slack.com/messaging/webhooks)
+- Logs: [Loki](https://grafana.com/docs/loki/latest/api/)
 - Metrics: [Prometheus](https://github.com/siimon/prom-client)
 - Tracing: [Tempo](https://grafana.com/docs/tempo/latest/api_docs/) with [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-js)
 
@@ -32,7 +32,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - [\[Context\] Request, Response and Metadata](docs/module/context.md)
 - [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)
 - [\[Http\] GOT Client](docs/module/http.md)
-- [\[Log\] Console, Loki, and Slack](docs/module/log.md)
+- [\[Log\] Loki](docs/module/log.md)
 - [\[Memory\] Volatile Storage with TTL](docs/module/memory.md)
 - [\[Metric\] Prometheus](docs/module/metric.md)
 - [\[ORM\] Prometheus](docs/module/orm.md)

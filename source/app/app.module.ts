@@ -23,7 +23,6 @@ import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
-import { SlackModule } from '../slack/slack.module';
 import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
@@ -111,7 +110,6 @@ export class AppModule {
       'logs',
       'loki',
       'metrics',
-      'slack',
       'traces',
     ];
 
@@ -311,7 +309,6 @@ export class AppModule {
       defaultModules.push(
         ConsoleModule,
         LokiModule,
-        SlackModule,
       );
     }
 

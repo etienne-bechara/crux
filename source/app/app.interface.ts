@@ -10,7 +10,6 @@ import { HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
-import { SlackOptions } from '../slack/slack.interface';
 import { TraceOptions } from '../trace/trace.interface';
 
 export interface AppOptions extends ModuleMetadata {
@@ -32,7 +31,7 @@ export interface AppOptions extends ModuleMetadata {
   disableValidator?: boolean;
   /** Disables HTTP caching. */
   disableCache?: boolean;
-  /** Disables all logging transports (Console, Loki and Slack). */
+  /** Disables all logging transports (Console and Loki). */
   disableLogs?: boolean;
   /** Disables metrics collector and `metrics` endpoint. */
   disableMetrics?: boolean;
@@ -72,8 +71,6 @@ export interface AppOptions extends ModuleMetadata {
   console?: ConsoleOptions;
   /** Loki logging transport configuration. */
   loki?: LokiOptions;
-  /** Slack logging transport configuration. */
-  slack?: SlackOptions;
   /** Metrics configuration. */
   metrics?: MetricOptions;
   /** Traces configuration. */

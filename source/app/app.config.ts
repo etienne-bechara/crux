@@ -12,7 +12,6 @@ import { HTTP_DEFAULT_OPTIONS } from '../http/http.config';
 import { LOG_DEFAULT_OPTIONS } from '../log/log.config';
 import { LOKI_DEFAULT_OPTIONS } from '../loki/loki.config';
 import { METRIC_DEFAULT_OPTIONS } from '../metric/metric.config';
-import { SLACK_DEFAULT_OPTIONS } from '../slack/slack.config';
 import { TRACE_DEFAULT_OPTIONS } from '../trace/trace.config';
 import { VALIDATOR_DEFAULT_OPTIONS } from '../validate/validate.config';
 import { IsEnum } from '../validate/validate.decorator';
@@ -54,7 +53,6 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   logs: LOG_DEFAULT_OPTIONS,
   console: CONSOLE_DEFAULT_OPTIONS,
   loki: LOKI_DEFAULT_OPTIONS,
-  slack: SLACK_DEFAULT_OPTIONS,
   metrics: METRIC_DEFAULT_OPTIONS,
   traces: TRACE_DEFAULT_OPTIONS,
   docs: DOC_DEFAULT_OPTIONS,
