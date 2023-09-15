@@ -116,11 +116,25 @@ export class SlackService implements LogTransport {
    */
   public getSlackEnvironment(environment: AppEnvironment): string {
     switch (environment) {
-      case AppEnvironment.PRODUCTION: return '🔴 Production';
-      case AppEnvironment.STAGING: return '🟠 Staging';
-      case AppEnvironment.DEVELOPMENT: return '🟡 Development';
-      case AppEnvironment.LOCAL: return '🟢 Local';
-      case AppEnvironment.TEST: return '⚪ Test';
+      case AppEnvironment.PRODUCTION: {
+        return '🔴 Production';
+      }
+
+      case AppEnvironment.STAGING: {
+        return '🟠 Staging';
+      }
+
+      case AppEnvironment.DEVELOPMENT: {
+        return '🟡 Development';
+      }
+
+      case AppEnvironment.LOCAL: {
+        return '🟢 Local';
+      }
+
+      case AppEnvironment.TEST: {
+        return '⚪ Test';
+      }
     }
   }
 
@@ -130,14 +144,29 @@ export class SlackService implements LogTransport {
    */
   public getSlackSeverity(severity: LogSeverity): string {
     switch (severity) {
-      case LogSeverity.FATAL: return '💀 Fatal';
-      case LogSeverity.ERROR: return '🚨 Error';
-      case LogSeverity.WARNING: return '⚠️ Warning';
-      case LogSeverity.NOTICE: return '✔️ Notice';
-      case LogSeverity.INFO: return 'ⓘ Info';
-      case LogSeverity.HTTP: return '🌐 Http';
-      case LogSeverity.DEBUG: return '🐞 Debug';
-      case LogSeverity.TRACE: return '🐜 Trace';
+      case LogSeverity.FATAL: { return '💀 Fatal';
+      }
+
+      case LogSeverity.ERROR: { return '🚨 Error';
+      }
+
+      case LogSeverity.WARNING: { return '⚠️ Warning';
+      }
+
+      case LogSeverity.NOTICE: { return '✔️ Notice';
+      }
+
+      case LogSeverity.INFO: { return 'ⓘ Info';
+      }
+
+      case LogSeverity.HTTP: { return '🌐 Http';
+      }
+
+      case LogSeverity.DEBUG: { return '🐞 Debug';
+      }
+
+      case LogSeverity.TRACE: { return '🐜 Trace';
+      }
     }
   }
 

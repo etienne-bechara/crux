@@ -105,12 +105,12 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
       validator: {
         validate(value: any, args: ValidationArguments) {
           const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
+          const propDefined = propKeys.reduce((p, c) => args.object[c] === undefined ? p : ++p, 0);
           return propDefined === 1;
         },
         defaultMessage(args: ValidationArguments) {
           const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] !== undefined ? ++p : p, 0);
+          const propDefined = propKeys.reduce((p, c) => args.object[c] === undefined ? p : ++p, 0);
 
           return propDefined === 0
             ? `one of ${propKeys.join(', ')} must be defined`

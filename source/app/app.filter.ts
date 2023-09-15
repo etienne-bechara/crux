@@ -131,7 +131,7 @@ export class AppFilter implements ExceptionFilter {
     const filteredResponse = {
       code,
       message: isProduction && isInternalError ? 'unexpected error' : message,
-      traceId: !isServerError ? undefined : traceId,
+      traceId: isServerError ? traceId : undefined,
       requestId: !isServerError || traceId ? undefined : this.contextService.getRequestId(),
       ...isProduction && isInternalError ? { } : details,
     };

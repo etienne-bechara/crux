@@ -109,12 +109,34 @@ export class DocModule {
         let operationId: string;
 
         switch (methodKey.slice(0, 3)) {
-          case 'get' : operationId = `Read ${entityName}`; break;
-          case 'pos' : operationId = `Create ${entityName}`; break;
-          case 'put' : operationId = `Replace ${entityName}`; break;
-          case 'pat' : operationId = `Update ${entityName}`; break;
-          case 'del' : operationId = `Delete ${entityName}`; break;
-          default: operationId = defaultId;
+          case 'get' : {
+            operationId = `Read ${entityName}`;
+            break;
+          }
+
+          case 'pos' : {
+            operationId = `Create ${entityName}`;
+            break;
+          }
+
+          case 'put' : {
+            operationId = `Replace ${entityName}`;
+            break;
+          }
+
+          case 'pat' : {
+            operationId = `Update ${entityName}`;
+            break;
+          }
+
+          case 'del' : {
+            operationId = `Delete ${entityName}`;
+            break;
+          }
+
+          default: {
+            operationId = defaultId;
+          }
         }
 
         if (methodKey.includes('Id')) {
@@ -228,17 +250,21 @@ export class DocModule {
     const { type, items, properties, required } = schemaObject;
 
     switch (type) {
-      case 'boolean':
+      case 'boolean': {
         return this.buildSampleValue(schemaObject, true);
+      }
 
-      case 'number':
+      case 'number': {
         return this.buildSampleValue(schemaObject, 1);
+      }
 
-      case 'string':
+      case 'string': {
         return this.buildSampleValue(schemaObject, 'string');
+      }
 
-      case 'array':
+      case 'array': {
         return [ this.schemaToSample(items, document) ];
+      }
 
       case 'object': {
         const obj = { };

@@ -300,11 +300,11 @@ export class AppModule {
       PromiseModule,
     ];
 
-    if (!disableCache) {
-      defaultModules.push(CacheModule);
+    if (disableCache) {
+      defaultModules.push(CacheDisabledModule);
     }
     else {
-      defaultModules.push(CacheDisabledModule);
+      defaultModules.push(CacheModule);
     }
 
     if (!disableLogs) {
@@ -315,18 +315,18 @@ export class AppModule {
       );
     }
 
-    if (!disableMetrics) {
-      defaultModules.push(MetricModule);
-    }
-    else {
+    if (disableMetrics) {
       defaultModules.push(MetricDisabledModule);
     }
+    else {
+      defaultModules.push(MetricModule);
+    }
 
-    if (!disableTraces) {
-      defaultModules.push(TraceModule);
+    if (disableTraces) {
+      defaultModules.push(TraceDisabledModule);
     }
     else {
-      defaultModules.push(TraceDisabledModule);
+      defaultModules.push(TraceModule);
     }
 
     if (!disableDocs) {

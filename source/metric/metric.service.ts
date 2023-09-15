@@ -152,21 +152,25 @@ export class MetricService {
     }
 
     switch (type) {
-      case MetricDataType.COUNTER:
+      case MetricDataType.COUNTER: {
         metric = new Counter({ name, ...params } as CounterConfiguration<any>);
         break;
+      }
 
-      case MetricDataType.GAUGE:
+      case MetricDataType.GAUGE: {
         metric = new Gauge({ name, ...params } as GaugeConfiguration<any>);
         break;
+      }
 
-      case MetricDataType.HISTOGRAM:
+      case MetricDataType.HISTOGRAM: {
         metric = new Histogram({ name, ...params } as HistogramConfiguration<any>);
         break;
+      }
 
-      case MetricDataType.SUMMARY:
+      case MetricDataType.SUMMARY: {
         metric = new Summary({ name, ...params } as SummaryConfiguration<any>);
         break;
+      }
     }
 
     this.register.registerMetric(metric);
