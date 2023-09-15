@@ -42,8 +42,8 @@
     "test:down": "cd test && docker compose down"
   },
   "dependencies": {
-    "@fastify/static": "6.5.0",
-    "@fastify/view": "7.1.1",
+    "@fastify/static": "6.10.2",
+    "@fastify/view": "8.1.0",
     "@mikro-orm/core": "5.8.1",
     "@mikro-orm/mysql": "5.8.1",
     "@mikro-orm/nestjs": "5.2.1",
@@ -62,8 +62,8 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
     "cycle": "1.0.3",
-    "dotenv": "16.0.3",
-    "fast-glob": "3.2.12",
+    "dotenv": "16.3.1",
+    "fast-glob": "3.3.1",
     "got": "11.8.5",
     "handlebars": "4.7.8",
     "httpsnippet": "3.0.1",

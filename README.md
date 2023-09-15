@@ -41,6 +41,9 @@ A Node.js all-in-one opinionated package intended for backend projects.
 
 ### Dependencies
 
-This framework is not yet ESM ready, dependencies are frequently revised in order to keep it up to date, but the following packages are currently behind latest version due to dropping CommonJS support:
-- `got@11.8.5`
-- `query-string@7.1.3`
+This framework is frequently revised in order to keep dependencies up to date.
+
+However, the following packages are currently behind latest version:
+- `@fastify/static@6.10.2`: `@nestjs/platform-fastify@10.2.5` uses `fastify@4.22.2`, latest version requires `^4.23.0`
+- `got@11.8.5`: Latest version requires ESM
+- `query-string@7.1.3` Latest version requires ESM
