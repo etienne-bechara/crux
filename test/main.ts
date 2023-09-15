@@ -21,15 +21,17 @@ const options: OrmModuleOptions = {
 };
 
 switch (ormType) {
-  case 'mysql':
+  case 'mysql': {
     options.port = 3306;
     options.user = 'root';
     break;
+  }
 
-  case 'postgresql':
+  case 'postgresql': {
     options.port = 5432;
     options.user = 'postgres';
     break;
+  }
 }
 
 /**

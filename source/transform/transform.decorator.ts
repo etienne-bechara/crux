@@ -14,13 +14,33 @@ export function ToBoolean(): any {
       if (value === undefined) return;
 
       switch (value) {
-        case 'false': return false;
-        case 'true': return true;
-        case 0: return false;
-        case 1: return true;
-        case false: return false;
-        case true: return true;
-        default: return null;
+        case 'false': {
+          return false;
+        }
+
+        case 'true': {
+          return true;
+        }
+
+        case 0: {
+          return false;
+        }
+
+        case 1: {
+          return true;
+        }
+
+        case false: {
+          return false;
+        }
+
+        case true: {
+          return true;
+        }
+
+        default: {
+          return null;
+        }
       }
     }, {
       toClassOnly: true,
@@ -82,10 +102,17 @@ export function ToString(options: TransformToStringOptions = { }): any {
       if (!str && str !== '') return null;
 
       switch (options.case) {
-        case 'lower': return str.toLowerCase();
-        case 'upper': return str.toUpperCase();
-        case 'title': return str.toLowerCase().replace(/\b[a-z]/g, (x) => x.toUpperCase());
-        default: return str;
+        case 'lower': { return str.toLowerCase();
+        }
+
+        case 'upper': { return str.toUpperCase();
+        }
+
+        case 'title': { return str.toLowerCase().replace(/\b[a-z]/g, (x) => x.toUpperCase());
+        }
+
+        default: { return str;
+        }
       }
     }, {
       toClassOnly: true,

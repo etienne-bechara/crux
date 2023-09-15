@@ -72,14 +72,45 @@ export class ConsoleService implements LogTransport {
       let severityColor: LogStyle;
 
       switch (severity) {
-        case LogSeverity.FATAL: severityColor = LogStyle.FG_MAGENTA; break;
-        case LogSeverity.ERROR: severityColor = LogStyle.FG_RED; break;
-        case LogSeverity.WARNING: severityColor = LogStyle.FG_YELLOW; break;
-        case LogSeverity.NOTICE: severityColor = LogStyle.FG_GREEN; break;
-        case LogSeverity.INFO: severityColor = LogStyle.FG_WHITE; break;
-        case LogSeverity.HTTP: severityColor = LogStyle.FG_BLUE; break;
-        case LogSeverity.DEBUG: severityColor = LogStyle.FG_BRIGHT_BLACK; break;
-        case LogSeverity.TRACE: severityColor = LogStyle.FG_BRIGHT_BLACK; break;
+        case LogSeverity.FATAL: {
+          severityColor = LogStyle.FG_MAGENTA;
+          break;
+        }
+
+        case LogSeverity.ERROR: {
+          severityColor = LogStyle.FG_RED;
+          break;
+        }
+
+        case LogSeverity.WARNING: {
+          severityColor = LogStyle.FG_YELLOW;
+          break;
+        }
+
+        case LogSeverity.NOTICE: {
+          severityColor = LogStyle.FG_GREEN;
+          break;
+        }
+
+        case LogSeverity.INFO: {
+          severityColor = LogStyle.FG_WHITE;
+          break;
+        }
+
+        case LogSeverity.HTTP: {
+          severityColor = LogStyle.FG_BLUE;
+          break;
+        }
+
+        case LogSeverity.DEBUG: {
+          severityColor = LogStyle.FG_BRIGHT_BLACK;
+          break;
+        }
+
+        case LogSeverity.TRACE: {
+          severityColor = LogStyle.FG_BRIGHT_BLACK;
+          break;
+        }
       }
 
       console[isError ? 'error' : 'log'](

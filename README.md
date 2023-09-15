@@ -13,7 +13,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - Caching: [ioredis](https://www.npmjs.com/package/ioredis) (distributed) or in-memory (local)
 - ORM: [MikroORM](https://mikro-orm.io/docs/installation)
 - Swagger: [Redoc](https://github.com/mxarc/nestjs-redoc)
-- Logs: [Loki](https://grafana.com/docs/loki/latest/api/) and [Slack](https://api.slack.com/messaging/webhooks)
+- Logs: [Loki](https://grafana.com/docs/loki/latest/api/)
 - Metrics: [Prometheus](https://github.com/siimon/prom-client)
 - Tracing: [Tempo](https://grafana.com/docs/tempo/latest/api_docs/) with [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-js)
 
@@ -32,9 +32,18 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - [\[Context\] Request, Response and Metadata](docs/module/context.md)
 - [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)
 - [\[Http\] GOT Client](docs/module/http.md)
-- [\[Log\] Console, Loki, and Slack](docs/module/log.md)
+- [\[Log\] Loki](docs/module/log.md)
 - [\[Memory\] Volatile Storage with TTL](docs/module/memory.md)
 - [\[Metric\] Prometheus](docs/module/metric.md)
 - [\[ORM\] Prometheus](docs/module/orm.md)
 - [\[Promise\] Retry, Timeout and Limiting](docs/module/promise.md)
 - [\[Trace\] Open Telemetry](docs/module/trace.md)
+
+### Dependencies
+
+This framework is frequently revised in order to keep dependencies up to date.
+
+However, the following packages are currently behind latest version:
+- `@fastify/static@6.10.2`: `@nestjs/platform-fastify@10.2.5` uses `fastify@4.22.2`, latest version requires `^4.23.0`
+- `got@11.8.5`: Latest version requires ESM
+- `query-string@7.1.3` Latest version requires ESM

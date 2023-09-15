@@ -67,7 +67,7 @@ export class MemoryService implements CacheProvider {
    */
   public smembers(key: string): string[] {
     const set: Set<string> = this.get(key);
-    return [ ...set ];
+    return set ? [ ...set ] : [ ];
   }
 
   /**
@@ -79,11 +79,11 @@ export class MemoryService implements CacheProvider {
   public sadd(key: string, value: string, options: MemoryOptions = { }): void {
     const set: Set<string> = this.get(key);
 
-    if (!set) {
-      this.set(key, new Set([ value ]), options);
+    if (set) {
+      set.add(value);
     }
     else {
-      set.add(value);
+      this.set(key, new Set([ value ]), options);
     }
   }
 

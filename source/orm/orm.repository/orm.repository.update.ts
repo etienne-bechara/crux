@@ -198,13 +198,13 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
 
         // Match (create or update) or missing (create)
         if (match.entity.length === 1) {
-          if (!options.disallowUpdate) {
-            resultMap.push({ index: updateParams.length, target: 'update' });
-            updateParams.push({ entity: match.entity[0], data: match.data });
-          }
-          else {
+          if (options.disallowUpdate) {
             resultMap.push({ index: existingEntities.length, target: 'read' });
             existingEntities.push(match.entity[0]);
+          }
+          else {
+            resultMap.push({ index: updateParams.length, target: 'update' });
+            updateParams.push({ entity: match.entity[0], data: match.data });
           }
         }
         else {
@@ -231,9 +231,17 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
 
       const resultEntities = resultMap.map((i) => {
         switch (i.target) {
-          case 'read': return existingEntities[i.index];
-          case 'create': return createdEntities[i.index];
-          case 'update': return updatedEntities[i.index];
+          case 'read': {
+            return existingEntities[i.index];
+          }
+
+          case 'create': {
+            return createdEntities[i.index];
+          }
+
+          case 'update': {
+            return updatedEntities[i.index];
+          }
         }
       });
 

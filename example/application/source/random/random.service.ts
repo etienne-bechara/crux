@@ -37,26 +37,33 @@ export class RandomService {
     await this.promiseService.sleep(inLatency);
 
     switch (true) {
-      case dice > 95:
+      case dice > 95: {
         throw new GatewayTimeoutException({ message: 'failed to fulfill request within timeout', ...metadata });
+      }
 
-      case dice > 90:
+      case dice > 90: {
         throw new InternalServerErrorException({ message: 'something went wrong', ...metadata });
+      }
 
-      case dice > 85:
+      case dice > 85: {
         throw new HttpException({ message: 'too many requests', ...metadata }, HttpStatus.TOO_MANY_REQUESTS);
+      }
 
-      case dice > 80:
+      case dice > 80: {
         throw new ForbiddenException({ message: 'not enough privileges', ...metadata });
+      }
 
-      case dice > 75:
+      case dice > 75: {
         throw new UnauthorizedException({ message: 'missing authorization header', ...metadata });
+      }
 
-      case dice > 70:
+      case dice > 70: {
         throw new BadRequestException('date must be an ISO8601 string');
+      }
 
-      case dice > 65:
+      case dice > 65: {
         throw new Error('unexpected error');
+      }
 
       case dice > 60: {
         const divisionByZero = dice / 0;
@@ -140,8 +147,9 @@ export class RandomService {
         return metadata;
       }
 
-      default:
+      default: {
         return metadata;
+      }
     }
   }
 

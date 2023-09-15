@@ -116,6 +116,7 @@ export class ConfigModule {
       const configInstance = plainToClass(configClass as ClassConstructor<unknown>, configObj);
 
       const validationErrors = await validate(configInstance as object, {
+        forbidUnknownValues: false,
         validationError: { target: false },
       });
 

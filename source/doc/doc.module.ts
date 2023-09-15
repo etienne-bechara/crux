@@ -2,7 +2,8 @@ import { INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import fs from 'fs';
-import HTTPSnippet from 'httpsnippet';
+import { HarRequest, HTTPSnippet } from 'httpsnippet';
+import { TargetId } from 'httpsnippet/dist/targets/targets';
 
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
@@ -109,12 +110,34 @@ export class DocModule {
         let operationId: string;
 
         switch (methodKey.slice(0, 3)) {
-          case 'get' : operationId = `Read ${entityName}`; break;
-          case 'pos' : operationId = `Create ${entityName}`; break;
-          case 'put' : operationId = `Replace ${entityName}`; break;
-          case 'pat' : operationId = `Update ${entityName}`; break;
-          case 'del' : operationId = `Delete ${entityName}`; break;
-          default: operationId = defaultId;
+          case 'get' : {
+            operationId = `Read ${entityName}`;
+            break;
+          }
+
+          case 'pos' : {
+            operationId = `Create ${entityName}`;
+            break;
+          }
+
+          case 'put' : {
+            operationId = `Replace ${entityName}`;
+            break;
+          }
+
+          case 'pat' : {
+            operationId = `Update ${entityName}`;
+            break;
+          }
+
+          case 'del' : {
+            operationId = `Delete ${entityName}`;
+            break;
+          }
+
+          default: {
+            operationId = defaultId;
+          }
         }
 
         if (methodKey.includes('Id')) {
@@ -143,7 +166,7 @@ export class DocModule {
 
         paths[path][method]['x-codeSamples'] = codeSamples.map((s) => {
           const [ target, ...clientParts ] = s.client.toLowerCase().split('_');
-          const snippet = httpSnippet.convert(target, clientParts.join('_'), snippetOptions) as string;
+          const snippet = httpSnippet.convert(target as TargetId, clientParts.join('_'), snippetOptions) as string;
 
           // Fix PowerShell not printing response
           const source = s.client === DocCodeSampleClient.POWERSHELL_WEBREQUEST
@@ -173,7 +196,7 @@ export class DocModule {
       method: rawMethod.toUpperCase(),
       url: `${servers[0].url}${path}`,
       headers: [ ],
-    } as any;
+    } as HarRequest;
 
     if (authOptions?.in === 'header') {
       httpSnippetOptions.headers.push({ name: authOptions.name, value: 'your_authorization' });
@@ -184,7 +207,7 @@ export class DocModule {
         const { name, example, schema } = pathParameter;
         const ref = { ...schema, example };
 
-        const value = this.schemaToSample(ref as ReferenceObject, document);
+        const value: string = this.schemaToSample(ref as ReferenceObject, document);
         httpSnippetOptions.url = httpSnippetOptions.url.replace(`{${name}}`, value);
       }
     }
@@ -212,7 +235,7 @@ export class DocModule {
       }
     }
 
-    return new HTTPSnippet(httpSnippetOptions as HTTPSnippet.Data);
+    return new HTTPSnippet(httpSnippetOptions);
   }
 
   /**
@@ -228,17 +251,21 @@ export class DocModule {
     const { type, items, properties, required } = schemaObject;
 
     switch (type) {
-      case 'boolean':
+      case 'boolean': {
         return this.buildSampleValue(schemaObject, true);
+      }
 
-      case 'number':
+      case 'number': {
         return this.buildSampleValue(schemaObject, 1);
+      }
 
-      case 'string':
+      case 'string': {
         return this.buildSampleValue(schemaObject, 'string');
+      }
 
-      case 'array':
+      case 'array': {
         return [ this.schemaToSample(items, document) ];
+      }
 
       case 'object': {
         const obj = { };

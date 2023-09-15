@@ -24,7 +24,7 @@ void AppModule.boot({
     pushInterval: 5000,
   },
   traces: {
-    url: 'http://tempo:55681/v1/traces',
+    url: 'http://tempo:4317/v1/traces',
     pushInterval: 5000,
   },
   docs: {

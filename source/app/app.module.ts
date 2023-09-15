@@ -23,7 +23,6 @@ import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
-import { SlackModule } from '../slack/slack.module';
 import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
@@ -111,7 +110,6 @@ export class AppModule {
       'logs',
       'loki',
       'metrics',
-      'slack',
       'traces',
     ];
 
@@ -300,33 +298,32 @@ export class AppModule {
       PromiseModule,
     ];
 
-    if (!disableCache) {
-      defaultModules.push(CacheModule);
+    if (disableCache) {
+      defaultModules.push(CacheDisabledModule);
     }
     else {
-      defaultModules.push(CacheDisabledModule);
+      defaultModules.push(CacheModule);
     }
 
     if (!disableLogs) {
       defaultModules.push(
         ConsoleModule,
         LokiModule,
-        SlackModule,
       );
     }
 
-    if (!disableMetrics) {
-      defaultModules.push(MetricModule);
-    }
-    else {
+    if (disableMetrics) {
       defaultModules.push(MetricDisabledModule);
     }
+    else {
+      defaultModules.push(MetricModule);
+    }
 
-    if (!disableTraces) {
-      defaultModules.push(TraceModule);
+    if (disableTraces) {
+      defaultModules.push(TraceDisabledModule);
     }
     else {
-      defaultModules.push(TraceDisabledModule);
+      defaultModules.push(TraceModule);
     }
 
     if (!disableDocs) {
