@@ -3,7 +3,7 @@ import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import got, { Got, Options } from 'got';
 import { IncomingHttpHeaders } from 'http';
-import { stringify } from 'query-string';
+import qs from 'query-string';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
@@ -125,7 +125,7 @@ export class HttpService {
     if (query || this.httpModuleOptions.query) {
       const qsOptions = queryOptions || this.httpModuleOptions.queryOptions;
       const mergedQuery = { ...this.httpModuleOptions.query, ...query };
-      params.searchParams = stringify(mergedQuery, qsOptions);
+      params.searchParams = qs.stringify(mergedQuery, qsOptions);
     }
 
     if (json && !Array.isArray(json)) {

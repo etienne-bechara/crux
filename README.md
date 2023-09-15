@@ -38,3 +38,9 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - [\[ORM\] Prometheus](docs/module/orm.md)
 - [\[Promise\] Retry, Timeout and Limiting](docs/module/promise.md)
 - [\[Trace\] Open Telemetry](docs/module/trace.md)
+
+### Dependencies
+
+This framework is not yet ESM ready, dependencies are frequently revised in order to keep it up to date, but the following packages are currently behind latest version due to dropping CommonJS support:
+- `got@11.8.5`
+- `query-string@7.1.3`
