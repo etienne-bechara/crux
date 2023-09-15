@@ -386,7 +386,7 @@ export function Max(maxValue: number, validationOptions?: ValidationOptions): Pr
  * @param options
  * @param validationOptions
  */
-export function IsNumberString(options?: any, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsNumberString(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -460,7 +460,7 @@ export function IsBase64(validationOptions?: ValidationOptions): PropertyDecorat
  * @param options
  * @param validationOptions
  */
-export function IsEmail(options?: any, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsEmail(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -496,7 +496,7 @@ export function IsEmail(options?: any, validationOptions?: ValidationOptions): P
  * @param options
  * @param validationOptions
  */
-export function IsISO8601(options?: any, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsISO8601(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -578,7 +578,7 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
  * @param options
  * @param validationOptions
  */
-export function IsUrl(options?: any, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsUrl(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(

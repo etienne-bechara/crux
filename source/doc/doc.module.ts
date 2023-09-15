@@ -207,7 +207,7 @@ export class DocModule {
         const { name, example, schema } = pathParameter;
         const ref = { ...schema, example };
 
-        const value = this.schemaToSample(ref as ReferenceObject, document);
+        const value: string = this.schemaToSample(ref as ReferenceObject, document);
         httpSnippetOptions.url = httpSnippetOptions.url.replace(`{${name}}`, value);
       }
     }
