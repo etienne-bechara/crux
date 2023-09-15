@@ -1,3 +1,18 @@
+# [4.38.0](https://github.com/etienne-bechara/crux/compare/v4.37.2...v4.38.0) (2023-09-15)
+
+
+### Bug Fixes
+
+* **memory:** set spreading ([b6e0497](https://github.com/etienne-bechara/crux/commit/b6e0497873a00162b05524732f381ffd92ed4642))
+* nestjs-redoc peer warnings ([f9bd765](https://github.com/etienne-bechara/crux/commit/f9bd765526a1f05797519d14519457b17bf6c279))
+* user node 18.x for ci ([fc4d163](https://github.com/etienne-bechara/crux/commit/fc4d16336bc8c725eb7a54dfc613227af07ff022))
+* validator any typings ([7c0910b](https://github.com/etienne-bechara/crux/commit/7c0910b1963edeab4eae553f57028a362c682c54))
+
+
+### Features
+
+* bump open telemetry, add trace grpc support ([a312eac](https://github.com/etienne-bechara/crux/commit/a312eac62dd814fc53083bbd7e57f2bc9659fdb9))
+
 ## [4.37.2](https://github.com/etienne-bechara/crux/compare/v4.37.1...v4.37.2) (2023-09-14)
 
 
