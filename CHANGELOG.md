@@ -1,3 +1,10 @@
+## [4.38.1](https://github.com/etienne-bechara/crux/compare/v4.38.0...v4.38.1) (2023-09-16)
+
+
+### Bug Fixes
+
+* add exception wrapper to configureDocumentation ([e1549a2](https://github.com/etienne-bechara/crux/commit/e1549a29aa303e695f0b285fb1b2d07aa15b17a9))
+
 # [4.38.0](https://github.com/etienne-bechara/crux/compare/v4.37.2...v4.38.0) (2023-09-15)
 
 
