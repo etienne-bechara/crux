@@ -1,3 +1,11 @@
+## [4.38.3](https://github.com/etienne-bechara/crux/compare/v4.38.2...v4.38.3) (2023-09-16)
+
+
+### Bug Fixes
+
+* remove httpsnippet ([2dbb260](https://github.com/etienne-bechara/crux/commit/2dbb260194ccd34655ee9dd57361ca7bbaa222af))
+* remove nestjs-redoc ([9a7d1a9](https://github.com/etienne-bechara/crux/commit/9a7d1a9020477014107704e914f9b9198734fefc))
+
 ## [4.38.2](https://github.com/etienne-bechara/crux/compare/v4.38.1...v4.38.2) (2023-09-16)
 
 
