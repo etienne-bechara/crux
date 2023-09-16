@@ -69,7 +69,7 @@ export class TraceService {
    */
   private setupOpenTelemetryComponents(): void {
     const { name: job, instance, traces } = this.appConfig.APP_OPTIONS || { };
-    const { username, password, pushInterval } = traces;
+    const { username, password, pushInterval, batchSize } = traces;
 
     const environment = this.appConfig.NODE_ENV;
     const contextManager = new AsyncHooksContextManager();
@@ -90,6 +90,8 @@ export class TraceService {
 
     const processor = new BatchSpanProcessor(exporter, {
       scheduledDelayMillis: pushInterval,
+      maxQueueSize: batchSize * 10,
+      maxExportBatchSize: batchSize,
     });
 
     const provider = new BasicTracerProvider({

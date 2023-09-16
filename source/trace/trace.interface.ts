@@ -8,4 +8,6 @@ export interface TraceOptions {
   password?: string;
   /** Open Telemetry API push interval in milliseconds. Default: 60s. */
   pushInterval?: number;
+  /** Open Telemetry maximum batch size, will drop spans if queued over 10 times. Default: 1000. */
+  batchSize?: number;
 }
