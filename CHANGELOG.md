@@ -1,3 +1,10 @@
+## [4.38.2](https://github.com/etienne-bechara/crux/compare/v4.38.1...v4.38.2) (2023-09-16)
+
+
+### Bug Fixes
+
+* rollback httpsnippet to 2.0.0 ([90f4e34](https://github.com/etienne-bechara/crux/commit/90f4e345186fd2f39ddae176fe727e69ef076b89))
+
 ## [4.38.1](https://github.com/etienne-bechara/crux/compare/v4.38.0...v4.38.1) (2023-09-16)
 
 
