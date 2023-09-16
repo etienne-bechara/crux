@@ -2,8 +2,7 @@ import { INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import fs from 'fs';
-import { HarRequest, HTTPSnippet } from 'httpsnippet';
-import { TargetId } from 'httpsnippet/dist/targets/targets';
+import HTTPSnippet from 'httpsnippet';
 
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
@@ -166,7 +165,7 @@ export class DocModule {
 
         paths[path][method]['x-codeSamples'] = codeSamples.map((s) => {
           const [ target, ...clientParts ] = s.client.toLowerCase().split('_');
-          const snippet = httpSnippet.convert(target as TargetId, clientParts.join('_'), snippetOptions) as string;
+          const snippet = httpSnippet.convert(target, clientParts.join('_'), snippetOptions) as string;
 
           // Fix PowerShell not printing response
           const source = s.client === DocCodeSampleClient.POWERSHELL_WEBREQUEST
@@ -196,7 +195,7 @@ export class DocModule {
       method: rawMethod.toUpperCase(),
       url: `${servers[0].url}${path}`,
       headers: [ ],
-    } as HarRequest;
+    } as Record<string, any>;
 
     if (authOptions?.in === 'header') {
       httpSnippetOptions.headers.push({ name: authOptions.name, value: 'your_authorization' });
@@ -235,7 +234,7 @@ export class DocModule {
       }
     }
 
-    return new HTTPSnippet(httpSnippetOptions);
+    return new HTTPSnippet(httpSnippetOptions as HTTPSnippet.Data);
   }
 
   /**

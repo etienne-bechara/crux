@@ -91,15 +91,7 @@ export class AppModule {
     await this.configureAdapter();
 
     if (!this.options.disableDocs) {
-      const app = this.getInstance();
-      const logService = app.get(LogService);
-
-      try {
-        DocModule.configureDocumentation(this.instance, this.options);
-      }
-      catch (e) {
-        logService.error('failed to configure documentation', e as Error);
-      }
+      DocModule.configureDocumentation(this.instance, this.options);
     }
 
     return this.instance;

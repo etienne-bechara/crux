@@ -44,6 +44,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 This framework is frequently revised in order to keep dependencies up to date.
 
 However, the following packages are currently behind latest version:
-- `@fastify/static@6.10.2`: `@nestjs/platform-fastify@10.2.5` uses `fastify@4.22.2`, latest version requires `^4.23.0`
-- `got@11.8.5`: Latest version requires ESM
-- `query-string@7.1.3` Latest version requires ESM
+- `@fastify/static@6.10.2`: Latest requires `fastify@4.23.0`, but `@nestjs/platform-fastify` uses `fastify@4.22.2`,
+- `httpsnippet@2.0.0`: Latest crashes `configureDocumentation()` when `NODE_ENV=production`
+- `got@11.8.5`: Latest requires ESM
+- `query-string@7.1.3` Latest requires ESM
