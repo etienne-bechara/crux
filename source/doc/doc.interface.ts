@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ExternalDocumentationObject, OpenAPIObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import { RedocOptions } from 'nestjs-redoc';
 
 import { DocCodeSampleClient } from './doc.enum';
 
@@ -43,7 +42,50 @@ export interface DocCodeSample {
   client: DocCodeSampleClient;
 }
 
-export interface DocOptions extends RedocOptions {
+export interface DocRedocOptions {
+  redocVersion?: string;
+  title?: string;
+  favicon?: string;
+  logo?: DogLogo;
+  theme?: any;
+  untrustedSpec?: boolean;
+  supressWarnings?: boolean;
+  hideHostname?: boolean;
+  expandResponses?: string;
+  requiredPropsFirst?: boolean;
+  sortPropsAlphabetically?: boolean;
+  showExtensions?: boolean | string;
+  noAutoAuth?: boolean;
+  pathInMiddlePanel?: boolean;
+  hideLoading?: boolean;
+  nativeScrollbars?: boolean;
+  hideDownloadButton?: boolean;
+  disableSearch?: boolean;
+  onlyRequiredInSamples?: boolean;
+  docName?: string;
+  auth?: DocAuth;
+  tagGroups?: DocTagGroup[];
+}
+
+export interface DogLogo {
+  url?: string;
+  backgroundColor?: string;
+  altText?: string;
+  href?: string;
+}
+
+export interface DocAuth {
+  enabled: boolean;
+  user: string;
+  password: string;
+}
+
+export interface DocTagGroup {
+  name: string;
+  tags: string[];
+}
+
+export interface DocOptions extends DocRedocOptions {
   enumSkipQuotes?: boolean;
   disableTryIt?: boolean;
   authBtnText?: string;
