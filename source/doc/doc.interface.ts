@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ExternalDocumentationObject, OpenAPIObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
-import { DocCodeSampleClient } from './doc.enum';
-
 export interface DocHttpSnippetParams {
   document: OpenAPIObject;
   servers: DocServer[];
@@ -35,11 +33,6 @@ export interface DocSecurity {
 export interface DocServer {
   url: string;
   description?: string;
-}
-
-export interface DocCodeSample {
-  label: string;
-  client: DocCodeSampleClient;
 }
 
 export interface DocRedocOptions {
@@ -97,7 +90,6 @@ export interface DocOptions extends DocRedocOptions {
   security?: DocSecurity[];
   tags?: DocTag[];
   theme?: DocTheme;
-  codeSamples?: DocCodeSample[];
 }
 
 export interface DocThemeGeneratorParams {
@@ -173,6 +165,22 @@ export interface DocServers {
   url?: {
     backgroundColor?: string;
   };
+}
+
+export interface DocCodeSampleOptions {
+  method: string;
+  url: string;
+  headers: {
+    key: string;
+    value: string;
+  }[];
+  query?: string;
+  body?: string;
+}
+
+export interface DocCodeSample {
+  lang: string;
+  source: string;
 }
 
 export interface DocThemeScrollbar {

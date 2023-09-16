@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { DocCodeSampleClient } from './doc.enum';
 import { DocOptions } from './doc.interface';
 
 export const DOC_DEFAULT_OPTIONS: DocOptions = {
@@ -99,8 +98,4 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
       color: '#ffffff',
     },
   },
-  codeSamples: [
-    { label: 'cURL', client: DocCodeSampleClient.SHELL_CURL },
-    { label: 'PowerShell', client: DocCodeSampleClient.POWERSHELL_WEBREQUEST },
-  ],
 };

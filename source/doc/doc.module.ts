@@ -2,15 +2,14 @@ import { INestApplication, Module } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ReferenceObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import fs from 'fs';
-import HTTPSnippet from 'httpsnippet';
+import qs from 'query-string';
 
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
 import { DocTagStorage } from './doc.decorator';
-import { DocCodeSampleClient } from './doc.enum';
-import { DocHttpSnippetParams, DocTheme, DocThemeGeneratorParams } from './doc.interface';
+import { DocCodeSample, DocCodeSampleOptions, DocTheme, DocThemeGeneratorParams } from './doc.interface';
 import { DocService } from './doc.service';
 
 @Module({
@@ -149,92 +148,110 @@ export class DocModule {
   }
 
   /**
-   * Generate code samples in place for target document.
+   * Generate code samples for command shells.
    * @param document
    * @param options
    */
   public static generateCodeSamples(document: OpenAPIObject, options: AppOptions): void {
     const { paths } = document;
     const { docs } = options;
-    const { servers, security, codeSamples } = docs;
+    const { servers, security } = docs;
+
+    const authOptions = security?.[0]?.options;
 
     for (const path in paths) {
       for (const method in paths[path]) {
-        const snippetOptions = { indent: ' ' };
-        const httpSnippet = this.buildHttpSnippet({ document, servers, security, path, method });
+        const pathParams = paths[path][method].parameters.filter((p) => p.required && p.in === 'path');
+        const queryParams = paths[path][method].parameters.filter((p) => p.required && p.in === 'query');
+        const bodyParams = paths[path][method].requestBody;
 
-        paths[path][method]['x-codeSamples'] = codeSamples.map((s) => {
-          const [ target, ...clientParts ] = s.client.toLowerCase().split('_');
-          const snippet = httpSnippet.convert(target, clientParts.join('_'), snippetOptions) as string;
+        const codeSampleOptions: DocCodeSampleOptions = {
+          method: method.toUpperCase(),
+          url: `${servers[0].url}${path}`,
+          headers: authOptions?.in === 'header'
+            ? [ { key: authOptions.name, value: 'your_authorization' } ]
+            : [ ],
+        };
 
-          // Fix PowerShell not printing response
-          const source = s.client === DocCodeSampleClient.POWERSHELL_WEBREQUEST
-            ? `${snippet}\nWrite-Output $response`
-            : snippet;
+        if (pathParams.length > 0) {
+          for (const pathParameter of pathParams) {
+            const { name, example, schema } = pathParameter;
+            const ref = { ...schema, example };
 
-          return { lang: s.label, source };
-        });
+            const value: string = this.schemaToSample(ref as ReferenceObject, document);
+            codeSampleOptions.url = codeSampleOptions.url.replace(`{${name}}`, value);
+          }
+        }
+
+        if (queryParams.length > 0) {
+          const queryObj = { };
+
+          for (const queryParam of queryParams) {
+            const { name, example, schema } = queryParam;
+            const ref = { ...schema, example };
+            queryObj[name] = String(this.schemaToSample(ref as ReferenceObject, document));
+          }
+
+          codeSampleOptions.query = qs.stringify(queryObj);
+        }
+
+        if (bodyParams) {
+          const jsonSchema: ReferenceObject = bodyParams?.content['application/json']?.schema;
+
+          if (jsonSchema) {
+            codeSampleOptions.headers.push({ key: 'Content-Type', value: 'application/json' });
+            codeSampleOptions.body = JSON.stringify(this.schemaToSample(jsonSchema, document));
+          }
+        }
+
+        paths[path][method]['x-codeSamples'] = [
+          this.buildCurlCodeSample(codeSampleOptions),
+          this.buildPowerShellCodeSample(codeSampleOptions),
+        ];
       }
     }
   }
 
   /**
-   * Builds an instance of the HTTP snippets generator.
+   * Builds a cURL sample snippet.
    * @param params
    */
-  private static buildHttpSnippet(params: DocHttpSnippetParams): HTTPSnippet {
-    const { document, servers, security, path, method: rawMethod } = params;
-    const { paths } = document;
+  private static buildCurlCodeSample(params: DocCodeSampleOptions): DocCodeSample {
+    const { method, url, headers, query, body } = params;
 
-    const authOptions = security?.[0]?.options;
-    const pathParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'path');
-    const queryParameters = paths[path][rawMethod].parameters.filter((p) => p.required && p.in === 'query');
-    const requestBody = paths[path][rawMethod].requestBody;
+    let source = `curl --request ${method} \\\n`;
+    source += `--url '${url}${query ? `?${query}` : ''}' \\\n`;
 
-    const httpSnippetOptions = {
-      method: rawMethod.toUpperCase(),
-      url: `${servers[0].url}${path}`,
-      headers: [ ],
-    } as Record<string, any>;
-
-    if (authOptions?.in === 'header') {
-      httpSnippetOptions.headers.push({ name: authOptions.name, value: 'your_authorization' });
+    for (const header of headers) {
+      source += `--header '${header.key}: ${header.value}' \\\n`;
     }
 
-    if (pathParameters.length > 0) {
-      for (const pathParameter of pathParameters) {
-        const { name, example, schema } = pathParameter;
-        const ref = { ...schema, example };
-
-        const value: string = this.schemaToSample(ref as ReferenceObject, document);
-        httpSnippetOptions.url = httpSnippetOptions.url.replace(`{${name}}`, value);
-      }
+    if (body) {
+      source += `--data '${body}'`;
     }
 
-    if (queryParameters.length > 0) {
-      httpSnippetOptions.queryString = queryParameters.map((p) => {
-        const { name, example, schema } = p;
-        const ref = { ...schema, example };
+    return { lang: 'cURL', source };
+  }
 
-        const value = String(this.schemaToSample(ref as ReferenceObject, document));
-        return { name, value };
-      });
+  /**
+   * Builds a PowerShell sample snippet.
+   * @param params
+   */
+  private static buildPowerShellCodeSample(params: DocCodeSampleOptions): DocCodeSample {
+    const { method, url, headers, query, body } = params;
+    let source = '$headers=@{}\n';
+
+    for (const header of headers) {
+      source += `$headers.Add("${header.key}", "${header.value}")\n`;
     }
 
-    if (requestBody) {
-      const jsonSchema: ReferenceObject = requestBody?.content['application/json']?.schema;
+    // eslint-disable-next-line max-len
+    source += `$response = Invoke-WebRequest -Uri '${url}${query ? `?${query}` : ''}' -Method ${method} -Headers $headers`;
+    source += body ? ` -Body '${body}'\n` : '\n';
 
-      if (jsonSchema) {
-        httpSnippetOptions.headers.push({ name: 'Content-Type', value: 'application/json' });
+    source += 'Write-Output $response';
 
-        httpSnippetOptions.postData = {
-          mimeType: 'application/json',
-          text: JSON.stringify(this.schemaToSample(jsonSchema, document)),
-        };
-      }
-    }
-
-    return new HTTPSnippet(httpSnippetOptions as HTTPSnippet.Data);
+    return { lang: 'PowerShell', source };
   }
 
   /**

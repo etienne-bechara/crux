@@ -45,6 +45,5 @@ This framework is frequently revised in order to keep dependencies up to date.
 
 However, the following packages are currently behind latest version:
 - `@fastify/static@6.10.2`: Latest requires `fastify@4.23.0`, but `@nestjs/platform-fastify` uses `fastify@4.22.2`,
-- `httpsnippet@2.0.0`: Latest crashes `configureDocumentation()` when `NODE_ENV=production`
 - `got@11.8.5`: Latest requires ESM
 - `query-string@7.1.3` Latest requires ESM

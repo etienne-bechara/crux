@@ -42,7 +42,6 @@ export class DocService {
     delete options.tags;
     delete options.theme?.backgroundColor;
     delete options.theme?.scrollbar;
-    delete options.codeSamples;
 
     return {
       disableTryIt,
