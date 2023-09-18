@@ -40,6 +40,8 @@ export class DocModule {
     const builder = this.configureBuilder(options);
     const document = this.buildOpenApiObject(instance, builder);
 
+    this.coalesceSchemaTitles(document);
+
     if (servers?.length > 0) {
       this.hasServers = true;
       this.generateCodeSamples(document, options);
@@ -145,6 +147,19 @@ export class DocModule {
         return entityName ? operationId : defaultId;
       },
     });
+  }
+
+  /**
+   * Add missing titles to components schemas.
+   * @param document
+   */
+  private static coalesceSchemaTitles(document: OpenAPIObject): void {
+    const { components } = document;
+    const { schemas } = components;
+
+    for (const key in schemas) {
+      schemas[key] = { ...schemas[key], title: key };
+    }
   }
 
   /**
