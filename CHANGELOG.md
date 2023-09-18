@@ -1,3 +1,10 @@
+## [4.38.4](https://github.com/etienne-bechara/crux/compare/v4.38.3...v4.38.4) (2023-09-16)
+
+
+### Bug Fixes
+
+* add default trace batch size ([6656f33](https://github.com/etienne-bechara/crux/commit/6656f33dffce04ae30259c538e943af1aa0499f5))
+
 ## [4.38.3](https://github.com/etienne-bechara/crux/compare/v4.38.2...v4.38.3) (2023-09-16)
 
 
