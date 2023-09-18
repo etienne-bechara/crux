@@ -1,3 +1,10 @@
+## [4.38.5](https://github.com/etienne-bechara/crux/compare/v4.38.4...v4.38.5) (2023-09-18)
+
+
+### Bug Fixes
+
+* coales openapi schema titles ([4b45949](https://github.com/etienne-bechara/crux/commit/4b4594927c08a30e60a718b73491f454621ea48b))
+
 ## [4.38.4](https://github.com/etienne-bechara/crux/compare/v4.38.3...v4.38.4) (2023-09-16)
 
 
