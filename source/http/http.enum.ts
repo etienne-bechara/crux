@@ -21,8 +21,7 @@ export enum HttpRedirect {
   MANUAL = 'manual',
 }
 
-export enum HttpParser {
-  BUFFER = 'BUFFER',
-  JSON = 'JSON',
-  TEXT = 'TEXT',
+export enum HttpTimeoutMessage {
+  INBOUND = 'Inbound request timed out, further outbound requests were aborted',
+  OUTBOUND = 'The operation was aborted',
 }

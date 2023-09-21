@@ -76,9 +76,7 @@ export class RandomService {
       }
 
       case dice > 50: {
-        const google = await this.httpService.get('https://www.google.com', {
-          responseType: 'text',
-        });
+        const google = await this.httpService.get('https://www.google.com');
 
         await this.promiseService.sleep(outLatency);
         return google;
@@ -86,7 +84,6 @@ export class RandomService {
 
       case dice > 45: {
         const notFound = await this.httpService.get('https://www.google.com/404', {
-          responseType: 'text',
           retryCodes: [ 404 ],
         });
 

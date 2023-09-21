@@ -2,8 +2,7 @@ import { HttpStatus, Injectable, Module } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
-import { HttpParser } from './http.enum';
-import { HttpRequestParams, HttpResponse } from './http.interface';
+import { HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
 
@@ -28,8 +27,7 @@ class GoogleService {
 @Module({
   imports: [
     HttpModule.register({
-      url: 'https://jsonplaceholder.typicode.com',
-      parser: HttpParser.JSON,
+      baseUrl: 'https://jsonplaceholder.typicode.com',
       cacheTtl: 1000,
     }),
   ],
@@ -45,8 +43,7 @@ class JsonModule { }
 @Module({
   imports: [
     HttpModule.register({
-      url: 'https://www.google.com',
-      parser: HttpParser.TEXT,
+      baseUrl: 'https://www.google.com',
     }),
   ],
   providers: [
@@ -155,7 +152,7 @@ describe('HttpService', () => {
         errorMessage = e.message;
       }
 
-      expect(errorMessage).toMatch(/timeout/gi);
+      expect(errorMessage.includes('Request timed out after')).toBe(true);
     });
 
     it('should throw an internal server error exception', async () => {
@@ -220,32 +217,13 @@ describe('HttpService', () => {
 
   describe('parseCookies', () => {
     it('should parse cookies from response headers', async () => {
-      const res: HttpResponse<string> = await googleHttpService.get('');
+      const res: HttpResponse = await googleHttpService.get('', {
+        fullResponse: true,
+      });
 
       expect(res.cookies[0]).toBeDefined();
       expect(res.cookies[0].domain).toMatch(/google/g);
       expect(res.cookies[0].expires).toBeInstanceOf(Date);
-    });
-  });
-
-  describe('buildRequestParams', () => {
-    it('should join query string arrays into string', () => {
-      const params: HttpRequestParams = {
-        query: {
-          string: 'string',
-          stringArray: [ 'string', 'string' ],
-          test: [ 'test1', 'test2', 'test3' ],
-        },
-        queryOptions: {
-          arrayFormat: 'separator',
-          arrayFormatSeparator: '|',
-        },
-      };
-
-      const expectation = 'string=string&stringArray=string|string&test=test1|test2|test3';
-      const result = googleHttpService['buildRequestParams'](params);
-
-      expect(result.searchParams).toStrictEqual(expectation);
     });
   });
 });
