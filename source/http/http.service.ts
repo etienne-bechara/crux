@@ -90,10 +90,10 @@ export class HttpService {
     const scheme = protocol.replace(':', '');
 
     return {
-      timeout: this.httpModuleOptions.timeout ?? timeout,
-      username: this.httpModuleOptions.username || username,
-      password: this.httpModuleOptions.password || password,
-      redirect: this.httpModuleOptions.redirect || redirect,
+      timeout: timeout ?? this.httpModuleOptions.timeout ?? this.defaultOptions.timeout,
+      username: username || this.httpModuleOptions.username,
+      password: password || this.httpModuleOptions.password,
+      redirect: redirect || this.httpModuleOptions.redirect,
       method: method || HttpMethod.GET,
       url: joinedUrl,
       scheme,
@@ -314,7 +314,7 @@ export class HttpService {
   private async sendRequestCacheHandler(params: HttpSendParams): Promise<HttpResponse> {
     const { disableParsing, request, telemetry, cache } = params;
     const { cacheTtl: ttl, cacheTimeout: timeout } = cache;
-    const { host, method, path: rawPath, query, replacements } = request;
+    const { timeout: requestTimeout, host, method, path: rawPath, query, replacements } = request;
 
     const traffic = AppTraffic.OUTBOUND;
     const path = this.replaceUrlPlaceholders(rawPath, replacements);
@@ -345,7 +345,7 @@ export class HttpService {
     }
     catch (e) {
       if (e.message.startsWith(HttpTimeoutMessage.OUTBOUND)) {
-        throw new Error(`Request timed out after ${timeout} ms`);
+        throw new Error(`Request timed out after ${requestTimeout} ms`);
       }
 
       throw e;
@@ -455,11 +455,8 @@ export class HttpService {
     else if (contentType?.startsWith('text')) {
       return response.text() as Promise<T>;
     }
-    else if (contentType?.includes('form')) {
-      return response.formData() as Promise<T>;
-    }
     else {
-      return response.blob() as Promise<T>;
+      return response.arrayBuffer() as Promise<T>;
     }
   }
 

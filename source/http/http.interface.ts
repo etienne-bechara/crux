@@ -15,6 +15,8 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
  * HTTP options usable at application level.
  */
 export interface HttpOptions {
+  /** Request timeout in milliseconds. Default: 60s. */
+  timeout?: number;
   /** Max amount of retries. Default: 2. */
   retryLimit?: number;
   /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
@@ -43,8 +45,6 @@ export interface HttpSharedOptions {
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
-  /** Request timeout in milliseconds. */
-  timeout?: number;
   /** Username for Basic authentication. */
   username?: string;
   /** Password for Basic authentication. */
