@@ -1,9 +1,6 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import got, { Got, Options } from 'got';
-import { IncomingHttpHeaders } from 'http';
-import qs from 'query-string';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
@@ -15,14 +12,13 @@ import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
 import { PromiseService } from '../promise/promise.service';
 import { TraceService } from '../trace/trace.service';
-import { HttpInjectionToken, HttpMethod } from './http.enum';
+import { HttpInjectionToken, HttpMethod, HttpParser } from './http.enum';
 import { HttpCacheParams, HttpCookie, HttpModuleOptions, HttpOptions, HttpRequestFlowParams, HttpRequestParams, HttpResponse, HttpRetryParams, HttpTelemetryParams } from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
 
   private defaultOptions: HttpOptions;
-  private instance: Got;
 
   public constructor(
     @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
@@ -43,44 +39,7 @@ export class HttpService {
       this.traceService = undefined;
     }
 
-    this.setup();
-  }
-
-  /**
-   * Returns the underlying GOT client.
-   */
-  public getInstance(): Got {
-    return this.instance;
-  }
-
-  /**
-   * Creates new HTTP instance based on GOT.
-   *
-   * Adds a hook to destroy p-cancellable request in order to prevent exceptions
-   * when fulfilling a request asynchronously.
-   */
-  private setup(): void {
-    const { name, prefixUrl } = this.httpModuleOptions;
-
     this.defaultOptions = this.appConfig.APP_OPTIONS.http || { };
-    this.logService?.debug(`Creating HTTP instance for ${name || prefixUrl}`);
-
-    this.httpModuleOptions.hooks ??= {
-      afterResponse: [
-        (res): any => {
-          const { statusCode, request } = res;
-          const limitStatusCode = request.options.followRedirect ? 299 : 399;
-          const isSuccess = statusCode >= 200 && statusCode <= limitStatusCode || statusCode === 304;
-          if (isSuccess) request.destroy();
-          return res;
-        },
-      ],
-    };
-
-    this.instance = got.extend({
-      ...this.httpModuleOptions,
-      retry: 0,
-    });
   }
 
   /**
@@ -117,15 +76,12 @@ export class HttpService {
    * @param params
    */
   private buildRequestParams(params: HttpRequestParams): HttpRequestParams {
-    const { query, queryOptions, json, form } = params;
+    const { query, json, form } = params;
 
     params.method ??= HttpMethod.GET;
-    params.resolveBodyOnly = false;
 
     if (query || this.httpModuleOptions.query) {
-      const qsOptions = queryOptions || this.httpModuleOptions.queryOptions;
-      const mergedQuery = { ...this.httpModuleOptions.query, ...query };
-      params.searchParams = qs.stringify(mergedQuery, qsOptions);
+      params.query = { ...this.httpModuleOptions.query, ...query };
     }
 
     if (json && !Array.isArray(json)) {
@@ -145,9 +101,9 @@ export class HttpService {
    * @param params
    */
   private buildTelemetryParams(url: string, params: HttpRequestParams): HttpTelemetryParams {
-    const { prefixUrl, method, replacements, query, body: rawBody, json, form, headers } = params;
+    const { method, replacements, query, body: rawBody, json, form, headers } = params;
 
-    const finalPrefix = this.httpModuleOptions.prefixUrl || prefixUrl;
+    const finalPrefix = this.httpModuleOptions.url;
     const finalUrl = url.startsWith('http') ? new URL(url) : new URL(`${finalPrefix}/${url}`);
 
     const { host, pathname: path } = finalUrl;
@@ -215,13 +171,13 @@ export class HttpService {
    * @param params
    */
   private buildRequestSendParams(url: string, params: HttpRequestParams): HttpRequestFlowParams {
-    const { ignoreExceptions, resolveBodyOnly, replacements } = params;
+    const { ignoreExceptions, parser, replacements } = params;
 
     return {
       url: this.replaceUrlPlaceholders(url, replacements),
       request: this.buildRequestParams(params),
       ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
-      resolveBodyOnly: resolveBodyOnly ?? this.httpModuleOptions.resolveBodyOnly,
+      parser: parser ?? this.httpModuleOptions.parser,
       telemetry: this.buildTelemetryParams(url, params),
       retry: this.buildRetryParams(params),
       cache: this.buildCacheParams(params),
@@ -229,7 +185,7 @@ export class HttpService {
   }
 
   /**
-   * Sends an HTTP request, extending GOT functionality with:
+   * Sends an HTTP request including:
    * - Path variables replacement and search param array joining
    * - Full observability with logs, metrics and tracing
    * - Configurable retry conditions and outbound caching
@@ -239,11 +195,25 @@ export class HttpService {
    */
   public async request<T>(url: string, params: HttpRequestParams): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
-    const response: any = await this.sendRequestLoopHandler<T>(sendParams);
+    const response = await this.sendRequestLoopHandler(sendParams);
 
-    return sendParams.resolveBodyOnly
-      ? response?.body
-      : response;
+    switch (sendParams.parser) {
+      case HttpParser.BUFFER: {
+        return response.arrayBuffer() as T;
+      }
+
+      case HttpParser.JSON: {
+        return response.json() as T;
+      }
+
+      case HttpParser.TEXT: {
+        return response.text() as T;
+      }
+
+      default: {
+        return response as T;
+      }
+    }
   }
 
   /**
@@ -251,16 +221,15 @@ export class HttpService {
    * parses response cookies and returns acquired data.
    * @param params
    */
-  private async sendRequestLoopHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
-    let response: HttpResponse<T>;
+  private async sendRequestLoopHandler(params: HttpRequestFlowParams): Promise<HttpResponse> {
+    let response: HttpResponse;
 
     while (!response) {
       response = await this.sendRequestRetryHandler(params);
     }
 
     if (response) {
-      const headers: IncomingHttpHeaders = response.headers;
-      response.cookies = this.parseCookies(headers);
+      response.cookies = this.parseCookies(response.headers);
     }
 
     return response;
@@ -272,19 +241,18 @@ export class HttpService {
    * the loop handler may try again.
    * @param params
    */
-  private async sendRequestRetryHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+  private async sendRequestRetryHandler(params: HttpRequestFlowParams): Promise<HttpResponse> {
     const contextTimeoutMsg = 'context request timed out';
-    const { retry, request } = params;
+    const { retry } = params;
     const { retryLimit, retryCodes, retryDelay } = retry;
-    const { url } = request;
-    let response: HttpResponse<T>;
+    let response: HttpResponse;
 
     retry.attempt++;
 
     const { attempt } = retry;
 
     try {
-      const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.REQUEST_TIMED_OUT) && url !== 'v1/traces';
+      const isTimedOut = ContextStorage.getStore()?.get(ContextStorageKey.REQUEST_TIMED_OUT);
       if (isTimedOut) throw new Error(contextTimeoutMsg);
 
       response = await this.sendRequestSpanHandler(params);
@@ -312,7 +280,7 @@ export class HttpService {
    * builds its name based on parameters.
    * @param params
    */
-  private async sendRequestSpanHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+  private async sendRequestSpanHandler(params: HttpRequestFlowParams): Promise<HttpResponse> {
     const { telemetry, retry } = params;
     const { method, host, path, spanOptions } = telemetry;
     const { retryLimit, attempt } = retry;
@@ -327,12 +295,12 @@ export class HttpService {
   }
 
   /**
-   * Orchestrates HTTP request sending with GOT instance, which
+   * Orchestrates HTTP request sending with Node.js fetch, which
    * also includes adding propagation headers. Upon failure calls
    * the client exception handler.
    * @param params
    */
-  private async sendRequestClientHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+  private async sendRequestClientHandler(params: HttpRequestFlowParams): Promise<HttpResponse> {
     params.telemetry.start = Date.now();
 
     this.injectPropagationHeaders(params);
@@ -358,19 +326,20 @@ export class HttpService {
       this.collectOutboundTelemetry(params);
     }
 
-    return params.response as HttpResponse<T>;
+    return params.response as HttpResponse;
   }
 
   /**
    * Orchestrates HTTP request sending with distributed cache support.
    * @param params
    */
-  private async sendRequestCacheHandler<T>(params: HttpRequestFlowParams): Promise<HttpResponse<T>> {
+  private async sendRequestCacheHandler(params: HttpRequestFlowParams): Promise<HttpResponse> {
     const { url, request, telemetry, cache } = params;
     const { host, method, path: rawPath, query } = telemetry;
     const { cacheTtl: ttl, cacheTimeout: timeout } = cache;
-    const { replacements } = request;
-    let response: HttpResponse<T>;
+    // TODO: query, json, form, timeout
+    const { replacements, headers } = request;
+    let response: HttpResponse;
 
     const traffic = AppTraffic.OUTBOUND;
     const path = this.replaceUrlPlaceholders(rawPath, replacements);
@@ -392,12 +361,12 @@ export class HttpService {
       }
     }
 
-    response = await this.instance(url, request as Options) as HttpResponse<T>;
+    response = await fetch(url, { method, headers });
 
     if (ttl) {
       telemetry.cacheStatus = CacheStatus.MISS;
-      const { statusCode, headers, body } = response;
-      const data = { statusCode, headers, body };
+      const { status, headers, body } = response;
+      const data = { status, headers, body };
 
       this.cacheService.setCache(data, { ...cacheParams, ttl });
     }
@@ -435,8 +404,8 @@ export class HttpService {
    * Given http response headers, acquire its parsed cookies.
    * @param headers
    */
-  private parseCookies(headers: IncomingHttpHeaders): HttpCookie[] {
-    const setCookie = headers?.['set-cookie'];
+  private parseCookies(headers: Headers): HttpCookie[] {
+    const setCookie: string[] = headers?.['set-cookie'];
     const cookies: HttpCookie[] = [ ];
     if (!setCookie) return cookies;
 
@@ -467,7 +436,7 @@ export class HttpService {
   private collectOutboundTelemetry(params: HttpRequestFlowParams): void {
     const { telemetry, span, response, error } = params;
     const { start, method, host, path, cacheStatus: cache } = telemetry;
-    const { statusCode: code, body: resBody, headers } = response || { };
+    const { status: code, body: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
     const traffic = AppTraffic.OUTBOUND;
@@ -509,8 +478,8 @@ export class HttpService {
     const { proxyExceptions, body } = request;
     const isProxyExceptions = proxyExceptions ?? this.httpModuleOptions.proxyExceptions;
 
-    const code: HttpStatus = isProxyExceptions && response?.statusCode
-      ? response?.statusCode
+    const code: HttpStatus = isProxyExceptions && response?.status
+      ? response?.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
     throw new HttpException({
@@ -525,7 +494,7 @@ export class HttpService {
         url: undefined,
       },
       outboundResponse: {
-        code: response?.statusCode,
+        code: response?.status,
         headers: response?.headers,
         body: response?.body,
       },

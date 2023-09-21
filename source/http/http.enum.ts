@@ -14,3 +14,15 @@ export enum HttpMethod {
   TRACE = 'TRACE',
   PATCH = 'PATCH',
 }
+
+export enum HttpRedirect {
+  ERROR = 'error',
+  FOLLOW = 'follow',
+  MANUAL = 'manual',
+}
+
+export enum HttpParser {
+  BUFFER = 'BUFFER',
+  JSON = 'JSON',
+  TEXT = 'TEXT',
+}

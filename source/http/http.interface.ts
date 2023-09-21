@@ -1,10 +1,9 @@
 import { HttpStatus, ModuleMetadata } from '@nestjs/common';
 import { Span, SpanOptions } from '@opentelemetry/api';
-import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
 import { StringifyOptions } from 'query-string';
 
 import { CacheStatus } from '../cache/cache.enum';
-import { HttpMethod } from './http.enum';
+import { HttpMethod, HttpParser, HttpRedirect } from './http.enum';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
@@ -29,41 +28,46 @@ export interface HttpOptions {
 }
 
 export interface HttpSharedOptions extends HttpOptions {
-/** In case of an exception, ignore it and return the response object. */
+  /** In case of an exception, ignore it and return the response object. */
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
-  /** Request query params with array joining support, overrides `searchParams`. */
+  /** Body parser to resolve request, if undefined returns the full Response object. */
+  parser?: HttpParser;
+  /** Whether request follows redirects, results in an error upon encountering a redirect, or returns the redirect. */
+  redirect?: HttpRedirect;
+  /** Request method. */
+  method?: HttpMethod;
+  /** Request URL. */
+  url?: string;
+  /** Request headers. */
+  headers?: Record<string, string>;
+  /** Request query params with array joining support. */
   query?: Record<string, any>;
   /** Query stringify options. */
   queryOptions?: StringifyOptions;
+  /** Request body to be sent as JSON. Should not be used in combination with `body` or `form`. */
+  json?: any;
+  /** Request body to be sent as form encoded. Should not be used in combination with `body` or `json`. */
+  form?: Record<string, string>;
 }
 
-export type HttpModuleOptionsBase =
-  Omit<ExtendOptions, 'retry' | 'cache' | 'cacheOptions'>
-  & HttpSharedOptions;
-
-export interface HttpModuleOptions extends HttpModuleOptionsBase {
-  /** Display name for logging. */
-  name?: string;
+export interface HttpModuleOptions extends HttpSharedOptions {
   /** Disable logs, metrics and traces. */
   disableTelemetry?: boolean;
   /** Disable trace propagation. */
   disablePropagation?: boolean;
+
 }
 
-export type HttpRequestParamsBase =
-  Omit<OptionsOfUnknownResponseBody, 'retry' | 'cache' | 'cacheOptions'>
-  & Omit<HttpSharedOptions, 'retryMethods' | 'cacheMethods'>;
-
-export interface HttpRequestParams extends Omit<HttpRequestParamsBase, 'method'> {
-  /** HTTP Method. */
-  method?: HttpMethod;
+export interface HttpRequestParams extends Omit<HttpSharedOptions, | 'retryMethods' | 'cacheMethods'> {
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string | number>;
+  /** Request body. Should not be used in combination with `json` or `form`. */
+  body?: any;
 }
 
-export interface HttpResponse<T> extends Response<T> {
+export interface HttpResponse extends Response {
   cookies?: HttpCookie[];
 }
 
@@ -79,12 +83,12 @@ export interface HttpRequestFlowParams {
   url: string;
   request: HttpRequestParams;
   ignoreExceptions: boolean;
-  resolveBodyOnly: boolean;
+  parser?: HttpParser;
   telemetry: HttpTelemetryParams;
   retry: HttpRetryParams;
   cache: HttpCacheParams;
   span?: Span;
-  response?: HttpResponse<unknown>;
+  response?: Response;
   error?: Error;
 }
 

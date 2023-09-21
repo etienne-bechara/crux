@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, Module } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
+import { HttpParser } from './http.enum';
 import { HttpRequestParams, HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
@@ -27,9 +28,8 @@ class GoogleService {
 @Module({
   imports: [
     HttpModule.register({
-      prefixUrl: 'https://jsonplaceholder.typicode.com',
-      resolveBodyOnly: true,
-      responseType: 'json',
+      url: 'https://jsonplaceholder.typicode.com',
+      parser: HttpParser.JSON,
       cacheTtl: 1000,
     }),
   ],
@@ -45,9 +45,8 @@ class JsonModule { }
 @Module({
   imports: [
     HttpModule.register({
-      prefixUrl: 'https://www.google.com',
-      resolveBodyOnly: false,
-      responseType: 'text',
+      url: 'https://www.google.com',
+      parser: HttpParser.TEXT,
     }),
   ],
   providers: [
