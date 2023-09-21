@@ -313,12 +313,12 @@ export class HttpService {
    */
   private async sendRequestCacheHandler(params: HttpSendParams): Promise<HttpResponse> {
     const { disableParsing, request, telemetry, cache } = params;
-    const { cacheTtl: ttl, cacheTimeout: timeout } = cache;
-    const { timeout: requestTimeout, host, method, path: rawPath, query, replacements } = request;
+    const { cacheTtl: ttl, cacheTimeout } = cache;
+    const { timeout, host, method, path: rawPath, query, replacements } = request;
 
     const traffic = AppTraffic.OUTBOUND;
     const path = this.replaceUrlPlaceholders(rawPath, replacements);
-    const cacheParams = { traffic, host, method, path, query, timeout };
+    const cacheParams = { traffic, host, method, path, query, timeout: cacheTimeout };
     telemetry.cacheStatus = CacheStatus.DISABLED;
 
     if (ttl) {
@@ -345,7 +345,7 @@ export class HttpService {
     }
     catch (e) {
       if (e.message.startsWith(HttpTimeoutMessage.OUTBOUND)) {
-        throw new Error(`Request timed out after ${requestTimeout} ms`);
+        throw new Error(`Request timed out after ${timeout} ms`);
       }
 
       throw e;
