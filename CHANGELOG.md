@@ -1,3 +1,11 @@
+## [5.0.5](https://github.com/etienne-bechara/crux/compare/v5.0.4...v5.0.5) (2023-09-22)
+
+
+### Bug Fixes
+
+* **http:** remove disableParsing and add option for custom parser ([f2999dc](https://github.com/etienne-bechara/crux/commit/f2999dc78a9672c76bfc5108d52cf3382fb023d0))
+* **telemetry:** lower default push intervals ([a8da8fb](https://github.com/etienne-bechara/crux/commit/a8da8fb5a598aa84c8a9ff058ac885f476386b28))
+
 ## [5.0.4](https://github.com/etienne-bechara/crux/compare/v5.0.3...v5.0.4) (2023-09-22)
 
 
