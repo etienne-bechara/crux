@@ -1,3 +1,22 @@
+# [5.0.0](https://github.com/etienne-bechara/crux/compare/v4.38.5...v5.0.0) (2023-09-22)
+
+
+### Bug Fixes
+
+* **http:** timeout and coalesces ([bd68c5d](https://github.com/etienne-bechara/crux/commit/bd68c5d83f7d7b575f6ab540d3141522687b2e06))
+* var names ([72f2a3a](https://github.com/etienne-bechara/crux/commit/72f2a3a23f2c34c5ec7091ed207d3e8fb333b744))
+
+
+### Features
+
+* **http:** replace got with fetch (wip) ([66b08c8](https://github.com/etienne-bechara/crux/commit/66b08c8dca1b49d442c552c4dfbca9c9ade2d36e))
+* **http:** replace got with native fetch() ([990e53e](https://github.com/etienne-bechara/crux/commit/990e53e5cf2bbb6322d32e8ab498c36d99eb5a87))
+
+
+### BREAKING CHANGES
+
+* **http:** replace got with native fetch()
+
 ## [4.38.5](https://github.com/etienne-bechara/crux/compare/v4.38.4...v4.38.5) (2023-09-18)
 
 
