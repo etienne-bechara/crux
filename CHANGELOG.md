@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/etienne-bechara/crux/compare/v5.0.5...v5.1.0) (2023-09-22)
+
+
+### Features
+
+* **http:** add dispatcher support ([61fe6fe](https://github.com/etienne-bechara/crux/commit/61fe6fecfda58a5779869a748d7f4010cd087856))
+
 ## [5.0.5](https://github.com/etienne-bechara/crux/compare/v5.0.4...v5.0.5) (2023-09-22)
 
 
