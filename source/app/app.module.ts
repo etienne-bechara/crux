@@ -103,14 +103,15 @@ export class AppModule {
    */
   private static configureOptions(options: AppOptions): void {
     const deepMergeProps: (keyof AppOptions)[] = [
-      'cache',
-      'console',
-      'docs',
       'fastify',
+      'cache',
+      'http',
       'logs',
+      'console',
       'loki',
       'metrics',
       'traces',
+      'docs',
     ];
 
     this.options = { ...APP_DEFAULT_OPTIONS, ...options };
