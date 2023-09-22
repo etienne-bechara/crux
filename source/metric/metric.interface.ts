@@ -34,7 +34,7 @@ export interface MetricOptions {
   username?: string;
   /** Prometheus password to publish metrics. Can be overridden by env `METRIC_PASSWORD`. */
   password?: string;
-  /** Prometheus API push interval in milliseconds. Default: 60s. */
+  /** Prometheus API push interval in milliseconds. Default: 30s. */
   pushInterval?: number;
 }
 

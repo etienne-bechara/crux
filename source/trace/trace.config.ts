@@ -4,7 +4,7 @@ import { TraceOptions } from './trace.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TRACE_DEFAULT_OPTIONS: TraceOptions = {
-  pushInterval: 60_000,
+  pushInterval: 5000,
   batchSize: 1000,
 };
 
