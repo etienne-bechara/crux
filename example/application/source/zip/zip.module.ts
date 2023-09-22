@@ -10,10 +10,7 @@ import { ZipService } from './zip.service';
       imports: [ ZipModule ],
       inject: [ ZipConfig ],
       useFactory: (zipConfig: ZipConfig) => ({
-        name: 'ZipModule',
-        prefixUrl: zipConfig.ZIP_HOST,
-        resolveBodyOnly: true,
-        responseType: 'json',
+        baseUrl: zipConfig.ZIP_HOST,
         cacheTtl: 60_000,
       }),
     }),

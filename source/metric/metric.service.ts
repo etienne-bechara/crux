@@ -95,7 +95,6 @@ export class MetricService {
     const { username, password, pushInterval } = metrics;
 
     this.httpService = new HttpService({
-      name: 'MetricModule',
       username: this.metricConfig.METRIC_USERNAME ?? username,
       password: this.metricConfig.METRIC_PASSWORD ?? password,
     }, this.appConfig, this.promiseService);

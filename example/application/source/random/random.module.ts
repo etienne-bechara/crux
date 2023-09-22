@@ -5,10 +5,7 @@ import { RandomService } from './random.service';
 
 @Module({
   imports: [
-    HttpModule.register({
-      name: 'RandomModule',
-      resolveBodyOnly: true,
-    }),
+    HttpModule.register(),
   ],
   controllers: [
     RandomController,

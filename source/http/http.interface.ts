@@ -1,17 +1,22 @@
 import { HttpStatus, ModuleMetadata } from '@nestjs/common';
 import { Span, SpanOptions } from '@opentelemetry/api';
-import { ExtendOptions, OptionsOfUnknownResponseBody, Response } from 'got';
 import { StringifyOptions } from 'query-string';
 
 import { CacheStatus } from '../cache/cache.enum';
-import { HttpMethod } from './http.enum';
+import { HttpMethod, HttpRedirect } from './http.enum';
+import { HttpError } from './http.error';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
   useFactory?: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
+/**
+ * HTTP options usable at application level.
+ */
 export interface HttpOptions {
+  /** Request timeout in milliseconds. Default: 60s. */
+  timeout?: number;
   /** Max amount of retries. Default: 2. */
   retryLimit?: number;
   /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
@@ -28,43 +33,93 @@ export interface HttpOptions {
   cacheTimeout?: number;
 }
 
-export interface HttpSharedOptions extends HttpOptions {
-/** In case of an exception, ignore it and return the response object. */
+/**
+ * HTTP options shared between module and request level.
+ */
+export interface HttpSharedOptions {
+  /** Returns the full `Response` object from `fetch()` API. */
+  fullResponse?: boolean;
+  /** Disables parsing of response body, should be used in conjunction with `fullResponse` to control body parsing. */
+  disableParsing?: boolean;
+  /** In case of an exception code, ignores it and resolve request. */
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
-  /** Request query params with array joining support, overrides `searchParams`. */
-  query?: Record<string, any>;
-  /** Query stringify options. */
-  queryOptions?: StringifyOptions;
+  /** Username for Basic authentication. */
+  username?: string;
+  /** Password for Basic authentication. */
+  password?: string;
+  /** Whether request follows redirects, results in an error upon encountering a redirect, or returns the redirect. */
+  redirect?: HttpRedirect;
+  /** Request headers. */
+  headers?: Record<string, string>;
 }
 
-export type HttpModuleOptionsBase =
-  Omit<ExtendOptions, 'retry' | 'cache' | 'cacheOptions'>
-  & HttpSharedOptions;
-
-export interface HttpModuleOptions extends HttpModuleOptionsBase {
-  /** Display name for logging. */
-  name?: string;
+/**
+ * HTTP options usable at module level.
+ */
+export interface HttpModuleOptions extends HttpOptions, HttpSharedOptions {
   /** Disable logs, metrics and traces. */
   disableTelemetry?: boolean;
   /** Disable trace propagation. */
   disablePropagation?: boolean;
+  /** Request base URL. */
+  baseUrl?: string;
 }
 
-export type HttpRequestParamsBase =
-  Omit<OptionsOfUnknownResponseBody, 'retry' | 'cache' | 'cacheOptions'>
-  & Omit<HttpSharedOptions, 'retryMethods' | 'cacheMethods'>;
-
-export interface HttpRequestParams extends Omit<HttpRequestParamsBase, 'method'> {
-  /** HTTP Method. */
+/**
+ * HTTP options usable at request level.
+ */
+export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
+  /** Request method. */
   method?: HttpMethod;
   /** Object containing replacement string for path variables. */
   replacements?: Record<string, string | number>;
+  /** Request query params with array joining support. */
+  query?: Record<string, any>;
+  /** Query stringify options. */
+  queryOptions?: StringifyOptions;
+  /** Request body. Should not be used in combination with `json` or `form`. */
+  body?: any;
+  /** Request body to be sent as JSON. Should not be used in combination with `body` or `form`. */
+  json?: any;
+  /** Request body to be sent as form encoded. Should not be used in combination with `body` or `json`. */
+  form?: Record<string, string>;
 }
 
-export interface HttpResponse<T> extends Response<T> {
-  cookies?: HttpCookie[];
+export interface HttpRequestSendParams extends Pick<HttpRequestOptions,
+'timeout'| 'username' | 'password' | 'redirect' | 'method' | 'replacements' | 'headers'
+| 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+  url: string;
+  scheme: string;
+  host: string;
+  path: string;
+}
+
+export interface HttpRetrySendParams extends Pick<HttpOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
+  attempt: number;
+}
+
+export type HttpCacheSendParams = Pick<HttpOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
+
+export interface HttpTelemetrySendParams {
+  spanOptions: SpanOptions;
+  start?: number;
+  cacheStatus?: CacheStatus;
+}
+
+export interface HttpSendParams {
+  fullResponse: boolean;
+  disableParsing: boolean;
+  ignoreExceptions: boolean;
+  proxyExceptions: boolean;
+  request: HttpRequestSendParams;
+  retry: HttpRetrySendParams;
+  telemetry: HttpTelemetrySendParams;
+  cache: HttpCacheSendParams;
+  span?: Span;
+  response?: HttpResponse;
+  error?: HttpError;
 }
 
 export interface HttpCookie {
@@ -75,35 +130,18 @@ export interface HttpCookie {
   expires: Date;
 }
 
-export interface HttpRequestFlowParams {
-  url: string;
-  request: HttpRequestParams;
-  ignoreExceptions: boolean;
-  resolveBodyOnly: boolean;
-  telemetry: HttpTelemetryParams;
-  retry: HttpRetryParams;
-  cache: HttpCacheParams;
-  span?: Span;
-  response?: HttpResponse<unknown>;
-  error?: Error;
+export interface HttpResponse extends Response {
+  cookies?: HttpCookie[];
+  data?: unknown;
 }
 
-export interface HttpRetryParams extends Pick<HttpSharedOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
-  attempt: number;
-}
-
-export type HttpCacheParams = Pick<HttpSharedOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
-
-export interface HttpTelemetryParams {
-  method: HttpMethod;
-  host: string;
-  path: string;
-  replacements: Record<string, string | number>;
-  query: Record<string, any>;
-  body: any;
-  headers: any;
-  spanOptions: SpanOptions;
-  start?: number;
-  span?: Span;
-  cacheStatus?: CacheStatus;
+export interface HttpExceptionData {
+  message: string;
+  proxyExceptions: boolean;
+  outboundRequest: HttpRequestSendParams;
+  outboundResponse: {
+    code: HttpStatus;
+    headers: Record<string, string>;
+    body: unknown;
+  };
 }

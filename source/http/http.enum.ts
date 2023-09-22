@@ -14,3 +14,14 @@ export enum HttpMethod {
   TRACE = 'TRACE',
   PATCH = 'PATCH',
 }
+
+export enum HttpRedirect {
+  ERROR = 'error',
+  FOLLOW = 'follow',
+  MANUAL = 'manual',
+}
+
+export enum HttpTimeoutMessage {
+  INBOUND = 'Inbound request timed out, further outbound requests were aborted',
+  OUTBOUND = 'The operation was aborted',
+}

@@ -5,6 +5,7 @@ import { HttpOptions } from './http.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const HTTP_DEFAULT_OPTIONS: HttpOptions = {
+  timeout: 60 * 1000,
   cacheTtl: 0,
   cacheTimeout: 500,
   cacheMethods: [
