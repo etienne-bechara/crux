@@ -45,6 +45,8 @@ export interface HttpSharedOptions {
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
   proxyExceptions?: boolean;
+  /** Custom undici agent. Requires installation of `undici` package and configuration with `new Agent()`. */
+  dispacher?: unknown;
   /** Username for Basic authentication. */
   username?: string;
   /** Password for Basic authentication. */
@@ -87,9 +89,7 @@ export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' |
   form?: Record<string, any>;
 }
 
-export interface HttpRequestSendParams extends Pick<HttpRequestOptions,
-'timeout'| 'username' | 'password' | 'redirect' | 'method' | 'replacements' | 'headers'
-| 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispacher' | 'username' | 'password' | 'redirect' | 'method' | 'replacements' | 'headers' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
   url: string;
   scheme: string;
   host: string;

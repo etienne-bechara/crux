@@ -75,7 +75,7 @@ export class HttpService {
    * @param params
    */
   private buildRequestParams(url: string, params: HttpRequestOptions): HttpRequestSendParams {
-    const { timeout, username, password, redirect, method, replacements } = params;
+    const { timeout, dispacher, username, password, redirect, method, replacements } = params;
     const { headers, query, queryOptions, body, json, form } = params;
 
     if ([ body, json, form ].filter(Boolean).length > 1) {
@@ -91,6 +91,7 @@ export class HttpService {
 
     return {
       timeout: timeout ?? this.httpModuleOptions.timeout ?? this.defaultOptions.timeout,
+      dispacher: dispacher || this.httpModuleOptions.dispacher,
       username: username || this.httpModuleOptions.username,
       password: password || this.httpModuleOptions.password,
       redirect: redirect || this.httpModuleOptions.redirect,
@@ -376,7 +377,7 @@ export class HttpService {
    */
   private async sendRequestFetchHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { request } = params;
-    const { timeout, username, password, redirect, method, url, replacements } = request;
+    const { timeout, dispacher, username, password, redirect, method, url, replacements } = request;
     const { headers, query, queryOptions, body, json, form } = request;
 
     const finalQuery = qs.stringify(query, queryOptions);
@@ -399,7 +400,8 @@ export class HttpService {
       headers['Authorization'] = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
     }
 
-    return fetch(`${finalUrl}${finalQuery ? `?${finalQuery}` : ''}`, {
+    const fetchOptions = {
+      dispacher,
       redirect,
       method,
       headers,
@@ -407,7 +409,9 @@ export class HttpService {
       signal: timeout
         ? AbortSignal.timeout(timeout)
         : undefined,
-    });
+    };
+
+    return fetch(`${finalUrl}${finalQuery ? `?${finalQuery}` : ''}`, fetchOptions);
   }
 
   /**
