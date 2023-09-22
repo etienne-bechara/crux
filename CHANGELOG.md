@@ -1,3 +1,10 @@
+## [5.1.1](https://github.com/etienne-bechara/crux/compare/v5.1.0...v5.1.1) (2023-09-22)
+
+
+### Bug Fixes
+
+* **app:** add http to deep merge ([4906447](https://github.com/etienne-bechara/crux/commit/49064474b2b04984d181e5d5d82786c677585e1c))
+
 # [5.1.0](https://github.com/etienne-bechara/crux/compare/v5.0.5...v5.1.0) (2023-09-22)
 
 
