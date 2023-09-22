@@ -208,7 +208,7 @@ export class HttpService {
   public async request<T>(url: string, params: HttpRequestOptions): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
     const { fullResponse } = sendParams;
-    let response: HttpResponse;
+    let response: HttpResponse<T>;
 
     while (!response) {
       response = await this.sendRequestRetryHandler(sendParams);
@@ -216,7 +216,7 @@ export class HttpService {
 
     return fullResponse
       ? response as T
-      : response.data as T;
+      : response.data;
   }
 
   /**
@@ -225,10 +225,10 @@ export class HttpService {
    * the loop handler may try again.
    * @param params
    */
-  private async sendRequestRetryHandler(params: HttpSendParams): Promise<HttpResponse> {
+  private async sendRequestRetryHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { retry } = params;
     const { retryLimit, retryCodes, retryDelay } = retry;
-    let response: HttpResponse;
+    let response: HttpResponse<T>;
 
     retry.attempt++;
 
@@ -263,7 +263,7 @@ export class HttpService {
    * builds its name based on parameters.
    * @param params
    */
-  private async sendRequestSpanHandler(params: HttpSendParams): Promise<HttpResponse> {
+  private async sendRequestSpanHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { request, telemetry } = params;
     const { method, url } = request;
     const { spanOptions } = telemetry;
@@ -283,7 +283,7 @@ export class HttpService {
    * the client exception handler.
    * @param params
    */
-  private async sendRequestClientHandler(params: HttpSendParams): Promise<HttpResponse> {
+  private async sendRequestClientHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     params.telemetry.start = Date.now();
 
     this.injectPropagationHeaders(params);
@@ -311,7 +311,7 @@ export class HttpService {
    * Orchestrates HTTP request sending with distributed cache support.
    * @param params
    */
-  private async sendRequestCacheHandler(params: HttpSendParams): Promise<HttpResponse> {
+  private async sendRequestCacheHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { disableParsing, request, telemetry, cache } = params;
     const { cacheTtl: ttl, cacheTimeout } = cache;
     const { timeout, host, method, path: rawPath, query, replacements } = request;
@@ -334,11 +334,11 @@ export class HttpService {
       if (data) {
         this.logService.debug('Resolving outbound request with cached data');
         telemetry.cacheStatus = CacheStatus.HIT;
-        return { data } as HttpResponse;
+        return { data } as HttpResponse<T>;
       }
     }
 
-    let response: HttpResponse;
+    let response: HttpResponse<T>;
 
     try {
       response = await this.sendRequestFetchHandler(params);
@@ -377,7 +377,7 @@ export class HttpService {
    * applicable.
    * @param params
    */
-  private async sendRequestFetchHandler(params: HttpSendParams): Promise<HttpResponse> {
+  private async sendRequestFetchHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { request } = params;
     const { timeout, username, password, redirect, method, url, replacements } = request;
     const { headers, query, queryOptions, body, json, form } = request;
@@ -445,7 +445,7 @@ export class HttpService {
    * Parses HTTP response according to content-type header.
    * @param response
    */
-  private async parseResponse<T>(response: HttpResponse): Promise<T> {
+  private async parseResponse<T>(response: HttpResponse<T>): Promise<T> {
     const { headers } = response;
     const contentType = headers.get('content-type');
 

@@ -118,7 +118,7 @@ export interface HttpSendParams {
   telemetry: HttpTelemetrySendParams;
   cache: HttpCacheSendParams;
   span?: Span;
-  response?: HttpResponse;
+  response?: HttpResponse<any>;
   error?: HttpError;
 }
 
@@ -130,9 +130,9 @@ export interface HttpCookie {
   expires: Date;
 }
 
-export interface HttpResponse extends Response {
+export interface HttpResponse<T = unknown> extends Response {
   cookies?: HttpCookie[];
-  data?: unknown;
+  data?: T;
 }
 
 export interface HttpExceptionData {
