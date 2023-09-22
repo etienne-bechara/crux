@@ -84,7 +84,7 @@ export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' |
   /** Request body to be sent as JSON. Should not be used in combination with `body` or `form`. */
   json?: any;
   /** Request body to be sent as form encoded. Should not be used in combination with `body` or `json`. */
-  form?: Record<string, string>;
+  form?: Record<string, any>;
 }
 
 export interface HttpRequestSendParams extends Pick<HttpRequestOptions,
