@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/etienne-bechara/crux/compare/v5.1.1...v5.1.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* **http:** dispatcher typo ([77dd160](https://github.com/etienne-bechara/crux/commit/77dd1604dfa6d480458e4f431fd2f8c7913942fc))
+
 ## [5.1.1](https://github.com/etienne-bechara/crux/compare/v5.1.0...v5.1.1) (2023-09-22)
 
 
