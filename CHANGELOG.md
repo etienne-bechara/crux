@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/etienne-bechara/crux/compare/v5.0.0...v5.0.1) (2023-09-22)
+
+
+### Bug Fixes
+
+* update docs ([f262085](https://github.com/etienne-bechara/crux/commit/f2620859f24ec95538d61a03db34b8882643b6eb))
+
 # [5.0.0](https://github.com/etienne-bechara/crux/compare/v4.38.5...v5.0.0) (2023-09-22)
 
 
