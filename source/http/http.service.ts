@@ -75,7 +75,7 @@ export class HttpService {
    * @param params
    */
   private buildRequestParams(url: string, params: HttpRequestOptions): HttpRequestSendParams {
-    const { timeout, dispacher, username, password, redirect, method, replacements } = params;
+    const { timeout, dispatcher, username, password, redirect, method, replacements } = params;
     const { headers, query, queryOptions, body, json, form } = params;
 
     if ([ body, json, form ].filter(Boolean).length > 1) {
@@ -91,7 +91,7 @@ export class HttpService {
 
     return {
       timeout: timeout ?? this.httpModuleOptions.timeout ?? this.defaultOptions.timeout,
-      dispacher: dispacher || this.httpModuleOptions.dispacher,
+      dispatcher: dispatcher || this.httpModuleOptions.dispatcher,
       username: username || this.httpModuleOptions.username,
       password: password || this.httpModuleOptions.password,
       redirect: redirect || this.httpModuleOptions.redirect,
@@ -377,7 +377,7 @@ export class HttpService {
    */
   private async sendRequestFetchHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { request } = params;
-    const { timeout, dispacher, username, password, redirect, method, url, replacements } = request;
+    const { timeout, dispatcher, username, password, redirect, method, url, replacements } = request;
     const { headers, query, queryOptions, body, json, form } = request;
 
     const finalQuery = qs.stringify(query, queryOptions);
@@ -401,7 +401,7 @@ export class HttpService {
     }
 
     const fetchOptions = {
-      dispacher,
+      dispatcher,
       redirect,
       method,
       headers,
