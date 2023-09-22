@@ -1,3 +1,10 @@
+## [5.0.4](https://github.com/etienne-bechara/crux/compare/v5.0.3...v5.0.4) (2023-09-22)
+
+
+### Bug Fixes
+
+* **http:** allow typing response body from full response ([cb5116f](https://github.com/etienne-bechara/crux/commit/cb5116f14e1cc28b0a881d30b405d9c81995a9b2))
+
 ## [5.0.3](https://github.com/etienne-bechara/crux/compare/v5.0.2...v5.0.3) (2023-09-22)
 
 
