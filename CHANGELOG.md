@@ -1,3 +1,10 @@
+## [5.0.2](https://github.com/etienne-bechara/crux/compare/v5.0.1...v5.0.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* **http:** return Buffer instead of ArrayBuffer when automatically parsing ([7aa7eff](https://github.com/etienne-bechara/crux/commit/7aa7eff04708693a4dba2e251803dd61b6b8e326))
+
 ## [5.0.1](https://github.com/etienne-bechara/crux/compare/v5.0.0...v5.0.1) (2023-09-22)
 
 
