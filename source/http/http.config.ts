@@ -1,11 +1,26 @@
 import { HttpStatus } from '@nestjs/common';
 
 import { HttpMethod } from './http.enum';
-import { HttpOptions } from './http.interface';
+import { HttpOptions, HttpResponse } from './http.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const HTTP_DEFAULT_OPTIONS: HttpOptions = {
   timeout: 60 * 1000,
+  parser: async (res: HttpResponse) => {
+    const { headers } = res;
+    const contentType = headers.get('content-type');
+
+    if (contentType?.startsWith('application/json')) {
+      return res.json();
+    }
+    else if (contentType?.startsWith('text')) {
+      return res.text();
+    }
+    else {
+      const arrayBuffer = await res.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    }
+  },
   cacheTtl: 0,
   cacheTimeout: 500,
   cacheMethods: [

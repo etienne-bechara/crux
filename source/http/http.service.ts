@@ -181,14 +181,14 @@ export class HttpService {
    * @param params
    */
   private buildRequestSendParams(url: string, params: HttpRequestOptions): HttpSendParams {
-    const { fullResponse, disableParsing, ignoreExceptions, proxyExceptions } = params;
+    const { fullResponse, ignoreExceptions, proxyExceptions, parser } = params;
     const request = this.buildRequestParams(url, params);
 
     return {
       fullResponse: fullResponse ?? this.httpModuleOptions.fullResponse,
-      disableParsing: disableParsing ?? this.httpModuleOptions.disableParsing,
       ignoreExceptions: ignoreExceptions ?? this.httpModuleOptions.ignoreExceptions,
       proxyExceptions: proxyExceptions ?? this.httpModuleOptions.proxyExceptions,
+      parser: parser || this.httpModuleOptions.parser || this.defaultOptions.parser,
       request,
       retry: this.buildRetryParams(request.method, params),
       cache: this.buildCacheParams(request.method, params),
@@ -312,7 +312,7 @@ export class HttpService {
    * @param params
    */
   private async sendRequestCacheHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
-    const { disableParsing, request, telemetry, cache } = params;
+    const { parser, request, telemetry, cache } = params;
     const { cacheTtl: ttl, cacheTimeout } = cache;
     const { timeout, host, method, path: rawPath, query, replacements } = request;
 
@@ -352,10 +352,7 @@ export class HttpService {
     }
 
     response.cookies = this.parseCookies(response);
-
-    if (!disableParsing) {
-      response.data = await this.parseResponse(response);
-    }
+    response.data = await parser(response) as T;
 
     const { status, data } = response;
 
@@ -363,7 +360,7 @@ export class HttpService {
       throw new HttpError(`Request failed with status code ${status}`, response);
     }
 
-    if (ttl && !disableParsing) {
+    if (ttl) {
       telemetry.cacheStatus = CacheStatus.MISS;
       this.cacheService.setCache(data, { ...cacheParams, ttl });
     }
@@ -439,26 +436,6 @@ export class HttpService {
     this.logService?.http(`⯅ ${method} ${url}`, {
       method, scheme, host, path, replacements, query, body, headers,
     });
-  }
-
-  /**
-   * Parses HTTP response according to content-type header.
-   * @param response
-   */
-  private async parseResponse<T>(response: HttpResponse<T>): Promise<T> {
-    const { headers } = response;
-    const contentType = headers.get('content-type');
-
-    if (contentType?.startsWith('application/json')) {
-      return response.json() as Promise<T>;
-    }
-    else if (contentType?.startsWith('text')) {
-      return response.text() as Promise<T>;
-    }
-    else {
-      const arrayBuffer = await response.arrayBuffer();
-      return Buffer.from(arrayBuffer) as T;
-    }
   }
 
   /**

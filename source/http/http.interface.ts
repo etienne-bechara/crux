@@ -17,6 +17,8 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
 export interface HttpOptions {
   /** Request timeout in milliseconds. Default: 60s. */
   timeout?: number;
+  /** Response parser. Default: Parse as JSON or text based on response `Content-Type`, otherwise as buffer. */
+  parser?: (res: HttpResponse) => Promise<unknown>;
   /** Max amount of retries. Default: 2. */
   retryLimit?: number;
   /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
@@ -39,8 +41,6 @@ export interface HttpOptions {
 export interface HttpSharedOptions {
   /** Returns the full `Response` object from `fetch()` API. */
   fullResponse?: boolean;
-  /** Disables parsing of response body, should be used in conjunction with `fullResponse` to control body parsing. */
-  disableParsing?: boolean;
   /** In case of an exception code, ignores it and resolve request. */
   ignoreExceptions?: boolean;
   /** In case of an exception, will return to client the exact same code and body from upstream. */
@@ -110,9 +110,9 @@ export interface HttpTelemetrySendParams {
 
 export interface HttpSendParams {
   fullResponse: boolean;
-  disableParsing: boolean;
   ignoreExceptions: boolean;
   proxyExceptions: boolean;
+  parser: (res: HttpResponse) => Promise<unknown>;
   request: HttpRequestSendParams;
   retry: HttpRetrySendParams;
   telemetry: HttpTelemetrySendParams;
