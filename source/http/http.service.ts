@@ -442,10 +442,10 @@ export class HttpService {
   }
 
   /**
-   * Parses HTTP response according to target parser.
+   * Parses HTTP response according to content-type header.
    * @param response
    */
-  private parseResponse<T>(response: HttpResponse): Promise<T> {
+  private async parseResponse<T>(response: HttpResponse): Promise<T> {
     const { headers } = response;
     const contentType = headers.get('content-type');
 
@@ -456,7 +456,8 @@ export class HttpService {
       return response.text() as Promise<T>;
     }
     else {
-      return response.arrayBuffer() as Promise<T>;
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer) as T;
     }
   }
 
