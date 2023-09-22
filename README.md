@@ -9,7 +9,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 
 - Framework: [NestJS](https://docs.nestjs.com/)
 - HTTP Server: [Fastify](https://www.fastify.io/docs/latest/)
-- HTTP Client: [GOT](https://github.com/sindresorhus/got)
+- HTTP Client: [Fetch](https://nodejs.org/dist/latest-v18.x/docs/api/globals.html#fetch)
 - Caching: [ioredis](https://www.npmjs.com/package/ioredis) (distributed) or in-memory (local)
 - ORM: [MikroORM](https://mikro-orm.io/docs/installation)
 - Swagger: [Redoc](https://github.com/mxarc/nestjs-redoc)
@@ -31,7 +31,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - [\[Config\] Environment Variables](docs/module/config.md)
 - [\[Context\] Request, Response and Metadata](docs/module/context.md)
 - [\[Doc\] Redoc and OpenAPI](docs/module/doc.md)
-- [\[Http\] GOT Client](docs/module/http.md)
+- [\[Http\] Fetch API](docs/module/http.md)
 - [\[Log\] Loki](docs/module/log.md)
 - [\[Memory\] Volatile Storage with TTL](docs/module/memory.md)
 - [\[Metric\] Prometheus](docs/module/metric.md)
@@ -45,5 +45,4 @@ This framework is frequently revised in order to keep dependencies up to date.
 
 However, the following packages are currently behind latest version:
 - `@fastify/static@6.10.2`: Latest requires `fastify@4.23.0`, but `@nestjs/platform-fastify` uses `fastify@4.22.2`,
-- `got@11.8.5`: Latest requires ESM
 - `query-string@7.1.3` Latest requires ESM

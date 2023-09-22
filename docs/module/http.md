@@ -1,6 +1,6 @@
 # Http Module
 
-Work as a wrapper of GOT library and exposes methods to make http requests.
+Work as a wrapper of Node.js Fetch API and exposes methods to make http requests.
 
 The scope of this module is transient, which means one new instance will be provided every time it is injected.
 
@@ -69,14 +69,6 @@ const httpModuleOptions: HttpAsyncModuleOptions = {
 })
 export class FooModule { }
 ```
-
----
-
-## Module Options
-
-The list of options are available at official [GOT documentation](https://github.com/sindresorhus/got/blob/main/documentation/2-options.md).
-
-They have been extended with [optional](../../source/http/http.interface.ts) configurations.
 
 ---
 
