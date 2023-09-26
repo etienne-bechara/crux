@@ -1,3 +1,10 @@
+# [5.2.0](https://github.com/etienne-bechara/crux/compare/v5.1.2...v5.2.0) (2023-09-26)
+
+
+### Features
+
+* **trace:** add sampler ratio ([ac2a0c9](https://github.com/etienne-bechara/crux/commit/ac2a0c99203553521733175e9bfeeb4e31e581ea))
+
 ## [5.1.2](https://github.com/etienne-bechara/crux/compare/v5.1.1...v5.1.2) (2023-09-22)
 
 
