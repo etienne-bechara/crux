@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "lib": [ "es2020", "dom" ],
+    "lib": [ "es2023", "dom" ],
     "moduleResolution": "node",
     "outDir": "dist",
     "declaration": true,
