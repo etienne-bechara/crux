@@ -7,7 +7,7 @@ import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
-import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { BasicTracerProvider, BatchSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 import { AppConfig } from '../app/app.config';
@@ -69,7 +69,7 @@ export class TraceService {
    */
   private setupOpenTelemetryComponents(): void {
     const { name: job, instance, traces } = this.appConfig.APP_OPTIONS || { };
-    const { username, password, pushInterval, batchSize } = traces;
+    const { username, password, pushInterval, batchSize, samplerRatio } = traces;
 
     const environment = this.appConfig.NODE_ENV;
     const contextManager = new AsyncHooksContextManager();
@@ -95,6 +95,9 @@ export class TraceService {
     });
 
     const provider = new BasicTracerProvider({
+      sampler: new ParentBasedSampler({
+        root: new TraceIdRatioBasedSampler(samplerRatio),
+      }),
       resource: new Resource({
         [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: environment,
         [SemanticResourceAttributes.SERVICE_NAME]: job,

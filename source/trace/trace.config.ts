@@ -6,6 +6,7 @@ import { TraceOptions } from './trace.interface';
 export const TRACE_DEFAULT_OPTIONS: TraceOptions = {
   pushInterval: 5000,
   batchSize: 1000,
+  samplerRatio: 1,
 };
 
 @Config()
