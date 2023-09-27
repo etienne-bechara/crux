@@ -329,7 +329,7 @@ export class HttpService {
         response = await this.cacheService.getCache(cacheParams);
       }
       catch (e) {
-        this.logService.warning('Failed to acquire outbound cached response', e as Error);
+        this.logService.warning('Failed to acquire outbound cached data', e as Error);
       }
 
       if (response) {
