@@ -1,6 +1,19 @@
 # [5.3.0-beta.1](https://github.com/etienne-bechara/crux/compare/v5.2.1...v5.3.0-beta.1) (2023-09-27)
 
 
+### Bug Fixes
+
+* trigger beta release ([922f43a](https://github.com/etienne-bechara/crux/commit/922f43aa12d12747ffb77a2bf6be4c43ad84b2c9))
+
+
+### Features
+
+* add profiling support (wip) ([6acbb28](https://github.com/etienne-bechara/crux/commit/6acbb280089080570826a0309e575d1394c03bb6))
+* **profile:** add push interval and tags ([f971ca2](https://github.com/etienne-bechara/crux/commit/f971ca22a18502c93cda3b23c7257ff76f3759ad))
+
+# [5.3.0-beta.1](https://github.com/etienne-bechara/crux/compare/v5.2.1...v5.3.0-beta.1) (2023-09-27)
+
+
 ### Features
 
 * add profiling support (wip) ([6acbb28](https://github.com/etienne-bechara/crux/commit/6acbb280089080570826a0309e575d1394c03bb6))
