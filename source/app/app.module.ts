@@ -112,6 +112,7 @@ export class AppModule {
       'loki',
       'metrics',
       'traces',
+      'profiles',
       'docs',
     ];
 
