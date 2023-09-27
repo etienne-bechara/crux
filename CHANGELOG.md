@@ -1,3 +1,10 @@
+# [5.3.0-beta.2](https://github.com/etienne-bechara/crux/compare/v5.3.0-beta.1...v5.3.0-beta.2) (2023-09-27)
+
+
+### Bug Fixes
+
+* add profiles to deep merge ([bd89a32](https://github.com/etienne-bechara/crux/commit/bd89a329eab154d0bdd63f334538529324b93573))
+
 # [5.3.0-beta.1](https://github.com/etienne-bechara/crux/compare/v5.2.1...v5.3.0-beta.1) (2023-09-27)
 
 
