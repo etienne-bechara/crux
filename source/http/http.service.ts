@@ -322,24 +322,22 @@ export class HttpService {
     const cacheParams = { traffic, host, method, path, query, timeout: cacheTimeout };
     telemetry.cacheStatus = CacheStatus.DISABLED;
 
-    if (ttl) {
-      let data: unknown;
+    let response: HttpResponse<T>;
 
+    if (ttl) {
       try {
-        data = await this.cacheService.getCache(cacheParams);
+        response = await this.cacheService.getCache(cacheParams);
       }
       catch (e) {
-        this.logService.warning('Failed to acquire outbound cached data', e as Error);
+        this.logService.warning('Failed to acquire outbound cached response', e as Error);
       }
 
-      if (data) {
+      if (response) {
         this.logService.debug('Resolving outbound request with cached data');
         telemetry.cacheStatus = CacheStatus.HIT;
-        return { data } as HttpResponse<T>;
+        return response;
       }
     }
-
-    let response: HttpResponse<T>;
 
     try {
       response = await this.sendRequestFetchHandler(params);
@@ -363,7 +361,7 @@ export class HttpService {
 
     if (ttl) {
       telemetry.cacheStatus = CacheStatus.MISS;
-      this.cacheService.setCache(data, { ...cacheParams, ttl });
+      this.cacheService.setCache({ status, data }, { ...cacheParams, ttl });
     }
 
     return response;
@@ -482,10 +480,11 @@ export class HttpService {
     const { telemetry, span, request, response, error } = params;
     const { start, cacheStatus: cache } = telemetry;
     const { url, method, host, path } = request;
-    const { status: code, data: resBody, headers } = response || { };
+    const { status, data: resBody, headers } = response || { };
     const duration = (Date.now() - start) / 1000;
 
     const traffic = AppTraffic.OUTBOUND;
+    const code = status || HttpStatus.INTERNAL_SERVER_ERROR;
     const body = this.appConfig.APP_OPTIONS.logs?.enableResponseBody ? resBody || undefined : undefined;
 
     this.logService?.http(`⯆ ${method} ${url}`, { duration, code, body, headers });
