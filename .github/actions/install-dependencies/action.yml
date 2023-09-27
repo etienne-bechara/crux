@@ -32,4 +32,4 @@ runs:
 
     - name: Install Dependencies
       shell: bash
-      run: pnpm i --frozen-lockfile --ignore-scripts
+      run: pnpm i --frozen-lockfile
