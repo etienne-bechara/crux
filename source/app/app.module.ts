@@ -22,6 +22,7 @@ import { LogService } from '../log/log.service';
 import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
+import { ProfileModule } from '../profile/profile.module';
 import { PromiseModule } from '../promise/promise.module';
 import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
@@ -129,9 +130,11 @@ export class AppModule {
       this.options.disableFilter = true;
       this.options.disableLogs = true;
       this.options.disableMetrics = true;
+      this.options.disableProfiles = true;
       this.options.disableScan = true;
       this.options.disableSerializer = true;
       this.options.disableStatus = true;
+      this.options.disableTraces = true;
       this.options.disableValidator = true;
     }
 
@@ -287,8 +290,8 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
-    const { envPath, imports: importedModules, exports: exportedModules } = this.options;
+    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableProfiles } = this.options;
+    const { disableDocs, envPath, imports: importedModules, exports: exportedModules } = this.options;
     const preloadedModules: any[] = [ ];
     let sourceModules: unknown[] = [ ];
 
@@ -325,6 +328,10 @@ export class AppModule {
     }
     else {
       defaultModules.push(TraceModule);
+    }
+
+    if (!disableProfiles) {
+      defaultModules.push(ProfileModule);
     }
 
     if (!disableDocs) {

@@ -18,7 +18,7 @@ services:
 
   # Grafana - Centralized analytics vizualization
   grafana:
-    image: grafana/grafana:9.4.14
+    image: grafana/grafana:10.1.2
     container_name: crux-grafana
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
@@ -71,6 +71,17 @@ services:
       - --config.file=/etc/tempo/tempo.yaml
     volumes:
       - ./tempo:/etc/tempo
+
+  # Pyroscope - Continuous CPU and memory profiling
+  pyroscope:
+    image: grafana/pyroscope:1.0.0
+    container_name: crux-pyroscope
+    ports:
+      - 4040:4040
+    networks:
+      - internal
+    command:
+      - 'server'
 
   # Redis - Key value storage
   redis:

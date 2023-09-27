@@ -27,6 +27,9 @@ void AppModule.boot({
     url: 'http://tempo:4317/v1/traces',
     pushInterval: 5000,
   },
+  profiles: {
+    url: 'http://pyroscope:4040',
+  },
   docs: {
     tagGroups: [
       { name: 'User Management', tags: [ 'User' ] },

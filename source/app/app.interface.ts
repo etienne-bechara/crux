@@ -10,6 +10,7 @@ import { HttpExceptionData, HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
+import { ProfileOptions } from '../profile/profile.interface';
 import { TraceOptions } from '../trace/trace.interface';
 
 export interface AppOptions extends ModuleMetadata {
@@ -37,6 +38,8 @@ export interface AppOptions extends ModuleMetadata {
   disableMetrics?: boolean;
   /** Disables request tracer. */
   disableTraces?: boolean;
+  /** Disables application profiler. */
+  disableProfiles?: boolean;
   /** Disables documentation generator and `docs` endpoint. */
   disableDocs?: boolean;
   /** Application name, also used as job name for telemetry. */
@@ -75,6 +78,8 @@ export interface AppOptions extends ModuleMetadata {
   metrics?: MetricOptions;
   /** Traces configuration. */
   traces?: TraceOptions;
+  /** Profiles configuration. */
+  profiles?: ProfileOptions;
   /** Documentation configuration. */
   docs?: DocOptions;
 }

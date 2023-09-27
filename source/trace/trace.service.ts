@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable no-import-assign */
 import * as grpc from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
 import { Context, context, diag, DiagLogLevel, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';
@@ -45,7 +43,7 @@ export class TraceService {
     const traceUrl = this.buildTraceUrl();
 
     if (!this.appConfig.APP_OPTIONS.disableTraces && !traceUrl) {
-      this.logService.warning('Trace disable due to missing URL');
+      this.logService.warning('Tracing disabled due to missing URL');
       this.appConfig.APP_OPTIONS.disableTraces = true;
     }
 
