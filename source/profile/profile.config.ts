@@ -3,7 +3,9 @@ import { IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.de
 import { ProfileOptions } from './profile.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const PROFILE_DEFAULT_OPTIONS: ProfileOptions = { };
+export const PROFILE_DEFAULT_OPTIONS: ProfileOptions = {
+  pushInterval: 5000,
+};
 
 @Config()
 export class ProfileConfig {

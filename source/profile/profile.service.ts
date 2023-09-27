@@ -45,14 +45,19 @@ export class ProfileService {
    */
   private setupProfiler(): void {
     if (!this.isEnabled()) return;
-    const { name, profiles } = this.appConfig.APP_OPTIONS || { };
-    const { username, password } = profiles;
+
+    const { name: job, instance, profiles } = this.appConfig.APP_OPTIONS || { };
+    const { username, password, pushInterval } = profiles;
+    const environment = this.appConfig.NODE_ENV;
+
+    process.env['PYROSCOPE_SAMPLING_DURATION'] ??= String(pushInterval);
 
     Pyroscope.init({
       serverAddress: this.buildProfileUrl(),
-      appName: name,
+      appName: job,
       basicAuthUser: username,
       basicAuthPassword: password,
+      tags: { environment, job, instance },
     });
 
     Pyroscope.start();
