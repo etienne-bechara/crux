@@ -6,3 +6,5 @@ export interface ProfileOptions {
   /** Pyroscope password to publish profiles. Can be overridden by env `PROFILE_PASSWORD`. */
   password?: string;
 }
+
+// TODO: add express override to remove dependency
