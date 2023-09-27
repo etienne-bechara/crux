@@ -1,3 +1,11 @@
+## [5.2.1](https://github.com/etienne-bechara/crux/compare/v5.2.0...v5.2.1) (2023-09-27)
+
+
+### Bug Fixes
+
+* **http:** wrong status code in outbound telemetry ([0cb2270](https://github.com/etienne-bechara/crux/commit/0cb22703ecb6e38af88f58f9a74c8d4b17a81a22))
+* typo ([0bdd790](https://github.com/etienne-bechara/crux/commit/0bdd7901b703809022e2f3f351950fd9003ef822))
+
 # [5.2.0](https://github.com/etienne-bechara/crux/compare/v5.1.2...v5.2.0) (2023-09-26)
 
 
