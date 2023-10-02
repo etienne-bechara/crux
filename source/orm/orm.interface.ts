@@ -44,7 +44,7 @@ export interface OrmSubscriberChangeset<Entity> {
 }
 
 export interface OrmSubscriberOptions {
-  entities: any | any[];
+  entities: any;
 }
 
 export interface OrmUpdateParams<Entity> {

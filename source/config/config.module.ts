@@ -63,7 +63,7 @@ export class ConfigModule {
       if (fileExist) return testFile;
 
       testPath = `${testPath}/..`;
-      testFile = testFile.replace(/\.env$/g, '../.env');
+      testFile = testFile.replaceAll(/\.env$/g, '../.env');
     }
   }
 

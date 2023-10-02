@@ -1,6 +1,5 @@
 import { EntityManager, EntityName } from '@mikro-orm/core';
-import { QueryBuilder as MySqlQueryBuilder } from '@mikro-orm/mysql';
-import { QueryBuilder as PostgreSqlQueryBuilder } from '@mikro-orm/postgresql';
+import { QueryBuilder } from '@mikro-orm/mysql';
 import { BadRequestException, ConflictException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
@@ -31,7 +30,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
   /**
    * Creates a query builder instance .
    */
-  public createQueryBuilder(): MySqlQueryBuilder<Entity> | PostgreSqlQueryBuilder<Entity> {
+  public createQueryBuilder(): QueryBuilder<Entity> {
     return this.entityManager['createQueryBuilder'](this.entityName);
   }
 
@@ -39,7 +38,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * Checks if provided data is valid as single or multiple entities.
    * @param data
    */
-  protected isValidData(data: unknown | unknown[]): boolean {
+  protected isValidData(data: unknown): boolean {
     return Array.isArray(data) ? data.length > 0 : !!data;
   }
 
@@ -91,7 +90,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * @param retries
    */
   protected async runWithinSpan<T>(spanPrefix: OrmSpanPrefix, operation: () => Promise<T>, retries = 0): Promise<T> {
-    const spanName = `Orm | ${spanPrefix} ${this.entityName}`;
+    const spanName = `Orm | ${spanPrefix} ${this.entityName as string}`;
     const hasContext = !!ContextStorage.getStore();
     const shareableContext = [ OrmSpanPrefix.READ, OrmSpanPrefix.COUNT, OrmSpanPrefix.POPULATE ];
     const cleanContext = !hasContext || !shareableContext.includes(spanPrefix);

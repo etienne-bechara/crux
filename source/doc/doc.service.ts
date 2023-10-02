@@ -81,15 +81,15 @@ export class DocService {
     const fontIds: string[] = [ ];
 
     if (fontFamily) {
-      fontIds.push(fontFamily.toLowerCase().replace(/\s+/g, '-'));
+      fontIds.push(fontFamily.toLowerCase().replaceAll(/\s+/g, '-'));
     }
 
     if (code?.fontFamily) {
-      fontIds.push(code.fontFamily.toLowerCase().replace(/\s+/g, '-'));
+      fontIds.push(code.fontFamily.toLowerCase().replaceAll(/\s+/g, '-'));
     }
 
     if (headings?.fontFamily) {
-      fontIds.push(headings.fontFamily.toLowerCase().replace(/\s+/g, '-'));
+      fontIds.push(headings.fontFamily.toLowerCase().replaceAll(/\s+/g, '-'));
     }
 
     const uniqueIs = [ ...new Set(fontIds) ];

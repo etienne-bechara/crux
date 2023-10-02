@@ -26,7 +26,7 @@ export class UserSubscriber extends OrmSubscriber<User> {
     const names = name.split(' ');
 
     if (names.length > 2) {
-      entity.name = `${names[0]} ${names[names.length - 1]}`;
+      entity.name = `${names[0]} ${names.at(-1)}`;
     }
   }
 

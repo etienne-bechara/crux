@@ -102,13 +102,16 @@ export function ToString(options: TransformToStringOptions = { }): any {
       if (!str && str !== '') return null;
 
       switch (options.case) {
-        case 'lower': { return str.toLowerCase();
+        case 'lower': {
+          return str.toLowerCase();
         }
 
-        case 'upper': { return str.toUpperCase();
+        case 'upper': {
+          return str.toUpperCase();
         }
 
-        case 'title': { return str.toLowerCase().replace(/\b[a-z]/g, (x) => x.toUpperCase());
+        case 'title': {
+          return str.toLowerCase().replaceAll(/\b[a-z]/g, (x) => x.toUpperCase());
         }
 
         default: { return str;
