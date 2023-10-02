@@ -1,3 +1,11 @@
+## [5.2.2](https://github.com/etienne-bechara/crux/compare/v5.2.1...v5.2.2) (2023-10-02)
+
+
+### Bug Fixes
+
+* **main:** bump packages ([6d69c70](https://github.com/etienne-bechara/crux/commit/6d69c70091d3dc1cb04c8fa6703437c087f7afe9))
+* **main:** lint fixes ([8387a8d](https://github.com/etienne-bechara/crux/commit/8387a8d1a12fd97e857b21ebf799e3a69e77fed3))
+
 ## [5.2.1](https://github.com/etienne-bechara/crux/compare/v5.2.0...v5.2.1) (2023-09-27)
 
 
