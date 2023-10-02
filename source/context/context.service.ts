@@ -108,7 +108,7 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestPath(): string {
     const req = this.getRequest();
-    return req?.routerPath || req?.url?.split('?')[0];
+    return req?.routeOptions?.url || req?.url?.split('?')[0];
   }
 
   /**

@@ -44,5 +44,4 @@ A Node.js all-in-one opinionated package intended for backend projects.
 This framework is frequently revised in order to keep dependencies up to date.
 
 However, the following packages are currently behind latest version:
-- `@fastify/static@6.10.2`: Latest requires `fastify@4.23.0`, but `@nestjs/platform-fastify` uses `fastify@4.22.2`,
 - `query-string@7.1.3` Latest requires ESM

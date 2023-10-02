@@ -6,6 +6,7 @@ import http from 'http';
 import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
+import { HttpMethod } from '../http/http.enum';
 import { HttpExceptionData, HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
@@ -97,13 +98,21 @@ export interface AppRequest {
   ips: string[];
   hostname: string;
   protocol: 'http' | 'https';
-  method: string;
+  method: HttpMethod;
   url: string;
   routerMethod: string;
-  routerPath: string;
   is404: boolean;
   socket: any;
   context: any;
+  routeOptions: {
+    method: HttpMethod;
+    url: string;
+    bodyLimit: number;
+    attachValidation: boolean;
+    logLevel: string;
+    exposeHeadRoute: boolean;
+    prefixTrailingSlash: string;
+  };
 }
 
 /**
