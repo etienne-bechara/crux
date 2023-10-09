@@ -43,17 +43,17 @@ export abstract class OrmBaseRepository<Entity extends object> {
   }
 
   /**
-   * Returns custom primary key or 'id'.
+   * Returns entity primary keys.
    */
-  protected getPrimaryKey(): string {
-    return this.repositoryOptions.primaryKey || 'id';
+  protected getPrimaryKeys(): string[] {
+    return this.entityManager.getMetadata().get(this.entityName as string).primaryKeys;
   }
 
   /**
-   * Returns custom nested primary keys including id.
+   * Returns custom nested primary keys.
    */
   protected getNestedPrimaryKeys(): string[] {
-    this.repositoryOptions.nestedPrimaryKeys ??= [];
+    this.repositoryOptions.nestedPrimaryKeys ??= [ ];
     return [ 'id', ...this.repositoryOptions.nestedPrimaryKeys ];
   }
 

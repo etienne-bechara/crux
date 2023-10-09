@@ -115,7 +115,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       const dataArray = Array.isArray(data) ? data : [ data ];
       const uniqueKey = this.getValidUniqueKey(options.uniqueKey);
       const nestedPks = this.getNestedPrimaryKeys();
-      const pk = this.getPrimaryKey();
 
       const resultMap: { index: number; target: 'read' | 'create' | 'update' }[] = [ ];
       const updateParams: OrmUpdateParams<Entity>[] = [ ];
@@ -192,7 +191,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
           throw new ConflictException({
             message: OrmException.UNIQUE_KEY_FAIL,
             uniqueKey,
-            matches: match.entity.map((e) => e[pk]),
           });
         }
 

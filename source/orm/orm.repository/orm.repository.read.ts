@@ -1,6 +1,6 @@
 import { EntityManager, EntityName, FindOptions } from '@mikro-orm/core';
 import { AutoPath, FilterQuery } from '@mikro-orm/core/typings';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 import { OrmPageDto } from '../orm.dto';
 import { OrmException, OrmSpanPrefix } from '../orm.enum';
@@ -66,8 +66,15 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     id: string | number,
     options: OrmReadOptions<Entity, P> = { },
   ): Promise<Entity> {
-    const pk = this.getPrimaryKey();
-    const entities = await this.readBy({ [pk]: id } as FilterQuery<Entity>, options);
+    const pks = this.getPrimaryKeys();
+
+    if (pks.length > 1) {
+      throw new InternalServerErrorException({
+        message: `readById unsupported for ${this.entityName as string} as it has composite primary key`,
+      });
+    }
+
+    const entities = await this.readBy({ [pks[0]]: id } as FilterQuery<Entity>, options);
     return entities[0];
   }
 
