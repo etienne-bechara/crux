@@ -1,3 +1,10 @@
+## [5.2.3](https://github.com/etienne-bechara/crux/compare/v5.2.2...v5.2.3) (2023-10-11)
+
+
+### Bug Fixes
+
+* **orm:** automatically acquire primary key ([c185e3f](https://github.com/etienne-bechara/crux/commit/c185e3fa4221d97326c89257df1d20898cd8ca29))
+
 ## [5.2.2](https://github.com/etienne-bechara/crux/compare/v5.2.1...v5.2.2) (2023-10-02)
 
 
