@@ -1,3 +1,10 @@
+# [5.3.0](https://github.com/etienne-bechara/crux/compare/v5.2.3...v5.3.0) (2023-11-01)
+
+
+### Features
+
+* add fastify helmet ([34a3292](https://github.com/etienne-bechara/crux/commit/34a329214b94f4dc824ec4422cd7277c09b17e33))
+
 ## [5.2.3](https://github.com/etienne-bechara/crux/compare/v5.2.2...v5.2.3) (2023-10-11)
 
 
