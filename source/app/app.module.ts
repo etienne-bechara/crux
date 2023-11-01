@@ -1,6 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
+import helmet from '@fastify/helmet';
 import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
@@ -165,6 +166,7 @@ export class AppModule {
 
     this.instance.setGlobalPrefix(globalPrefix);
     this.instance.enableCors(cors);
+    this.instance['register'](helmet);
 
     this.instance.getHttpAdapter().useStaticAssets({
       // eslint-disable-next-line unicorn/prefer-module
