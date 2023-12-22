@@ -1,3 +1,10 @@
+## [5.3.2](https://github.com/etienne-bechara/crux/compare/v5.3.1...v5.3.2) (2023-12-22)
+
+
+### Bug Fixes
+
+* **orm:** nested sort when reading paginated ([72af92e](https://github.com/etienne-bechara/crux/commit/72af92e644e11f41fc80632ad7207b5e8596686a))
+
 ## [5.3.1](https://github.com/etienne-bechara/crux/compare/v5.3.0...v5.3.1) (2023-11-01)
 
 
