@@ -153,7 +153,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     if (sort) {
       order = bOrder || OrmQueryOrder.ASC;
-      orderBy = [ sort.split('.').reverse().reduce((acc: unknown, v) => acc = { [v]: acc }, order) ];
+      orderBy = [ sort.split('.').reverse().reduce((acc: unknown, v) => ({ [v]: acc }), order) ];
     }
 
     const readParams: OrmReadParams<Entity> = remainder as any;
