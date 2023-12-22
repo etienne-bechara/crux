@@ -3,7 +3,7 @@ import { AutoPath, FilterQuery } from '@mikro-orm/core/typings';
 import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 import { OrmPageDto } from '../orm.dto';
-import { OrmException, OrmSpanPrefix } from '../orm.enum';
+import { OrmException, OrmQueryOrder, OrmSpanPrefix } from '../orm.enum';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
@@ -143,11 +143,18 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * @param params
    */
   public async readPaginatedBy(params: OrmReadPaginatedParams<Entity>): Promise<OrmPageDto<Entity>> {
-    const { limit: bLimit, offset: bOffset, count: hasCount, sort, order, populate, ...remainder } = params;
+    const { limit: bLimit, offset: bOffset, count: hasCount, sort, order: bOrder, populate, ...remainder } = params;
 
     const limit = bLimit ?? 100;
     const offset = bOffset ?? 0;
-    const orderBy = sort && order ? [ { [sort]: order } ] : undefined;
+
+    let order: OrmQueryOrder;
+    let orderBy;
+
+    if (sort) {
+      order = bOrder || OrmQueryOrder.ASC;
+      orderBy = [ sort.split('.').reverse().reduce((acc: unknown, v) => acc = { [v]: acc }, order) ];
+    }
 
     const readParams: OrmReadParams<Entity> = remainder as any;
     const readPromise = this.readBy(readParams, { orderBy, limit, offset, populate });

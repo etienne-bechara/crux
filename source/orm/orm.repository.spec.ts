@@ -411,6 +411,26 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         expect(records[2].name).toBe('0_SORT_3');
       });
 
+      it('should read entities respecting nested order and sort', async () => {
+        await userRepository.create([
+          { name: 'NESTED_SORT_0', age: 10, address: { zip: '00000000', state: AddressState.AC } },
+          { name: 'NESTED_SORT_1', age: 20, address: { zip: '11111111', state: AddressState.SC } },
+          { name: 'NESTED_SORT_2', age: 30, address: { zip: '22222222', state: AddressState.TO } },
+        ]);
+
+        const { order, sort, records } = await userRepository.readPaginatedBy({
+          name: { $like: 'NESTED_SORT_%' },
+          order: OrmQueryOrder.DESC,
+          sort: 'address.zip',
+          populate: [ 'address' ],
+        });
+
+        expect(order).toBe(OrmQueryOrder.DESC);
+        expect(sort).toBe('address.zip');
+        expect(records[0].address.zip).toBe('22222222');
+        expect(records[2].address.zip).toBe('00000000');
+      });
+
       it('should read entities respecting limit', async () => {
         const { limit, records } = await userRepository.readPaginatedBy({ limit: 1 });
 
