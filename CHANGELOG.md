@@ -1,3 +1,10 @@
+## [5.3.3](https://github.com/etienne-bechara/crux/compare/v5.3.2...v5.3.3) (2023-12-22)
+
+
+### Bug Fixes
+
+* **orm:** unnecessary assignment ([fa5d100](https://github.com/etienne-bechara/crux/commit/fa5d1009d63dd323d8062af1e135de30ff5d9f94))
+
 ## [5.3.2](https://github.com/etienne-bechara/crux/compare/v5.3.1...v5.3.2) (2023-12-22)
 
 
