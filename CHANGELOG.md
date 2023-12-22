@@ -1,3 +1,10 @@
+## [5.3.1](https://github.com/etienne-bechara/crux/compare/v5.3.0...v5.3.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* remove helmet ([ccc95ad](https://github.com/etienne-bechara/crux/commit/ccc95ad6ca04a821cdc545bd87116ef35dfc28da))
+
 # [5.3.0](https://github.com/etienne-bechara/crux/compare/v5.2.3...v5.3.0) (2023-11-01)
 
 
