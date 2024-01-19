@@ -31,7 +31,7 @@ jobs:
         env:
           HUSKY: 0
         run: |
-          npm i -g pnpm @semantic-release/changelog @semantic-release/git semantic-release
+          npm i -g pnpm @semantic-release/changelog @semantic-release/git semantic-release@22
           pnpm i --frozen-lockfile --ignore-scripts
           pnpm build
           semantic-release
