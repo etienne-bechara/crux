@@ -39,7 +39,6 @@ import {
   NotContains as CvNotContains,
   NotEquals as CvNotEquals,
   registerDecorator,
-  UUIDVersion,
   ValidateIf as CvValidateIf,
   ValidateNested as CvValidateNested,
   ValidationArguments,
@@ -313,7 +312,7 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
 export function IsArray(validationOptions?: ValidationOptions): PropertyDecorator {
   return applyDecorators(
     CvIsArray(validationOptions),
-    ApiProperty(),
+    ApiProperty({ isArray: true }),
   );
 }
 
@@ -386,7 +385,7 @@ export function Max(maxValue: number, validationOptions?: ValidationOptions): Pr
  * @param options
  * @param validationOptions
  */
-export function IsNumberString(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsNumberString(options?: validator.IsNumericOptions, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -435,13 +434,14 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
 
 /**
  * Checks if a string is base64 encoded. If given value is not a string, then it returns false.
+ * @param options
  * @param validationOptions
  */
-export function IsBase64(validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsBase64(options?: validator.IsBase64Options, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
-    CvIsBase64(validationOptions),
+    CvIsBase64(options, validationOptions),
     ApiProperty({ ...propertyOptions, format: 'base64' }),
   );
 }
@@ -460,7 +460,7 @@ export function IsBase64(validationOptions?: ValidationOptions): PropertyDecorat
  * @param options
  * @param validationOptions
  */
-export function IsEmail(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsEmail(options?: validator.IsEmailOptions, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -496,7 +496,7 @@ export function IsEmail(options?: Record<string, unknown>, validationOptions?: V
  * @param options
  * @param validationOptions
  */
-export function IsISO8601(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsISO8601(options?: validator.IsISO8601Options, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -578,7 +578,7 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
  * @param options
  * @param validationOptions
  */
-export function IsUrl(options?: Record<string, unknown>, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsUrl(options?: validator.IsURLOptions, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(
@@ -594,7 +594,7 @@ export function IsUrl(options?: Record<string, unknown>, validationOptions?: Val
  * @param version
  * @param validationOptions
  */
-export function IsUUID(version?: UUIDVersion, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsUUID(version?: validator.UUIDVersion, validationOptions?: ValidationOptions): PropertyDecorator {
   const propertyOptions = getPropertyOptions(String, validationOptions);
 
   return applyDecorators(

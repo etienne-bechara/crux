@@ -61,7 +61,7 @@
     "@opentelemetry/sdk-trace-base": "1.17.0",
     "@opentelemetry/semantic-conventions": "1.17.0",
     "class-transformer": "0.5.1",
-    "class-validator": "0.14.0",
+    "class-validator": "0.14.1",
     "cycle": "1.0.3",
     "dotenv": "16.3.1",
     "fast-glob": "3.3.1",

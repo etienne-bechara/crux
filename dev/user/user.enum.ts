@@ -2,6 +2,16 @@ export enum UserOneOf {
   USER_AGE_BIRTH_YEAR = 'USER_AGE_BIRTH_YEAR'
 }
 
+export enum UserTag {
+  RED = 'RED',
+  GREEN = 'GREEN',
+  BLUE = 'BLUE',
+  YELLOW = 'YELLOW',
+  PURPLE = 'PURPLE',
+  BLACK = 'BLACK',
+  WHITE = 'WHITE',
+}
+
 export enum UserAddressState {
   AC = 'AC',
   AL = 'AL',
