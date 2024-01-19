@@ -1,3 +1,10 @@
+## [5.3.5](https://github.com/etienne-bechara/crux/compare/v5.3.4...v5.3.5) (2024-01-19)
+
+
+### Bug Fixes
+
+* **validate:** validator namespace and array check ([eb1891f](https://github.com/etienne-bechara/crux/commit/eb1891f222e3eb04a2401870ba86ee4e88605dc9))
+
 ## [5.3.4](https://github.com/etienne-bechara/crux/compare/v5.3.3...v5.3.4) (2024-01-19)
 
 
