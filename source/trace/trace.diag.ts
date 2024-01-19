@@ -13,7 +13,8 @@ export class TraceDiagConsoleLogger implements DiagLogger {
    * @param message
    */
   public error(message: string): void {
-    this.logService.error(message);
+    this.logService.info(message);
+    this.logService.error('Failed to push traces');
   }
 
   /**
@@ -21,7 +22,12 @@ export class TraceDiagConsoleLogger implements DiagLogger {
    * @param message
    */
   public warn(message: string): void {
-    this.logService.warning(message);
+    if (message.startsWith('Dropped')) {
+      this.logService.warning('Dropped spans because maxQueueSize reached');
+    }
+    else {
+      this.logService.warning(message);
+    }
   }
 
   /**
