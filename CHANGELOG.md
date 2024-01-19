@@ -1,3 +1,11 @@
+## [5.3.4](https://github.com/etienne-bechara/crux/compare/v5.3.3...v5.3.4) (2024-01-19)
+
+
+### Bug Fixes
+
+* normalize trace exceptions ([5cc208e](https://github.com/etienne-bechara/crux/commit/5cc208ef5014eb19ffc28198440d7b6c03315a46))
+* **orm:** normalize deadlock errors to facilitate log aggregation ([a4783e6](https://github.com/etienne-bechara/crux/commit/a4783e6eafba63a5bab1645bd8c4b4dc8f5c82b5))
+
 ## [5.3.3](https://github.com/etienne-bechara/crux/compare/v5.3.2...v5.3.3) (2023-12-22)
 
 
