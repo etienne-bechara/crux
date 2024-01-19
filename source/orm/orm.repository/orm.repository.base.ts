@@ -149,13 +149,20 @@ export abstract class OrmBaseRepository<Entity extends object> {
     }
 
     const constraint = message.split(' - ')[message.split(' - ').length - 1];
+    const isDeadlockError = /deadlock found/i.test(message);
     const isDuplicateError = /duplicate (entry|key)/i.test(message);
     const isInsertFkError = /add.+foreign key constraint fails|insert.+violates foreign key/i.test(message);
     const isDeleteFkError = /delete.+foreign key constraint fails|delete.+violates foreign key/i.test(message);
     const isInvalidFieldError = message.startsWith('Trying to query by not existing property');
     const isInvalidConditionError = message.startsWith('Invalid query condition');
 
-    if (isDuplicateError) {
+    if (isDeadlockError) {
+      throw new InternalServerErrorException({
+        message: OrmException.DEADLOCK,
+        constraint,
+      });
+    }
+    else if (isDuplicateError) {
       throw new ConflictException({
         message: OrmException.ENTITY_CONFLICT,
         constraint,

@@ -10,6 +10,7 @@ export enum OrmQueryOrder {
 }
 
 export enum OrmException {
+  DEADLOCK = 'deadlock found',
   ENTITY_CONFLICT = 'entity already exists',
   ENTITY_NOT_FOUND = 'entity does not exist',
   FOREIGN_KEY_FAIL = 'foreign key prevents cascade deletion',
