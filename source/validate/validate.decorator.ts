@@ -56,7 +56,6 @@ export function buildApiPropertyOptions(type: any, validationOptions: Validation
   const { each } = validationOptions || { };
 
   return {
-    isArray: each,
     type: each ? [ type ] : type,
   };
 }
