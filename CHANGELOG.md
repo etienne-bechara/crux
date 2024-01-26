@@ -1,3 +1,10 @@
+## [5.3.6](https://github.com/etienne-bechara/crux/compare/v5.3.5...v5.3.6) (2024-01-26)
+
+
+### Bug Fixes
+
+* **validate:** expose build api property options ([fdbe110](https://github.com/etienne-bechara/crux/commit/fdbe110159fa1c8596f2fdfb1e2ae661d457c432))
+
 ## [5.3.5](https://github.com/etienne-bechara/crux/compare/v5.3.4...v5.3.5) (2024-01-19)
 
 
