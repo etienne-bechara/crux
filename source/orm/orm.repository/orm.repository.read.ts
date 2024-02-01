@@ -195,15 +195,16 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     const { limit, offset, records } = page;
 
-    return {
-      next: records.length === limit
-        ? await this.getToken({ ...params, offset: offset + limit })
+    const [ next, previous ] = await Promise.all([
+      records.length === limit
+        ? this.getToken({ ...params, offset: offset + limit })
         : null,
-      previous: offset
-        ? await this.getToken({ ...params, offset: offset - limit })
+      offset
+        ? this.getToken({ ...params, offset: offset - limit })
         : null,
-      ...page,
-    };
+    ]);
+
+    return { next, previous, ...page };
   }
 
   /**
