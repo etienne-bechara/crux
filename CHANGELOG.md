@@ -1,3 +1,10 @@
+## [5.3.7](https://github.com/etienne-bechara/crux/compare/v5.3.6...v5.3.7) (2024-01-26)
+
+
+### Bug Fixes
+
+* **validate:** remove isArray from build api property as it nests when used with @IsArray() ([73d9b43](https://github.com/etienne-bechara/crux/commit/73d9b43090ae48c52d5b3c192512423f7b93978c))
+
 ## [5.3.6](https://github.com/etienne-bechara/crux/compare/v5.3.5...v5.3.6) (2024-01-26)
 
 

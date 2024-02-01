@@ -1,6 +1,6 @@
 {
   "name": "@bechara/crux",
-  "version": "5.3.6",
+  "version": "5.3.7",
   "description": "Node.js backend package including: framework (NestJS), HTTP server (Fastify), HTTP client (Fetch), distributed caching (ioredis), ORM (MikroORM), swagger documentation (Redoc), logger (Loki), metrics (Prometheus) and tracing (Tempo with OpenTelemetry).",
   "author": {
     "name": "Etienne Bechara",
