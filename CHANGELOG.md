@@ -1,3 +1,10 @@
+# [5.4.0](https://github.com/etienne-bechara/crux/compare/v5.3.7...v5.4.0) (2024-02-01)
+
+
+### Features
+
+* **orm:** add read page with token support ([74c1267](https://github.com/etienne-bechara/crux/commit/74c1267749603a2b0da4829b830c395213c877de))
+
 ## [5.3.7](https://github.com/etienne-bechara/crux/compare/v5.3.6...v5.3.7) (2024-01-26)
 
 
