@@ -1,10 +1,13 @@
 import { EntityManager, EntityName, FindOptions } from '@mikro-orm/core';
 import { AutoPath, FilterQuery } from '@mikro-orm/core/typings';
-import { ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import crypto from 'crypto';
 
-import { OrmPageDto } from '../orm.dto';
+import { AppModule } from '../../app/app.module';
+import { CacheService } from '../../cache/cache.service';
+import { OrmPageDto, OrmPageTokenDto } from '../orm.dto';
 import { OrmException, OrmQueryOrder, OrmSpanPrefix } from '../orm.enum';
-import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
+import { OrmReadOptions, OrmReadPaginatedParams, OrmReadPaginatedTokenParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';
 
 export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRepository<Entity> {
@@ -168,6 +171,70 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     const [ count, records ] = await Promise.all([ countPromise, readPromise ]);
 
     return { limit, offset, count, sort, order, records };
+  }
+
+  /**
+   * Read entities with token based pagination support including sort,
+   * order, limit and whether to include total count or not.
+   * @param params
+   */
+  public async readPaginatedTokenBy(params: OrmReadPaginatedTokenParams<Entity>): Promise<OrmPageTokenDto<Entity>> {
+    const { token } = params;
+    delete params.token;
+
+    let page: OrmPageDto<Entity>;
+    let context: OrmReadPaginatedParams<Entity>;
+
+    if (token) {
+      context = await this.getTokenContext(token);
+      page = await this.readPaginatedBy(context);
+    }
+    else {
+      page = await this.readPaginatedBy(params);
+    }
+
+    const { limit, offset, records } = page;
+
+    return {
+      next: records.length === limit
+        ? await this.getToken({ ...params, offset: offset + limit })
+        : null,
+      previous: offset
+        ? await this.getToken({ ...params, offset: offset - limit })
+        : null,
+      ...page,
+    };
+  }
+
+  /**
+   * Generates a token for given pagination context.
+   * @param params
+   */
+  private async getToken(params: OrmReadPaginatedParams<Entity>): Promise<string> {
+    const { pageTokenTtl } = this.repositoryOptions;
+    const defaultTtl = 5 * 60 * 1000;
+    const ttl = pageTokenTtl ?? defaultTtl;
+
+    const token = crypto.randomBytes(16).toString('hex');
+    const cacheService = AppModule.getInstance().get(CacheService);
+    await cacheService.getProvider().set(token, params, { ttl });
+
+    return token;
+  }
+
+  /**
+   * Acquires pagination context related to given token.
+   * @param token
+   */
+  private async getTokenContext(token: string): Promise<OrmReadPaginatedParams<Entity>> {
+    const cacheService = AppModule.getInstance().get(CacheService);
+    const params = await cacheService.getProvider().get(token);
+
+    if (!params) {
+      throw new BadRequestException('token is invalid or expired');
+    }
+
+    return params as OrmReadPaginatedParams<Entity>;
   }
 
 }

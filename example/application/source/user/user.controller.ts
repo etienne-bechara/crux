@@ -1,6 +1,6 @@
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTag, Body, Cache, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@bechara/crux';
+import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTag, Body, Cache, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@bechara/crux';
 
-import { UserCollection, UserCreateDto, UserIdDto, UserUpdateDto } from './user.dto';
+import { UserCollection, UserCreateDto, UserIdDto, UserReadDto, UserUpdateDto } from './user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -21,8 +21,8 @@ export class UserController {
   @Get()
   @ApiOkResponse({ type: UserCollection })
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
-  public getUser(): Promise<UserCollection> {
-    return this.userRepository.readPaginatedBy({ });
+  public getUser(@Query() query: UserReadDto): Promise<UserCollection> {
+    return this.userRepository.readPaginatedTokenBy(query);
   }
 
   @Get(':id')

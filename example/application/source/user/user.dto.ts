@@ -1,8 +1,10 @@
-import { ApiProperty, OmitType, OrmPageDto, PartialType, PickType, SetType, ValidateNested } from '@bechara/crux';
+import { ApiProperty, OmitType, OrmPageDto, OrmPageTokenReadDto, PartialType, PickType, SetType, ValidateNested } from '@bechara/crux';
 
 import { User } from './user.entity';
 
 export class UserIdDto extends PickType(User, [ 'id' ]) { }
+
+export class UserReadDto extends OrmPageTokenReadDto { }
 
 export class UserCreateDto extends OmitType(User, [ 'id', 'created', 'updated' ]) { }
 
