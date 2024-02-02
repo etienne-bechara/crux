@@ -1,3 +1,10 @@
+## [5.4.2](https://github.com/etienne-bechara/crux/compare/v5.4.1...v5.4.2) (2024-02-02)
+
+
+### Bug Fixes
+
+* **orm:** integrate page token with existing pagination instead of separate method ([d71d403](https://github.com/etienne-bechara/crux/commit/d71d40351c2ab383978f3e9c3ca70e579d731693))
+
 ## [5.4.1](https://github.com/etienne-bechara/crux/compare/v5.4.0...v5.4.1) (2024-02-01)
 
 
