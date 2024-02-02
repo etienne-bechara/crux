@@ -1,3 +1,10 @@
+## [5.4.1](https://github.com/etienne-bechara/crux/compare/v5.4.0...v5.4.1) (2024-02-01)
+
+
+### Bug Fixes
+
+* **orm:** create next and previous token concurrently ([be21b4a](https://github.com/etienne-bechara/crux/commit/be21b4ac896c7fb1def9e384675a86066667461e))
+
 # [5.4.0](https://github.com/etienne-bechara/crux/compare/v5.3.7...v5.4.0) (2024-02-01)
 
 
