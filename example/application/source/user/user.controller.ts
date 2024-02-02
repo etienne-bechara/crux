@@ -22,7 +22,7 @@ export class UserController {
   @ApiOkResponse({ type: UserCollection })
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
   public getUser(@Query() query: UserReadDto): Promise<UserCollection> {
-    return this.userRepository.readPaginatedTokenBy(query);
+    return this.userRepository.readPaginatedBy(query);
   }
 
   @Get(':id')

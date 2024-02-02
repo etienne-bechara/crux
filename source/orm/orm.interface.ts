@@ -6,13 +6,11 @@ import { ModuleMetadata } from '@nestjs/common';
 import { AppConfig } from '../app/app.config';
 import { LogService } from '../log/log.service';
 import { SchemaModuleOptions } from '../schema/schema.interface';
-import { OrmPageReadDto, OrmPageTokenReadDto } from './orm.dto';
+import { OrmPageReadDto } from './orm.dto';
 
 export type OrmReadParams<T> = FilterQuery<T>;
 
 export type OrmReadPaginatedParams<T> = FilterQuery<T> & OrmPageReadDto;
-
-export type OrmReadPaginatedTokenParams<T> = FilterQuery<T> & OrmPageTokenReadDto;
 
 export type OrmSubscriberParams<Entity> = EventArgs<Entity>;
 

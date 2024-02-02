@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { uuidV4 } from '../override';
 import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decorator';
@@ -6,6 +6,15 @@ import { IsArray, IsBoolean, IsEnum, IsInt, IsISO8601, IsNotEmpty, IsOptional, I
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageReadDto {
+
+  @IsOptional()
+  @IsString()
+  @Length(32, 32)
+  @ApiProperty({
+    description: 'Pagination token, mutually exclusive with other pagination properties',
+    example: '8d47bdcbde4a7a2d4a98d5f555a19701',
+  })
+  public token?: string;
 
   @IsOptional()
   @ToNumber()
@@ -29,7 +38,7 @@ export class OrmPageReadDto {
   @ToBoolean()
   @IsBoolean()
   @ApiProperty({
-    description: 'Whether or not record count should be calculated, only recommended for first page',
+    description: 'Whether or not record count should be calculated',
     default: false,
   })
   public count?: boolean;
@@ -59,20 +68,23 @@ export class OrmPageReadDto {
 
 }
 
-export class OrmPageTokenReadDto extends OmitType(OrmPageReadDto, [ 'offset' ]) {
+export class OrmPageDto<T> {
 
-  @IsOptional()
   @IsString()
   @Length(32, 32)
   @ApiProperty({
-    description: 'Pagination token, when provided ignores further pagination configurations from request',
+    description: 'Next page token',
     example: '8d47bdcbde4a7a2d4a98d5f555a19701',
   })
-  public token?: string;
+  public next: string;
 
-}
-
-export class OrmPageDto<T> {
+  @IsString()
+  @Length(32, 32)
+  @ApiProperty({
+    description: 'Previous page token',
+    example: '331e15ea3754b9cdccb7c698bc094795',
+  })
+  public previous: string;
 
   @IsInt() @Min(1) @Max(1000)
   @ApiProperty({
@@ -112,26 +124,6 @@ export class OrmPageDto<T> {
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
   public records: T[];
-
-}
-
-export class OrmPageTokenDto<T> extends OrmPageDto<T> {
-
-  @IsString()
-  @Length(32, 32)
-  @ApiProperty({
-    description: 'Next page token',
-    example: '8d47bdcbde4a7a2d4a98d5f555a19701',
-  })
-  public next: string;
-
-  @IsString()
-  @Length(32, 32)
-  @ApiProperty({
-    description: 'Previous page token',
-    example: '331e15ea3754b9cdccb7c698bc094795',
-  })
-  public previous: string;
 
 }
 
