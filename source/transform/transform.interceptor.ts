@@ -4,7 +4,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { map, Observable } from 'rxjs';
 
-import { AppReflectorKey } from '../app/app.enum';
+import { AppMetadataKey } from '../app/app.enum';
 import { TraceService } from '../trace/trace.service';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class TransformInterceptor extends ClassSerializerInterceptor implements 
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const contextOptions = this.getContextOptions(context);
     const options = { ...this.defaultOptions, ...contextOptions };
-    const responseClass = this.reflector.get(AppReflectorKey.RESPONSE_BODY, context.getHandler());
+    const responseClass = this.reflector.get(AppMetadataKey.RESPONSE_CLASS, context.getHandler());
 
     return next
       .handle()

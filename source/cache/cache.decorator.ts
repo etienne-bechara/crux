@@ -1,6 +1,6 @@
 import { applyDecorators, SetMetadata, UseInterceptors } from '@nestjs/common';
 
-import { CacheReflector } from './cache.enum';
+import { AppMetadataKey } from '../app/app.enum';
 import { CacheInterceptor } from './cache.interceptor';
 import { CacheRouteOptions } from './cache.interface';
 
@@ -10,7 +10,7 @@ import { CacheRouteOptions } from './cache.interface';
  */
 export function Cache<T>(options: CacheRouteOptions<T> = { }): any {
   return applyDecorators(
-    SetMetadata(CacheReflector.CACHE_OPTIONS, options),
+    SetMetadata(AppMetadataKey.CACHE_OPTIONS, options),
     UseInterceptors(CacheInterceptor),
   );
 }

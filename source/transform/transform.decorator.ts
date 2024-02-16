@@ -2,7 +2,7 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 
-import { AppReflectorKey } from '../app/app.enum';
+import { AppMetadataKey } from '../app/app.enum';
 import { TransformToStringArrayOptions, TransformToStringOptions } from './transform.interface';
 
 /**
@@ -12,7 +12,7 @@ import { TransformToStringArrayOptions, TransformToStringOptions } from './trans
  */
 export function Response(cls: any): MethodDecorator {
   return applyDecorators(
-    SetMetadata(AppReflectorKey.RESPONSE_BODY, cls),
+    SetMetadata(AppMetadataKey.RESPONSE_CLASS, cls),
   );
 }
 

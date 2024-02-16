@@ -3,9 +3,10 @@ import { Reflector } from '@nestjs/core';
 import { mergeMap, Observable, of } from 'rxjs';
 
 import { AppConfig } from '../app/app.config';
+import { AppMetadataKey } from '../app/app.enum';
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
-import { CacheReflector, CacheStatus } from './cache.enum';
+import { CacheStatus } from './cache.enum';
 import { CacheInterceptParams, CacheRouteOptions } from './cache.interface';
 import { CacheService } from './cache.service';
 
@@ -64,7 +65,7 @@ export class CacheInterceptor implements NestInterceptor {
   private buildCacheInterceptParams(context: ExecutionContext): CacheInterceptParams {
     const method = this.contextService.getRequestMethod();
 
-    const options: CacheRouteOptions = this.reflector.get(CacheReflector.CACHE_OPTIONS, context.getHandler());
+    const options: CacheRouteOptions = this.reflector.get(AppMetadataKey.CACHE_OPTIONS, context.getHandler());
     const { enabled: routeEnabled, timeout: routeTimeout, ttl: routeTtl, buckets, invalidate } = options;
 
     const enabled = routeEnabled ?? [ 'GET', 'HEAD' ].includes(method);

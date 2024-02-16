@@ -19,6 +19,7 @@ export enum AppMemoryKey {
   OPEN_API_SPECIFICATION = 'OPEN_API_SPECIFICATION',
 }
 
-export enum AppReflectorKey {
-  RESPONSE_BODY = 'RESPONSE_BODY',
+export enum AppMetadataKey {
+  CACHE_OPTIONS = 'CACHE_OPTIONS',
+  RESPONSE_CLASS = 'RESPONSE_BODY',
 }
