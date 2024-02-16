@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { applyDecorators, SetMetadata } from '@nestjs/common';
+import { applyDecorators, HttpCode, HttpStatus, SetMetadata } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 import { AppMetadataKey } from '../app/app.enum';
@@ -8,11 +9,14 @@ import { TransformToStringArrayOptions, TransformToStringOptions } from './trans
 /**
  * Specifies response body class in order to trigger
  * outbound payload validation.
+ * @param status
  * @param cls
  */
-export function Response(cls: any): MethodDecorator {
+export function Response(status: HttpStatus, cls?: any): MethodDecorator {
   return applyDecorators(
+    HttpCode(status),
     SetMetadata(AppMetadataKey.RESPONSE_CLASS, cls),
+    ApiResponse({ status, type: cls }),
   );
 }
 
