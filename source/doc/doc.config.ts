@@ -8,6 +8,7 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
   noAutoAuth: true,
   authBtnText: 'Authenticate',
   authBtnPosSelector: '.sc-gIvpjk:eq(0)',
+  expandResponses: '200,201',
   title: 'API Reference | OpenAPI',
   version: 'v1',
   favicon: 'https://www.openapis.org/wp-content/uploads/sites/3/2016/11/favicon.png',

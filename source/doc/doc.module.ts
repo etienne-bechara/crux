@@ -105,46 +105,16 @@ export class DocModule {
     return SwaggerModule.createDocument(instance, builder.build(), {
       ignoreGlobalPrefix: true,
       operationIdFactory: (controllerKey: string, methodKey: string) => {
-        const entityName = controllerKey.replace('Controller', '');
-        const defaultId = `${controllerKey}_${methodKey}`;
-        let operationId: string;
+        const titleCase = methodKey.replaceAll(/([A-Z])/g, ' $1');
 
-        switch (methodKey.slice(0, 3)) {
-          case 'get' : {
-            operationId = `Read ${entityName}`;
-            break;
-          }
+        const operationId = titleCase
+          .replace('get ', 'Read ')
+          .replace('post ', 'Create ')
+          .replace('patch ', 'Update ')
+          .replace('put ', 'Update ')
+          .replace('delete ', 'Delete ');
 
-          case 'pos' : {
-            operationId = `Create ${entityName}`;
-            break;
-          }
-
-          case 'put' : {
-            operationId = `Replace ${entityName}`;
-            break;
-          }
-
-          case 'pat' : {
-            operationId = `Update ${entityName}`;
-            break;
-          }
-
-          case 'del' : {
-            operationId = `Delete ${entityName}`;
-            break;
-          }
-
-          default: {
-            operationId = defaultId;
-          }
-        }
-
-        if (methodKey.includes('Id')) {
-          operationId = `${operationId} by ID`;
-        }
-
-        return entityName ? operationId : defaultId;
+        return operationId;
       },
     });
   }

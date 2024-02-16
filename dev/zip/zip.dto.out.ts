@@ -3,7 +3,7 @@ import { UserAddressState } from '../user/user.enum';
 
 export class ZipDto {
 
-  @IsNumberString()
+  @IsString()
   public cep: string;
 
   @IsString()

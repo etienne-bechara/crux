@@ -1,6 +1,6 @@
 import { Cache } from '../../source/cache/cache.decorator';
 import { ApiTag } from '../../source/doc/doc.decorator';
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Response } from '../../source/override';
+import { ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Response } from '../../source/override';
 import { UserCreateDto, UserIdDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto.in';
 import { UserDto } from './user.dto.out';
 import { UserService } from './user.service';
@@ -21,47 +21,45 @@ export class UserController {
   ) { }
 
   @Get()
-  @Response(UserPageDto)
-  @ApiOkResponse({ type: UserPageDto })
+  @Response(HttpStatus.OK, UserPageDto)
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
   public getUser(@Query() query: UserReadDto): UserPageDto {
     return this.userService.readUsers(query);
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: UserDto })
-  @ApiOperation({ description: 'Reads a single user by its ID' })
+  @Response(HttpStatus.OK, UserDto)
   @Cache<UserDto>({
     buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
   })
+  @ApiOperation({ description: 'Reads a single user by its ID' })
   public getUserById(@Param() params: UserIdDto): UserDto {
     return this.userService.readUserById(params.id);
   }
 
   @Post()
-  @ApiCreatedResponse({ type: UserDto })
+  @Response(HttpStatus.CREATED, UserDto)
   @ApiOperation({ description: 'Creates a new user' })
   public postUser(@Body() body: UserCreateDto): Promise<UserDto> {
     return this.userService.createUser(body);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: UserDto })
-  @ApiOperation({ description: 'Partially updates an existing user by its ID' })
+  @Response(HttpStatus.OK, UserDto)
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
+  @ApiOperation({ description: 'Partially updates an existing user by its ID' })
   public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): UserDto {
     return this.userService.updateUserById(params.id, body);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse()
-  @ApiOperation({ description: 'Deletes an user by its ID' })
+  @Response(HttpStatus.NO_CONTENT)
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
+  @ApiOperation({ description: 'Deletes an user by its ID' })
   public deleteUserById(@Param() params: UserIdDto): void {
     return this.userService.deleteUserById(params.id);
   }
