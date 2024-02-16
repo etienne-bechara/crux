@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 import { AppModule } from '../../app/app.module';
 import { CacheService } from '../../cache/cache.service';
-import { OrmPageDto } from '../orm.dto';
+import { OrmPageDto } from '../orm.dto.out';
 import { OrmException, OrmQueryOrder, OrmSpanPrefix } from '../orm.enum';
 import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOptions } from '../orm.interface';
 import { OrmBaseRepository } from './orm.repository.base';

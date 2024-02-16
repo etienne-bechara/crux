@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import { AppMemoryKey } from '../app/app.enum';
 import { MemoryService } from '../memory/memory.service';
-import { DocSpecification } from './doc.dto';
+import { DocJsonDto } from './doc.dto.out';
 import { DocOptions } from './doc.interface';
 import { DocService } from './doc.service';
 
@@ -28,7 +28,7 @@ export class DocController {
   }
 
   @Get('json')
-  public getDocsJson(): DocSpecification {
+  public getDocsJson(): DocJsonDto {
     return this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
   }
 

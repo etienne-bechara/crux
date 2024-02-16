@@ -2,14 +2,14 @@ import { ContextService } from '../../source/context/context.service';
 import { Injectable, NotFoundException, uuidV4 } from '../../source/override';
 import { Span } from '../../source/trace/trace.decorator';
 import { ZipService } from '../zip/zip.service';
-import { UserCreateDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto';
-import { User } from './user.entity';
+import { UserCreateDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto.in';
+import { UserDto } from './user.dto.out';
 import { UserAddressState } from './user.enum';
 
 @Injectable()
 export class UserService {
 
-  private readonly USER_DATABASE: User[] = [ ];
+  private readonly USER_DATABASE: UserDto[] = [ ];
 
   public constructor(
     private readonly contextService: ContextService,
@@ -39,7 +39,7 @@ export class UserService {
    * @param id
    */
   @Span()
-  public readUserById(id: string): User {
+  public readUserById(id: string): UserDto {
     const user = this.USER_DATABASE.find((u) => u.id === id);
 
     if (!user) {
@@ -54,13 +54,13 @@ export class UserService {
    * @param params
    */
   @Span()
-  public async createUser(params: UserCreateDto): Promise<User> {
+  public async createUser(params: UserCreateDto): Promise<UserDto> {
     const { age, birthYear, address } = params;
     const { zip } = address;
 
     const { logradouro, bairro, localidade, uf } = await this.zipService.readZip(zip);
 
-    const user: User = {
+    const user: UserDto = {
       id: uuidV4(),
       originId: this.contextService.getRequestId(),
       // Age and birth year are mutually exclusive, calculate the other based on the existing
@@ -88,7 +88,7 @@ export class UserService {
    * @param params
    */
   @Span()
-  public updateUserById(id: string, params: UserUpdateDto): User {
+  public updateUserById(id: string, params: UserUpdateDto): UserDto {
     const user = this.readUserById(id);
 
     for (const key in params) {

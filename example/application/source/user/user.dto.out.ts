@@ -12,7 +12,7 @@ export class UserCreateDto extends PickType(User, [
 
 export class UserUpdateDto extends PartialType(UserCreateDto) { }
 
-export class UserCollection extends OrmPageDto<User> {
+export class UserPageDto extends OrmPageDto<User> {
 
   @ApiProperty({ type: [ User ] })
   @ValidateNested({ each: true })

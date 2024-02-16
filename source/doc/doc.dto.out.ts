@@ -1,4 +1,4 @@
-export interface DocSpecification {
+export interface DocJsonDto {
   openapi: string;
   paths: Record<string, any>;
   info: Record<string, any>;

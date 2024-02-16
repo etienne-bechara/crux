@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
-import { AppStatus } from './app.dto';
+import { AppStatusDto } from './app.dto.out';
 import { AppService } from './app.service';
 
 @Controller()
@@ -19,7 +19,7 @@ export class AppController {
   }
 
   @Get('status')
-  public getStatus(): AppStatus {
+  public getStatus(): AppStatusDto {
     return this.appService.getStatus();
   }
 

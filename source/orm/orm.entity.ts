@@ -1,7 +1,7 @@
 import { AnyEntity, BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
 
-import { OrmBigIntDto, OrmBigIntTimestampDto, OrmIntDto, OrmIntTimestampDto, OrmTimestampDto, OrmUuidDto, OrmUuidTimestampDto } from './orm.dto';
+import { OrmBigIntDto, OrmBigIntTimestampDto, OrmIntDto, OrmIntTimestampDto, OrmTimestampDto, OrmUuidDto, OrmUuidTimestampDto } from './orm.dto.out';
 
 export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 

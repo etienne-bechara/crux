@@ -6,7 +6,7 @@ import { ModuleMetadata } from '@nestjs/common';
 import { AppConfig } from '../app/app.config';
 import { LogService } from '../log/log.service';
 import { SchemaModuleOptions } from '../schema/schema.interface';
-import { OrmPageReadDto } from './orm.dto';
+import { OrmPageReadDto } from './orm.dto.in';
 
 export type OrmReadParams<T> = FilterQuery<T>;
 

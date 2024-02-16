@@ -6,7 +6,7 @@ import os from 'os';
 import { ContextService } from '../context/context.service';
 import { HttpMethod } from '../http/http.enum';
 import { MetricService } from '../metric/metric.service';
-import { AppStatus } from './app.dto';
+import { AppStatusDto } from './app.dto.out';
 import { AppTraffic } from './app.enum';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class AppService {
   /**
    * Reads data regarding current runtime and network.
    */
-  public getStatus(): AppStatus {
+  public getStatus(): AppStatusDto {
     return {
       system: {
         version: os.version(),

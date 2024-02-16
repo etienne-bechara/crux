@@ -1,8 +1,8 @@
 import { ArrayMaxSize, IsArray, IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
-import { ArrayMinSize, OneOf } from '../../source/validate/validate.decorator';
-import { UserAddressState, UserOneOf, UserTag } from './user.enum';
+import { ArrayMinSize } from '../../source/validate/validate.decorator';
+import { UserAddressState, UserTag } from './user.enum';
 
-export class UserEmployer {
+export class UserEmployerDto {
 
   @IsString()
   public name: string;
@@ -12,7 +12,7 @@ export class UserEmployer {
 
 }
 
-export class UserAddress {
+export class UserAddressDto {
 
   @IsNumberString() @Length(5, 8)
   public zip: string;
@@ -46,7 +46,7 @@ export class UserAddress {
 
 }
 
-export class User {
+export class UserDto {
 
   /** Automatically generated user ID. */
   @IsUUID()
@@ -59,11 +59,9 @@ export class User {
   @IsString() @MinLength(3)
   public name: string;
 
-  @OneOf(UserOneOf.USER_AGE_BIRTH_YEAR)
   @IsInt() @Min(0)
   public age?: number;
 
-  @OneOf(UserOneOf.USER_AGE_BIRTH_YEAR)
   @IsInt()
   @Min(new Date().getFullYear() - 100)
   @Max(new Date().getFullYear())
@@ -94,13 +92,13 @@ export class User {
   @IsEnum(UserTag, { each: true })
   public tags?: UserTag[];
 
-  @IsObject(UserAddress)
-  public address: UserAddress;
+  @IsObject(UserAddressDto)
+  public address: UserAddressDto;
 
   @IsOptional()
   @IsArray()
-  @IsObject(UserEmployer, { each: true })
+  @IsObject(UserEmployerDto, { each: true })
   @ArrayMinSize(1) @ArrayMaxSize(5)
-  public employers: UserEmployer[];
+  public employers: UserEmployerDto[];
 
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 
-import { UserCreateDto, UserPagination, UserReadDto, UserUpdateDto } from './user.dto';
+import { UserCreateDto, UserPagination, UserReadDto, UserUpdateDto } from './user.dto.out';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 

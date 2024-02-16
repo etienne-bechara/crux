@@ -1,6 +1,6 @@
 import { HttpService, Injectable } from '../../source/override';
 import { Span } from '../../source/trace/trace.decorator';
-import { Zip } from './zip.interface';
+import { ZipDto } from './zip.dto.out';
 
 @Injectable()
 export class ZipService {
@@ -14,7 +14,7 @@ export class ZipService {
    * @param zip
    */
   @Span()
-  public readZip(zip: string): Promise<Zip> {
+  public readZip(zip: string): Promise<ZipDto> {
     return this.httpService.get(':zip/json', {
       replacements: { zip },
     });

@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiExcludeController, ApiProduces } from '@nestjs/swagger';
 
-import { MetricData } from './metric.dto';
+import { MetricDataDto } from './metric.dto.out';
 import { MetricService } from './metric.service';
 
 @Controller('metrics')
@@ -19,7 +19,7 @@ export class MetricController {
   }
 
   @Get('json')
-  public getMetricsJson(): Promise<MetricData[]> {
+  public getMetricsJson(): Promise<MetricDataDto[]> {
     return this.metricService.readMetricsJson();
   }
 

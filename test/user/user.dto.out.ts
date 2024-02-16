@@ -1,6 +1,7 @@
 import { PartialType, PickType } from '@nestjs/swagger';
 
-import { OrmPageDto, OrmPageReadDto } from '../../source/orm/orm.dto';
+import { OrmPageReadDto } from '../../source/orm/orm.dto.in';
+import { OrmPageDto } from '../../source/orm/orm.dto.out';
 import { IsObject, IsOptional, IsString } from '../../source/validate/validate.decorator';
 import { User } from './user.entity';
 

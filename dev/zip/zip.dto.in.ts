@@ -1,6 +1,6 @@
 import { ApiProperty, IsNumberString, Length } from '../../source/override';
 
-export class ZipCodeDto {
+export class ZipReadDto {
 
   @IsNumberString()
   @Length(8, 8)

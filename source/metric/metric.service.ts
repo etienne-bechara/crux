@@ -10,7 +10,7 @@ import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
 import { PromiseService } from '../promise/promise.service';
 import { MetricConfig } from './metric.config';
-import { MetricData } from './metric.dto';
+import { MetricDataDto } from './metric.dto.out';
 import { MetricDataType, MetricHttpStrategy } from './metric.enum';
 import { MetricHttpDurationParams, MetricMessage } from './metric.interface';
 import { MetricMessageProto } from './metric.proto';
@@ -208,11 +208,11 @@ export class MetricService {
   /**
    * Read metrics in Prometheus JSON format.
    */
-  public async readMetricsJson(): Promise<MetricData[]> {
+  public async readMetricsJson(): Promise<MetricDataDto[]> {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { defaultFilter } = metrics;
 
-    let currentMetrics: MetricData[] = await this.register.getMetricsAsJSON() as any;
+    let currentMetrics: MetricDataDto[] = await this.register.getMetricsAsJSON() as any;
 
     if (defaultFilter) {
       const reportMetrics = new Set([ ...defaultFilter, ...this.metrics.keys() ]);

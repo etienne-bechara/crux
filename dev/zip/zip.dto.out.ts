@@ -1,7 +1,7 @@
 import { IsEnum, IsNumberString, IsString } from '../../source/override';
 import { UserAddressState } from '../user/user.enum';
 
-export class Zip {
+export class ZipDto {
 
   @IsNumberString()
   public cep: string;
