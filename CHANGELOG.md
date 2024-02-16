@@ -1,3 +1,18 @@
+# [5.5.0](https://github.com/etienne-bechara/crux/compare/v5.4.2...v5.5.0) (2024-02-16)
+
+
+### Bug Fixes
+
+* **app:** metadata enum ([de04cf7](https://github.com/etienne-bechara/crux/commit/de04cf715bcbae71a59c476e07b33103258ddc81))
+* **doc:** improve operationId generation ([1ade6bf](https://github.com/etienne-bechara/crux/commit/1ade6bfeb1c530a987051339cba360633e164533))
+* dto nomenclatures ([19e3ed1](https://github.com/etienne-bechara/crux/commit/19e3ed128f0301f2736306160aba530ec637fb94))
+
+
+### Features
+
+* **transform:** add response body validation support ([7077539](https://github.com/etienne-bechara/crux/commit/7077539756b52f4f48900c13c1703c7d6c70bd9e))
+* **transform:** automatically add documentation when response is specified ([4dd9d4f](https://github.com/etienne-bechara/crux/commit/4dd9d4f9bc47f583171b06a03502bf86b1134bce))
+
 ## [5.4.2](https://github.com/etienne-bechara/crux/compare/v5.4.1...v5.4.2) (2024-02-02)
 
 
