@@ -25,6 +25,8 @@ export class UserService {
     const { limit, offset } = params;
 
     return {
+      next: null,
+      previous: null,
       limit,
       offset,
       count: this.USER_DATABASE.length,

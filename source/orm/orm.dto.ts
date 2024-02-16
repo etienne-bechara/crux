@@ -70,36 +70,41 @@ export class OrmPageReadDto {
 
 export class OrmPageDto<T> {
 
+  @IsOptional()
   @IsString()
   @Length(32, 32)
   @ApiProperty({
     description: 'Next page token',
     example: '8d47bdcbde4a7a2d4a98d5f555a19701',
   })
-  public next: string;
+  public next?: string;
 
+  @IsOptional()
   @IsString()
   @Length(32, 32)
   @ApiProperty({
     description: 'Previous page token',
     example: '331e15ea3754b9cdccb7c698bc094795',
   })
-  public previous: string;
+  public previous?: string;
 
+  @IsOptional()
   @IsInt() @Min(1) @Max(1000)
   @ApiProperty({
     description: 'Amount of records read',
     example: 100,
   })
-  public limit: number;
+  public limit?: number;
 
+  @IsOptional()
   @IsInt() @Min(0)
   @ApiProperty({
     description: 'Amount of records skipped',
     example: 0,
   })
-  public offset: number;
+  public offset?: number;
 
+  @IsOptional()
   @IsOptional()
   @IsInt() @Min(0)
   @ApiProperty({

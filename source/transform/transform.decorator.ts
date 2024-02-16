@@ -1,8 +1,20 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 
+import { AppReflectorKey } from '../app/app.enum';
 import { TransformToStringArrayOptions, TransformToStringOptions } from './transform.interface';
+
+/**
+ * Specifies response body class in order to trigger
+ * outbound payload validation.
+ * @param cls
+ */
+export function Response(cls: any): MethodDecorator {
+  return applyDecorators(
+    SetMetadata(AppReflectorKey.RESPONSE_BODY, cls),
+  );
+}
 
 /**
  * Transforms a primitive to its corresponding boolean.

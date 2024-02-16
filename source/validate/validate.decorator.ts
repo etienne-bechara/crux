@@ -96,7 +96,7 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
     ValidateStorage.set(key, mutuallyExclusiveProperties);
 
     registerDecorator({
-      name: 'MutuallyExclusive',
+      name: 'mutuallyExclusive',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [ group ],

@@ -18,3 +18,7 @@ export enum AppTraffic {
 export enum AppMemoryKey {
   OPEN_API_SPECIFICATION = 'OPEN_API_SPECIFICATION',
 }
+
+export enum AppReflectorKey {
+  RESPONSE_BODY = 'RESPONSE_BODY',
+}
