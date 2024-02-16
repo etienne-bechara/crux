@@ -35,7 +35,7 @@ A Node.js all-in-one opinionated package intended for backend projects.
 - [\[Log\] Loki](docs/module/log.md)
 - [\[Memory\] Volatile Storage with TTL](docs/module/memory.md)
 - [\[Metric\] Prometheus](docs/module/metric.md)
-- [\[ORM\] Prometheus](docs/module/orm.md)
+- [\[ORM\] MikroORM and Schema Sync](docs/module/orm.md)
 - [\[Promise\] Retry, Timeout and Limiting](docs/module/promise.md)
 - [\[Trace\] Open Telemetry](docs/module/trace.md)
 
