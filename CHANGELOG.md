@@ -1,3 +1,11 @@
+## [5.5.3](https://github.com/etienne-bechara/crux/compare/v5.5.2...v5.5.3) (2024-02-17)
+
+
+### Bug Fixes
+
+* **override:** export custom validator interfaces of class-validator ([9b04f22](https://github.com/etienne-bechara/crux/commit/9b04f22a567a549ff3345a18b2a5c34baf9c2726))
+* **override:** fix class-validator overrides ([042b718](https://github.com/etienne-bechara/crux/commit/042b718a59ae22134287f0198bf9b867acc8fce9))
+
 ## [5.5.2](https://github.com/etienne-bechara/crux/compare/v5.5.1...v5.5.2) (2024-02-17)
 
 
