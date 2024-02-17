@@ -26,7 +26,7 @@ import { PromiseModule } from '../promise/promise.module';
 import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
-import { TransformInterceptor } from '../transform/transform.interceptor';
+import { ValidateInterceptor } from '../validate/validate.interceptor';
 import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
@@ -130,7 +130,6 @@ export class AppModule {
       this.options.disableLogs = true;
       this.options.disableMetrics = true;
       this.options.disableScan = true;
-      this.options.disableSerializer = true;
       this.options.disableStatus = true;
       this.options.disableValidator = true;
     }
@@ -373,7 +372,7 @@ export class AppModule {
    * Adds exception filter, serializer, timeout and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilter, disableSerializer, disableValidator, timeout, providers } = this.options;
+    const { disableFilter, disableValidator, timeout, providers } = this.options;
 
     const preloadedProviders: any[] = [
       { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
@@ -395,17 +394,13 @@ export class AppModule {
       });
     }
 
-    if (!disableSerializer) {
-      preloadedProviders.push({
-        provide: APP_INTERCEPTOR,
-        useClass: TransformInterceptor,
-      });
-    }
-
     if (!disableValidator) {
       preloadedProviders.push({
         provide: APP_PIPE,
         useClass: ValidatePipe,
+      }, {
+        provide: APP_INTERCEPTOR,
+        useClass: ValidateInterceptor,
       });
     }
 

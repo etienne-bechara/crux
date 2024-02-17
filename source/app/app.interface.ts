@@ -26,8 +26,6 @@ export interface AppOptions extends ModuleMetadata {
   disableStatus?: boolean;
   /** Disables built-in exception filter `app.filter.ts`. */
   disableFilter?: boolean;
-  /** Disables serialization interceptor which applies `class-transformer` decorators. */
-  disableSerializer?: boolean;
   /** Disables validation pipe which applies `class-validator` decorators. */
   disableValidator?: boolean;
   /** Disables HTTP caching. */
