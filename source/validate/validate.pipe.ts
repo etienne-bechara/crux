@@ -4,7 +4,7 @@ import { ValidationError } from 'class-validator';
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
 import { TraceService } from '../trace/trace.service';
-import { VALIDATOR_DEFAULT_OPTIONS } from './validate.config';
+import { VALIDATE_REQUEST_DEFAULT_OPTIONS } from './validate.config';
 
 @Injectable()
 export class ValidatePipe extends ValidationPipe implements PipeTransform {
@@ -13,7 +13,7 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
   ) {
-    super(VALIDATOR_DEFAULT_OPTIONS);
+    super(VALIDATE_REQUEST_DEFAULT_OPTIONS);
   }
 
   /**
@@ -22,7 +22,7 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
    * @param object
    */
   protected validate(object: object): Promise<ValidationError[]> | ValidationError[] {
-    const defaultOptions = this.appConfig.APP_OPTIONS.validator;
+    const defaultOptions = this.appConfig.APP_OPTIONS.validator?.request || { };
     const options = this.contextService.getValidatorOptions() || defaultOptions;
     return TraceService.startManagedSpan('App | Validation Pipe', { }, () => super.validate(object, options));
   }

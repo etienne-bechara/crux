@@ -7,7 +7,7 @@ import supertest from 'supertest';
 import { AppModule } from '../app/app.module';
 import { ContextService } from '../context/context.service';
 import { ToNumber } from '../transform/transform.decorator';
-import { VALIDATOR_DEFAULT_OPTIONS } from './validate.config';
+import { VALIDATE_REQUEST_DEFAULT_OPTIONS } from './validate.config';
 import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './validate.decorator';
 
 class ValidatorNestedDto {
@@ -51,7 +51,7 @@ class ValidatorInterceptor implements NestInterceptor {
 
   public intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
     this.contextService.setValidatorOptions({
-      ...VALIDATOR_DEFAULT_OPTIONS,
+      ...VALIDATE_REQUEST_DEFAULT_OPTIONS,
       groups: [ 'group1' ],
     });
 

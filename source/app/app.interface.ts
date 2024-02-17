@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { ValidatorOptions } from 'class-validator';
 import http from 'http';
 
 import { CacheOptions } from '../cache/cache.interface';
@@ -12,6 +11,7 @@ import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { TraceOptions } from '../trace/trace.interface';
+import { ValidateOptions } from '../validate/validate.interface';
 
 export interface AppOptions extends ModuleMetadata {
   /** Provide an already built instance to skip `.compile()` step. */
@@ -59,7 +59,7 @@ export interface AppOptions extends ModuleMetadata {
   /** Extra underlying HTTP adapter options. */
   fastify?: Record<string, any>;
   /** Validation pipe options. Can be overwritten per request using `ContextService`. */
-  validator?: ValidatorOptions;
+  validator?: ValidateOptions;
   /** Cache configuration. */
   cache?: CacheOptions;
   /** Http configuration. */

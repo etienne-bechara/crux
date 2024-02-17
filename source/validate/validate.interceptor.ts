@@ -4,6 +4,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { map, Observable } from 'rxjs';
 
+import { AppConfig } from '../app/app.config';
 import { AppMetadataKey } from '../app/app.enum';
 import { TraceService } from '../trace/trace.service';
 
@@ -11,7 +12,8 @@ import { TraceService } from '../trace/trace.service';
 export class ValidateInterceptor implements NestInterceptor {
 
   public constructor(
-    public readonly reflector: Reflector,
+    private readonly appConfig: AppConfig,
+    private readonly reflector: Reflector,
   ) { }
 
   /**
@@ -20,6 +22,8 @@ export class ValidateInterceptor implements NestInterceptor {
    * @param next
    */
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const options = this.appConfig.APP_OPTIONS.validator?.response || { };
+
     const responseClass: ClassConstructor<unknown> = this.reflector.get(
       AppMetadataKey.RESPONSE_CLASS,
       context.getHandler(),
@@ -28,24 +32,15 @@ export class ValidateInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        map((data: any) => {
+        map((data: unknown) => {
           return TraceService.startManagedSpan('App | Validation Interceptor', { }, async () => {
             if (!responseClass) {
               return data;
             }
 
-            const configInstance = plainToClass(responseClass, data, {
-              ignoreDecorators: true,
-            });
-
-            const errors = await validate(configInstance as object, {
-              whitelist: true,
-              forbidNonWhitelisted: true,
-              skipNullProperties: true,
-              validationError: {
-                target: false,
-              },
-            });
+            const { transformOptions, ...validateOptions } = options;
+            const configInstance = plainToClass(responseClass, data, transformOptions);
+            const errors = await validate(configInstance as object, validateOptions);
 
             if (errors.length > 0) {
               throw new InternalServerErrorException({
@@ -54,7 +49,7 @@ export class ValidateInterceptor implements NestInterceptor {
               });
             }
 
-            return plainToClass(responseClass, data);
+            return configInstance;
           });
         }),
       );

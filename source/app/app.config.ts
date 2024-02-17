@@ -13,7 +13,7 @@ import { LOG_DEFAULT_OPTIONS } from '../log/log.config';
 import { LOKI_DEFAULT_OPTIONS } from '../loki/loki.config';
 import { METRIC_DEFAULT_OPTIONS } from '../metric/metric.config';
 import { TRACE_DEFAULT_OPTIONS } from '../trace/trace.config';
-import { VALIDATOR_DEFAULT_OPTIONS } from '../validate/validate.config';
+import { VALIDATE_DEFAULT_OPTIONS } from '../validate/validate.config';
 import { IsEnum } from '../validate/validate.decorator';
 import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
@@ -47,7 +47,7 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
     HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
   ],
   fastify: FASTIFY_DEFAULT_OPTIONS,
-  validator: VALIDATOR_DEFAULT_OPTIONS,
+  validator: VALIDATE_DEFAULT_OPTIONS,
   cache: CACHE_DEFAULT_OPTIONS,
   http: HTTP_DEFAULT_OPTIONS,
   logs: LOG_DEFAULT_OPTIONS,
