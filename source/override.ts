@@ -6,6 +6,7 @@ export * from '@nestjs/core';
 export * from '@nestjs/platform-fastify';
 export * from '@nestjs/swagger';
 export * from 'class-transformer';
+export * from 'class-validator';
 export * from 'rxjs';
 
 export { EntityName, MetadataStorage, NotFoundError, Subscriber } from '@mikro-orm/core';
@@ -13,7 +14,7 @@ export { EntityRepository as MySqlEntityRepository } from '@mikro-orm/mysql';
 export { EntityRepository as PostgreSqlEntityRepository } from '@mikro-orm/postgresql';
 export { Head, Logger, Options, SerializeOptions, ValidationError, Type } from '@nestjs/common';
 export { Type as SetType, serialize } from 'class-transformer';
-export { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface, validate } from 'class-validator';
+export { equals, isEmpty, min, max } from 'class-validator';
 export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
 
 export { CacheInterceptor } from './cache/cache.interceptor';
@@ -24,3 +25,41 @@ export { HttpService } from './http/http.service';
 export { LogService as LoggerService } from './log/log.service';
 export { Response } from './transform/transform.decorator';
 
+export {
+  Contains,
+  Equals,
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsBase64,
+  IsBoolean,
+  IsDate,
+  IsDefined,
+  IsEmail,
+  IsEmpty,
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsISO8601,
+  IsJSON,
+  IsJWT,
+  IsNotEmpty,
+  IsNotIn,
+  IsNumber,
+  IsNumberString,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsUUID,
+  Length,
+  Matches,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+  NotContains,
+  NotEquals,
+  ValidateIf,
+  ValidateNested,
+} from './validate/validate.decorator';
