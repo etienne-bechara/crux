@@ -1,3 +1,10 @@
+## [5.5.2](https://github.com/etienne-bechara/crux/compare/v5.5.1...v5.5.2) (2024-02-17)
+
+
+### Bug Fixes
+
+* **validate:** allow configuration of request/response validation options ([d3d2b0f](https://github.com/etienne-bechara/crux/commit/d3d2b0f167727d00a24abd4abbe9a3a9033e4908))
+
 ## [5.5.1](https://github.com/etienne-bechara/crux/compare/v5.5.0...v5.5.1) (2024-02-17)
 
 
