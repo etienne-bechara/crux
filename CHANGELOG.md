@@ -1,3 +1,10 @@
+## [5.5.1](https://github.com/etienne-bechara/crux/compare/v5.5.0...v5.5.1) (2024-02-17)
+
+
+### Bug Fixes
+
+* **validate:** ignore decorators and skip null properties during outbound validation ([f14f817](https://github.com/etienne-bechara/crux/commit/f14f8179a729a1d61747c8bfb980047f2adf5060))
+
 # [5.5.0](https://github.com/etienne-bechara/crux/compare/v5.4.2...v5.5.0) (2024-02-16)
 
 
