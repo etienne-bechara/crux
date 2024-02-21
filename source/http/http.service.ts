@@ -515,12 +515,12 @@ export class HttpService {
       ? response?.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const cause = errorCause as Record<string, string>;
+    const cause = errorCause as Error;
 
     const message = errorMessage.startsWith(HttpTimeoutMessage.OUTBOUND)
       ? `Request timed out after ${timeout} ms`
       : errorCause
-        ? `${cause.syscall} ${cause.code} ${cause.hostname}`
+        ? cause.message
         : errorMessage;
 
     const exceptionData: HttpExceptionData = {
