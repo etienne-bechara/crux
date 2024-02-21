@@ -1,3 +1,10 @@
+## [5.5.4](https://github.com/etienne-bechara/crux/compare/v5.5.3...v5.5.4) (2024-02-21)
+
+
+### Bug Fixes
+
+* **http:** improve error message when fetch failed ([1b9a790](https://github.com/etienne-bechara/crux/commit/1b9a79011fbfedeed739fad608a59c262da920a7))
+
 ## [5.5.3](https://github.com/etienne-bechara/crux/compare/v5.5.2...v5.5.3) (2024-02-17)
 
 
