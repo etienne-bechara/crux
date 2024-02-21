@@ -315,7 +315,7 @@ export class HttpService {
   private async sendRequestCacheHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
     const { parser, request, telemetry, cache } = params;
     const { cacheTtl: ttl, cacheTimeout } = cache;
-    const { timeout, host, method, path: rawPath, query, replacements } = request;
+    const { host, method, path: rawPath, query, replacements } = request;
 
     const traffic = AppTraffic.OUTBOUND;
     const path = this.replaceUrlPlaceholders(rawPath, replacements);
@@ -339,16 +339,7 @@ export class HttpService {
       }
     }
 
-    try {
-      response = await this.sendRequestFetchHandler(params);
-    }
-    catch (e) {
-      if (e.message.startsWith(HttpTimeoutMessage.OUTBOUND)) {
-        throw new Error(`Request timed out after ${timeout} ms`);
-      }
-
-      throw e;
-    }
+    response = await this.sendRequestFetchHandler(params);
 
     response.cookies = this.parseCookies(response);
     response.data = await parser(response) as T;
@@ -517,24 +508,34 @@ export class HttpService {
    */
   private handleRequestException(params: HttpSendParams): void {
     const { proxyExceptions, request, response, error } = params;
-    const { message } = error;
-    const { method, url } = request;
+    const { message: errorMessage, cause: errorCause } = error;
+    const { method, url, timeout } = request;
 
     const code: HttpStatus = proxyExceptions && response?.status
       ? response?.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    const cause = errorCause as Record<string, string>;
+
+    const message = errorMessage.startsWith(HttpTimeoutMessage.OUTBOUND)
+      ? `Request timed out after ${timeout} ms`
+      : errorCause
+        ? `${cause.syscall} ${cause.code} ${cause.hostname}`
+        : errorMessage;
+
     const exceptionData: HttpExceptionData = {
       message: `⯆ ${method} ${url} | ${message}`,
       proxyExceptions,
       outboundRequest: request,
-      outboundResponse: {
-        code: response?.status,
-        headers: response?.headers
-          ? Object.fromEntries(response.headers as unknown as Iterable<readonly [PropertyKey, string]>)
-          : { },
-        body: response?.data,
-      },
+      outboundResponse: cause
+        ? undefined
+        : {
+          code: response?.status,
+          headers: response?.headers
+            ? Object.fromEntries(response.headers as unknown as Iterable<readonly [PropertyKey, string]>)
+            : { },
+          body: response?.data,
+        },
     };
 
     throw new HttpException(exceptionData, code);
