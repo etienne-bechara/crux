@@ -1,3 +1,10 @@
+## [5.5.5](https://github.com/etienne-bechara/crux/compare/v5.5.4...v5.5.5) (2024-02-21)
+
+
+### Bug Fixes
+
+* **http:** improve error cause message ([225b554](https://github.com/etienne-bechara/crux/commit/225b55482d3d1892ad9306a917f9c87bc57225a2))
+
 ## [5.5.4](https://github.com/etienne-bechara/crux/compare/v5.5.3...v5.5.4) (2024-02-21)
 
 
