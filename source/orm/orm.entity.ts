@@ -86,11 +86,11 @@ export abstract class OrmUuidEntity extends OrmBaseEntity implements OrmUuidDto 
 export abstract class OrmTimestampEntity extends OrmBaseEntity implements OrmTimestampDto {
 
   @Index()
-  @Property({ columnType: 'timestamp', onUpdate: () => new Date(), nullable: true })
+  @Property({ columnType: 'timestamp', onUpdate: () => new Date() })
   public updated: Date = new Date();
 
   @Index()
-  @Property({ columnType: 'timestamp', nullable: true })
+  @Property({ columnType: 'timestamp' })
   public created: Date = new Date();
 
 }

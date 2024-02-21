@@ -1,5 +1,6 @@
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTag, Body, Cache, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@bechara/crux';
 
+import { UserDto } from './user.dto.in';
 import { UserCreateDto, UserIdDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto.out';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -26,7 +27,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: User })
+  @ApiOkResponse({ type: UserDto })
   @ApiOperation({ description: 'Reads a single user by its ID' })
   @Cache<User>({
     buckets: ({ req }) => [ req.params.id ],
@@ -36,14 +37,14 @@ export class UserController {
   }
 
   @Post()
-  @ApiCreatedResponse({ type: User })
+  @ApiCreatedResponse({ type: UserDto })
   @ApiOperation({ description: 'Creates a new user' })
   public postUser(@Body() body: UserCreateDto): Promise<User> {
     return this.userRepository.createOne(body);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ type: User })
+  @ApiOkResponse({ type: UserDto })
   @ApiOperation({ description: 'Partially updates an existing user by its ID' })
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
