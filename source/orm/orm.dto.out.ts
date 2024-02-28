@@ -68,7 +68,7 @@ export class OrmPageDto<T> {
 
 }
 
-export abstract class OrmIntDto {
+export class OrmIntDto {
 
   @IsInt()
   @ApiProperty({
@@ -79,7 +79,7 @@ export abstract class OrmIntDto {
 
 }
 
-export abstract class OrmBigIntDto {
+export class OrmBigIntDto {
 
   @IsInt()
   @ApiProperty({
@@ -90,7 +90,7 @@ export abstract class OrmBigIntDto {
 
 }
 
-export abstract class OrmUuidDto {
+export class OrmUuidDto {
 
   @IsUUID()
   @ApiProperty({
@@ -101,7 +101,7 @@ export abstract class OrmUuidDto {
 
 }
 
-export abstract class OrmTimestampDto {
+export class OrmTimestampDto {
 
   @IsISO8601()
   @ApiProperty({
@@ -119,7 +119,7 @@ export abstract class OrmTimestampDto {
 
 }
 
-export abstract class OrmIntTimestampDto extends OrmTimestampDto {
+export class OrmIntTimestampDto extends OrmTimestampDto {
 
   @IsInt()
   @ApiProperty({
@@ -130,7 +130,7 @@ export abstract class OrmIntTimestampDto extends OrmTimestampDto {
 
 }
 
-export abstract class OrmBigIntTimestampDto extends OrmTimestampDto {
+export class OrmBigIntTimestampDto extends OrmTimestampDto {
 
   @IsInt()
   @ApiProperty({
@@ -141,7 +141,7 @@ export abstract class OrmBigIntTimestampDto extends OrmTimestampDto {
 
 }
 
-export abstract class OrmUuidTimestampDto extends OrmTimestampDto {
+export class OrmUuidTimestampDto extends OrmTimestampDto {
 
   @IsUUID()
   @ApiProperty({
