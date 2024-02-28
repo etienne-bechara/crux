@@ -1,3 +1,10 @@
+## [5.5.6](https://github.com/etienne-bechara/crux/compare/v5.5.5...v5.5.6) (2024-02-21)
+
+
+### Bug Fixes
+
+* **orm:** make created/updated columns not-nullable since they come with default values ([1fa3bd3](https://github.com/etienne-bechara/crux/commit/1fa3bd3460d3106b8d49f319468b31ff4e9cf287))
+
 ## [5.5.5](https://github.com/etienne-bechara/crux/compare/v5.5.4...v5.5.5) (2024-02-21)
 
 
