@@ -1,3 +1,10 @@
+## [5.5.7](https://github.com/etienne-bechara/crux/compare/v5.5.6...v5.5.7) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orm:** do not force abstract class on dtos ([1acce4d](https://github.com/etienne-bechara/crux/commit/1acce4d8966dfd4134ad2830156449c0cfbba39d))
+
 ## [5.5.6](https://github.com/etienne-bechara/crux/compare/v5.5.5...v5.5.6) (2024-02-21)
 
 
