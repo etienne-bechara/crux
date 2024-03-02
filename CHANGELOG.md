@@ -1,3 +1,10 @@
+## [5.5.8](https://github.com/etienne-bechara/crux/compare/v5.5.7...v5.5.8) (2024-03-02)
+
+
+### Bug Fixes
+
+* **docs:** simplify buildOpenApiObject by just converting camelCase to Title Case ([a88b1c6](https://github.com/etienne-bechara/crux/commit/a88b1c60b28c605da2377dfdd4e4df004a3fb3a4))
+
 ## [5.5.7](https://github.com/etienne-bechara/crux/compare/v5.5.6...v5.5.7) (2024-02-28)
 
 
