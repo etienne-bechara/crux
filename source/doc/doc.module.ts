@@ -106,15 +106,7 @@ export class DocModule {
       ignoreGlobalPrefix: true,
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const titleCase = methodKey.replaceAll(/([A-Z])/g, ' $1');
-
-        const operationId = titleCase
-          .replace('get ', 'Read ')
-          .replace('post ', 'Create ')
-          .replace('patch ', 'Update ')
-          .replace('put ', 'Update ')
-          .replace('delete ', 'Delete ');
-
-        return operationId;
+        return `${titleCase.charAt(0).toUpperCase()}${titleCase.slice(1)}`;
       },
     });
   }
