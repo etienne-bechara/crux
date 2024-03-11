@@ -1,3 +1,10 @@
+## [5.5.9](https://github.com/etienne-bechara/crux/compare/v5.5.8...v5.5.9) (2024-03-11)
+
+
+### Bug Fixes
+
+* **orm:** use static examples to prevent open api spec diffs ([fe3f1b9](https://github.com/etienne-bechara/crux/commit/fe3f1b9c1f60a26a7e0d1f0fe60d12e4d71c0a59))
+
 ## [5.5.8](https://github.com/etienne-bechara/crux/compare/v5.5.7...v5.5.8) (2024-03-02)
 
 
