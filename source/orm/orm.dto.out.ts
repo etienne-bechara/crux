@@ -95,7 +95,7 @@ export class OrmUuidDto {
   @IsUUID()
   @ApiProperty({
     description: 'Unique identifier',
-    example: uuidV4(),
+    example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
   public id: string = uuidV4();
 
@@ -106,14 +106,14 @@ export class OrmTimestampDto {
   @IsISO8601()
   @ApiProperty({
     description: 'Date of last update',
-    example: new Date().toISOString(),
+    example: '2024-03-11T17:30:20.757Z',
   })
   public updated: Date = new Date();
 
   @IsISO8601()
   @ApiProperty({
     description: 'Date of creation',
-    example: new Date().toISOString(),
+    example: '2024-03-11T17:30:20.757Z',
   })
   public created: Date = new Date();
 
@@ -146,7 +146,7 @@ export class OrmUuidTimestampDto extends OrmTimestampDto {
   @IsUUID()
   @ApiProperty({
     description: 'Unique identifier',
-    example: uuidV4(),
+    example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
   public id: string = uuidV4();
 
