@@ -1,3 +1,10 @@
+## [5.6.1](https://github.com/etienne-bechara/crux/compare/v5.6.0...v5.6.1) (2024-04-13)
+
+
+### Bug Fixes
+
+* **memory:** return ttl as integer ([3334818](https://github.com/etienne-bechara/crux/commit/333481889ad40f86d407b069c4515dc0c204ef41))
+
 # [5.6.0](https://github.com/etienne-bechara/crux/compare/v5.5.9...v5.6.0) (2024-04-13)
 
 
