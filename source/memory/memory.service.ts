@@ -15,7 +15,7 @@ export class MemoryService implements CacheProvider {
    */
   public ttl(key: string): number {
     const exp = this.memoryExpiration.get(key);
-    return (exp - Date.now()) / 1000;
+    return Math.ceil((exp - Date.now()) / 1000);
   }
 
   /**
