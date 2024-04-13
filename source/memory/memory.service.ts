@@ -10,6 +10,15 @@ export class MemoryService implements CacheProvider {
   private memoryExpiration = new Map<string, number>();
 
   /**
+   * Reads current TTL in seconds of target key.
+   * @param key
+   */
+  public ttl(key: string): number {
+    const exp = this.memoryExpiration.get(key);
+    return (exp - Date.now()) / 1000;
+  }
+
+  /**
    * Reads data from target storage key, if a TTL is set and expired removes the key.
    * @param key
    */
@@ -59,6 +68,21 @@ export class MemoryService implements CacheProvider {
   public del(key: string): void {
     this.memoryData.delete(key);
     this.memoryExpiration.delete(key);
+  }
+
+  /**
+   * Increments a key and return its current value.
+   * If it does not exist create it with given ttl.
+   * @param key
+   * @param amount
+   * @param options
+   */
+  public incrbyfloat(key: string, amount: number = 1, options: MemoryOptions = { }): number {
+    const value: number = this.get(key);
+    const newValue = !value && value !== 0 ? amount : value + amount;
+
+    this.set(key, newValue, options);
+    return newValue;
   }
 
   /**

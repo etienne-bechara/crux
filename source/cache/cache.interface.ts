@@ -63,10 +63,12 @@ export interface CacheOptions {
 }
 
 export interface CacheProvider {
+  ttl: (key: string) => number | Promise<number>;
   get: <T>(key: string) => T | Promise<T>;
   getBuffer: (key: string) => Buffer | Promise<Buffer>;
   set: (key: string, value: any, options?: CacheTtlOptions) => void | Promise<void>;
   del: (key: string) => void | Promise<void>;
+  incrbyfloat(key: string, amount?: number, options?: CacheTtlOptions): number | Promise<number>;
   sadd: (key: string, value: string, options?: CacheTtlOptions) => void | Promise<void>;
   smembers: (key: string) => string[] | Promise<string[]>;
 }

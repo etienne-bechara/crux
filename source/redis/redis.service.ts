@@ -97,6 +97,17 @@ export class RedisService implements CacheProvider {
   }
 
   /**
+   * Reads current TTL in seconds of target key.
+   * @param key
+   */
+  public ttl(key: string): number {
+    return TraceService.startManagedSpan(`Redis | TTL ${key}`, { }, async () => {
+      this.logService.trace(`TTL ${key}`);
+      return this.getClient().ttl(key);
+    });
+  }
+
+  /**
    * Reads given key and parse its value.
    * @param key
    */

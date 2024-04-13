@@ -23,6 +23,7 @@ import { LokiModule } from '../loki/loki.module';
 import { MemoryModule } from '../memory/memory.module';
 import { MetricDisabledModule, MetricModule } from '../metric/metric.module';
 import { PromiseModule } from '../promise/promise.module';
+import { RateInterceptor } from '../rate/rate.interceptor';
 import { TimeoutInterceptor } from '../timeout/timeout.interceptor';
 import { TraceDisabledModule, TraceModule } from '../trace/trace.module';
 import { TraceService } from '../trace/trace.service';
@@ -376,6 +377,7 @@ export class AppModule {
 
     const preloadedProviders: any[] = [
       { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
+      { provide: APP_INTERCEPTOR, useClass: RateInterceptor },
       AppConfig,
       AppService,
     ];
