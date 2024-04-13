@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/etienne-bechara/crux/compare/v5.5.9...v5.6.0) (2024-04-13)
+
+
+### Features
+
+* **rate:** add rate limit per IP support ([1419ca9](https://github.com/etienne-bechara/crux/commit/1419ca9e05bb2407eb6c1184fc66f31097af70e5))
+
 ## [5.5.9](https://github.com/etienne-bechara/crux/compare/v5.5.8...v5.5.9) (2024-03-11)
 
 
