@@ -1,3 +1,10 @@
+## [5.7.1](https://github.com/etienne-bechara/crux/compare/v5.7.0...v5.7.1) (2024-04-22)
+
+
+### Bug Fixes
+
+* **promise:** improve dedupe to support handling parent errors ([4037b8c](https://github.com/etienne-bechara/crux/commit/4037b8c0d022fbd2e0fdf475494b1d8eaef8df64))
+
 # [5.7.0](https://github.com/etienne-bechara/crux/compare/v5.6.1...v5.7.0) (2024-04-22)
 
 
