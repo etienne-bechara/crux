@@ -45,6 +45,8 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       app = await AppModule.compile({
         disableScan: true,
         disableLogs: true,
+        disableMetrics: true,
+        disableTraces: true,
         imports: [
           UserModule,
           OrmModule.registerAsync({

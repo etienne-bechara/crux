@@ -53,6 +53,8 @@ describe('CacheService', () => {
     app = await AppModule.boot({
       disableScan: true,
       disableLogs: true,
+      disableMetrics: true,
+      disableTraces: true,
       port: 0,
       imports: [ CacheTestModule ],
       cache: {

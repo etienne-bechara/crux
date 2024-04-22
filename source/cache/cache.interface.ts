@@ -19,6 +19,10 @@ export interface CacheTtlOptions {
   ttl?: number;
 }
 
+export interface CacheSetOptions extends CacheTtlOptions {
+  skip?: 'IF_EXIST' | 'IF_NOT_EXIST';
+}
+
 export interface CacheRouteOptions<T = unknown> extends CacheTtlOptions {
   /** Whether or not to enable cache for this route. Default: `true` for `HEAD` and `GET`, `false` otherwise. */
   enabled?: boolean;
@@ -66,7 +70,7 @@ export interface CacheProvider {
   ttl: (key: string) => number | Promise<number>;
   get: <T>(key: string) => T | Promise<T>;
   getBuffer: (key: string) => Buffer | Promise<Buffer>;
-  set: (key: string, value: any, options?: CacheTtlOptions) => void | Promise<void>;
+  set: (key: string, value: any, options?: CacheSetOptions) => void | Promise<void>;
   del: (key: string) => void | Promise<void>;
   incrbyfloat(key: string, amount?: number, options?: CacheTtlOptions): number | Promise<number>;
   sadd: (key: string, value: string, options?: CacheTtlOptions) => void | Promise<void>;

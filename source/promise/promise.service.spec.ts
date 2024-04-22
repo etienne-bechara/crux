@@ -1,4 +1,8 @@
+import { setTimeout } from 'timers/promises';
+
 import { AppModule } from '../app/app.module';
+import { CacheModule } from '../override';
+import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -11,7 +15,14 @@ describe('PromiseService', () => {
   let promiseService: PromiseService;
 
   beforeAll(async () => {
-    const app = await AppModule.compile({ disableAll: true });
+    const app = await AppModule.compile({
+      disableScan: true,
+      disableLogs: true,
+      disableMetrics: true,
+      disableTraces: true,
+      imports: [ PromiseModule, CacheModule ],
+    });
+
     promiseService = app.get(PromiseService);
   });
 
@@ -76,6 +87,34 @@ describe('PromiseService', () => {
       }
 
       expect(err.message).toBe(errorMessage);
+    });
+  });
+
+  describe('resolveDeduplicated', () => {
+    it('should not duplicate underlying promise execution', async () => {
+      let counter = 0;
+
+      const fn = async (): Promise<number> => {
+        counter++;
+        await setTimeout(2000);
+        return Math.random();
+      };
+
+      const dedup = (): Promise<number> => promiseService.resolveDeduplicated({
+        key: 'dedup',
+        timeout: 5000,
+        promise: fn,
+      });
+
+      const firstPromise = dedup();
+      const secondPromise = dedup();
+      const thirdPromise = dedup();
+
+      const [ first, second, third ] = await Promise.all([ firstPromise, secondPromise, thirdPromise ]);
+
+      expect(counter).toBe(1);
+      expect(second).toEqual(first);
+      expect(third).toEqual(first);
     });
   });
 

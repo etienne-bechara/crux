@@ -22,6 +22,7 @@ export class CacheService {
     private readonly contextService: ContextService,
     private readonly logService: LogService,
     private readonly memoryService: MemoryService,
+    @Inject(forwardRef(() => PromiseService))
     private readonly promiseService: PromiseService,
     @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
@@ -121,7 +122,10 @@ export class CacheService {
         throw new Error('cache service is offline');
       }
 
-      data = await this.promiseService.resolveOrTimeout(this.getCacheHandler(params), timeout);
+      data = await this.promiseService.resolveOrTimeout({
+        promise: () => this.getCacheHandler(params),
+        timeout,
+      });
     }
     catch (e) {
       this.failureStart ??= Date.now();

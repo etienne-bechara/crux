@@ -29,7 +29,10 @@ export class FooService {
 
   public async readFooOrTimeout(): Promise<unknown> {
     const timeout = 5000; // 5 seconds
-    return this.promiseService.resolveOrTimeout(this.httpService.get('foo'), timeout);
+    return this.promiseService.resolveOrTimeout({
+      promise: () => this.httpService.get('foo'),
+      timeout
+    });
   }
 
   public async readFooWithRetry(): Promise<unknown> {

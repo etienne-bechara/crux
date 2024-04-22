@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import Redis, { RedisOptions } from 'ioredis';
 import { v4 } from 'uuid';
 
@@ -19,6 +19,7 @@ export class RedisService implements CacheProvider {
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
     private readonly redisModuleOptions: RedisModuleOptions,
     private readonly logService: LogService,
+    @Inject(forwardRef(() => PromiseService))
     private readonly promiseService: PromiseService,
   ) {
     this.setupClient();

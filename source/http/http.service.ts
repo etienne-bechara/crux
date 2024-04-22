@@ -26,6 +26,7 @@ export class HttpService {
     @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
     private readonly httpModuleOptions: HttpModuleOptions = { },
     private readonly appConfig: AppConfig,
+    @Inject(forwardRef(() => PromiseService))
     private readonly promiseService: PromiseService,
     private readonly logService?: LogService,
     @Inject(forwardRef(() => MetricService))

@@ -27,6 +27,19 @@ describe('MemoryService', () => {
       expect(true).toBeTruthy();
     });
 
+    it('should skip setting existing key', () => {
+      memoryService.set('foo', 'bar', { skip: 'IF_EXIST' });
+      memoryService.set('foo', 'baz', { skip: 'IF_EXIST' });
+      const foo = memoryService.get('foo');
+      expect(foo).toBe('bar');
+    });
+
+    it('should skip setting non-existing key', () => {
+      memoryService.set('non-existent', 'non-existent', { skip: 'IF_NOT_EXIST' });
+      const nonExistent = memoryService.get('non-existent');
+      expect(nonExistent).toBeUndefined();
+    });
+
     it('should successfully set storage key with TTL', () => {
       memoryService.set('testTtl', testTtl, { ttl });
       expect(true).toBeTruthy();

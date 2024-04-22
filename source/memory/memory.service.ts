@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { CacheProvider } from '../cache/cache.interface';
-import { MemoryOptions } from './memory.interface';
+import { CacheProvider, CacheSetOptions, CacheTtlOptions } from '../cache/cache.interface';
 
 @Injectable()
 export class MemoryService implements CacheProvider {
@@ -48,11 +47,43 @@ export class MemoryService implements CacheProvider {
    * @param value
    * @param options
    */
-  public set(key: string, value: any, options: MemoryOptions = { }): void {
-    const { ttl } = options;
-    this.memoryData.set(key, value);
+  public set(key: string, value: any, options: CacheSetOptions = { }): void {
+    const { ttl, skip } = options;
+    let skipped: boolean;
 
-    if (ttl) {
+    switch (skip) {
+      case 'IF_EXIST': {
+        const exists = this.get(key);
+
+        if (exists) {
+          skipped = true;
+        }
+        else {
+          this.memoryData.set(key, value);
+        }
+
+        break;
+      }
+
+      case 'IF_NOT_EXIST': {
+        const exists = this.get(key);
+
+        if (exists) {
+          this.memoryData.set(key, value);
+        }
+        else {
+          skipped = true;
+        }
+
+        break;
+      }
+
+      default: {
+        this.memoryData.set(key, value);
+      }
+    }
+
+    if (ttl && !skipped) {
       const currentExp = this.memoryExpiration.get(key);
 
       if (!currentExp) {
@@ -77,7 +108,7 @@ export class MemoryService implements CacheProvider {
    * @param amount
    * @param options
    */
-  public incrbyfloat(key: string, amount: number = 1, options: MemoryOptions = { }): number {
+  public incrbyfloat(key: string, amount: number = 1, options: CacheTtlOptions = { }): number {
     const value: number = this.get(key);
     const newValue = !value && value !== 0 ? amount : value + amount;
 
@@ -100,7 +131,7 @@ export class MemoryService implements CacheProvider {
    * @param value
    * @param options
    */
-  public sadd(key: string, value: string, options: MemoryOptions = { }): void {
+  public sadd(key: string, value: string, options: CacheTtlOptions = { }): void {
     const set: Set<string> = this.get(key);
 
     if (set) {

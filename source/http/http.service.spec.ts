@@ -63,6 +63,8 @@ describe('HttpService', () => {
     const app = await AppModule.compile({
       disableScan: true,
       disableLogs: true,
+      disableMetrics: true,
+      disableTraces: true,
       imports: [ GoogleModule, JsonModule ],
     });
 

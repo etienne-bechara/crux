@@ -41,6 +41,8 @@ export async function compileTestApp(): Promise<INestApplication> {
   return AppModule.compile({
     disableScan: true,
     disableLogs: true,
+    disableMetrics: true,
+    disableTraces: true,
     imports: [
       UserModule,
       OrmModule.registerAsync({

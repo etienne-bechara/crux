@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
 import { compress } from 'snappy';
 import { setTimeout } from 'timers/promises';
@@ -24,6 +24,7 @@ export class MetricService {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    @Inject(forwardRef(() => PromiseService))
     private readonly promiseService: PromiseService,
     private readonly logService: LogService,
     private readonly metricConfig: MetricConfig,

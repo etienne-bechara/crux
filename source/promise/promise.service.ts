@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
+import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
-import { PromiseResolveParams, PromiseRetryParams } from './promise.interface';
+import { uuidV4 } from '../override';
+import { PromiseResolveDeduplicatedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
 
 @Injectable()
 export class PromiseService {
 
   public constructor(
+    @Inject(forwardRef(() => CacheService))
+    private readonly cacheService: CacheService,
     private readonly logService: LogService,
   ) { }
 
@@ -21,19 +25,19 @@ export class PromiseService {
   /**
    * Wait for target promise resolution withing desired timeout.
    * On failure throw a timeout exception.
-   * @param promise
-   * @param timeout
+   * @param params
    */
-  public async resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
+  public async resolveOrTimeout<T>(params: PromiseResolveOrTimeoutParams<T>): Promise<T> {
+    const { promise, timeout } = params;
     this.logService.debug(`Resolving promise with ${timeout / 1000}s timeout`);
 
     const result = await Promise.race([
-      promise,
+      promise(),
       new Promise((reject) => setTimeout(() => reject('timed out'), timeout)),
     ]);
 
     if (result === 'timed out') {
-      throw new Error(`promise resolution timed out after ${timeout / 1000}s`);
+      throw new InternalServerErrorException(`promise resolution timed out after ${timeout / 1000}s`);
     }
 
     this.logService.debug('Promise resolved successfully within timeout');
@@ -44,7 +48,7 @@ export class PromiseService {
    * Runs multiple promises limiting concurrency.
    * @param params
    */
-  public async resolveLimited<I, O>(params: PromiseResolveParams<I, O>): Promise<Awaited<O>[]> {
+  public async resolveLimited<I, O>(params: PromiseResolveLimitedParams<I, O>): Promise<Awaited<O>[]> {
     const { data, limit, promise: method } = params;
     const resolved: Promise<O>[] = [ ];
     const executing = [ ];
@@ -74,6 +78,51 @@ export class PromiseService {
   }
 
   /**
+   * Runs underlying promise ensuring that the same instance of it
+   * does not run concurrently. In the event of a duplication, the
+   * duplicated waits for original resolution and share its output.
+   * @param params
+   */
+  public async resolveDeduplicated<T>(params: PromiseResolveDeduplicatedParams<T>): Promise<T> {
+    const { key, timeout, delay: paramsDelay, promise } = params;
+
+    const dataKey = `${key}:data`;
+    const ttl = timeout ?? 60 * 1000;
+    const delay = paramsDelay ?? 500;
+
+    this.logService.debug(`Deduplicating ${key} promise with ${ttl / 1000}s TTL`);
+
+    const provider = this.cacheService.getProvider();
+    const providerId = uuidV4();
+
+    await provider.set(key, providerId, { ttl, skip: 'IF_EXIST' });
+    const keyValue = await provider.get(key);
+
+    let data: T;
+
+    if (keyValue === providerId) {
+      data = await promise();
+      await provider.set(dataKey, data, { ttl });
+      this.logService.debug(`Promise ${key} resolved successfully with source data`);
+    }
+    else {
+      await this.resolveOrTimeout({
+        timeout: ttl,
+        promise: async () => {
+          while (!data) {
+            data = await provider.get(dataKey);
+            await this.sleep(delay);
+          }
+        },
+      });
+
+      this.logService.debug(`Promise ${key} resolved successfully with cached data`);
+    }
+
+    return data;
+  }
+
+  /**
    * Retry a method for configured times or until desired timeout.
    * @param params
    */
@@ -98,7 +147,7 @@ export class PromiseService {
         const elapsed = Date.now() - start;
 
         result = timeout
-          ? await this.resolveOrTimeout(promise(), timeout - elapsed)
+          ? await this.resolveOrTimeout({ promise, timeout: timeout - elapsed })
           : await promise();
 
         break;
