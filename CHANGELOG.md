@@ -1,3 +1,10 @@
+# [5.7.0](https://github.com/etienne-bechara/crux/compare/v5.6.1...v5.7.0) (2024-04-22)
+
+
+### Features
+
+* **promise:** add promise deduplication support ([a279869](https://github.com/etienne-bechara/crux/commit/a279869d8be91d34308e3aa4893269c48b8b1139))
+
 ## [5.6.1](https://github.com/etienne-bechara/crux/compare/v5.6.0...v5.6.1) (2024-04-13)
 
 
