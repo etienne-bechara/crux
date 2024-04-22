@@ -1,26 +1,21 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { setTimeout as sleep } from 'timers/promises';
 
+import { AppConfig } from '../app/app.config';
 import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
 import { uuidV4 } from '../override';
-import { PromiseResolveDeduplicatedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
+import { PromiseResolveDedupedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
 
 @Injectable()
 export class PromiseService {
 
   public constructor(
+    private readonly appConfig: AppConfig,
     @Inject(forwardRef(() => CacheService))
     private readonly cacheService: CacheService,
     private readonly logService: LogService,
   ) { }
-
-  /**
-   * Asynchronously wait for desired amount of milliseconds.
-   * @param time
-   */
-  public async sleep(time: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, time));
-  }
 
   /**
    * Wait for target promise resolution withing desired timeout.
@@ -28,7 +23,9 @@ export class PromiseService {
    * @param params
    */
   public async resolveOrTimeout<T>(params: PromiseResolveOrTimeoutParams<T>): Promise<T> {
-    const { promise, timeout } = params;
+    const { promise, timeout: paramsTimeout, timeoutMessage } = params;
+    const timeout = paramsTimeout ?? this.appConfig.APP_OPTIONS.timeout * 0.95;
+
     this.logService.debug(`Resolving promise with ${timeout / 1000}s timeout`);
 
     const result = await Promise.race([
@@ -37,7 +34,8 @@ export class PromiseService {
     ]);
 
     if (result === 'timed out') {
-      throw new InternalServerErrorException(`promise resolution timed out after ${timeout / 1000}s`);
+      const errorMessage = timeoutMessage || `promise resolution timed out after ${timeout / 1000}s`;
+      throw new InternalServerErrorException(errorMessage);
     }
 
     this.logService.debug('Promise resolved successfully within timeout');
@@ -83,38 +81,61 @@ export class PromiseService {
    * duplicated waits for original resolution and share its output.
    * @param params
    */
-  public async resolveDeduplicated<T>(params: PromiseResolveDeduplicatedParams<T>): Promise<T> {
-    const { key, timeout, delay: paramsDelay, promise } = params;
+  public async resolveDeduped<T>(params: PromiseResolveDedupedParams<T>): Promise<T> {
+    const { key, timeout: paramsTimeout, timeoutMessage, ttl: paramsTtl, delay: paramsDelay, promise } = params;
 
-    const dataKey = `${key}:data`;
-    const ttl = timeout ?? 60 * 1000;
-    const delay = paramsDelay ?? 500;
+    const timeout = paramsTimeout ?? this.appConfig.APP_OPTIONS.timeout * 0.95;
+    const ttl = paramsTtl ?? 60 * 1000;
+    const delay = paramsDelay ?? 1000;
 
-    this.logService.debug(`Deduplicating ${key} promise with ${ttl / 1000}s TTL`);
+    this.logService.debug(`Deduplicating ${key} promise with ${timeout / 1000}s timeout and ${ttl / 1000}s TTL`);
 
     const provider = this.cacheService.getProvider();
     const providerId = uuidV4();
+    const providerKey = `dedupe:${key}:provider`;
+    const dataKey = `dedupe:${key}:data`;
+    const dataErrorMessage = 'DEDUPE_FAILED';
 
-    await provider.set(key, providerId, { ttl, skip: 'IF_EXIST' });
-    const keyValue = await provider.get(key);
+    await provider.set(providerKey, providerId, { ttl, skip: 'IF_EXIST' });
+    const keyValue = await provider.get(providerKey);
 
     let data: T;
 
     if (keyValue === providerId) {
-      data = await promise();
+      try {
+        data = await promise();
+      }
+      catch (e) {
+        await Promise.all([
+          provider.set(dataKey, dataErrorMessage, { ttl }),
+          provider.del(providerKey),
+        ]);
+
+        throw e;
+      }
+
       await provider.set(dataKey, data, { ttl });
       this.logService.debug(`Promise ${key} resolved successfully with source data`);
     }
     else {
-      await this.resolveOrTimeout({
-        timeout: ttl,
+      data = await this.resolveOrTimeout({
+        timeout,
+        timeoutMessage,
         promise: async () => {
-          while (!data) {
-            data = await provider.get(dataKey);
-            await this.sleep(delay);
+          let res: T;
+
+          while (!res) {
+            res = await provider.get(dataKey);
+            await sleep(delay);
           }
+
+          return res;
         },
       });
+
+      if (data === dataErrorMessage) {
+        return this.resolveDeduped(params);
+      }
 
       this.logService.debug(`Promise ${key} resolved successfully with cached data`);
     }
@@ -173,7 +194,7 @@ export class PromiseService {
         const msgRetry = `${txtPrefix} ${e.message} | Attempt #${tentative}/${txtRetry} | Elapsed ${txtElapsed}s`;
         this.logService.debug(msgRetry);
 
-        await this.sleep(delay || 0);
+        await sleep(delay || 0);
       }
     }
 

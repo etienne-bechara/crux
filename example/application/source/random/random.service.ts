@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, LogService, PromiseService, UnauthorizedException } from '@bechara/crux';
 import crypto from 'crypto';
+import { setTimeout } from 'timers/promises';
 
 @Injectable()
 export class RandomService {
@@ -34,7 +35,7 @@ export class RandomService {
     const outLatency = Math.random() * 1000;
     const dice = Math.random() * 100;
 
-    await this.promiseService.sleep(inLatency);
+    await setTimeout(inLatency);
 
     switch (true) {
       case dice > 95: {
@@ -78,7 +79,7 @@ export class RandomService {
       case dice > 50: {
         const google = await this.httpService.get('https://www.google.com');
 
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return google;
       }
 
@@ -92,43 +93,43 @@ export class RandomService {
 
       case dice > 40: {
         this.logService.fatal('Catasthrophic failure', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 35: {
         this.logService.error('Failed to do something', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 30: {
         this.logService.warning('Something bad is about to happen', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 25: {
         this.logService.notice('Random stuff done successfully', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 20: {
         this.logService.info('Doing random stuff', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 15: {
         this.logService.debug('Detailing random stuff being done', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
       case dice > 10: {
         this.logService.trace('Detailing random stuff being done even more', metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 
@@ -140,7 +141,7 @@ export class RandomService {
         this.logService.info(crypto.randomBytes(20).toString('base64url'), metadata);
         this.logService.debug(crypto.randomBytes(20).toString('base64url'), metadata);
         this.logService.trace(crypto.randomBytes(20).toString('base64url'), metadata);
-        await this.promiseService.sleep(outLatency);
+        await setTimeout(outLatency);
         return metadata;
       }
 

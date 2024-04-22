@@ -2,6 +2,7 @@ import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServ
 import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import qs from 'query-string';
+import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
@@ -254,7 +255,7 @@ export class HttpService {
       const delay = retryDelay(attempt);
       this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, e as Error);
 
-      await this.promiseService.sleep(delay);
+      await setTimeout(delay);
     }
 
     return response;

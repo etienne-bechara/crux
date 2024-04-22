@@ -21,12 +21,6 @@ export class FooService {
     private readonly httpService: HttpService,
   ) { }
 
-  public async readFooDelayed(): Promise<unknown> {
-    const foo = await this.httpService.get('foo');
-    await this.promiseService.sleep(5000); // 5 seconds
-    return foo;
-  }
-
   public async readFooOrTimeout(): Promise<unknown> {
     const timeout = 5000; // 5 seconds
     return this.promiseService.resolveOrTimeout({

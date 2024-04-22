@@ -1,7 +1,7 @@
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
-import { CacheModule } from '../override';
+import { CacheModule, uuidV4 } from '../override';
 import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
@@ -26,24 +26,13 @@ describe('PromiseService', () => {
     promiseService = app.get(PromiseService);
   });
 
-  describe('sleep', () => {
-    it('should sleep code execution for 1000ms', async () => {
-      const sleepTime = 1000;
-      const start = Date.now();
-      await promiseService.sleep(sleepTime);
-      const elapsed = Date.now() - start;
-      expect(elapsed).toBeGreaterThan(sleepTime * 0.95);
-      expect(elapsed).toBeLessThan(sleepTime * 1.05);
-    });
-  });
-
   describe('resolveLimited', () => {
     it('should restrict resolution if over limit', async () => {
       const start = Date.now();
 
       await promiseService.resolveLimited({
         data: [ 100, 200, 300, 400 ],
-        promise: (t) => promiseService.sleep(t),
+        promise: (t) => setTimeout(t),
         limit: 1,
       });
 
@@ -56,7 +45,7 @@ describe('PromiseService', () => {
 
       await promiseService.resolveLimited({
         data: [ 100, 200, 300, 400 ],
-        promise: (t) => promiseService.sleep(t),
+        promise: (t) => setTimeout(t),
         limit: 4,
       });
 
@@ -92,17 +81,18 @@ describe('PromiseService', () => {
 
   describe('resolveDeduplicated', () => {
     it('should not duplicate underlying promise execution', async () => {
+      const dedupKey = uuidV4();
       let counter = 0;
 
       const fn = async (): Promise<number> => {
         counter++;
-        await setTimeout(2000);
+        await setTimeout(1000);
         return Math.random();
       };
 
-      const dedup = (): Promise<number> => promiseService.resolveDeduplicated({
-        key: 'dedup',
-        timeout: 5000,
+      const dedup = (): Promise<number> => promiseService.resolveDeduped({
+        key: dedupKey,
+        timeout: 10_000,
         promise: fn,
       });
 
@@ -115,6 +105,49 @@ describe('PromiseService', () => {
       expect(counter).toBe(1);
       expect(second).toEqual(first);
       expect(third).toEqual(first);
+    });
+
+    it('should rerun underlying operation if parent deduplication fails', async () => {
+      const dedupKey = uuidV4();
+      const errorKey = uuidV4();
+      let counter = 0;
+      let errorMessage: string;
+
+      const fn = async (): Promise<number> => {
+        counter++;
+        const isFirst = counter === 1;
+        await setTimeout(1000);
+
+        if (isFirst) {
+          throw new Error(errorKey);
+        }
+
+        return Math.random();
+      };
+
+      const dedup = (): Promise<number> => promiseService.resolveDeduped({
+        key: dedupKey,
+        timeout: 10_000,
+        promise: fn,
+      });
+
+      const firstPromise = dedup();
+      const secondPromise = dedup();
+      const thirdPromise = dedup();
+
+      try {
+        await firstPromise;
+      }
+      catch (e) {
+        errorMessage = e.message;
+      }
+
+      const second = await secondPromise;
+      const third = await thirdPromise;
+
+      expect(counter).toBe(2);
+      expect(errorMessage).toBe(errorKey);
+      expect(second).toEqual(third);
     });
   });
 
@@ -157,7 +190,7 @@ describe('PromiseService', () => {
 
       try {
         await promiseService.retryOnRejection({
-          promise: () => promiseService.sleep(2000),
+          promise: () => setTimeout(2000),
           timeout,
         });
       }
