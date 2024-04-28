@@ -345,7 +345,7 @@ export class DocModule {
         },
       },
       schema: {
-        nestedBackground: params.rightPanelBackgroundColor,
+        nestedBackground: params.sidebarBackgroundColor,
       },
       typography: {
         fontSize: params.fontSize || '15px',

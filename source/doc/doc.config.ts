@@ -52,7 +52,7 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
       },
     },
     schema: {
-      nestedBackground: '#282c34',
+      nestedBackground: '#21252b',
     },
     typography: {
       fontSize: '15px',
