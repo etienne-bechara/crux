@@ -20,7 +20,7 @@ export const DOC_DEFAULT_OPTIONS: DocOptions = {
     backgroundColor: '#2f333d',
     scrollbar: {
       width: '16px',
-      thumbColor: '#282c34',
+      thumbColor: '#21252b',
       trackColor: '#2f333d',
     },
     colors: {

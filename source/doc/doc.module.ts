@@ -313,7 +313,7 @@ export class DocModule {
       backgroundColor: params.backgroundColor,
       scrollbar: {
         width: '16px',
-        thumbColor: params.rightPanelBackgroundColor,
+        thumbColor: params.sidebarBackgroundColor,
         trackColor: params.backgroundColor,
       },
       colors: {
