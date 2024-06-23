@@ -1,3 +1,11 @@
+## [5.7.3](https://github.com/etienne-bechara/crux/compare/v5.7.2...v5.7.3) (2024-06-23)
+
+
+### Bug Fixes
+
+* **package:** bump minor versions ([27c89e3](https://github.com/etienne-bechara/crux/commit/27c89e38bafe6545b92bae21bf63bf28e78768b1))
+* **package:** rollback eslint to 8.5.0 ([3872716](https://github.com/etienne-bechara/crux/commit/3872716e94d1215c48eaca5ae875fe6a02ac0da6))
+
 ## [5.7.2](https://github.com/etienne-bechara/crux/compare/v5.7.1...v5.7.2) (2024-04-28)
 
 
