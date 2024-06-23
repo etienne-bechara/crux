@@ -1,3 +1,11 @@
+## [5.7.2](https://github.com/etienne-bechara/crux/compare/v5.7.1...v5.7.2) (2024-04-28)
+
+
+### Bug Fixes
+
+* **doc:** nested background color ([a72e3c7](https://github.com/etienne-bechara/crux/commit/a72e3c7e21110f9e348c46af6f109ad28beed635))
+* **doc:** theme generation thumb color ([4eeb0e2](https://github.com/etienne-bechara/crux/commit/4eeb0e2cd79f370f6229b5407aa5a984f5ce2f06))
+
 ## [5.7.1](https://github.com/etienne-bechara/crux/compare/v5.7.0...v5.7.1) (2024-04-22)
 
 
