@@ -1,3 +1,10 @@
+## [5.7.4](https://github.com/etienne-bechara/crux/compare/v5.7.3...v5.7.4) (2024-07-16)
+
+
+### Bug Fixes
+
+* **validate:** add isArray to buildApiPropertyOptions based on each ([667f37f](https://github.com/etienne-bechara/crux/commit/667f37f8aeafb2bded4ff97475df7ef8614c3842))
+
 ## [5.7.3](https://github.com/etienne-bechara/crux/compare/v5.7.2...v5.7.3) (2024-06-23)
 
 
