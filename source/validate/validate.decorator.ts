@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators } from '@nestjs/common';
-import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type as SetType } from 'class-transformer';
 import {
   ArrayMaxSize as CvArrayMaxSize,
@@ -46,25 +46,6 @@ import {
 } from 'class-validator';
 
 const ValidateStorage: Map<string, any> = new Map();
-
-/**
- * Builds default ApiProperty options based on class-validator decorator.
- * @param type
- * @param validationOptions
- */
-export function buildApiPropertyOptions(type: any, validationOptions: ValidationOptions): ApiPropertyOptions {
-  const { each } = validationOptions || { };
-
-  const options: ApiPropertyOptions = {
-    isArray: each,
-  };
-
-  if (type) {
-    options.type = each ? [ type ] : type;
-  }
-
-  return options;
-}
 
 // -- Custom validation decorators
 
@@ -135,12 +116,10 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
  * @param validationOptions
  */
 export function ValidateIf(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvValidateIf(condition, validationOptions),
-    ApiProperty({ ...propertyOptions, required: false }),
+    ApiProperty({ required: false }),
   );
 }
 
@@ -149,12 +128,10 @@ export function ValidateIf(condition: (object: any, value: any) => boolean, vali
  * @param validationOptions
  */
 export function ValidateNested(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvValidateNested(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty(),
   );
 }
 
@@ -163,12 +140,10 @@ export function ValidateNested(validationOptions?: ValidationOptions): PropertyD
  * @param validationOptions
  */
 export function IsDefined(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsDefined(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty(),
   );
 }
 
@@ -177,12 +152,10 @@ export function IsDefined(validationOptions?: ValidationOptions): PropertyDecora
  * @param validationOptions
  */
 export function IsOptional(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsOptional(validationOptions),
-    ApiProperty({ ...propertyOptions, required: false }),
+    ApiProperty({ required: false }),
   );
 }
 
@@ -192,12 +165,10 @@ export function IsOptional(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function Equals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvEquals(comparison, validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty(),
   );
 }
 
@@ -207,12 +178,10 @@ export function Equals(comparison: any, validationOptions?: ValidationOptions): 
  * @param validationOptions
  */
 export function NotEquals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvNotEquals(comparison, validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty(),
   );
 }
 
@@ -221,12 +190,10 @@ export function NotEquals(comparison: any, validationOptions?: ValidationOptions
  * @param validationOptions
  */
 export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsEmpty(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'empty' }),
+    ApiProperty({ format: 'empty' }),
   );
 }
 
@@ -235,12 +202,10 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsNotEmpty(validationOptions),
-    ApiProperty({ ...propertyOptions, minLength: 1 }),
+    ApiProperty({ minLength: 1 }),
   );
 }
 
@@ -250,12 +215,10 @@ export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function IsIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsIn(values, validationOptions),
-    ApiProperty({ ...propertyOptions, enum: values }),
+    ApiProperty({ enum: values }),
   );
 }
 
@@ -265,12 +228,10 @@ export function IsIn(values: any[], validationOptions?: ValidationOptions): Prop
  * @param validationOptions
  */
 export function IsNotIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsNotIn(values, validationOptions),
-    ApiProperty({ ...propertyOptions, format: `not in ${values.join(', ')}` }),
+    ApiProperty({ format: `not in ${values.join(', ')}` }),
   );
 }
 
@@ -281,12 +242,12 @@ export function IsNotIn(values: any[], validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function IsBoolean(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Boolean, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsBoolean(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty({ type: Boolean, isArray: each }),
   );
 }
 
@@ -295,12 +256,12 @@ export function IsBoolean(validationOptions?: ValidationOptions): PropertyDecora
  * @param validationOptions
  */
 export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Date, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsDate(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty({ type: Date, isArray: each }),
   );
 }
 
@@ -309,12 +270,12 @@ export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator
  * @param validationOptions
  */
 export function IsString(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsString(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty({ type: String, isArray: each }),
   );
 }
 
@@ -324,12 +285,12 @@ export function IsString(validationOptions?: ValidationOptions): PropertyDecorat
  * @param validationOptions
  */
 export function IsNumber(options: IsNumberOptions = { }, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Number, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsNumber(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'float' }),
+    ApiProperty({ type: Number, isArray: each, format: 'float' }),
   );
 }
 
@@ -338,12 +299,12 @@ export function IsNumber(options: IsNumberOptions = { }, validationOptions?: Val
  * @param validationOptions
  */
 export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Number, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsInt(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'integer' }),
+    ApiProperty({ type: Number, isArray: each, format: 'integer' }),
   );
 }
 
@@ -352,12 +313,10 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
  * @param validationOptions
  */
 export function IsArray(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvIsArray(validationOptions),
-    ApiProperty({ ...propertyOptions, isArray: true }),
+    ApiProperty({ isArray: true }),
   );
 }
 
@@ -367,7 +326,7 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+  const { each } = validationOptions || { };
   const isNumeric = Object.keys(entity).some((k) => /^\d+$/.test(k));
   const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
 
@@ -375,12 +334,12 @@ export function IsEnum(entity: object, validationOptions?: ValidationOptions): P
     ? applyDecorators(
       Expose(),
       CvIsIn(numericValues, validationOptions),
-      ApiProperty({ ...propertyOptions, enum: numericValues }),
+      ApiProperty({ isArray: each, enum: numericValues }),
     )
     : applyDecorators(
       Expose(),
       CvIsIn(Object.values(entity), validationOptions),
-      ApiProperty({ ...propertyOptions, enum: Object.values(entity) }),
+      ApiProperty({ isArray: each, enum: Object.values(entity) }),
     );
 }
 
@@ -396,12 +355,12 @@ export function IsEnum(entity: object, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function Min(minValue: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Number, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvMin(minValue, validationOptions),
-    ApiProperty({ ...propertyOptions, minimum: minValue }),
+    ApiProperty({ type: Number, isArray: each, minimum: minValue }),
   );
 }
 
@@ -411,12 +370,12 @@ export function Min(minValue: number, validationOptions?: ValidationOptions): Pr
  * @param validationOptions
  */
 export function Max(maxValue: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(Number, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvMax(maxValue, validationOptions),
-    ApiProperty({ ...propertyOptions, maximum: maxValue }),
+    ApiProperty({ type: Number, isArray: each, maximum: maxValue }),
   );
 }
 
@@ -436,12 +395,12 @@ export function Max(maxValue: number, validationOptions?: ValidationOptions): Pr
  * @param validationOptions
  */
 export function IsNumberString(options?: validator.IsNumericOptions, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsNumberString(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'numeric' }),
+    ApiProperty({ type: String, isArray: each, format: 'numeric' }),
   );
 }
 
@@ -454,12 +413,12 @@ export function IsNumberString(options?: validator.IsNumericOptions, validationO
  * @param validationOptions
  */
 export function Contains(seed: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, format: `contains '${seed}'` }),
+    ApiProperty({ type: String, isArray: each, format: `contains '${seed}'` }),
   );
 }
 
@@ -470,12 +429,12 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function NotContains(seed: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvNotContains(seed, validationOptions),
-    ApiProperty({ ...propertyOptions, format: `not contains '${seed}'` }),
+    ApiProperty({ type: String, isArray: each, format: `not contains '${seed}'` }),
   );
 }
 
@@ -491,12 +450,12 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function IsBase64(options?: validator.IsBase64Options, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsBase64(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'base64' }),
+    ApiProperty({ type: String, isArray: each, format: 'base64' }),
   );
 }
 
@@ -515,12 +474,12 @@ export function IsBase64(options?: validator.IsBase64Options, validationOptions?
  * @param validationOptions
  */
 export function IsEmail(options?: validator.IsEmailOptions, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsEmail(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'e-mail' }),
+    ApiProperty({ type: String, isArray: each, format: 'e-mail' }),
   );
 }
 
@@ -552,12 +511,12 @@ export function IsEmail(options?: validator.IsEmailOptions, validationOptions?: 
  * @param validationOptions
  */
 export function IsISO8601(options?: validator.IsISO8601Options, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsISO8601(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'iso8601' }),
+    ApiProperty({ type: String, isArray: each, format: 'iso8601' }),
   );
 }
 
@@ -566,12 +525,12 @@ export function IsISO8601(options?: validator.IsISO8601Options, validationOption
  * @param validationOptions
  */
 export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsJSON(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'json' }),
+    ApiProperty({ type: String, isArray: each, format: 'json' }),
   );
 }
 
@@ -580,12 +539,12 @@ export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator
  * @param validationOptions
  */
 export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsJWT(validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'jwt' }),
+    ApiProperty({ type: String, isArray: each, format: 'jwt' }),
   );
 }
 
@@ -595,11 +554,11 @@ export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator 
  * @param validationOptions
  */
 export function IsObject(type: any = { }, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(type, validationOptions);
+  const { each } = validationOptions || { };
 
   const decorators = [
     CvIsObject(validationOptions),
-    ApiProperty(propertyOptions),
+    ApiProperty({ type, isArray: each }),
   ];
 
   if (typeof type === 'function') {
@@ -640,12 +599,12 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function IsUrl(options?: validator.IsURLOptions, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsUrl(options, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'url' }),
+    ApiProperty({ type: String, isArray: each, format: 'url' }),
   );
 }
 
@@ -657,12 +616,12 @@ export function IsUrl(options?: validator.IsURLOptions, validationOptions?: Vali
  * @param validationOptions
  */
 export function IsUUID(version?: validator.UUIDVersion, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvIsUUID(version, validationOptions),
-    ApiProperty({ ...propertyOptions, format: 'uuid' }),
+    ApiProperty({ type: String, isArray: each, format: 'uuid' }),
   );
 }
 
@@ -676,12 +635,12 @@ export function IsUUID(version?: validator.UUIDVersion, validationOptions?: Vali
  * @param validationOptions
  */
 export function Length(min: number, max?: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvLength(min, max, validationOptions),
-    ApiProperty({ ...propertyOptions, minLength: min, maxLength: max }),
+    ApiProperty({ type: String, isArray: each, minLength: min, maxLength: max }),
   );
 }
 
@@ -691,12 +650,12 @@ export function Length(min: number, max?: number, validationOptions?: Validation
  * @param validationOptions
  */
 export function MinLength(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvMinLength(min, validationOptions),
-    ApiProperty({ ...propertyOptions, minLength: min }),
+    ApiProperty({ type: String, isArray: each, minLength: min }),
   );
 }
 
@@ -706,12 +665,12 @@ export function MinLength(min: number, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function MaxLength(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvMaxLength(max, validationOptions),
-    ApiProperty({ ...propertyOptions, maxLength: max }),
+    ApiProperty({ type: String, isArray: each, maxLength: max }),
   );
 }
 
@@ -722,12 +681,12 @@ export function MaxLength(max: number, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function Matches(regexPattern: RegExp, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(String, validationOptions);
+  const { each } = validationOptions || { };
 
   return applyDecorators(
     Expose(),
     CvMatches(regexPattern, validationOptions),
-    ApiProperty({ ...propertyOptions, pattern: regexPattern.source }),
+    ApiProperty({ type: String, isArray: each, pattern: regexPattern.source }),
   );
 }
 
@@ -751,12 +710,10 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
  * @param validationOptions
  */
 export function ArrayMinSize(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvArrayMinSize(min, validationOptions),
-    ApiProperty({ ...propertyOptions, minItems: min }),
+    ApiProperty({ minItems: min }),
   );
 }
 
@@ -767,12 +724,10 @@ export function ArrayMinSize(min: number, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function ArrayMaxSize(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
-
   return applyDecorators(
     Expose(),
     CvArrayMaxSize(max, validationOptions),
-    ApiProperty({ ...propertyOptions, maxItems: max }),
+    ApiProperty({ maxItems: max }),
   );
 }
 // @ArrayUnique(identifier?: (o) => any)	Checks if all array's values are unique. Comparison for objects is reference-based. Optional function can be speciefied which return value will be used for the comparsion.
