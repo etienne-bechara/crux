@@ -55,9 +55,15 @@ const ValidateStorage: Map<string, any> = new Map();
 export function buildApiPropertyOptions(type: any, validationOptions: ValidationOptions): ApiPropertyOptions {
   const { each } = validationOptions || { };
 
-  return {
-    type: each ? [ type ] : type,
+  const options: ApiPropertyOptions = {
+    isArray: each,
   };
+
+  if (type) {
+    options.type = each ? [ type ] : type;
+  }
+
+  return options;
 }
 
 // -- Custom validation decorators
@@ -129,10 +135,12 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
  * @param validationOptions
  */
 export function ValidateIf(condition: (object: any, value: any) => boolean, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvValidateIf(condition, validationOptions),
-    ApiProperty({ required: false }),
+    ApiProperty({ ...propertyOptions, required: false }),
   );
 }
 
@@ -141,10 +149,12 @@ export function ValidateIf(condition: (object: any, value: any) => boolean, vali
  * @param validationOptions
  */
 export function ValidateNested(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvValidateNested(validationOptions),
-    ApiProperty(),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -153,10 +163,12 @@ export function ValidateNested(validationOptions?: ValidationOptions): PropertyD
  * @param validationOptions
  */
 export function IsDefined(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsDefined(validationOptions),
-    ApiProperty(),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -165,10 +177,12 @@ export function IsDefined(validationOptions?: ValidationOptions): PropertyDecora
  * @param validationOptions
  */
 export function IsOptional(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsOptional(validationOptions),
-    ApiProperty({ required: false }),
+    ApiProperty({ ...propertyOptions, required: false }),
   );
 }
 
@@ -178,10 +192,12 @@ export function IsOptional(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function Equals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvEquals(comparison, validationOptions),
-    ApiProperty(),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -191,10 +207,12 @@ export function Equals(comparison: any, validationOptions?: ValidationOptions): 
  * @param validationOptions
  */
 export function NotEquals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvNotEquals(comparison, validationOptions),
-    ApiProperty(),
+    ApiProperty(propertyOptions),
   );
 }
 
@@ -203,10 +221,12 @@ export function NotEquals(comparison: any, validationOptions?: ValidationOptions
  * @param validationOptions
  */
 export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsEmpty(validationOptions),
-    ApiProperty({ format: 'empty' }),
+    ApiProperty({ ...propertyOptions, format: 'empty' }),
   );
 }
 
@@ -215,10 +235,12 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsNotEmpty(validationOptions),
-    ApiProperty({ minLength: 1 }),
+    ApiProperty({ ...propertyOptions, minLength: 1 }),
   );
 }
 
@@ -228,10 +250,12 @@ export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function IsIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsIn(values, validationOptions),
-    ApiProperty({ enum: values }),
+    ApiProperty({ ...propertyOptions, enum: values }),
   );
 }
 
@@ -241,10 +265,12 @@ export function IsIn(values: any[], validationOptions?: ValidationOptions): Prop
  * @param validationOptions
  */
 export function IsNotIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsNotIn(values, validationOptions),
-    ApiProperty({ format: `not in ${values.join(', ')}` }),
+    ApiProperty({ ...propertyOptions, format: `not in ${values.join(', ')}` }),
   );
 }
 
@@ -326,10 +352,12 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
  * @param validationOptions
  */
 export function IsArray(validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvIsArray(validationOptions),
-    ApiProperty({ isArray: true }),
+    ApiProperty({ ...propertyOptions, isArray: true }),
   );
 }
 
@@ -339,6 +367,7 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
   const isNumeric = Object.keys(entity).some((k) => /^\d+$/.test(k));
   const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
 
@@ -346,12 +375,12 @@ export function IsEnum(entity: object, validationOptions?: ValidationOptions): P
     ? applyDecorators(
       Expose(),
       CvIsIn(numericValues, validationOptions),
-      ApiProperty({ enum: numericValues }),
+      ApiProperty({ ...propertyOptions, enum: numericValues }),
     )
     : applyDecorators(
       Expose(),
       CvIsIn(Object.values(entity), validationOptions),
-      ApiProperty({ enum: Object.values(entity) }),
+      ApiProperty({ ...propertyOptions, enum: Object.values(entity) }),
     );
 }
 
@@ -585,7 +614,9 @@ export function IsObject(type: any = { }, validationOptions?: ValidationOptions)
   }
 
   return applyDecorators(
-    Expose(), ...decorators);
+    Expose(),
+    ...decorators,
+  );
 }
 
 // @IsNotEmptyObject()	Checks if the object is not empty.
@@ -720,10 +751,12 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
  * @param validationOptions
  */
 export function ArrayMinSize(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvArrayMinSize(min, validationOptions),
-    ApiProperty({ minItems: min }),
+    ApiProperty({ ...propertyOptions, minItems: min }),
   );
 }
 
@@ -734,10 +767,12 @@ export function ArrayMinSize(min: number, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function ArrayMaxSize(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
+  const propertyOptions = buildApiPropertyOptions(null, validationOptions);
+
   return applyDecorators(
     Expose(),
     CvArrayMaxSize(max, validationOptions),
-    ApiProperty({ maxItems: max }),
+    ApiProperty({ ...propertyOptions, maxItems: max }),
   );
 }
 // @ArrayUnique(identifier?: (o) => any)	Checks if all array's values are unique. Comparison for objects is reference-based. Optional function can be speciefied which return value will be used for the comparsion.
