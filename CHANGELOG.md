@@ -1,3 +1,10 @@
+## [5.7.5](https://github.com/etienne-bechara/crux/compare/v5.7.4...v5.7.5) (2024-07-16)
+
+
+### Bug Fixes
+
+* **validate:** isArray redundancy ([003297a](https://github.com/etienne-bechara/crux/commit/003297a6e86cfb58b67cc62ff7163f746902972b))
+
 ## [5.7.4](https://github.com/etienne-bechara/crux/compare/v5.7.3...v5.7.4) (2024-07-16)
 
 
