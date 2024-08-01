@@ -1,3 +1,15 @@
+# [5.8.0](https://github.com/etienne-bechara/crux/compare/v5.7.5...v5.8.0) (2024-08-01)
+
+
+### Bug Fixes
+
+* **rate:** coalesce options to empty ([16fae88](https://github.com/etienne-bechara/crux/commit/16fae88e809b22a82101bca4421c1c0494f98eb5))
+
+
+### Features
+
+* **rate:** add limit, key and window customization support through context ([8a90c5e](https://github.com/etienne-bechara/crux/commit/8a90c5e4be00c959df9b8af5110b4d519c98f6b0))
+
 ## [5.7.5](https://github.com/etienne-bechara/crux/compare/v5.7.4...v5.7.5) (2024-07-16)
 
 
