@@ -23,7 +23,7 @@ export class RateInterceptor implements NestInterceptor {
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const options: RateLimitOptions = this.reflector.get(AppMetadataKey.RATE_LIMIT_OPTIONS, context.getHandler());
-    const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options;
+    const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options || { };
 
     const limit = typeof optionsLimit === 'function'
       ? optionsLimit(this.contextService)
