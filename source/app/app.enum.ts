@@ -21,6 +21,6 @@ export enum AppMemoryKey {
 
 export enum AppMetadataKey {
   CACHE_OPTIONS = 'CACHE_OPTIONS',
-  RATE_LIMIT = 'RATE_LIMIT',
+  RATE_LIMIT_OPTIONS = 'RATE_LIMIT_OPTIONS',
   RESPONSE_CLASS = 'RESPONSE_BODY',
 }

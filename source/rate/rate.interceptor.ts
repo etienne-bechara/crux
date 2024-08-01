@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { AppMetadataKey } from '../app/app.enum';
 import { CacheService } from '../cache/cache.service';
 import { ContextService } from '../context/context.service';
+import { RateLimitOptions } from './rate.interface';
 
 @Injectable()
 export class RateInterceptor implements NestInterceptor {
@@ -21,16 +22,28 @@ export class RateInterceptor implements NestInterceptor {
    * @param next
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const limit: number = this.reflector.get(AppMetadataKey.RATE_LIMIT, context.getHandler());
-    const window = 60 * 1000;
+    const options: RateLimitOptions = this.reflector.get(AppMetadataKey.RATE_LIMIT_OPTIONS, context.getHandler());
+    const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options;
+
+    const limit = typeof optionsLimit === 'function'
+      ? optionsLimit(this.contextService)
+      : optionsLimit;
+
+    const key = typeof optionsKey === 'function'
+      ? optionsKey(this.contextService)
+      : optionsKey || this.contextService.getRequestIp();
+
+    const window = typeof optionsWindow === 'function'
+      ? optionsWindow(this.contextService)
+      : optionsWindow || 60 * 1000;
 
     if (limit) {
-      const key = this.buildRateLimitKey();
+      const rateKey = `rate:${key}`;
       const provider = this.cacheService.getProvider();
-      const current = await provider.incrbyfloat(key, 1, { ttl: window });
+      const current = await provider.incrbyfloat(rateKey, 1, { ttl: window });
 
       if (current > limit) {
-        const ttl = await provider.ttl(key);
+        const ttl = await provider.ttl(rateKey);
 
         throw new HttpException({
           message: 'rate limit exceeded',
@@ -41,14 +54,6 @@ export class RateInterceptor implements NestInterceptor {
     }
 
     return next.handle();
-  }
-
-  /**
-   * Builds a rate limit key by IP.
-   */
-  private buildRateLimitKey(): string {
-    const ip = this.contextService.getRequestIp();
-    return `rate:${ip}`;
   }
 
 }

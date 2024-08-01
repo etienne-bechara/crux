@@ -9,7 +9,7 @@ import { RateLimit } from './rate.decorator';
 @Controller('rate')
 class RateTestController {
 
-  @RateLimit(3)
+  @RateLimit({ limit: 3 })
   @Get('limited')
   public getLimited(): { rng: number } {
     return { rng: Math.random() };

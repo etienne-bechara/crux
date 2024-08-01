@@ -18,7 +18,7 @@ export class ZipController {
     private readonly zipService: ZipService,
   ) { }
 
-  @RateLimit(5)
+  @RateLimit({ limit: 5 })
   @Get(':code')
   @Cache({ ttl: 10_000 })
   @Response(HttpStatus.OK, ZipDto)
