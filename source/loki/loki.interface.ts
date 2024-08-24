@@ -15,19 +15,9 @@ export interface LokiOptions {
   batchSize?: number;
 }
 
-export interface LokiTimestamp {
-  seconds: number;
-  nanos: number;
-}
-
-export interface LokiEntry {
-  timestamp: LokiTimestamp;
-  line: string;
-}
-
 export interface LokiStream {
-  labels: string;
-  entries: LokiEntry[];
+  stream: Record<string, string>;
+  values: string[][];
 }
 
 export interface LokiMessage {

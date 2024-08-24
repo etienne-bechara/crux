@@ -14,10 +14,18 @@ export class ZipService {
    * @param zip
    */
   @Span()
-  public readZip(zip: string): Promise<ZipDto> {
-    return this.httpService.get(':zip/json', {
+  public async readZip(zip: string): Promise<ZipDto> {
+    const zipDto: ZipDto = await this.httpService.get(':zip/json', {
       replacements: { zip },
     });
+
+    for (const key in zipDto) {
+      if (zipDto[key] === '') {
+        zipDto[key] = null;
+      }
+    }
+
+    return zipDto;
   }
 
 }

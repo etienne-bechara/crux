@@ -44,8 +44,8 @@ export interface CacheInterceptParams extends CacheRouteOptions{
 }
 
 export interface CacheOptions {
-  /** Disables gzip compression when storing cached data. */
-  disableCompression?: boolean;
+  /** Enables snappy compression when storing cached data. */
+  compression?: boolean;
   /** Default cache acquisition timeout in milliseconds when unspecified at controller. Default: 500ms. */
   defaultTimeout?: number;
   /** Default TTL in milliseconds when unspecified at controller. Default: 1m. */

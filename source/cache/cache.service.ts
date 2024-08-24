@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import zlib from 'zlib';
+import { compress, uncompress } from 'snappyjs';
 
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
@@ -147,20 +147,17 @@ export class CacheService {
    * @param params
    */
   private async getCacheHandler<T>(params: CacheGetParams = { }): Promise<T> {
-    const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
+    const { compression } = this.appConfig.APP_OPTIONS.cache || { };
     const dataKey = this.buildCacheDataKey(params);
 
-    let value: any = disableCompression
-      ? await this.cacheProvider.get(dataKey)
-      : await this.cacheProvider.getBuffer(dataKey);
+    let value: any = compression
+      ? await this.cacheProvider.getBuffer(dataKey)
+      : await this.cacheProvider.get(dataKey);
 
     if (!value) return;
 
-    if (!disableCompression) {
-      const uncompressed: Buffer = await new Promise((res, rej) => {
-        return zlib.gunzip(value as Buffer, (e, d) => e ? rej(e) : res(d));
-      });
-
+    if (compression) {
+      const uncompressed: Buffer = uncompress(value);
       value = JSON.parse(uncompressed.toString());
     }
 
@@ -185,15 +182,13 @@ export class CacheService {
    */
   private async setCacheHandler(value: any, params: CacheSetParams = { }): Promise<void> {
     const { ttl, ...getParams } = params;
-    const { disableCompression } = this.appConfig.APP_OPTIONS.cache || { };
+    const { compression } = this.appConfig.APP_OPTIONS.cache || { };
     const dataKey = this.buildCacheDataKey(getParams);
     let data = value;
 
     try {
-      if (!disableCompression) {
-        data = await new Promise((res, rej) => {
-          return zlib.gzip(Buffer.from(JSON.stringify(value)), (e, d) => e ? rej(e) : res(d));
-        });
+      if (compression) {
+        data = compress(Buffer.from(JSON.stringify(value)));
       }
 
       await this.cacheProvider.set(dataKey, data, { ttl });

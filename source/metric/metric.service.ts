@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
-import { compress } from 'snappy';
+import { compress } from 'snappyjs';
 import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
@@ -127,7 +127,7 @@ export class MetricService {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'content-type': 'application/vnd.google.protobuf',
           },
-          body: await compress(buffer),
+          body: compress(buffer),
           retryLimit: 2,
         });
       }

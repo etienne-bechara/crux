@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { compress } from 'snappy';
 
 import { AppConfig } from '../app/app.config';
 import { HttpService } from '../http/http.service';
@@ -7,8 +6,7 @@ import { LogException, LogSeverity, LogTransportName } from '../log/log.enum';
 import { LogParams, LogTransport } from '../log/log.interface';
 import { LogService } from '../log/log.service';
 import { LokiConfig } from './loki.config';
-import { LokiEntry, LokiMessage, LokiStream } from './loki.interface';
-import { LokiMessageProto } from './loki.proto';
+import { LokiMessage, LokiStream } from './loki.interface';
 
 @Injectable()
 export class LokiService implements LogTransport {
@@ -109,16 +107,10 @@ export class LokiService implements LogTransport {
     this.publishQueue = [ ];
 
     const messageData = this.buildLokiMessage(logs);
-    const message = new LokiMessageProto(messageData);
-    const buffer: Buffer = LokiMessageProto.encode(message).finish() as any;
 
     try {
       await this.httpService.post(lokiUrl, {
-        headers: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          'content-type': 'application/vnd.google.protobuf',
-        },
-        body: await compress(buffer),
+        json: messageData,
         retryLimit: 2,
       });
     }
@@ -135,10 +127,16 @@ export class LokiService implements LogTransport {
   private buildLokiMessage(logs: LogParams[]): LokiMessage {
     const streams: LokiStream[] = [ ];
 
-    for (const log of logs) {
+    for (const severity of Object.values(LogSeverity)) {
+      const matchingLogs = logs.filter((l) => l.severity === severity);
+      if (matchingLogs.length === 0) continue;
+
       streams.push({
-        labels: this.buildLokiLabels(log),
-        entries: this.buildLokiEntries(log),
+        stream: {
+          ...this.buildLokiLabels(),
+          level: this.getLokiLevel(severity),
+        },
+        values: this.buildLokiEntries(matchingLogs),
       });
     }
 
@@ -157,44 +155,26 @@ export class LokiService implements LogTransport {
   }
 
   /**
-   * Build Loki labels which consists of a string in
-   * custom format.
-   * @param log
+   * Build Loki labels.
    */
-  private buildLokiLabels(log: LogParams): string {
+  private buildLokiLabels(): Record<string, string> {
     const { name: job, instance } = this.appConfig.APP_OPTIONS;
     const environment = this.appConfig.NODE_ENV;
-    const { severity } = log;
-    const level = this.getLokiLevel(severity);
-
-    const labelsObj = { job, instance, environment };
-    let labelsStr = `level="${level}"`;
-
-    for (const key in labelsObj) {
-      labelsStr += `,${key}="${labelsObj[key]}"`;
-    }
-
-    return `{${labelsStr}}`;
+    return { job, instance, environment };
   }
 
   /**
    * Build Loki entries which consists of a timestamp
    * with ns precision and a log line.
-   * @param log
+   * @param logs
    */
-  private buildLokiEntries(log: LogParams): LokiEntry[] {
-    const { timestamp, message, caller, requestId, traceId, spanId, data } = log;
-    const timeMs = new Date(timestamp).getTime();
-
-    const entry: LokiEntry = {
-      line: JSON.stringify({ message, caller, requestId, traceId, spanId, data }),
-      timestamp: {
-        seconds: timeMs / 1000,
-        nanos: timeMs % 1000 * 1e6,
-      },
-    };
-
-    return [ entry ];
+  private buildLokiEntries(logs: LogParams[]): string[][] {
+    return logs.map((l) => {
+      const { timestamp, message, caller, requestId, traceId, spanId, data } = l;
+      const timeMs = new Date(timestamp).getTime();
+      const line = JSON.stringify({ message, caller, requestId, traceId, spanId, data });
+      return [ String(timeMs * 1_000_000), line ];
+    });
   }
 
 }
