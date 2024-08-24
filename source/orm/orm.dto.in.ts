@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decorator';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Length, Max, Min } from '../validate/validate.decorator';
+import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Length, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageReadDto {
@@ -43,7 +43,7 @@ export class OrmPageReadDto {
   public count?: boolean;
 
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   @ApiProperty({
     description: 'Entity key to sort resulting records',
   })

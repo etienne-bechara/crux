@@ -1,6 +1,6 @@
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsBase64, IsEnum, IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
+import { IsBase64, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
 
 @Config()
 export class OrmConfig {
@@ -17,7 +17,7 @@ export class OrmConfig {
 
   @IsOptional()
   @InjectConfig()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly ORM_HOST: string;
 
   @IsOptional()
@@ -27,17 +27,17 @@ export class OrmConfig {
 
   @IsOptional()
   @InjectConfig()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly ORM_USERNAME: string;
 
   @IsOptional()
   @InjectConfig()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly ORM_PASSWORD: string;
 
   @IsOptional()
   @InjectConfig()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly ORM_DATABASE: string;
 
   @IsOptional()

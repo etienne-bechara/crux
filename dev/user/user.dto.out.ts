@@ -1,4 +1,4 @@
-import { ArrayMaxSize, IsArray, IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
+import { ArrayMaxSize, IsArray, IsBoolean, IsEmail, IsEnum, IsInt, IsNumber, IsNumberString, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, MinLength } from '../../source/override';
 import { ArrayMinSize } from '../../source/validate/validate.decorator';
 import { UserAddressState, UserTag } from './user.enum';
 
@@ -17,26 +17,26 @@ export class UserAddressDto {
   @IsNumberString() @Length(5, 8)
   public zip: string;
 
-  @IsString() @IsNotEmpty()
+  @IsString()
   public number: string;
 
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public details?: string;
 
   /** Address street, populated through ZIP enrichment. */
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public street?: string;
 
   /** Address district, populated through ZIP enrichment. */
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public district?: string;
 
   /** Address city, populated through ZIP enrichment. */
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public city?: string;
 
   /** Address state, populated through ZIP enrichment. */

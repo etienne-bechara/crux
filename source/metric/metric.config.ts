@@ -1,5 +1,5 @@
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
+import { IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { MetricHttpStrategy } from './metric.enum';
 import { MetricOptions } from './metric.interface';
 
@@ -21,12 +21,12 @@ export class MetricConfig {
 
   @InjectConfig()
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly METRIC_USERNAME: string;
 
   @InjectConfig()
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly METRIC_PASSWORD: string;
 
 }

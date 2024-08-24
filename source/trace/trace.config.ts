@@ -1,5 +1,5 @@
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
+import { IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { TraceOptions } from './trace.interface';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -19,12 +19,12 @@ export class TraceConfig {
 
   @InjectConfig()
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly TRACE_USERNAME: string;
 
   @InjectConfig()
   @IsOptional()
-  @IsString() @IsNotEmpty()
+  @IsString()
   public readonly TRACE_PASSWORD: string;
 
 }

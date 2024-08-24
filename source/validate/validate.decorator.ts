@@ -205,7 +205,7 @@ export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecor
   return applyDecorators(
     Expose(),
     CvIsNotEmpty(validationOptions),
-    ApiProperty({ minLength: 1 }),
+    ApiProperty({ format: 'empty' }),
   );
 }
 
@@ -275,7 +275,8 @@ export function IsString(validationOptions?: ValidationOptions): PropertyDecorat
   return applyDecorators(
     Expose(),
     CvIsString(validationOptions),
-    ApiProperty({ type: String, isArray: each }),
+    CvIsNotEmpty(validationOptions),
+    ApiProperty({ type: String, isArray: each, format: 'not empty' }),
   );
 }
 
