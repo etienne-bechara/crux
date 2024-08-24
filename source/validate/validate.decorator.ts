@@ -45,6 +45,8 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
+import { IsStringOptions } from './validate.interface';
+
 const ValidateStorage: Map<string, any> = new Map();
 
 // -- Custom validation decorators
@@ -267,17 +269,25 @@ export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator
 
 /**
  * Checks if a given value is a real string.
+ * @param options
  * @param validationOptions
  */
-export function IsString(validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsString(options: IsStringOptions = { }, validationOptions?: ValidationOptions): PropertyDecorator {
+  const { allowEmpty } = options;
   const { each } = validationOptions || { };
 
-  return applyDecorators(
-    Expose(),
-    CvIsString(validationOptions),
-    CvIsNotEmpty(validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'not empty' }),
-  );
+  return allowEmpty
+    ? applyDecorators(
+      Expose(),
+      CvIsString(validationOptions),
+      ApiProperty({ type: String, isArray: each }),
+    )
+    : applyDecorators(
+      Expose(),
+      CvIsString(validationOptions),
+      CvIsNotEmpty(validationOptions),
+      ApiProperty({ type: String, isArray: each, format: 'not empty' }),
+    );
 }
 
 /**

@@ -6,3 +6,7 @@ export interface ValidateOptions {
   /** Validation options for response contracts defined using @Response() decorator at endpoint. */
   response?: ValidationPipeOptions;
 }
+
+export interface IsStringOptions {
+  allowEmpty?: boolean;
+}

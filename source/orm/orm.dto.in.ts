@@ -59,7 +59,7 @@ export class OrmPageReadDto {
   @IsOptional()
   @ToStringArray()
   @IsArray()
-  @IsString({ each: true })
+  @IsString({ }, { each: true })
   @ApiProperty({
     description: 'Nested entities to expand separated by comma',
   })

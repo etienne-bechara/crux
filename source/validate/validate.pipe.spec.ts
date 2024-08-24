@@ -34,7 +34,7 @@ class ValidatorCreateDto {
   @IsString()
   public optionalString: string;
 
-  @IsString({ groups: [ 'group1' ] })
+  @IsString({ }, { groups: [ 'group1' ] })
   public contextualString: string;
 
   @IsObject(ValidatorNestedDto)
