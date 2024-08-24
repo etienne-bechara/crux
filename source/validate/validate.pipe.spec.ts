@@ -156,6 +156,7 @@ describe('AppValidator', () => {
       expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
       expect(body.constraints).toStrictEqual([
         'requiredString must be a string',
+        'requiredString should not be empty',
         'requiredNumber must be a number conforming to the specified constraints',
         'requiredNested must be an object',
       ]);
@@ -168,6 +169,7 @@ describe('AppValidator', () => {
       expect(body.constraints).toStrictEqual([
         'property string should not exist',
         'requiredString must be a string',
+        'requiredString should not be empty',
         'requiredNumber must be a number conforming to the specified constraints',
         'requiredNested must be an object',
       ]);
@@ -238,7 +240,10 @@ describe('AppValidator', () => {
       });
 
       expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(body.constraints).toStrictEqual([ 'requiredString must be a string' ]);
+      expect(body.constraints).toStrictEqual([
+        'requiredString must be a string',
+        'requiredString should not be empty',
+      ]);
     });
 
     it('[400] missing contextualString', async () => {
@@ -251,7 +256,10 @@ describe('AppValidator', () => {
       });
 
       expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(body.constraints).toStrictEqual([ 'contextualString must be a string' ]);
+      expect(body.constraints).toStrictEqual([
+        'contextualString must be a string',
+        'contextualString should not be empty',
+      ]);
     });
   });
 
@@ -321,7 +329,10 @@ describe('AppValidator', () => {
       const { statusCode, body } = await supertest(httpServer).post('/validator/bulk').send(data);
 
       expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(body.constraints).toStrictEqual([ 'requiredString must be a string' ]);
+      expect(body.constraints).toStrictEqual([
+        'requiredString must be a string',
+        'requiredString should not be empty',
+      ]);
     });
   });
 });
