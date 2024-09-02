@@ -1,3 +1,10 @@
+## [5.8.2](https://github.com/etienne-bechara/crux/compare/v5.8.1...v5.8.2) (2024-09-02)
+
+
+### Bug Fixes
+
+* **validate:** allow response validation throwing to be configurable ([8753e9d](https://github.com/etienne-bechara/crux/commit/8753e9d1b5ac2cccae78b7ef2dd9433690c2723d))
+
 ## [5.8.1](https://github.com/etienne-bechara/crux/compare/v5.8.0...v5.8.1) (2024-08-24)
 
 
