@@ -6,6 +6,7 @@ import { map, Observable } from 'rxjs';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetadataKey } from '../app/app.enum';
+import { LogService } from '../log/log.service';
 import { TraceService } from '../trace/trace.service';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class ValidateInterceptor implements NestInterceptor {
 
   public constructor(
     private readonly appConfig: AppConfig,
+    private readonly logService: LogService,
     private readonly reflector: Reflector,
   ) { }
 
@@ -38,15 +40,20 @@ export class ValidateInterceptor implements NestInterceptor {
               return data;
             }
 
-            const { transformOptions, ...validateOptions } = options;
+            const { transformOptions, throwException, ...validateOptions } = options;
             const configInstance = plainToClass(responseClass, data, transformOptions);
             const errors = await validate(configInstance as object, validateOptions);
 
             if (errors.length > 0) {
-              throw new InternalServerErrorException({
-                message: 'response validation failed',
-                errors,
-              });
+              if (throwException) {
+                throw new InternalServerErrorException({
+                  message: 'response validation failed',
+                  errors,
+                });
+              }
+              else {
+                this.logService.error('response validation failed', { errors });
+              }
             }
 
             return configInstance;
