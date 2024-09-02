@@ -1,3 +1,13 @@
+## [5.8.1](https://github.com/etienne-bechara/crux/compare/v5.8.0...v5.8.1) (2024-08-24)
+
+
+### Bug Fixes
+
+* bump example to nodejs 20.x ([45cd6f4](https://github.com/etienne-bechara/crux/commit/45cd6f4bfdedbe5e5d6587679631b6fc79a058c8))
+* remove unnecessary compressions ([3d3f988](https://github.com/etienne-bechara/crux/commit/3d3f988d0523da050684bb8912cc1fea2d5e9486))
+* **validate:** improve @IsString() to be configurable for allowEmpty ([1bdc27e](https://github.com/etienne-bechara/crux/commit/1bdc27e5910635ae2a094adaa7d565084a735204))
+* **validate:** require is string to be not empty ([3a56be3](https://github.com/etienne-bechara/crux/commit/3a56be3aa72d3d181ba3d0fdf7d3f24e9453186b))
+
 # [5.8.0](https://github.com/etienne-bechara/crux/compare/v5.7.5...v5.8.0) (2024-08-01)
 
 
