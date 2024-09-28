@@ -4,7 +4,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 import { AppMetadataKey } from '../app/app.enum';
-import { TransformToStringArrayOptions, TransformToStringOptions } from './transform.interface';
+import { TransformToArrayOptions, TransformToStringOptions } from './transform.interface';
 
 /**
  * Specifies response body class in order to trigger
@@ -140,25 +140,53 @@ export function ToString(options: TransformToStringOptions = { }): any {
 }
 
 /**
- * Ensures target string or string array outputs as an array with unique entries.
+ * Ensures input string or string array, outputs as an array of unique strings.
+ * @param input
+ * @param options
+ */
+function toArray(input: string | string[], options: TransformToArrayOptions = { }): string[] {
+  if (input === undefined) return;
+  if (!input) return [ ];
+
+  options.splitBy ??= [ ',' ];
+
+  const inputArray: string[] = Array.isArray(input) ? input : [ input ];
+  const splitRegex = new RegExp(`[${options.splitBy.join('')}]`, 'g');
+  const splitArray = inputArray.flatMap((s) => s.split(splitRegex));
+
+  return [ ...new Set(splitArray) ];
+}
+
+/**
+ * Ensures input string or string array, outputs as an array of strings
+ * with unique entries.
+ *
  * Separators can be configured by `splitBy`, which defaults to comma.
  * @param options
  */
-export function ToStringArray(options: TransformToStringArrayOptions = { }): any {
-  options.splitBy ??= [ ',' ];
-
+export function ToStringArray(options: TransformToArrayOptions = { }): any {
   return applyDecorators(
     Transform((o) => {
       const { value } = o;
-      if (value === undefined) return;
+      return toArray(value as string | string[], options);
+    }, {
+      toClassOnly: true,
+    }),
+  );
+}
 
-      if (!value) return [ ];
-
-      const valueArray: string[] = Array.isArray(value) ? value : [ value ];
-      const splitRegex = new RegExp(`[${options.splitBy.join('')}]`, 'g');
-      const splitArray = valueArray.flatMap((s) => s.split(splitRegex));
-
-      return [ ...new Set(splitArray) ];
+/**
+ * Ensures input string or string array, outputs as an array of numbers
+ * with unique entries.
+ *
+ * Separators can be configured by `splitBy`, which defaults to comma.
+ * @param options
+ */
+export function ToNumberArray(options: TransformToArrayOptions = { }): any {
+  return applyDecorators(
+    Transform((o) => {
+      const { value } = o;
+      return toArray(value as string | string[], options)?.map(Number);
     }, {
       toClassOnly: true,
     }),

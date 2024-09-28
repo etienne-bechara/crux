@@ -2,6 +2,6 @@ export interface TransformToStringOptions {
   case?: 'lower' | 'upper' | 'title';
 }
 
-export interface TransformToStringArrayOptions {
+export interface TransformToArrayOptions {
   splitBy?: string[];
 }

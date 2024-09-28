@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-useless-undefined */
 import { plainToClass } from 'class-transformer';
 
-import { ToBoolean, ToNumber, ToString, ToStringArray } from './transform.decorator';
+import { ToBoolean, ToNumber, ToNumberArray, ToString, ToStringArray } from './transform.decorator';
 
 class TransformDto {
 
@@ -41,6 +41,15 @@ class TransformDto {
   @ToStringArray() public toStringArray07: string[];
   @ToStringArray() public toStringArray08: string[];
   @ToStringArray() public toStringArray09: string[];
+  @ToNumberArray() public toNumberArray01: string[];
+  @ToNumberArray() public toNumberArray02: string[];
+  @ToNumberArray({ splitBy: [ ',', '|' ] }) public toNumberArray03: string[];
+  @ToNumberArray({ splitBy: [ ';' ] }) public toNumberArray04: string[];
+  @ToNumberArray() public toNumberArray05: string[];
+  @ToNumberArray() public toNumberArray06: string[];
+  @ToNumberArray() public toNumberArray07: string[];
+  @ToNumberArray() public toNumberArray08: string[];
+  @ToNumberArray() public toNumberArray09: string[];
 
 }
 
@@ -81,6 +90,15 @@ const transformSubject = {
   toStringArray07: [ ],
   toStringArray08: null,
   toStringArray09: undefined,
+  toNumberArray01: '1',
+  toNumberArray02: [ '1', '2' ],
+  toNumberArray03: '1,2|3',
+  toNumberArray04: [ '1;2', '2', 'x' ],
+  toNumberArray05: [ '1,2', '3' ],
+  toNumberArray06: [ 'x' ],
+  toNumberArray07: [ ],
+  toNumberArray08: null,
+  toNumberArray09: undefined,
 };
 
 describe('ToBoolean', () => {
@@ -142,5 +160,21 @@ describe('ToStringArray', () => {
     expect(dto.toStringArray07).toStrictEqual([ ]);
     expect(dto.toStringArray08).toStrictEqual([ ]);
     expect(dto.toStringArray09).toStrictEqual(undefined);
+  });
+});
+
+describe('ToNumberArray', () => {
+  it('should transform separated strings or array of strings into an array of unique numbers', () => {
+    const dto = plainToClass(TransformDto, transformSubject);
+
+    expect(dto.toNumberArray01).toStrictEqual([ 1 ]);
+    expect(dto.toNumberArray02).toStrictEqual([ 1, 2 ]);
+    expect(dto.toNumberArray03).toStrictEqual([ 1, 2, 3 ]);
+    expect(dto.toNumberArray04).toStrictEqual([ 1, 2, Number.NaN ]);
+    expect(dto.toNumberArray05).toStrictEqual([ 1, 2, 3 ]);
+    expect(dto.toNumberArray06).toStrictEqual([ Number.NaN ]);
+    expect(dto.toNumberArray07).toStrictEqual([ ]);
+    expect(dto.toNumberArray08).toStrictEqual([ ]);
+    expect(dto.toNumberArray09).toStrictEqual(undefined);
   });
 });
