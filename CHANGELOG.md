@@ -1,3 +1,10 @@
+# [5.9.0](https://github.com/etienne-bechara/crux/compare/v5.8.2...v5.9.0) (2024-09-28)
+
+
+### Features
+
+* **transform:** add @ToNumberArray() ([86d357d](https://github.com/etienne-bechara/crux/commit/86d357dccafc745416efa87e0a7e7441d5472afc))
+
 ## [5.8.2](https://github.com/etienne-bechara/crux/compare/v5.8.1...v5.8.2) (2024-09-02)
 
 
