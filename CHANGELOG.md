@@ -1,3 +1,10 @@
+## [5.9.1](https://github.com/etienne-bechara/crux/compare/v5.9.0...v5.9.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* **validate:** prevent class-transformer from reordering object keys ([fa83a95](https://github.com/etienne-bechara/crux/commit/fa83a9572f6ba4e6c68582b876b20cf456923a95))
+
 # [5.9.0](https://github.com/etienne-bechara/crux/compare/v5.8.2...v5.9.0) (2024-09-28)
 
 
