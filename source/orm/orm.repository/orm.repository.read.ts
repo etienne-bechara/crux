@@ -148,8 +148,12 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * pagination information in-memory or distributed according
    * to cache service configuration.
    * @param params
+   * @param options
    */
-  public async readPaginatedBy(params: OrmReadPaginatedParams<Entity>): Promise<OrmPageDto<Entity>> {
+  public async readPaginatedBy<P extends string = never>(
+    params: OrmReadPaginatedParams<Entity>,
+    options: OrmReadOptions<Entity, P> = { },
+  ): Promise<OrmPageDto<Entity>> {
     const { token } = params;
 
     if (token && Object.keys(params).length > 1) {
@@ -160,10 +164,10 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     if (token) {
       const context = await this.readTokenContext(token);
-      page = await this.readPageBy(context);
+      page = await this.readPageBy(context, options);
     }
     else {
-      page = await this.readPageBy(params);
+      page = await this.readPageBy(params, options);
     }
 
     return page;
@@ -173,8 +177,12 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    * Apply pagination coalesces and reads target page,
    * then build pagination tokens.
    * @param params
+   * @param options
    */
-  private async readPageBy(params: OrmReadPaginatedParams<Entity>): Promise<OrmPageDto<Entity>> {
+  private async readPageBy<P extends string = never>(
+    params: OrmReadPaginatedParams<Entity>,
+    options: OrmReadOptions<Entity, P> = { },
+  ): Promise<OrmPageDto<Entity>> {
     const { limit: bLimit, offset: bOffset, count: hasCount, sort, order: bOrder, populate, ...remainder } = params;
 
     const limit = bLimit ?? 100;
@@ -189,7 +197,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     }
 
     const readParams: OrmReadParams<Entity> = remainder as any;
-    const readPromise = this.readBy(readParams, { orderBy, limit, offset, populate });
+    const readPromise = this.readBy(readParams, { ...options, orderBy, limit, offset, populate });
 
     const countPromise = hasCount
       ? this.countBy(readParams)
