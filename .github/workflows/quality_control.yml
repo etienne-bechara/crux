@@ -97,7 +97,7 @@ jobs:
             -Dsonar.testExecutionReportPaths=test-report.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_HOST_URL: https://sonarcloud.io
 
       - name: Run SonarQube Quality Gate
         if: github.event.repository.name != 'master' && github.event.repository.name != 'beta' && github.event.repository.name != 'alpha'
