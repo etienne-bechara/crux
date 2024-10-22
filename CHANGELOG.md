@@ -1,3 +1,10 @@
+## [5.9.2](https://github.com/etienne-bechara/crux/compare/v5.9.1...v5.9.2) (2024-10-19)
+
+
+### Bug Fixes
+
+* **orm:** add options support to readPaginatedBy ([049e00d](https://github.com/etienne-bechara/crux/commit/049e00da04aabbc345c265d20bb7d85f6b6a785c))
+
 ## [5.9.1](https://github.com/etienne-bechara/crux/compare/v5.9.0...v5.9.1) (2024-09-30)
 
 
