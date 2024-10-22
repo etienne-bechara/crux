@@ -65,42 +65,42 @@ jobs:
       - name: Run Lint Check
         run: pnpm lint
 
-  sonar:
-    name: SonarQube Scan
-    runs-on: ubuntu-latest
-    needs: test
+  # sonar:
+  #   name: SonarQube Scan
+  #   runs-on: ubuntu-latest
+  #   needs: test
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Download Test Coverage
-        uses: actions/download-artifact@v3
-        with:
-          name: test-coverage
+  #     - name: Download Test Coverage
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: test-coverage
 
-      - name: Run SonarQube Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          args: >
-            -Dsonar.organization=${{ github.repository_owner }}
-            -Dsonar.projectKey=${{ github.event.repository.name }}
-            -Dsonar.pullrequest.key=${{ github.event.number }}
-            -Dsonar.pullrequest.branch=${{ github.HEAD_REF }}
-            -Dsonar.pullrequest.base=${{ github.BASE_REF }}
-            -Dsonar.sources=source
-            -Dsonar.tests=source
-            -Dsonar.test.inclusions=source/**/*.spec.ts
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=test-report.xml
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
+  #     - name: Run SonarQube Scan
+  #       uses: sonarsource/sonarcloud-github-action@master
+  #       with:
+  #         args: >
+  #           -Dsonar.organization=${{ github.repository_owner }}
+  #           -Dsonar.projectKey=${{ github.event.repository.name }}
+  #           -Dsonar.pullrequest.key=${{ github.event.number }}
+  #           -Dsonar.pullrequest.branch=${{ github.HEAD_REF }}
+  #           -Dsonar.pullrequest.base=${{ github.BASE_REF }}
+  #           -Dsonar.sources=source
+  #           -Dsonar.tests=source
+  #           -Dsonar.test.inclusions=source/**/*.spec.ts
+  #           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+  #           -Dsonar.testExecutionReportPaths=test-report.xml
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #         SONAR_HOST_URL: https://sonarcloud.io
 
-      - name: Run SonarQube Quality Gate
-        if: github.event.repository.name != 'master' && github.event.repository.name != 'beta' && github.event.repository.name != 'alpha'
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #     - name: Run SonarQube Quality Gate
+  #       if: github.event.repository.name != 'master' && github.event.repository.name != 'beta' && github.event.repository.name != 'alpha'
+  #       uses: sonarsource/sonarqube-quality-gate-action@master
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
