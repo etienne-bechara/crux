@@ -50,6 +50,9 @@ class TransformDto {
   @ToNumberArray() public toNumberArray07: string[];
   @ToNumberArray() public toNumberArray08: string[];
   @ToNumberArray() public toNumberArray09: string[];
+  @ToNumberArray() public toNumberArray10: string[];
+  @ToNumberArray() public toNumberArray11: string[];
+  @ToNumberArray() public toNumberArray12: string[];
 
 }
 
@@ -91,14 +94,17 @@ const transformSubject = {
   toStringArray08: null,
   toStringArray09: undefined,
   toNumberArray01: '1',
-  toNumberArray02: [ '1', '2' ],
+  toNumberArray02: [ 1, '2' ],
   toNumberArray03: '1,2|3',
-  toNumberArray04: [ '1;2', '2', 'x' ],
-  toNumberArray05: [ '1,2', '3' ],
+  toNumberArray04: [ '1;2', 2, 'x' ],
+  toNumberArray05: [ '1,2', 3 ],
   toNumberArray06: [ 'x' ],
   toNumberArray07: [ ],
   toNumberArray08: null,
   toNumberArray09: undefined,
+  toNumberArray10: 0,
+  toNumberArray11: '0',
+  toNumberArray12: [ 0, '123.45', 678.9 ],
 };
 
 describe('ToBoolean', () => {
@@ -176,5 +182,8 @@ describe('ToNumberArray', () => {
     expect(dto.toNumberArray07).toStrictEqual([ ]);
     expect(dto.toNumberArray08).toStrictEqual([ ]);
     expect(dto.toNumberArray09).toStrictEqual(undefined);
+    expect(dto.toNumberArray10).toStrictEqual([ 0 ]);
+    expect(dto.toNumberArray11).toStrictEqual([ 0 ]);
+    expect(dto.toNumberArray12).toStrictEqual([ 0, 123.45, 678.9 ]);
   });
 });

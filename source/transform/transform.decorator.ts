@@ -140,17 +140,18 @@ export function ToString(options: TransformToStringOptions = { }): any {
 }
 
 /**
- * Ensures input string or string array, outputs as an array of unique strings.
+ * Ensures input string, number, string array, or number array
+ * outputs as an array of unique strings.
  * @param input
  * @param options
  */
-function toArray(input: string | string[], options: TransformToArrayOptions = { }): string[] {
+function toArray(input: string | number | string[] | number[], options: TransformToArrayOptions = { }): string[] {
   if (input === undefined) return;
-  if (!input) return [ ];
+  if (!input && input !== 0) return [ ];
 
   options.splitBy ??= [ ',' ];
 
-  const inputArray: string[] = Array.isArray(input) ? input : [ input ];
+  const inputArray: string[] = Array.isArray(input) ? input.map(String) : [ String(input) ];
   const splitRegex = new RegExp(`[${options.splitBy.join('')}]`, 'g');
   const splitArray = inputArray.flatMap((s) => s.split(splitRegex));
 
@@ -176,8 +177,8 @@ export function ToStringArray(options: TransformToArrayOptions = { }): any {
 }
 
 /**
- * Ensures input string or string array, outputs as an array of numbers
- * with unique entries.
+ * Ensures input string, number, string array, or number array, outputs
+ * as an array of numbers with unique entries.
  *
  * Separators can be configured by `splitBy`, which defaults to comma.
  * @param options
@@ -186,7 +187,7 @@ export function ToNumberArray(options: TransformToArrayOptions = { }): any {
   return applyDecorators(
     Transform((o) => {
       const { value } = o;
-      return toArray(value as string | string[], options)?.map(Number);
+      return toArray(value as string | string[] | number | number[], options)?.map(Number);
     }, {
       toClassOnly: true,
     }),
