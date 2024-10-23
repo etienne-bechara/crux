@@ -1,3 +1,10 @@
+## [5.9.5](https://github.com/etienne-bechara/crux/compare/v5.9.4...v5.9.5) (2024-10-23)
+
+
+### Bug Fixes
+
+* **orm:** toJSON wrapper ([823f645](https://github.com/etienne-bechara/crux/commit/823f6458f5a906aff5c46a9146d91188b03a6725))
+
 ## [5.9.4](https://github.com/etienne-bechara/crux/compare/v5.9.3...v5.9.4) (2024-10-23)
 
 
