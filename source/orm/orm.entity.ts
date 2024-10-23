@@ -3,7 +3,20 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { OrmBigIntDto, OrmBigIntTimestampDto, OrmIntDto, OrmIntTimestampDto, OrmTimestampDto, OrmUuidDto, OrmUuidTimestampDto } from './orm.dto.out';
 
-export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> { }
+export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
+
+  /**
+   * Serializes current entity, can be extended in order to apply
+   * custom rules.
+   * @param args
+   */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  public toJSON(...args: any[]): any {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return super.toJSON(...args);
+  }
+
+}
 
 export abstract class OrmIntEntity extends OrmBaseEntity implements OrmIntDto {
 
