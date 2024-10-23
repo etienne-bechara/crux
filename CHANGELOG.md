@@ -1,3 +1,11 @@
+## [5.9.3](https://github.com/etienne-bechara/crux/compare/v5.9.2...v5.9.3) (2024-10-22)
+
+
+### Bug Fixes
+
+* temp disable sonar ([33f6e31](https://github.com/etienne-bechara/crux/commit/33f6e31fe40ab4a4b9838824cb12e1383001ba05))
+* **transform:** to number array with number inputs ([1172370](https://github.com/etienne-bechara/crux/commit/1172370612b1118b34b9d3e342f625513ee5008f))
+
 ## [5.9.2](https://github.com/etienne-bechara/crux/compare/v5.9.1...v5.9.2) (2024-10-19)
 
 
