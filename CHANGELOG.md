@@ -1,3 +1,10 @@
+## [5.9.4](https://github.com/etienne-bechara/crux/compare/v5.9.3...v5.9.4) (2024-10-23)
+
+
+### Bug Fixes
+
+* **orm:** remove entity recursion removal due to performance issues ([6bab95a](https://github.com/etienne-bechara/crux/commit/6bab95a065178cec3199809ad1190173f2ae6664))
+
 ## [5.9.3](https://github.com/etienne-bechara/crux/compare/v5.9.2...v5.9.3) (2024-10-22)
 
 
