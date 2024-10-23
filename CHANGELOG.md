@@ -1,3 +1,10 @@
+## [5.9.6](https://github.com/etienne-bechara/crux/compare/v5.9.5...v5.9.6) (2024-10-23)
+
+
+### Bug Fixes
+
+* use pat instead of public token ([d133ef5](https://github.com/etienne-bechara/crux/commit/d133ef563c6e60847a1c4b212707946aaaa15c07))
+
 ## [5.9.5](https://github.com/etienne-bechara/crux/compare/v5.9.4...v5.9.5) (2024-10-23)
 
 
