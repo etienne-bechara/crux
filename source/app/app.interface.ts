@@ -22,8 +22,6 @@ export interface AppOptions extends ModuleMetadata {
   disableAll?: boolean;
   /** Disables automatically importing `*.module.ts` files. */
   disableScan?: boolean;
-  /** Disables status endpoints `/` and `/status`. */
-  disableStatus?: boolean;
   /** Disables built-in exception filter `app.filter.ts`. */
   disableFilter?: boolean;
   /** Disables validation pipe which applies `class-validator` decorators. */

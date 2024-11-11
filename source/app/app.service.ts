@@ -1,12 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
-import os from 'os';
 
 import { ContextService } from '../context/context.service';
 import { HttpMethod } from '../http/http.enum';
 import { MetricService } from '../metric/metric.service';
-import { AppStatusDto } from './app.dto.out';
 import { AppTraffic } from './app.enum';
 
 @Injectable()
@@ -16,30 +14,6 @@ export class AppService {
     private readonly contextService: ContextService,
     private readonly metricService: MetricService,
   ) { }
-
-  /**
-   * Reads data regarding current runtime and network.
-   */
-  public getStatus(): AppStatusDto {
-    return {
-      system: {
-        version: os.version(),
-        type: os.type(),
-        release: os.release(),
-        architecture: os.arch(),
-        endianness: os.endianness(),
-        uptime: os.uptime(),
-      },
-      memory: {
-        total: os.totalmem(),
-        free: os.freemem(),
-      },
-      cpus: os.cpus(),
-      network: {
-        interfaces: os.networkInterfaces(),
-      },
-    };
-  }
 
   /**
    * Register logs, metrics and tracing of inbound request.

@@ -45,7 +45,7 @@ export class TraceService {
     const traceUrl = this.buildTraceUrl();
 
     if (!this.appConfig.APP_OPTIONS.disableTraces && !traceUrl) {
-      this.logService.warning('Trace disable due to missing URL');
+      this.logService.warning('Trace disabled due to missing URL');
       this.appConfig.APP_OPTIONS.disableTraces = true;
     }
 

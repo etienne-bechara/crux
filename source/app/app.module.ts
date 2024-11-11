@@ -131,7 +131,6 @@ export class AppModule {
       this.options.disableLogs = true;
       this.options.disableMetrics = true;
       this.options.disableScan = true;
-      this.options.disableStatus = true;
       this.options.disableValidator = true;
     }
 
@@ -271,7 +270,7 @@ export class AppModule {
     return {
       module: AppModule,
       imports: this.buildModules('imports'),
-      controllers: this.buildControllers(),
+      controllers: [ ...this.options.controllers, AppController ],
       providers: this.buildProviders(),
       exports: [
         AppConfig,
@@ -353,20 +352,6 @@ export class AppModule {
     }
 
     return preloadedModules;
-  }
-
-  /**
-   * Adds app controller with machine status information.
-   */
-  private static buildControllers(): any[] {
-    const { disableStatus, controllers } = this.options;
-    const preloadedControllers = [ ];
-
-    if (!disableStatus) {
-      preloadedControllers.push(AppController);
-    }
-
-    return [ ...preloadedControllers, ...controllers ];
   }
 
   /**
