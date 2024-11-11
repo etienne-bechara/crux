@@ -1,3 +1,10 @@
+## [5.9.7](https://github.com/etienne-bechara/crux/compare/v5.9.6...v5.9.7) (2024-11-11)
+
+
+### Bug Fixes
+
+* **app:** remove automatic status endpoint ([644bc64](https://github.com/etienne-bechara/crux/commit/644bc645f94d57094dacf33294ff5f6d3dafa6b4))
+
 ## [5.9.6](https://github.com/etienne-bechara/crux/compare/v5.9.5...v5.9.6) (2024-10-23)
 
 
