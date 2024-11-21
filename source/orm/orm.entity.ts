@@ -1,8 +1,6 @@
 import { AnyEntity, BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 as uuidV4 } from 'uuid';
 
-import { OrmBigIntDto, OrmBigIntTimestampDto, OrmIntDto, OrmIntTimestampDto, OrmTimestampDto, OrmUuidDto, OrmUuidTimestampDto } from './orm.dto.out';
-
 export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 
   /**
@@ -18,28 +16,28 @@ export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
 
 }
 
-export abstract class OrmIntEntity extends OrmBaseEntity implements OrmIntDto {
+export abstract class OrmIntEntity extends OrmBaseEntity {
 
   @PrimaryKey()
   public id: number;
 
 }
 
-export abstract class OrmBigIntEntity extends OrmBaseEntity implements OrmBigIntDto {
+export abstract class OrmBigIntEntity extends OrmBaseEntity {
 
   @PrimaryKey({ columnType: 'bigint' })
   public id: number;
 
 }
 
-export abstract class OrmUuidEntity extends OrmBaseEntity implements OrmUuidDto {
+export abstract class OrmUuidEntity extends OrmBaseEntity {
 
   @PrimaryKey({ length: 36 })
   public id: string = uuidV4();
 
 }
 
-export abstract class OrmTimestampEntity extends OrmBaseEntity implements OrmTimestampDto {
+export abstract class OrmTimestampEntity extends OrmBaseEntity {
 
   @Index()
   @Property({ columnType: 'timestamp', onUpdate: () => new Date() })
@@ -51,21 +49,21 @@ export abstract class OrmTimestampEntity extends OrmBaseEntity implements OrmTim
 
 }
 
-export abstract class OrmIntTimestampEntity extends OrmTimestampEntity implements OrmIntTimestampDto {
+export abstract class OrmIntTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey()
   public id: number;
 
 }
 
-export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity implements OrmBigIntTimestampDto {
+export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey({ columnType: 'bigint' })
   public id: number;
 
 }
 
-export abstract class OrmUuidTimestampEntity extends OrmTimestampEntity implements OrmUuidTimestampDto {
+export abstract class OrmUuidTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey({ length: 36 })
   public id: string = uuidV4();

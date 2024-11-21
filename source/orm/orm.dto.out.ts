@@ -108,14 +108,14 @@ export class OrmTimestampDto {
     description: 'Date of last update',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public updated: Date = new Date();
+  public updated: string;
 
   @IsISO8601()
   @ApiProperty({
     description: 'Date of creation',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public created: Date = new Date();
+  public created: string;
 
 }
 
