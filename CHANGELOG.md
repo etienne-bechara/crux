@@ -1,3 +1,10 @@
+## [5.9.9](https://github.com/etienne-bechara/crux/compare/v5.9.8...v5.9.9) (2024-11-21)
+
+
+### Bug Fixes
+
+* **transform:** add overload for @Response to better configure documentation ([7b22cc3](https://github.com/etienne-bechara/crux/commit/7b22cc327d2133c0c2a4c53470794072bffd1d44))
+
 ## [5.9.8](https://github.com/etienne-bechara/crux/compare/v5.9.7...v5.9.8) (2024-11-21)
 
 
