@@ -1,4 +1,4 @@
-import { EntityData, EventArgs, FilterQuery, FindOptions } from '@mikro-orm/core';
+import { EntityData, FilterQuery, FindOptions } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
 import { EntityName, MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { ModuleMetadata } from '@nestjs/common';
@@ -11,8 +11,6 @@ import { OrmPageReadDto } from './orm.dto.in';
 export type OrmReadParams<T> = FilterQuery<T>;
 
 export type OrmReadPaginatedParams<T> = FilterQuery<T> & OrmPageReadDto;
-
-export type OrmSubscriberParams<Entity> = EventArgs<Entity>;
 
 export interface OrmAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   disableEntityScan?: boolean;
@@ -36,15 +34,6 @@ export interface OrmExceptionHandlerParams {
   caller: (retries: number) => any;
   retries: number;
   error: Error;
-}
-
-export interface OrmSubscriberChangeset<Entity> {
-  before?: EntityData<Entity>;
-  after: EntityData<Entity>;
-}
-
-export interface OrmSubscriberOptions {
-  entities: any;
 }
 
 export interface OrmUpdateParams<Entity> {

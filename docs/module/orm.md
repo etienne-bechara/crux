@@ -137,39 +137,6 @@ upsertOne(): Promise<Entity>;
 commit(): Promise<void>;
 ```
 
-### Creating an Subscriber
-
-If you would like to create hooks when triggering certain operations, it is possible by defining an injectable subscriber:
-
-```ts
-import { Injectable, LoggerService } from '@bechara/nestjs-core';
-import { EntityManager, OrmSubscriber, OrmSubscriberParams } from '@bechara/nestjs-orm';
-
-import { User } from './user.entity';
-
-@Injectable()
-export class UserSubscriber implements OrmSubscriber<User> {
-
-  public constructor(
-    private readonly entityManager: EntityManager,
-    private readonly loggerService: LoggerService,
-  ) {
-    entityManager.getEventManager().registerSubscriber(this);
-  }
-
-  /**
-   * Before update hook example.
-   * @param params
-   */
-  public beforeUpdate(params: OrmSubscriberParams<User>): Promise<void> {
-    const { changeSet } = params;
-    this.loggerService.warning('beforeUpdate: changeSet', changeSet);
-    return;
-  }
-
-}
-```
-
 
 ### Creating an Entity Controller
 

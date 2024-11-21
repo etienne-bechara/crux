@@ -97,18 +97,6 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
       });
     });
 
-    describe('OrmSubscriber', () => {
-      it('should apply beforeCreate hook', async () => {
-        await userRepository.create({
-          name: 'After Create Hook',
-          age: 10,
-        });
-
-        const [ user ] = await userRepository.readBy({ name: 'After Hook' });
-        expect(user.name).toBe('After Hook');
-      });
-    });
-
     describe('OrmBaseRepository', () => {
       it('should build an entity and persist only after committing', async () => {
         const user = userRepository.buildOne({
