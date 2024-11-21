@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators, HttpCode, HttpStatus, SetMetadata } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 import { AppMetadataKey } from '../app/app.enum';
@@ -10,13 +10,20 @@ import { TransformToArrayOptions, TransformToStringOptions } from './transform.i
  * Specifies response body class in order to trigger
  * outbound payload validation.
  * @param status
- * @param cls
+ * @param type
  */
-export function Response(status: HttpStatus, cls?: any): MethodDecorator {
+export function Response(status: HttpStatus, type?: any): MethodDecorator;
+export function Response(options: ApiResponseOptions): MethodDecorator;
+// eslint-disable-next-line jsdoc/require-jsdoc, padding-line-between-statements
+export function Response(statusOrOptions: HttpStatus | ApiResponseOptions, type?: any): MethodDecorator {
+  const apiResponseOptions: ApiResponseOptions = typeof statusOrOptions === 'number'
+    ? { status: statusOrOptions, type }
+    : statusOrOptions;
+
   return applyDecorators(
-    HttpCode(status),
-    SetMetadata(AppMetadataKey.RESPONSE_CLASS, cls),
-    ApiResponse({ status, type: cls }),
+    HttpCode(Number(apiResponseOptions.status)),
+    SetMetadata(AppMetadataKey.RESPONSE_CLASS, apiResponseOptions['type']),
+    ApiResponse(apiResponseOptions),
   );
 }
 
