@@ -1,3 +1,11 @@
+## [5.9.8](https://github.com/etienne-bechara/crux/compare/v5.9.7...v5.9.8) (2024-11-21)
+
+
+### Bug Fixes
+
+* **orm:** drop unreliable subscriber support ([98c0323](https://github.com/etienne-bechara/crux/commit/98c03238472426ae65fda03c8af5f27406a56431))
+* **orm:** typings for timestamp dto ([edb1579](https://github.com/etienne-bechara/crux/commit/edb1579e59164033315d17286f7f5b9c7073ed96))
+
 ## [5.9.7](https://github.com/etienne-bechara/crux/compare/v5.9.6...v5.9.7) (2024-11-11)
 
 
