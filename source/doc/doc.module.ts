@@ -41,6 +41,7 @@ export class DocModule {
     const document = this.buildOpenApiObject(instance, builder);
 
     this.coalesceSchemaTitles(document);
+    this.coalescePathSummaries(document);
 
     if (servers?.length > 0) {
       this.hasServers = true;
@@ -120,7 +121,21 @@ export class DocModule {
     const { schemas } = components;
 
     for (const key in schemas) {
-      schemas[key] = { ...schemas[key], title: key };
+      schemas[key]['title'] ||= key;
+    }
+  }
+
+  /**
+   * Add missing summaries to path schemas.
+   * @param document
+   */
+  private static coalescePathSummaries(document: OpenAPIObject): void {
+    const { paths } = document;
+
+    for (const path in paths) {
+      for (const method in paths[path]) {
+        paths[path][method].summary ||= paths[path][method].operationId;
+      }
     }
   }
 
