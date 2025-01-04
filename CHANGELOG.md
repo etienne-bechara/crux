@@ -1,3 +1,10 @@
+## [5.9.10](https://github.com/etienne-bechara/crux/compare/v5.9.9...v5.9.10) (2025-01-04)
+
+
+### Bug Fixes
+
+* **doc:** add path summary coalesce support ([8e1e6d8](https://github.com/etienne-bechara/crux/commit/8e1e6d83de3deb6ff87d3bf3391041dbf28ba3a0))
+
 ## [5.9.9](https://github.com/etienne-bechara/crux/compare/v5.9.8...v5.9.9) (2024-11-21)
 
 
