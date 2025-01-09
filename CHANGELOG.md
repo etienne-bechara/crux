@@ -1,3 +1,10 @@
+## [5.9.11](https://github.com/etienne-bechara/crux/compare/v5.9.10...v5.9.11) (2025-01-09)
+
+
+### Bug Fixes
+
+* **app:** unlock everything related to cors by default ([fa3d393](https://github.com/etienne-bechara/crux/commit/fa3d393618b0f621e595efb808c08612b308f470))
+
 ## [5.9.10](https://github.com/etienne-bechara/crux/compare/v5.9.9...v5.9.10) (2025-01-04)
 
 
