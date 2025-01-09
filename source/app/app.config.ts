@@ -20,7 +20,9 @@ import { AppOptions } from './app.interface';
 
 export const CORS_DEFAULT_OPTIONS: CorsOptions = {
   origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: '*',
+  allowedHeaders: '*',
+  exposedHeaders: '*',
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
