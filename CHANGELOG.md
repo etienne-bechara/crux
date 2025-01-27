@@ -1,3 +1,10 @@
+## [5.9.12](https://github.com/etienne-bechara/crux/compare/v5.9.11...v5.9.12) (2025-01-27)
+
+
+### Bug Fixes
+
+* **orm:** ensure entity manager is cleared after async context is finished ([b6d3d2b](https://github.com/etienne-bechara/crux/commit/b6d3d2b6f5d8ea34f31742954ae793540f81c36e))
+
 ## [5.9.11](https://github.com/etienne-bechara/crux/compare/v5.9.10...v5.9.11) (2025-01-09)
 
 
