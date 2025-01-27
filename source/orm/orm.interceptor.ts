@@ -25,6 +25,7 @@ export class OrmInterceptor implements NestInterceptor {
   public intercept(context: ExecutionContext, next: CallHandler): any {
     const store = this.contextService.getStore();
     const entityManager = this.mikroOrm.em.fork({ clear: true, useContext: true });
+
     store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
 
     return next
@@ -32,6 +33,7 @@ export class OrmInterceptor implements NestInterceptor {
       .pipe(
         // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
+          entityManager.clear();
           return this.stringifyEntities(data);
         }),
       );

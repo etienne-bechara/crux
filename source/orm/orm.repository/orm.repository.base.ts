@@ -82,9 +82,9 @@ export abstract class OrmBaseRepository<Entity extends object> {
 
   /**
    * Executes target operation wrapped into:
-   * - Shared exception handler to standardize erros as HTTP codes
-   * - A children tracing span
-   * - Clear entity manager context.
+   * - Clear entity manager context for write operations
+   * - Shared exception handler to standardize errors
+   * - A children tracing span.
    * @param spanPrefix
    * @param operation
    * @param retries
@@ -98,12 +98,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
     try {
       const traceResult = await TraceService.startManagedSpan(spanName, { }, async () => {
         return cleanContext
-          ? await ContextStorage.run(new Map(), () => {
-            const store = ContextStorage.getStore();
-            const entityManager = this.entityManager.fork({ clear: true, useContext: true });
-            store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
-            return operation();
-          })
+          ? await this.runWithinCleanContext(operation)
           : await operation();
       });
 
@@ -116,6 +111,30 @@ export abstract class OrmBaseRepository<Entity extends object> {
         error: e,
       });
     }
+  }
+
+  /**
+   * Runs the underlying operation under a new async storage context,
+   * including an entity manager fork.
+   * @param operation
+   */
+  private runWithinCleanContext<T>(operation: () => Promise<T>): Promise<T> {
+    return ContextStorage.run(new Map(), async () => {
+      const store = ContextStorage.getStore();
+      const entityManager = this.entityManager.fork({ clear: true, useContext: true });
+
+      store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+      let result: T;
+
+      try {
+        result = await operation();
+      }
+      finally {
+        entityManager.clear();
+      }
+
+      return result;
+    });
   }
 
   /**
@@ -132,15 +151,10 @@ export abstract class OrmBaseRepository<Entity extends object> {
     const { caller, error, retries } = params;
     const { message } = error;
 
+    const retryableExceptions = [ 'read ECONNRESET' ];
     const retryDelay = 500;
     const retryMax = 4;
 
-    if (message === OrmException.ENTITY_NOT_FOUND) {
-      throw error;
-    }
-
-    // Connection terminated by from DB side
-    const retryableExceptions = [ 'read ECONNRESET' ];
     const isRetryable = retryableExceptions.some((r) => message.includes(r));
 
     if (isRetryable && retries < retryMax) {
@@ -155,6 +169,12 @@ export abstract class OrmBaseRepository<Entity extends object> {
     const isDeleteFkError = /delete.+foreign key constraint fails|delete.+violates foreign key/i.test(message);
     const isInvalidFieldError = message.startsWith('Trying to query by not existing property');
     const isInvalidConditionError = message.startsWith('Invalid query condition');
+
+    this.entityManager.clear();
+
+    if (message === OrmException.ENTITY_NOT_FOUND) {
+      throw error;
+    }
 
     if (isDeadlockError) {
       throw new InternalServerErrorException({
