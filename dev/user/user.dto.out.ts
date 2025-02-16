@@ -31,6 +31,6 @@ export class UserDto extends OrmUuidTimestampDto {
 export class UserPageDto extends OrmPageDto<UserDto> {
 
   @IsObject(UserDto, { each: true })
-  public records: UserDto[];
+  public declare records: UserDto[];
 
 }

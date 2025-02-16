@@ -13,7 +13,7 @@ CRUX is an opinionated Node.js framework package designed for backend projects. 
 - **HTTP Client:** [Fetch](https://nodejs.org/dist/latest-v18.x/docs/api/globals.html#fetch)
 - **Caching:** [ioredis](https://www.npmjs.com/package/ioredis) (distributed) or in-memory (local)
 - **ORM:** [MikroORM](https://mikro-orm.io/docs/installation)
-- **Swagger:** [Redoc](https://github.com/mxarc/nestjs-redoc)
+- **OpenAPI:** [Scalar](https://scalar.com/)
 - **Logs:** [Loki](https://grafana.com/docs/loki/latest/api/)
 - **Metrics:** [Prometheus](https://github.com/siimon/prom-client)
 - **Tracing:** [Tempo](https://grafana.com/docs/tempo/latest/api_docs/) with [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-js)

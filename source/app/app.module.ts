@@ -6,7 +6,6 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
-import handlebars from 'handlebars';
 
 import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -143,8 +142,7 @@ export class AppModule {
    * - Add an on request hook which runs prior to all interceptors
    * - Set the global path prefix if any
    * - Enable cors if configured
-   * - Maps a local directory to serve static assets
-   * - Configures handlebars as view engine to support ReDoc.
+   * - Maps a local directory to serve static assets.
    */
   private static async configureAdapter(): Promise<void> {
     const { fastify, globalPrefix, assetsPrefix, cors } = this.options;
@@ -169,10 +167,6 @@ export class AppModule {
       // eslint-disable-next-line unicorn/prefer-module
       root: `${process.cwd()}/${assetsPrefix}`,
       prefix: `/${assetsPrefix}/`,
-    });
-
-    this.instance.getHttpAdapter().setViewEngine({
-      engine: { handlebars },
     });
   }
 
