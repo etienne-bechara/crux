@@ -6,7 +6,7 @@ import { User } from '../user/user.entity';
 import { OrderStatus } from './order.enum';
 import { OrderRepository } from './order.repository';
 
-@Entity({ customRepository: () => OrderRepository })
+@Entity({ repository: () => OrderRepository })
 export class Order extends OrmUuidTimestampEntity {
 
   @Enum(() => OrderStatus)

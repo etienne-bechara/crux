@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import Redis, { RedisOptions } from 'ioredis';
-import { v4 } from 'uuid';
 
 import { CacheProvider } from '../cache/cache.interface';
 import { LogService } from '../log/log.service';
@@ -244,7 +244,7 @@ export class RedisService implements CacheProvider {
 
     const { ttl, delay, timeout, retries } = options;
     const lockKey = `lock:${key}`;
-    const lockValue = v4();
+    const lockValue = randomUUID();
 
     await this.promiseService.retryOnRejection({
       name: 'lock()',

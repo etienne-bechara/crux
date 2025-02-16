@@ -1,6 +1,6 @@
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsBase64, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
+import { IsBase64, IsEnum, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
 
 @Config()
 export class OrmConfig {
@@ -9,11 +9,6 @@ export class OrmConfig {
   @InjectConfig()
   @IsEnum(AppEnvironment)
   public readonly NODE_ENV: AppEnvironment;
-
-  @IsOptional()
-  @InjectConfig()
-  @IsIn([ 'mongo', 'mysql', 'mariadb', 'postgresql', 'sqlite' ])
-  public readonly ORM_TYPE: 'mongo' | 'mysql' | 'mariadb' | 'postgresql' | 'sqlite';
 
   @IsOptional()
   @InjectConfig()

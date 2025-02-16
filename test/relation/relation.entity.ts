@@ -4,7 +4,7 @@ import { OrmBaseEntity } from '../../source/orm/orm.entity';
 import { User } from '../user/user.entity';
 import { RelationRepository } from './relation.repository';
 
-@Entity({ customRepository: () => RelationRepository })
+@Entity({ repository: () => RelationRepository })
 @Index({ properties: [ 'created' ] })
 export class Relation extends OrmBaseEntity {
 

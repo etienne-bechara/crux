@@ -96,7 +96,6 @@ export interface AppRequest {
   protocol: 'http' | 'https';
   method: HttpMethod;
   url: string;
-  routerMethod: string;
   is404: boolean;
   socket: any;
   context: any;

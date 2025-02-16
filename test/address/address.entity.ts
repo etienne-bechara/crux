@@ -6,7 +6,7 @@ import { User } from '../user/user.entity';
 import { AddressState } from './address.enum';
 import { AddressRepository } from './address.repository';
 
-@Entity({ customRepository: () => AddressRepository })
+@Entity({ repository: () => AddressRepository })
 export class Address extends OrmBaseEntity {
 
   @OneToOne(() => User, 'address', { primary: true, owner: true })

@@ -1,7 +1,8 @@
+import { randomUUID } from 'crypto';
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
-import { CacheModule, uuidV4 } from '../override';
+import { CacheModule } from '../override';
 import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
@@ -81,7 +82,7 @@ describe('PromiseService', () => {
 
   describe('resolveDeduplicated', () => {
     it('should not duplicate underlying promise execution', async () => {
-      const dedupKey = uuidV4();
+      const dedupKey = randomUUID();
       let counter = 0;
 
       const fn = async (): Promise<number> => {
@@ -108,8 +109,8 @@ describe('PromiseService', () => {
     });
 
     it('should rerun underlying operation if parent deduplication fails', async () => {
-      const dedupKey = uuidV4();
-      const errorKey = uuidV4();
+      const dedupKey = randomUUID();
+      const errorKey = randomUUID();
       let counter = 0;
       let errorMessage: string;
 

@@ -9,16 +9,16 @@ export * from 'class-transformer';
 export * from 'class-validator';
 export * from 'rxjs';
 
-export { EntityName, MetadataStorage, NotFoundError, Subscriber } from '@mikro-orm/core';
-export { EntityRepository as MySqlEntityRepository } from '@mikro-orm/mysql';
-export { EntityRepository as PostgreSqlEntityRepository } from '@mikro-orm/postgresql';
+export { EntityName, MaybePromise, MetadataStorage, NotFoundError } from '@mikro-orm/core';
+export { EntityRepository as MySqlEntityRepository, MySqlDriver } from '@mikro-orm/mysql';
+export { EntityRepository as PostgreSqlEntityRepository, PostgreSqlDriver } from '@mikro-orm/postgresql';
 export { Head, Logger, Options, SerializeOptions, ValidationError, Type } from '@nestjs/common';
 export { Type as SetType, serialize } from 'class-transformer';
 export { equals, isEmpty, min, max } from 'class-validator';
-export { v1 as uuidV1, v3 as uuidV3, v4 as uuidV4, v5 as uuidV5 } from 'uuid';
 
 export { CacheInterceptor } from './cache/cache.interceptor';
 export { CacheModule } from './cache/cache.module';
+export { Config } from './config/config.decorator';
 export { HttpModuleOptions } from './http/http.interface';
 export { HttpModule } from './http/http.module';
 export { HttpService } from './http/http.service';

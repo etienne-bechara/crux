@@ -1,3 +1,5 @@
+import { MySqlDriver } from '@mikro-orm/mysql';
+
 import { AppModule } from '../source/app/app.module';
 import { ConfigModule } from '../source/config/config.module';
 import { OrmModule } from '../source/orm/orm.module';
@@ -55,7 +57,7 @@ void AppModule.boot({
         User,
       ],
       useFactory: () => ({
-        type: 'mysql',
+        driver: MySqlDriver,
         host: 'localhost',
         port: 3306,
         dbName: 'crux',

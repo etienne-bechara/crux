@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { randomUUID } from 'crypto';
 
-import { uuidV4 } from '../override';
 import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUUID, Length, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
@@ -97,7 +97,7 @@ export class OrmUuidDto {
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }
 
@@ -148,6 +148,6 @@ export class OrmUuidTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }

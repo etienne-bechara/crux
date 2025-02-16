@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { EntityData, EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
+import { EntityData, EntityManager, EntityName, FromEntityType, RequiredEntityData } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 
 import { OrmException, OrmSpanPrefix } from '../orm.enum';
@@ -53,8 +53,8 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
             }
           }
 
-          const assignedEntity = this.entityManager.assign(entity, data);
-          assignedEntities.push(assignedEntity);
+          const assignedEntity = this.entityManager.assign(entity, data as EntityData<FromEntityType<Entity>, false>);
+          assignedEntities.push(assignedEntity as Entity);
         }),
       );
 

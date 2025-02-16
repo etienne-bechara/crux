@@ -19,7 +19,7 @@ export interface OrmAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   useFactory?: (...args: any[]) => Promise<OrmModuleOptions> | OrmModuleOptions;
 }
 
-export interface OrmModuleOptions extends MikroOrmModuleOptions {
+export interface OrmModuleOptions extends Omit<MikroOrmModuleOptions, 'type'> {
   sync?: SchemaModuleOptions;
 }
 

@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
-import { uuidV4 } from '../override';
 import { PromiseResolveDedupedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
 
 @Injectable()
@@ -91,7 +91,7 @@ export class PromiseService {
     this.logService.debug(`Deduplicating ${key} promise with ${timeout / 1000}s timeout and ${ttl / 1000}s TTL`);
 
     const provider = this.cacheService.getProvider();
-    const providerId = uuidV4();
+    const providerId = randomUUID();
     const providerKey = `dedupe:${key}:provider`;
     const dataKey = `dedupe:${key}:data`;
     const dataErrorMessage = 'DEDUPE_FAILED';

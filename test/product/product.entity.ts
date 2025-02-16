@@ -4,7 +4,7 @@ import { OrmUuidTimestampEntity } from '../../source/orm/orm.entity';
 import { Order } from '../order/order.entity';
 import { ProductRepository } from './product.repository';
 
-@Entity({ customRepository: () => ProductRepository })
+@Entity({ repository: () => ProductRepository })
 export class Product extends OrmUuidTimestampEntity {
 
   @Property()

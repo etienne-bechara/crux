@@ -8,7 +8,7 @@ import { Order } from '../order/order.entity';
 import { Relation } from '../relation/relation.entity';
 import { UserRepository } from './user.repository';
 
-@Entity({ customRepository: () => UserRepository })
+@Entity({ repository: () => UserRepository })
 @Unique({ properties: [ 'name' ] })
 export class User extends OrmUuidTimestampEntity {
 

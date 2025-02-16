@@ -1,17 +1,16 @@
-import { AnyEntity, BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
-import { v4 as uuidV4 } from 'uuid';
+import { BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
+import { randomUUID } from 'crypto';
 
-export abstract class OrmBaseEntity extends BaseEntity<AnyEntity, 'id'> {
+export abstract class OrmBaseEntity extends BaseEntity {
 
   /**
    * Serializes current entity, can be extended in order to apply
    * custom rules.
-   * @param args
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public toJSON(...args: any[]): any {
+  public toObject(): any {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return super.toJSON(...args);
+    return super.toObject();
   }
 
 }
@@ -33,7 +32,7 @@ export abstract class OrmBigIntEntity extends OrmBaseEntity {
 export abstract class OrmUuidEntity extends OrmBaseEntity {
 
   @PrimaryKey({ length: 36 })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }
 
@@ -66,6 +65,6 @@ export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity {
 export abstract class OrmUuidTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey({ length: 36 })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }

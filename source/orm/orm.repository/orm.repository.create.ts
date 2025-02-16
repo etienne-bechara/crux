@@ -22,7 +22,10 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
     if (!this.isValidData(data)) return [ ];
 
     const dataArray = Array.isArray(data) ? data : [ data ];
-    return dataArray.map((d) => this.entityManager.create(this.entityName, d));
+
+    return dataArray.map((d) => this.entityManager.create(this.entityName, d, {
+      persist: false,
+    }));
   }
 
   /**

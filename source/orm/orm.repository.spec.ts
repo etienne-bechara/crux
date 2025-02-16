@@ -1,4 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
+import { MySqlDriver } from '@mikro-orm/mysql';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
@@ -53,7 +55,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
             disableEntityScan: true,
             entities: [ Address, Metadata, Order, Product, Relation, User ],
             useFactory: () => ({
-              type: type as 'mysql' | 'postgresql',
+              driver: type === 'mysql' ? MySqlDriver : PostgreSqlDriver,
               host: 'localhost',
               port,
               dbName: 'test',
