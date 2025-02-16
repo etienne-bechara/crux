@@ -30,8 +30,7 @@
     "build": "rimraf ./dist && rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source && tsc -p tsconfig.build.json && rimraf ./source/index.ts",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
     "mysql": "docker start mysql || docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=crux mysql",
-    "test": "cd test && docker compose up -d && pnpm jest && docker compose down && cd ..",
-    "jest": "jest --forceExit --config .jestrc.json"
+    "test": "docker compose -f ./test/docker-compose.yml up -d && jest && docker compose -f ./test/docker-compose.yml down"
   },
   "dependencies": {
     "@fastify/static": "8.1.0",
