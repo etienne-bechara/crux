@@ -1,7 +1,7 @@
 {
   "collectCoverage": true,
   "coverageDirectory": "../coverage",
-  "rootDir": "../../source",
+  "rootDir": "source",
   "testEnvironment": "node",
   "testRegex": ".spec.ts$",
   "testResultsProcessor": "jest-sonar-reporter",
