@@ -8,7 +8,6 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import { BasicTracerProvider, BatchSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 import { AppConfig } from '../app/app.config';
 import { LogService } from '../log/log.service';
@@ -99,9 +98,9 @@ export class TraceService {
         root: new TraceIdRatioBasedSampler(samplerRatio),
       }),
       resource: new Resource({
-        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: environment,
-        [SemanticResourceAttributes.SERVICE_NAME]: job,
-        [SemanticResourceAttributes.SERVICE_INSTANCE_ID]: instance,
+        'deployment.environment': environment,
+        'service.name': job,
+        'service.instance.id': instance,
       }),
     });
 

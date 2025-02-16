@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { SpanStatusCode } from '@opentelemetry/api';
-import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 
 import { ContextService } from '../context/context.service';
 import { HttpMethod } from '../http/http.enum';
@@ -40,10 +39,10 @@ export class AppService {
 
     if (span) {
       span.setAttributes({
-        [SemanticAttributes.HTTP_METHOD]: method,
-        [SemanticAttributes.HTTP_ROUTE]: path,
-        [SemanticAttributes.HTTP_STATUS_CODE]: code,
-        'http.duration': duration, // eslint-disable-line @typescript-eslint/naming-convention
+        'http.method': method,
+        'http.route': path,
+        'http.status_code': code,
+        'http.duration': duration,
       });
 
       if (error) {

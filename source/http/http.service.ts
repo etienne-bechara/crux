@@ -1,6 +1,5 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
-import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import qs from 'query-string';
 import { setTimeout } from 'timers/promises';
 
@@ -123,10 +122,10 @@ export class HttpService {
 
     const spanOptions: SpanOptions = {
       attributes: {
-        [SemanticAttributes.HTTP_METHOD]: method,
-        [SemanticAttributes.HTTP_SCHEME]: scheme,
-        [SemanticAttributes.HTTP_HOST]: host,
-        [SemanticAttributes.HTTP_ROUTE]: path,
+        'http.method': method,
+        'http.scheme': scheme,
+        'http.host': host,
+        'http.route': path,
       },
     };
 
@@ -485,8 +484,8 @@ export class HttpService {
 
     if (span) {
       span.setAttributes({
-        [SemanticAttributes.HTTP_STATUS_CODE]: String(code) || undefined,
-        'http.duration': duration, // eslint-disable-line @typescript-eslint/naming-convention
+        'http.status_code': String(code) || undefined,
+        'http.duration': duration,
       });
 
       if (error) {
