@@ -27,7 +27,7 @@
   },
   "scripts": {
     "prepare": "node -e \"try { require('husky').install('.config/husky') } catch(e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }\"",
-    "dev": "tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./dev/main.ts",
+    "dev": "pnpm mysql && tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./dev/main.ts",
     "example": "pnpm example:build && cd example && docker-compose up --build",
     "example:build": "rimraf ./example/application/crux && pnpm build && pnpm example:assets",
     "example:assets": "copyfiles -u 1 ./dist/**/* ./example/application/crux/dist/ && copyfiles ./package.json ./pnpm-lock.yaml ./example/application/crux/",
@@ -36,6 +36,7 @@
     "build:assets": "copyfiles -u 1 ./source/doc/doc.view.hbs ./dist/",
     "build:cleanup": "rimraf ./source/index.ts",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
+    "mysql": "docker start mysql || docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=crux mysql",
     "test": "pnpm test:up && pnpm test:jest && pnpm test:down",
     "test:up": "cd test && docker compose up -d",
     "test:jest": "jest --forceExit --config .config/jest/.jestrc.json",

@@ -1,12 +1,13 @@
 import { Cache } from '../../source/cache/cache.decorator';
 import { ApiTag } from '../../source/doc/doc.decorator';
-import { ApiOperation, ApiSecurity, Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Response } from '../../source/override';
-import { UserCreateDto, UserIdDto, UserPageDto, UserReadDto, UserUpdateDto } from './user.dto.in';
-import { UserDto } from './user.dto.out';
-import { UserService } from './user.service';
+import { OrmPageDto } from '../../source/orm/orm.dto.out';
+import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '../../source/override';
+import { UserCreateDto, UserIdDto, UserReadDto, UserUpdateDto } from './user.dto.in';
+import { UserDto, UserPageDto } from './user.dto.out';
+import { User } from './user.entity';
+import { UserRepository } from './user.repository';
 
 @Controller('user')
-@ApiSecurity('API Key')
 @ApiTag({
   name: 'User',
   description: `A user is a person who utilizes a computer or network service.
@@ -17,51 +18,52 @@ nickname and handle, which is derived from the identical citizens band radio ter
 export class UserController {
 
   public constructor(
-    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
   ) { }
 
   @Get()
-  @Response(HttpStatus.OK, UserPageDto)
+  @ApiOkResponse({ type: UserPageDto })
   @ApiOperation({ description: 'Reads the collection of users with pagination support' })
-  public getUser(@Query() query: UserReadDto): UserPageDto {
-    return this.userService.readUsers(query);
+  public getUser(@Query() query: UserReadDto): Promise<OrmPageDto<User>> {
+    return this.userRepository.readPaginatedBy(query);
   }
 
   @Get(':id')
-  @Response(HttpStatus.OK, UserDto)
-  @Cache<UserDto>({
-    buckets: ({ req, data }) => [ req.params.id, data.address.zip ],
-  })
+  @ApiOkResponse({ type: UserDto })
   @ApiOperation({ description: 'Reads a single user by its ID' })
-  public getUserById(@Param() params: UserIdDto): UserDto {
-    return this.userService.readUserById(params.id);
+  @Cache<User>({
+    buckets: ({ req }) => [ req.params.id ],
+  })
+  public getUserById(@Param() params: UserIdDto): Promise<User> {
+    return this.userRepository.readById(params.id);
   }
 
   @Post()
-  @Response(HttpStatus.CREATED, UserDto)
+  @ApiCreatedResponse({ type: UserDto })
   @ApiOperation({ description: 'Creates a new user' })
-  public postUser(@Body() body: UserCreateDto): Promise<UserDto> {
-    return this.userService.createUser(body);
+  public postUser(@Body() body: UserCreateDto): Promise<User> {
+    return this.userRepository.createOne(body);
   }
 
   @Patch(':id')
-  @Response(HttpStatus.OK, UserDto)
+  @ApiOkResponse({ type: UserDto })
+  @ApiOperation({ description: 'Partially updates an existing user by its ID' })
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  @ApiOperation({ description: 'Partially updates an existing user by its ID' })
-  public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): UserDto {
-    return this.userService.updateUserById(params.id, body);
+  public patchUser(@Param() params: UserIdDto, @Body() body: UserUpdateDto): Promise<User> {
+    return this.userRepository.updateById(params.id, body);
   }
 
   @Delete(':id')
-  @Response(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  @ApiOperation({ description: 'Deletes an user by its ID' })
   @Cache({
     invalidate: ({ req }) => [ req.params.id ],
   })
-  @ApiOperation({ description: 'Deletes an user by its ID' })
-  public deleteUserById(@Param() params: UserIdDto): void {
-    return this.userService.deleteUserById(params.id);
+  public async deleteUserById(@Param() params: UserIdDto): Promise<void> {
+    await this.userRepository.deleteById(params.id);
   }
 
 }

@@ -125,7 +125,7 @@ export class MetricService {
         await this.httpService.post(metricUrl, {
           headers: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'content-type': 'application/vnd.google.protobuf',
+            'content-type': 'application/x-protobuf',
           },
           body: compress(buffer),
           retryLimit: 2,

@@ -1,5 +1,4 @@
-import { IsEnum, IsNumberString, IsString } from '@bechara/crux';
-
+import { IsEnum, IsNumberString, IsString } from '../../source/override';
 import { ZipState } from './zip.enum';
 
 export class Zip {

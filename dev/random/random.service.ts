@@ -1,12 +1,13 @@
-import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, LogService, PromiseService, UnauthorizedException } from '@bechara/crux';
 import crypto from 'crypto';
 import { setTimeout } from 'timers/promises';
+
+import { LogService } from '../../source/log/log.service';
+import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../source/override';
 
 @Injectable()
 export class RandomService {
 
   public constructor(
-    private readonly promiseService: PromiseService,
     private readonly httpService: HttpService,
     private readonly logService: LogService,
   ) { }

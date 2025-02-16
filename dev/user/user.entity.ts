@@ -1,5 +1,5 @@
-import { Entity, OrmUuidTimestampEntity, Property, Unique } from '@bechara/crux';
-
+import { OrmUuidTimestampEntity } from '../../source/orm/orm.entity';
+import { Entity, Property, Unique } from '../../source/override';
 import { UserRepository } from './user.repository';
 
 @Entity({ customRepository: () => UserRepository })
