@@ -13,32 +13,32 @@ import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from './validate.
 class ValidatorNestedDto {
 
   @IsBoolean()
-  public requiredBoolean: boolean;
+  public requiredBoolean!: boolean;
 
   @IsOptional()
   @IsNumber()
-  public optionalNumber: number;
+  public optionalNumber?: number;
 
 }
 
 class ValidatorCreateDto {
 
   @IsString()
-  public requiredString: string;
+  public requiredString!: string;
 
   @IsNumber()
   @ToNumber()
-  public requiredNumber: number;
+  public requiredNumber!: number;
 
   @IsOptional()
   @IsString()
-  public optionalString: string;
+  public optionalString?: string;
 
   @IsString({ }, { groups: [ 'group1' ] })
-  public contextualString: string;
+  public contextualString!: string;
 
   @IsObject(ValidatorNestedDto)
-  public requiredNested: ValidatorNestedDto;
+  public requiredNested!: ValidatorNestedDto;
 
 }
 

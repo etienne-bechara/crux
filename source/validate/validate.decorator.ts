@@ -78,28 +78,30 @@ export function OneOf(group: string, validationOptions?: ValidationOptions): Pro
  * @param validationOptions
  */
 export function MutuallyExclusive(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  return function (object: any, propertyName: string): any {
+  return function (object: Object, propertyName: string | symbol): any {
     const key = `MUTUALLY_EXCLUSIVE_${group}`;
     const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [ ];
 
-    mutuallyExclusiveProperties.push(propertyName);
+    mutuallyExclusiveProperties.push(propertyName as string);
     ValidateStorage.set(key, mutuallyExclusiveProperties);
 
     registerDecorator({
       name: 'mutuallyExclusive',
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName: propertyName as string,
       constraints: [ group ],
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
           const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] === undefined ? p : ++p, 0);
+          const propObject: Record<string, any> = args.object
+          const propDefined = propKeys.reduce((p, c) => propObject[c] === undefined ? p : ++p, 0);
           return propDefined === 1;
         },
         defaultMessage(args: ValidationArguments) {
           const propKeys: string[] = ValidateStorage.get(key);
-          const propDefined = propKeys.reduce((p, c) => args.object[c] === undefined ? p : ++p, 0);
+          const propObject: Record<string, any> = args.object
+          const propDefined = propKeys.reduce((p, c) => propObject[c] === undefined ? p : ++p, 0);
 
           return propDefined === 0
             ? `one of ${propKeys.join(', ')} must be defined`

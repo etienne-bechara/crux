@@ -41,7 +41,7 @@ export class ValidateInterceptor implements NestInterceptor {
             }
 
             const { transformOptions, throwException, ...validateOptions } = options;
-            const template = Object.fromEntries(Object.keys(data).map((k) => [ k, undefined ]));
+            const template = Object.fromEntries(Object.keys(data || { }).map((k) => [ k, undefined ]));
             const configInstance = plainToClass(responseClass, data, transformOptions);
             const errors = await validate(configInstance as object, validateOptions);
 
