@@ -30,7 +30,7 @@ export class TraceService {
   /**
    * Acquires configured trace URL giving priority to environment variable.
    */
-  private buildTraceUrl(): string {
+  private buildTraceUrl(): string | undefined{
     const { traces } = this.appConfig.APP_OPTIONS || { };
     const { url } = traces;
     return this.traceConfig.TRACE_URL || url;
@@ -114,14 +114,14 @@ export class TraceService {
   /**
    * Acquires active span.
    */
-  public getActiveSpan(): Span {
+  public getActiveSpan(): Span | undefined {
     return TraceService.getActiveSpan();
   }
 
   /**
    * Acquires active span.
    */
-  public static getActiveSpan(): Span {
+  public static getActiveSpan(): Span | undefined {
     return trace.getSpan(context.active());
   }
 
@@ -219,7 +219,7 @@ export class TraceService {
         }
         catch (e) {
           span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
           throw e;
         }
         finally {
@@ -234,7 +234,7 @@ export class TraceService {
         }
         catch (e) {
           span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
           throw e;
         }
         finally {
