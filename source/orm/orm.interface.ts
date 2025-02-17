@@ -15,8 +15,8 @@ export type OrmReadPaginatedParams<T> = FilterQuery<T> & OrmPageReadDto;
 export interface OrmAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   disableEntityScan?: boolean;
   entities?: any[];
-  inject?: any[];
-  useFactory?: (...args: any[]) => Promise<OrmModuleOptions> | OrmModuleOptions;
+  inject: any[];
+  useFactory: (...args: any[]) => Promise<OrmModuleOptions> | OrmModuleOptions;
 }
 
 export interface OrmModuleOptions extends Omit<MikroOrmModuleOptions, 'type'> {

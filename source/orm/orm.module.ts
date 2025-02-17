@@ -98,7 +98,7 @@ export class OrmModule {
       {
         provide: OrmInjectionToken.ORM_SCHEMA_OPTIONS,
         inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS ],
-        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync,
+        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync || { },
       },
     ];
   }

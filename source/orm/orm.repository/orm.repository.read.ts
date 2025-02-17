@@ -211,8 +211,8 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     const previousPromise = offset
       ? this.createToken({ ...params, offset: offset - limit })
-      : null
-     ;
+      : null;
+
     const [ next, previous ] = await Promise.all([ nextPromise, previousPromise ]);
 
     return { next, previous, limit, offset, count, sort, order, records };

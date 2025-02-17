@@ -18,14 +18,14 @@ export abstract class OrmBaseEntity extends BaseEntity {
 export abstract class OrmIntEntity extends OrmBaseEntity {
 
   @PrimaryKey()
-  public id: number;
+  public id!: number;
 
 }
 
 export abstract class OrmBigIntEntity extends OrmBaseEntity {
 
   @PrimaryKey({ columnType: 'bigint' })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -51,14 +51,14 @@ export abstract class OrmTimestampEntity extends OrmBaseEntity {
 export abstract class OrmIntTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey()
-  public id: number;
+  public id!: number;
 
 }
 
 export abstract class OrmBigIntTimestampEntity extends OrmTimestampEntity {
 
   @PrimaryKey({ columnType: 'bigint' })
-  public id: number;
+  public id!: number;
 
 }
 

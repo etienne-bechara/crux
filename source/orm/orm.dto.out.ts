@@ -64,7 +64,7 @@ export class OrmPageDto<T> {
 
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
-  public records: T[];
+  public records!: T[];
 
 }
 
@@ -75,7 +75,7 @@ export class OrmIntDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -86,7 +86,7 @@ export class OrmBigIntDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -108,14 +108,14 @@ export class OrmTimestampDto {
     description: 'Date of last update',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public updated: string;
+  public updated!: string;
 
   @IsISO8601()
   @ApiProperty({
     description: 'Date of creation',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public created: string;
+  public created!: string;
 
 }
 
@@ -126,7 +126,7 @@ export class OrmIntTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -137,7 +137,7 @@ export class OrmBigIntTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
