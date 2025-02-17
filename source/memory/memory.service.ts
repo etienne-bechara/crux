@@ -14,7 +14,7 @@ export class MemoryService implements CacheProvider {
    */
   public ttl(key: string): number {
     const exp = this.memoryExpiration.get(key);
-    return Math.ceil((exp - Date.now()) / 1000);
+    return exp ? Math.ceil((exp - Date.now()) / 1000) : 0;
   }
 
   /**
@@ -49,7 +49,7 @@ export class MemoryService implements CacheProvider {
    */
   public set(key: string, value: any, options: CacheSetOptions = { }): void {
     const { ttl, skip } = options;
-    let skipped: boolean;
+    let skipped = false;
 
     switch (skip) {
       case 'IF_EXIST': {

@@ -51,7 +51,8 @@ export class LogService {
    */
   private log(severity: LogSeverity, ...args: LogArguments[]): void {
     const message = this.getLogMessage(...args);
-    let params: LogParams;
+    let paramsGenerated = false
+    let params!: LogParams;
 
     for (const transport of this.transports) {
       const transportName = transport.getName();
@@ -60,7 +61,7 @@ export class LogService {
       const isSkippable = message === LogException.PUSH_FAILED && transportName !== LogTransportName.CONSOLE;
 
       if (isHigher && !isSkippable) {
-        if (!params) {
+        if (!paramsGenerated) {
           params = {
             timestamp: new Date().toISOString(),
             severity,
@@ -72,6 +73,8 @@ export class LogService {
             data: this.getLogData(...args),
             error: this.getLogError(...args),
           };
+
+          paramsGenerated = true
         }
 
         transport.log(params);
@@ -105,13 +108,15 @@ export class LogService {
    */
   private getCaller(...args: LogArguments[]): string {
     const error = args.find((a) => a instanceof Error) as Error || new Error('-');
-    const matches = error.stack.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
+    const matches = error.stack?.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
 
-    for (const match of matches) {
-      const filename = match[1];
-
-      if (!filename.includes('log.service')) {
-        return filename;
+    if (matches) {
+      for (const match of matches) {
+        const filename = match[1];
+  
+        if (!filename.includes('log.service')) {
+          return filename;
+        }
       }
     }
 
@@ -132,6 +137,8 @@ export class LogService {
         return arg.message;
       }
     }
+
+    return ''
   }
 
   /**

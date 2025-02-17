@@ -50,7 +50,7 @@ describe('MemoryService', () => {
       await new Promise((r) => setTimeout(r, delay));
 
       memoryService.set('testTtl', testTtl, { ttl });
-      const exp = memoryService['memoryExpiration'].get('testTtl');
+      const exp = memoryService['memoryExpiration'].get('testTtl') as number;
 
       expect(exp - Date.now()).toBeLessThanOrEqual(ttl - delay);
     });

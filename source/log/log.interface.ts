@@ -19,10 +19,10 @@ export interface LogParams {
   message: string;
   caller: string;
   requestId: string;
-  traceId: string;
-  spanId: string;
-  data: Record<string, any>;
-  error: Error;
+  traceId?: string;
+  spanId?: string;
+  data?: Record<string, any>;
+  error?: Error;
 }
 
 export interface LogTransport {
