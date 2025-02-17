@@ -45,7 +45,7 @@ export class RedisModule {
    * acquiring data from other injectable services (i.e. Config).
    * @param options
    */
-  public static registerAsync(options: RedisAsyncModuleOptions = { }): DynamicModule {
+  public static registerAsync(options: RedisAsyncModuleOptions): DynamicModule {
     return {
       module: RedisModule,
       imports: options.imports,

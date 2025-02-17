@@ -12,8 +12,8 @@ import { RedisLockOptions, RedisModuleOptions, RedisSetOptions, RedisTtlOptions 
 @Injectable({ scope: Scope.TRANSIENT })
 export class RedisService implements CacheProvider {
 
-  private redisClient: Redis;
-  private initialized: boolean;
+  private redisClient!: Redis;
+  private initialized = false
 
   public constructor(
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
@@ -35,7 +35,6 @@ export class RedisService implements CacheProvider {
       return;
     }
 
-    this.redisModuleOptions.defaultTtl ??= 60_000;
     this.redisModuleOptions.enableAutoPipelining ??= true;
     this.redisModuleOptions.lazyConnect = true;
     this.redisModuleOptions.keepAlive ??= 1000;
@@ -65,6 +64,14 @@ export class RedisService implements CacheProvider {
 
     this.initialized = true;
     void this.redisClient.connect();
+  }
+
+  /**
+   * Resolvers operation TTL, coalescing to module and then to default
+   * @param ttl
+   */
+  private resolveTtl(ttl: number | undefined): number {
+    return ttl ?? this.redisModuleOptions.defaultTtl ?? 60_000
   }
 
   /**
@@ -116,7 +123,7 @@ export class RedisService implements CacheProvider {
     return TraceService.startManagedSpan(`Redis | GET ${key}`, { }, async () => {
       this.logService.trace(`GET ${key}`);
       const value = await this.getClient().get(key);
-      return JSON.parse(value);
+      return value ? JSON.parse(value) : undefined;
     });
   }
 
@@ -140,9 +147,9 @@ export class RedisService implements CacheProvider {
   public set<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
     return TraceService.startManagedSpan(`Redis | SET ${key}`, { }, async () => {
       this.logService.trace(`SET ${key}`);
-      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
-      const { skip, get, keepTtl, ttl } = options;
+      const { skip, get, keepTtl, ttl: optionsTtl } = options;
+      const ttl = this.resolveTtl(optionsTtl)
       const data = Buffer.isBuffer(value) ? value : JSON.stringify(value);
       const extraParams: string[] = [ ];
 
@@ -187,13 +194,12 @@ export class RedisService implements CacheProvider {
   public incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
     return TraceService.startManagedSpan(`Redis | INCRBYFLOAT ${key}`, { }, async () => {
       this.logService.trace(`INCRBYFLOAT ${key} ${amount >= 0 ? '+' : ''}${amount}`);
-      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
       const stringValue = await this.getClient().incrbyfloat(key, amount);
       const numberValue = Number.parseFloat(stringValue);
 
       if (numberValue === amount) {
-        await this.expire(key, options.ttl);
+        await this.expire(key, this.resolveTtl(options.ttl));
       }
 
       return numberValue;
@@ -220,12 +226,11 @@ export class RedisService implements CacheProvider {
   public sadd(key: string, value: string, options: RedisTtlOptions = { }): Promise<void> {
     return TraceService.startManagedSpan(`Redis | SADD ${key}`, { }, async () => {
       this.logService.trace(`SADD ${key} ${value}`);
-      options.ttl ??= this.redisModuleOptions.defaultTtl;
 
       const setLength = await this.getClient().sadd(key, value);
 
       if (setLength === 1) {
-        await this.expire(key, options.ttl);
+        await this.expire(key, this.resolveTtl(options.ttl));
       }
     });
   }
@@ -238,11 +243,10 @@ export class RedisService implements CacheProvider {
    * @param options
    */
   public async lock(key: string, options: RedisLockOptions = { }): Promise<void> {
-    options.ttl ??= this.redisModuleOptions.defaultTtl;
-    options.timeout ??= this.redisModuleOptions.defaultTtl;
-    options.delay ??= 500;
-
-    const { ttl, delay, timeout, retries } = options;
+    const { ttl: optionsTtl, delay: optionsDelay, timeout: optionsTimeout, retries } = options;
+    const ttl = this.resolveTtl(optionsTtl);
+    const timeout = this.resolveTtl(optionsTimeout);
+    const delay = optionsDelay ?? 500;
     const lockKey = `lock:${key}`;
     const lockValue = randomUUID();
 
