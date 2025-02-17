@@ -27,7 +27,7 @@
   },
   "scripts": {
     "dev": "pnpm mysql && tsnd --exit-child --rs --watch *.env --inspect=0.0.0.0:9229 ./dev/main.ts",
-    "build": "rimraf ./dist && rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -d ./source && tsc -p tsconfig.build.json && rimraf ./source/index.ts",
+    "build": "rimraf ./dist && rimraf ./source/index.ts && barrelsby -q -e \\.spec\\.ts$ -e \\.d\\.ts$ -d ./source && tsc -p tsconfig.build.json && rimraf ./source/index.ts",
     "lint": "export TIMING=1 || set TIMING=1&& eslint **/*.ts --max-warnings=0",
     "mysql": "docker start mysql || docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=crux mysql",
     "test": "docker compose -f ./test/docker-compose.yml up -d && jest && docker compose -f ./test/docker-compose.yml down"

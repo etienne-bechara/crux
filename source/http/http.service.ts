@@ -42,7 +42,7 @@ export class HttpService {
       this.traceService = undefined;
     }
 
-    this.defaultOptions = this.appConfig.APP_OPTIONS.http || { };
+    this.defaultOptions = this.appConfig.APP_OPTIONS.http;
   }
 
   /**

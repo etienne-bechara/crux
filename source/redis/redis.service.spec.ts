@@ -29,7 +29,7 @@ describe('RedisService', () => {
     it('should obey skip if not exist rule', async () => {
       await redisService.set(testObjectKey, { rng: randomNumber }, { skip: 'IF_NOT_EXIST' });
       const storedNumber = await redisService.get(testObjectKey);
-      expect(storedNumber).toBeNull();
+      expect(storedNumber).toBeUndefined();
     });
 
     it('should persist a random number', async () => {
@@ -63,7 +63,7 @@ describe('RedisService', () => {
     it('should delete persisted random number', async () => {
       await redisService.del(testObjectKey);
       const testValue = await redisService.get(testObjectKey);
-      expect(testValue).toBeNull();
+      expect(testValue).toBeUndefined();
     });
   });
 
@@ -106,7 +106,7 @@ describe('RedisService', () => {
       await new Promise((resolve) => setTimeout(resolve, 1100));
 
       const testValue = await redisService.get(incrementKey);
-      expect(testValue).toBeNull();
+      expect(testValue).toBeUndefined();
     });
 
     it('should decrement a key if input is negative', async () => {

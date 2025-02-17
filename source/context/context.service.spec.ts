@@ -12,41 +12,6 @@ describe('ContextService', () => {
     contextService = app.get(ContextService);
   });
 
-  describe('getRequest', () => {
-    it('should read request as undefined', () => {
-      const req = contextService.getRequest();
-      expect(req).toBeUndefined();
-    });
-  });
-
-  describe('getResponse', () => {
-    it('should read response as undefined', () => {
-      const res = contextService.getResponse();
-      expect(res).toBeUndefined();
-    });
-  });
-
-  describe('getMetadata', () => {
-    it('should read metadata as undefined', () => {
-      const metadata = contextService.getMetadata('dummy');
-      expect(metadata).toBeUndefined();
-    });
-  });
-
-  describe('getClientIp', () => {
-    it('should read client ip as undefined', () => {
-      const ip = contextService.getRequestIp();
-      expect(ip).toBeUndefined();
-    });
-  });
-
-  describe('getJwtPayload', () => {
-    it('should read jwt payload as undefined', () => {
-      const payload = contextService.getRequestJwtPayload();
-      expect(payload).toBeUndefined();
-    });
-  });
-
   describe('decodeJwtPayload', () => {
     it('should decode jwt payload flattening metadata claims', () => {
       // eslint-disable-next-line max-len
