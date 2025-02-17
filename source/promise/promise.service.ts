@@ -122,7 +122,7 @@ export class PromiseService {
         timeout,
         timeoutMessage,
         promise: async () => {
-          let res!: T;
+          let res: T | undefined;
 
           while (!res) {
             res = await provider.get(dataKey);

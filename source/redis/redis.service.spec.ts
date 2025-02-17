@@ -156,7 +156,7 @@ describe('RedisService', () => {
     it('should try once and throw if retries are zero', async () => {
       const lockKey: string = randomUUID();
       const ttl = 1000;
-      let exception!: boolean;
+      let exception = false
 
       await redisService.lock(lockKey, { ttl });
 

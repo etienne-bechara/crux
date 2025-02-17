@@ -57,7 +57,7 @@ describe('PromiseService', () => {
     it('should throw error if any resolution fails', async () => {
       const errorMessage = 'RESOLVE_LIMITED_FAILED';
       let counter = 0;
-      let err!: Error;
+      let err: Error | undefined;
 
       const promise = (): Promise<void> => new Promise((r) => {
         counter++;
@@ -76,7 +76,7 @@ describe('PromiseService', () => {
         err = e as Error;
       }
 
-      expect(err.message).toBe(errorMessage);
+      expect(err?.message).toBe(errorMessage);
     });
   });
 
@@ -112,7 +112,7 @@ describe('PromiseService', () => {
       const dedupKey = randomUUID();
       const errorKey = randomUUID();
       let counter = 0;
-      let errorMessage!: string;
+      let errorMessage: string | undefined;
 
       const fn = async (): Promise<number> => {
         counter++;

@@ -210,7 +210,7 @@ export class HttpService {
   public async request<T>(url: string, params: HttpRequestOptions): Promise<T> {
     const sendParams = this.buildRequestSendParams(url, params);
     const { fullResponse } = sendParams;
-    let response!: HttpResponse<T>;
+    let response: HttpResponse<T> | undefined;
 
     while (!response) {
       response = await this.sendRequestRetryHandler(sendParams);
