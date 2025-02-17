@@ -13,9 +13,9 @@ import { CacheGetParams, CacheProvider, CacheSetParams } from './cache.interface
 @Injectable()
 export class CacheService {
 
-  private cacheProvider: CacheProvider;
+  private cacheProvider!: CacheProvider;
   private failureCount = 0;
-  private failureStart: number;
+  private failureStart?: number;
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -127,12 +127,12 @@ export class CacheService {
         timeout,
       });
     }
-    catch (e) {
+    catch (e: unknown) {
       this.failureStart ??= Date.now();
       this.failureCount++;
 
       throw new InternalServerErrorException({
-        message: `failed to acquire cached data | ${e.message}`,
+        message: `failed to acquire cached data | ${(e as Error).message}`,
         params,
       });
     }
@@ -154,9 +154,7 @@ export class CacheService {
       ? await this.cacheProvider.getBuffer(dataKey)
       : await this.cacheProvider.get(dataKey);
 
-    if (!value) return;
-
-    if (compression) {
+    if (value && compression) {
       const uncompressed: Buffer = uncompress(value);
       value = JSON.parse(uncompressed.toString());
     }

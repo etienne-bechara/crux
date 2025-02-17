@@ -31,7 +31,7 @@ import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
-import { AppOptions, AppRequest, AppResponse } from './app.interface';
+import { AppModuleOptions, AppOptions, AppRequest, AppResponse } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()
@@ -66,7 +66,7 @@ export class AppModule {
    * Skips the compile step if a pre-compiled `instance` is provided.
    * @param options
    */
-  public static async boot(options: Partial<AppOptions> = { }): Promise<INestApplication> {
+  public static async boot(options: AppModuleOptions = { }): Promise<INestApplication> {
     const { app } = options;
 
     if (app) {
@@ -85,7 +85,7 @@ export class AppModule {
    * its reference without starting the adapter.
    * @param options
    */
-  public static async compile(options: Partial<AppOptions> = { }): Promise<INestApplication> {
+  public static async compile(options: AppModuleOptions = { }): Promise<INestApplication> {
     this.configureOptions(options);
     await this.configureAdapter();
 
@@ -100,9 +100,10 @@ export class AppModule {
    * Merge compile options with default and persist them as configuration .
    * @param options
    */
-  private static configureOptions(options: Partial<AppOptions>): void {
+  private static configureOptions(options: AppModuleOptions): void {
     const deepMergeProps: (keyof AppOptions)[] = [
       'fastify',
+      'validator',
       'cache',
       'http',
       'logs',
@@ -113,7 +114,7 @@ export class AppModule {
       'docs',
     ];
 
-    this.options = { ...APP_DEFAULT_OPTIONS, ...options };
+    this.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
 
     for (const key of deepMergeProps) {
       const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
