@@ -13,7 +13,7 @@ export class OrmPageDto<T> {
     description: 'Next page token',
     example: '8d47bdcbde4a7a2d4a98d5f555a19701',
   })
-  public next?: string;
+  public next?: string | null;
 
   @IsOptional()
   @IsString()
@@ -22,7 +22,7 @@ export class OrmPageDto<T> {
     description: 'Previous page token',
     example: '331e15ea3754b9cdccb7c698bc094795',
   })
-  public previous?: string;
+  public previous?: string | null;
 
   @IsOptional()
   @IsInt() @Min(1) @Max(1000)

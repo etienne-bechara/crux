@@ -210,13 +210,8 @@ export class AppModule {
 
     ContextStorage.run(new Map(), () => {
       const store = ContextStorage.getStore();
-
-      if (!store) {
-        throw new InternalServerErrorException('cannot get store outside async context');
-      }
-
-      store.set(ContextStorageKey.REQUEST, req);
-      store.set(ContextStorageKey.RESPONSE, res);
+      store?.set(ContextStorageKey.REQUEST, req);
+      store?.set(ContextStorageKey.RESPONSE, res);
 
       if (traceEnabled) {
         const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
@@ -228,7 +223,7 @@ export class AppModule {
             const traceId = span.spanContext().traceId;
 
             res.header('trace-id', traceId);
-            store.set(ContextStorageKey.REQUEST_SPAN, span);
+            store?.set(ContextStorageKey.REQUEST_SPAN, span);
 
             next();
           });

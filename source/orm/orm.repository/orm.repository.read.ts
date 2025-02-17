@@ -188,7 +188,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     const limit = bLimit ?? 100;
     const offset = bOffset ?? 0;
 
-    let order: OrmQueryOrder;
+    let order!: OrmQueryOrder;
     let orderBy;
 
     if (sort) {

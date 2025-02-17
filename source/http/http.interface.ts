@@ -7,7 +7,7 @@ import { HttpMethod, HttpRedirect } from './http.enum';
 import { HttpError } from './http.error';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
-  inject: any[];
+  inject?: any[];
   useFactory: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
