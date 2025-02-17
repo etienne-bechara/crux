@@ -18,22 +18,22 @@ export class CacheConfig {
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly CACHE_HOST: string;
+  public readonly CACHE_HOST?: string;
 
   @InjectConfig()
   @IsOptional()
   @ToNumber()
   @IsNumber()
-  public readonly CACHE_PORT: number;
+  public readonly CACHE_PORT?: number;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly CACHE_USERNAME: string;
+  public readonly CACHE_USERNAME?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly CACHE_PASSWORD: string;
+  public readonly CACHE_PASSWORD?: string;
 
 }

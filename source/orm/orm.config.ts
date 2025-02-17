@@ -8,46 +8,46 @@ export class OrmConfig {
   @IsOptional()
   @InjectConfig()
   @IsEnum(AppEnvironment)
-  public readonly NODE_ENV: AppEnvironment;
+  public readonly NODE_ENV?: AppEnvironment;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_HOST: string;
+  public readonly ORM_HOST?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsNumberString()
-  public readonly ORM_PORT: number;
+  public readonly ORM_PORT?: number;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_USERNAME: string;
+  public readonly ORM_USERNAME?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_PASSWORD: string;
+  public readonly ORM_PASSWORD?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_DATABASE: string;
+  public readonly ORM_DATABASE?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_SERVER_CA: string;
+  public readonly ORM_SERVER_CA?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_CLIENT_CERTIFICATE: string;
+  public readonly ORM_CLIENT_CERTIFICATE?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_CLIENT_KEY: string;
+  public readonly ORM_CLIENT_KEY?: string;
 
 }

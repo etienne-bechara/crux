@@ -65,9 +65,9 @@ export class AppConfig {
 
   @InjectConfig()
   @IsEnum(AppEnvironment)
-  public readonly NODE_ENV: AppEnvironment;
+  public readonly NODE_ENV!: AppEnvironment;
 
   @InjectConfig()
-  public readonly APP_OPTIONS: AppOptions;
+  public readonly APP_OPTIONS!: AppOptions;
 
 }

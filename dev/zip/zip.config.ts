@@ -4,6 +4,6 @@ import { Config, InjectConfig } from '../../source/config/config.decorator';
 export class ZipConfig {
 
   @InjectConfig({ fallback: 'https://viacep.com.br/ws' })
-  public readonly ZIP_HOST: string;
+  public readonly ZIP_HOST!: string;
 
 }

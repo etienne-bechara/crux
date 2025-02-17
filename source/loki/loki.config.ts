@@ -16,21 +16,21 @@ export class LokiConfig {
   @InjectConfig()
   @IsOptional()
   @IsUrl()
-  public readonly LOKI_URL: string;
+  public readonly LOKI_URL?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly LOKI_USERNAME: string;
+  public readonly LOKI_USERNAME?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly LOKI_PASSWORD: string;
+  public readonly LOKI_PASSWORD?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsEnum(LogSeverity)
-  public readonly LOKI_SEVERITY: LogSeverity;
+  public readonly LOKI_SEVERITY?: LogSeverity;
 
 }

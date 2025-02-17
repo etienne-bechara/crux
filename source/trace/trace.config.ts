@@ -15,16 +15,16 @@ export class TraceConfig {
   @InjectConfig()
   @IsOptional()
   @IsUrl()
-  public readonly TRACE_URL: string;
+  public readonly TRACE_URL?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly TRACE_USERNAME: string;
+  public readonly TRACE_USERNAME?: string;
 
   @InjectConfig()
   @IsOptional()
   @IsString()
-  public readonly TRACE_PASSWORD: string;
+  public readonly TRACE_PASSWORD?: string;
 
 }

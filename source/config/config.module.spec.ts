@@ -10,22 +10,22 @@ class TestConfig {
 
   @InjectConfig()
   @IsEnum(AppEnvironment)
-  public readonly NODE_ENV: AppEnvironment;
+  public readonly NODE_ENV!: AppEnvironment;
 
   @InjectConfig({ fallback: 'config_fallback' })
-  public readonly TEST_CONFIG_FALLBACK: string;
+  public readonly TEST_CONFIG_FALLBACK!: string;
 
   @InjectConfig({ fallback: '100' })
   @ToNumber()
-  public readonly TEST_CONFIG_TRANSFORM: number;
+  public readonly TEST_CONFIG_TRANSFORM!: number;
 
   @InjectConfig({ json: true, fallback: '{"hello":"world"}' })
   @IsObject()
-  public readonly TEST_CONFIG_JSON: number;
+  public readonly TEST_CONFIG_JSON!: number;
 
   @InjectConfig({ fallback: '100' })
   @IsNumber()
-  public readonly TEST_CONFIG_VALIDATION: number;
+  public readonly TEST_CONFIG_VALIDATION!: number;
 
 }
 
