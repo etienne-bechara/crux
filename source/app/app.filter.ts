@@ -25,7 +25,7 @@ export class AppFilter implements ExceptionFilter {
    */
   public catch(exception: HttpException | Error): void {
     try {
-      let appExceptionResponse: AppExceptionResponse;
+      let appExceptionResponse!: AppExceptionResponse;
 
       TraceService.startManagedSpan('App | Exception Handler', { }, () => {
         const appException: AppException = {
@@ -51,10 +51,10 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  private buildCode(exception: HttpException | Error): HttpStatus {
-    return exception?.['getStatus']?.()
-      || exception?.['statusCode']
-      || HttpStatus.INTERNAL_SERVER_ERROR;
+  private buildCode(exception: HttpException | Error & { statusCode?: number }): HttpStatus {
+   return exception instanceof HttpException
+    ? exception.getStatus()
+    : exception.statusCode || HttpStatus.INTERNAL_SERVER_ERROR
   }
 
   /**
@@ -90,7 +90,7 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   private buildDetails(exception: HttpException | Error): AppExceptionDetails {
-    let details: AppExceptionDetails;
+    let details: AppExceptionDetails = { };
 
     if (exception instanceof HttpException) {
       details = exception.getResponse() as Record<string, any>;
@@ -112,7 +112,7 @@ export class AppFilter implements ExceptionFilter {
       }
     }
 
-    return cycle.decycle(details) || { };
+    return cycle.decycle(details);
   }
 
   /**

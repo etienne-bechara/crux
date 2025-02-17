@@ -16,23 +16,23 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
  */
 export interface HttpOptions {
   /** Request timeout in milliseconds. Default: 60s. */
-  timeout?: number;
+  timeout: number;
   /** Response parser. Default: Parse as JSON or text based on response `Content-Type`, otherwise as buffer. */
-  parser?: (res: HttpResponse) => Promise<unknown>;
+  parser: (res: HttpResponse) => Promise<unknown>;
   /** Max amount of retries. Default: 2. */
-  retryLimit?: number;
+  retryLimit: number;
   /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
-  retryMethods?: HttpMethod[];
+  retryMethods: HttpMethod[];
   /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
-  retryCodes?: HttpStatus[];
+  retryCodes: HttpStatus[];
   /** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
-  retryDelay?: (attempts: number) => number;
+  retryDelay: (attempts: number) => number;
   /** Time to live in milliseconds, cache is disable when zero. Default: 0. */
-  cacheTtl?: number;
+  cacheTtl: number;
   /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
-  cacheMethods?: HttpMethod[];
+  cacheMethods: HttpMethod[];
   /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 500ms. */
-  cacheTimeout?: number;
+  cacheTimeout: number;
 }
 
 /**

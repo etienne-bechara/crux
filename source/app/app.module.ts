@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
+import { DynamicModule, Global, INestApplication, InternalServerErrorException, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
@@ -57,7 +57,6 @@ export class AppModule {
    */
   public static async close(): Promise<void> {
     await this.instance.close();
-    this.instance = undefined;
   }
 
   /**
@@ -67,7 +66,7 @@ export class AppModule {
    * Skips the compile step if a pre-compiled `instance` is provided.
    * @param options
    */
-  public static async boot(options: AppOptions = { }): Promise<INestApplication> {
+  public static async boot(options: Partial<AppOptions> = { }): Promise<INestApplication> {
     const { app } = options;
 
     if (app) {
@@ -86,7 +85,7 @@ export class AppModule {
    * its reference without starting the adapter.
    * @param options
    */
-  public static async compile(options: AppOptions = { }): Promise<INestApplication> {
+  public static async compile(options: Partial<AppOptions> = { }): Promise<INestApplication> {
     this.configureOptions(options);
     await this.configureAdapter();
 
@@ -101,7 +100,7 @@ export class AppModule {
    * Merge compile options with default and persist them as configuration .
    * @param options
    */
-  private static configureOptions(options: AppOptions): void {
+  private static configureOptions(options: Partial<AppOptions>): void {
     const deepMergeProps: (keyof AppOptions)[] = [
       'fastify',
       'cache',
@@ -120,7 +119,7 @@ export class AppModule {
       const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
       const providedData = options[key] as Record<string, any>;
 
-      this.options[key as string] = { ...defaultData, ...providedData };
+      (this.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
     }
 
     if (this.options.disableAll) {
@@ -160,10 +159,13 @@ export class AppModule {
       return this.createRequestContext(req, res, next);
     });
 
-    this.instance.setGlobalPrefix(globalPrefix);
+    if (globalPrefix) {
+      this.instance.setGlobalPrefix(globalPrefix);
+    }
+
     this.instance.enableCors(cors);
 
-    this.instance.getHttpAdapter().useStaticAssets({
+    httpAdapter.useStaticAssets({
       // eslint-disable-next-line unicorn/prefer-module
       root: `${process.cwd()}/${assetsPrefix}`,
       prefix: `/${assetsPrefix}/`,
@@ -207,6 +209,11 @@ export class AppModule {
 
     ContextStorage.run(new Map(), () => {
       const store = ContextStorage.getStore();
+
+      if (!store) {
+        throw new InternalServerErrorException('cannot run outside async context')
+      }
+
       store.set(ContextStorageKey.REQUEST, req);
       store.set(ContextStorageKey.RESPONSE, res);
 
@@ -256,11 +263,6 @@ export class AppModule {
    * as entry point for the cascade initialization.
    */
   private static buildEntryModule(): DynamicModule {
-    this.options.controllers ??= [ ];
-    this.options.providers ??= [ ];
-    this.options.imports ??= [ ];
-    this.options.exports ??= [ ];
-
     return {
       module: AppModule,
       imports: this.buildModules('imports'),
@@ -407,7 +409,7 @@ export class AppModule {
 
     const exportsArrays = normalizedFiles.map((file) => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-      const exportsObject: unknown = require(`${cwd}/${file}`);
+      const exportsObject = require(`${cwd}/${file}`);
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });
 

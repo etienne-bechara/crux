@@ -39,6 +39,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   port: 8080,
   hostname: '0.0.0.0',
   timeout: 60_000,
+  controllers: [ ],
+  imports: [ ],
+  exports: [ ],
+  providers: [ ],
   cors: CORS_DEFAULT_OPTIONS,
   httpErrors: [
     HttpStatus.INTERNAL_SERVER_ERROR,

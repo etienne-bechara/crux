@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
+import { Abstract, DynamicModule, ForwardReference, HttpException, HttpStatus, INestApplication, ModuleMetadata, Provider, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import http from 'http';
 
@@ -13,7 +13,7 @@ import { MetricOptions } from '../metric/metric.interface';
 import { TraceOptions } from '../trace/trace.interface';
 import { ValidateOptions } from '../validate/validate.interface';
 
-export interface AppOptions extends ModuleMetadata {
+export interface AppOptions {
   /** Provide an already built instance to skip `.compile()` step. */
   app?: INestApplication;
   /** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
@@ -37,43 +37,51 @@ export interface AppOptions extends ModuleMetadata {
   /** Disables documentation generator and `docs` endpoint. */
   disableDocs?: boolean;
   /** Application name, also used as job name for telemetry. */
-  name?: string;
+  name: string;
   /** Instance ID for telemetry. */
-  instance?: string;
+  instance: string;
   /** Application port. Default: 8080. */
-  port?: number;
+  port: number;
   /** Application hostname. Default: `0.0.0.0`. */
-  hostname?: string;
+  hostname: string;
   /** Application prefix to apply to all endpoints. */
   globalPrefix?: string;
   /** Application static assets path relative to current work directory. Default: `assets`. */
-  assetsPrefix?: string;
+  assetsPrefix: string;
   /** Application request timeout in milliseconds. Default: 60s. */
-  timeout?: number;
+  timeout: number;
   /** Application CORS response. */
-  cors?: CorsOptions;
+  cors: CorsOptions;
   /** HTTP exceptions that should be logged as errors. Default: Array of all `5xx` status. */
-  httpErrors?: HttpStatus[];
+  httpErrors: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
-  fastify?: Record<string, any>;
+  fastify: Record<string, any>;
   /** Validation pipe options. Can be overwritten per request using `ContextService`. */
-  validator?: ValidateOptions;
+  validator: ValidateOptions;
   /** Cache configuration. */
-  cache?: CacheOptions;
+  cache: CacheOptions;
   /** Http configuration. */
-  http?: HttpOptions;
+  http: HttpOptions;
   /** Logs configuration. */
-  logs?: LogOptions;
+  logs: LogOptions;
   /** Console logging transport configuration. */
-  console?: ConsoleOptions;
+  console: ConsoleOptions;
   /** Loki logging transport configuration. */
-  loki?: LokiOptions;
+  loki: LokiOptions;
   /** Metrics configuration. */
-  metrics?: MetricOptions;
+  metrics: MetricOptions;
   /** Traces configuration. */
-  traces?: TraceOptions;
+  traces: TraceOptions;
   /** Documentation configuration. */
-  docs?: DocOptions;
+  docs: DocOptions;
+  /** NestJS list of imports. */
+  imports: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+  /** NestJS list of controllers. */
+  controllers: Type<any>[];
+  /** NestJS list of providers. */
+  providers: Provider[];
+  /** NestJS list of exports. */
+  exports: Array<DynamicModule | string | symbol | Provider | ForwardReference | Abstract<any> | Function>;
 }
 
 /**

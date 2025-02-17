@@ -47,15 +47,15 @@ export interface CacheOptions {
   /** Enables snappy compression when storing cached data. */
   compression?: boolean;
   /** Default cache acquisition timeout in milliseconds when unspecified at controller. Default: 500ms. */
-  defaultTimeout?: number;
+  defaultTimeout: number;
   /** Default TTL in milliseconds when unspecified at controller. Default: 1m. */
-  defaultTtl?: number;
+  defaultTtl: number;
   /** Bucket TTL in milliseconds. Default: 1d. */
-  bucketTtl?: number;
+  bucketTtl: number;
   /** Amount of failed read attempts to trigger a failure state. Default: 3. */
-  failureThreshold?: number;
+  failureThreshold: number;
   /** Duration of a failure state in milliseconds where all attempts to read cached data are ignored. Default: 5s. */
-  failureTtl?: number;
+  failureTtl: number;
   /** Redis host to store cached data. Can be overridden by env `CACHE_HOST`. */
   host?: string;
   /** Redis port to store cached data. Can be overridden by env `CACHE_PORT`. */

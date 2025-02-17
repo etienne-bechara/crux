@@ -30,10 +30,10 @@ export interface DocTagGroup {
 }
 
 export interface DocOptions {
-  title?: string;
-  version?: string;
+  title: string;
+  version: string;
   description?: string;
-  favicon?: string;
+  favicon: string;
   servers?: DocServer[];
   security?: DocSecurity[];
   tags?: DocTag[];
