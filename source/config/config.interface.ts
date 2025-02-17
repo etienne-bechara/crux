@@ -7,7 +7,7 @@ export interface ConfigModuleOptions {
 
 export interface ConfigInjectionOptions {
   /** Key when storing secret, defaults to annotated property name. */
-  key?: string;
+  key: string;
   /** Returning value when secret is `null` or `undefined`. */
   fallback?: string | number | boolean | ((environment: AppEnvironment) => string | number | boolean);
   /** When enabled attempts to parse the secret as JSON. */

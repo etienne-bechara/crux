@@ -13,7 +13,7 @@ import { ConfigModuleOptions, ConfigRecord } from './config.interface';
 export class ConfigModule {
 
   private static configs: ConfigRecord[] = [ ];
-  private static classes = [ ];
+  private static classes: ClassConstructor<any>[] = [ ];
   private static isRegistered: boolean;
 
   /**
@@ -51,7 +51,7 @@ export class ConfigModule {
    * an .env file up to the desired maximum depth.
    * @param maxDepth
    */
-  private static scanEnvFile(maxDepth: number = 5): string {
+  private static scanEnvFile(maxDepth: number = 5): string | undefined {
     let testPath = process.cwd();
     let testFile = `${testPath}/.env`;
 

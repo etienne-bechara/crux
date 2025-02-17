@@ -7,7 +7,7 @@ import { ConfigModule } from './config.module';
 /**
  * Loads decorated class as a config.
  */
-export function Config(): any {
+export function Config(): ClassDecorator {
   // eslint-disable-next-line unicorn/consistent-function-scoping
   const loadTargetAsConfig = (target: unknown): void => {
     ConfigModule.setClass(target);
@@ -27,11 +27,11 @@ export function Config(): any {
  * be interpreted by secret service when building its path.
  * @param options
  */
-export function InjectConfig(options: ConfigInjectionOptions = { }): any {
+export function InjectConfig(options: Partial<ConfigInjectionOptions> = { }): PropertyDecorator {
   const { key: baseKey, json, fallback } = options;
 
-  return function (target: unknown, propertyKey: string): void {
-    const key = baseKey || propertyKey;
+  return function (target: Object, propertyKey: string | symbol): void {
+    const key = baseKey || propertyKey as string;
     Reflect.defineMetadata(ConfigMetadata.CONFIG_KEY, key, target, propertyKey);
     ConfigModule.set({ key, fallback, json });
 
