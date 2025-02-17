@@ -78,16 +78,16 @@ describe('ContextService', () => {
 
     it('should throw an exception for invalid payload', () => {
       const token = 'xxx.xxx.xxx';
-      let err: HttpException;
+      let err: HttpException | undefined;
 
       try {
         contextService['decodeJwtPayload'](token);
       }
-      catch (e) {
-        err = e;
+      catch (e: unknown) {
+        err = e as HttpException;
       }
 
-      expect(err.getStatus()).toBe(HttpStatus.UNAUTHORIZED);
+      expect(err?.getStatus()).toBe(HttpStatus.UNAUTHORIZED);
     });
   });
 });

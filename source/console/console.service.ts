@@ -55,7 +55,7 @@ export class ConsoleService implements LogTransport {
     if (environment === AppEnvironment.LOCAL) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
       const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
-      const strData = JSON.stringify(data, null, prettyPrint ? 2 : null);
+      const strData = JSON.stringify(data, null, prettyPrint ? 2 : undefined);
 
       const strFilename = caller.length > 25
         ? `${caller.slice(0, 11)}...${caller.slice(-11)}`

@@ -212,7 +212,7 @@ export class AppModule {
       const store = ContextStorage.getStore();
 
       if (!store) {
-        throw new InternalServerErrorException('cannot run outside async context')
+        throw new InternalServerErrorException('cannot get store outside async context');
       }
 
       store.set(ContextStorageKey.REQUEST, req);
