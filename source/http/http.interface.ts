@@ -7,8 +7,8 @@ import { HttpMethod, HttpRedirect } from './http.enum';
 import { HttpError } from './http.error';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
-  inject?: any[];
-  useFactory?: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
+  inject: any[];
+  useFactory: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface HttpSharedOptions {
 /**
  * HTTP options usable at module level.
  */
-export interface HttpModuleOptions extends HttpOptions, HttpSharedOptions {
+export interface HttpModuleOptions extends Partial<HttpOptions>, HttpSharedOptions {
   /** Disable logs, metrics and traces. */
   disableTelemetry?: boolean;
   /** Disable trace propagation. */
@@ -72,7 +72,7 @@ export interface HttpModuleOptions extends HttpOptions, HttpSharedOptions {
 /**
  * HTTP options usable at request level.
  */
-export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
+export interface HttpRequestOptions extends Omit<Partial<HttpOptions>, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
   /** Request method. */
   method?: HttpMethod;
   /** Object containing replacement string for path variables. */
@@ -89,18 +89,19 @@ export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' |
   form?: Record<string, any>;
 }
 
-export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'method' | 'replacements' | 'headers' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'replacements' | 'headers' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+  method: HttpMethod;
   url: string;
   scheme: string;
   host: string;
   path: string;
 }
 
-export interface HttpRetrySendParams extends Pick<HttpOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
+export interface HttpRetrySendParams extends Pick<Partial<HttpOptions>, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
   attempt: number;
 }
 
-export type HttpCacheSendParams = Pick<HttpOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
+export type HttpCacheSendParams = Pick<Partial<HttpOptions>, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
 
 export interface HttpTelemetrySendParams {
   spanOptions: SpanOptions;
@@ -109,9 +110,9 @@ export interface HttpTelemetrySendParams {
 }
 
 export interface HttpSendParams {
-  fullResponse: boolean;
-  ignoreExceptions: boolean;
-  proxyExceptions: boolean;
+  fullResponse?: boolean;
+  ignoreExceptions?: boolean;
+  proxyExceptions?: boolean;
   parser: (res: HttpResponse) => Promise<unknown>;
   request: HttpRequestSendParams;
   retry: HttpRetrySendParams;
