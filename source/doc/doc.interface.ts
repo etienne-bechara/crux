@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { ExternalDocumentationObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ComponentsObject, ExternalDocumentationObject, OpenAPIObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export interface DocSecurity {
   name: string;
@@ -38,4 +38,9 @@ export interface DocOptions {
   security?: DocSecurity[];
   tags?: DocTag[];
   tagGroups?: DocTagGroup[];
+}
+
+export interface DocOpenApi extends Omit<OpenAPIObject, 'components'> {
+  components: ComponentsObject;
+  ['x-tagGroups']?: DocTagGroup[]
 }

@@ -7,6 +7,8 @@ import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
 import { DocTagStorage } from './doc.decorator';
 import { DocService } from './doc.service';
+import { DocOpenApi } from './doc.interface';
+import { OperationObject, PathItemObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 @Module({
   controllers: [
@@ -55,7 +57,7 @@ export class DocModule {
 
     const builder = new DocumentBuilder()
       .setTitle(title)
-      .setDescription(description)
+      .setDescription(description || '')
       .setVersion(version);
 
     if (servers) {
@@ -89,26 +91,27 @@ export class DocModule {
    * @param instance
    * @param builder
    */
-  private static buildOpenApiObject(instance: INestApplication, builder: DocumentBuilder): OpenAPIObject {
+  private static buildOpenApiObject(instance: INestApplication, builder: DocumentBuilder): DocOpenApi {
     return SwaggerModule.createDocument(instance, builder.build(), {
       ignoreGlobalPrefix: true,
       operationIdFactory: (controllerKey: string, methodKey: string) => {
         const titleCase = methodKey.replaceAll(/([A-Z])/g, ' $1');
         return `${titleCase.charAt(0).toUpperCase()}${titleCase.slice(1)}`;
       },
-    });
+    }) as DocOpenApi;
   }
 
   /**
    * Add missing titles to components schemas.
    * @param document
    */
-  private static coalesceSchemaTitles(document: OpenAPIObject): void {
+  private static coalesceSchemaTitles(document: DocOpenApi): void {
     const { components } = document;
     const { schemas } = components;
 
     for (const key in schemas) {
-      schemas[key]['title'] ||= key;
+      const schema = schemas[key] as SchemaObject
+      schema.title ||= key;
     }
   }
 
@@ -116,12 +119,14 @@ export class DocModule {
    * Add missing summaries to path schemas.
    * @param document
    */
-  private static coalescePathSummaries(document: OpenAPIObject): void {
+  private static coalescePathSummaries(document: DocOpenApi): void {
     const { paths } = document;
 
     for (const path in paths) {
+
       for (const method in paths[path]) {
-        paths[path][method].summary ||= paths[path][method].operationId;
+        const operation = paths[path][method as keyof PathItemObject] as OperationObject
+        operation.summary ||= operation.operationId;
       }
     }
   }
