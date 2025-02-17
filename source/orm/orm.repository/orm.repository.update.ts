@@ -123,7 +123,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       let createdEntities: Entity[];
 
       // Create clauses to match existing entities
-      const clauses = dataArray.map((data) => {
+      const clauses = dataArray.map((data: Record<string, any>) => {
         const clause: Record<keyof Entity, any> = { } as any;
 
         for (const key of uniqueKey) {
@@ -136,7 +136,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
 
       // Find matching data, ensure to populate array data that are 1:m or m:n relations
       const populate = Array.isArray(options.populate) ? options.populate : [ ];
-      const sampleData = dataArray[0];
+      const sampleData: Record<string, any> = dataArray[0];
 
       for (const key in sampleData) {
         if (Array.isArray(sampleData[key]) && this.entityManager.canPopulate(this.entityName, key)) {
@@ -153,19 +153,17 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
           // Iterate each clause of unique key definition
           for (const key in clauses[i]) {
             // Check if matching a nested entity
-            let isNestedEntity = false;
-            let matchingNestedPk: string;
+            let matchingNestedPk: string | undefined;
 
             for (const nestedPk of nestedPks) {
               if (e[key]?.[nestedPk] || e[key]?.[nestedPk] === 0) {
                 matchingNestedPk = nestedPk;
-                isNestedEntity = true;
                 break;
               }
             }
 
             // Match nested entities or direct values
-            if (isNestedEntity) {
+            if (matchingNestedPk) {
               if (clauses[i][key]?.[matchingNestedPk] || clauses[i][key]?.[matchingNestedPk] === 0) {
                 if (e[key][matchingNestedPk] !== clauses[i][key][matchingNestedPk]) return false;
               }
