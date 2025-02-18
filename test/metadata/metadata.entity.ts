@@ -11,12 +11,12 @@ export class Metadata extends OrmBaseEntity {
   public id: string = randomUUID();
 
   @Property()
-  public key: string;
+  public key!: string;
 
   @Property()
-  public value: string;
+  public value!: string;
 
   @ManyToOne(() => User, { hidden: true })
-  public user: User;
+  public user?: User;
 
 }

@@ -14,19 +14,19 @@ export class User extends OrmUuidTimestampEntity {
 
   @IsString()
   @Property()
-  public name: string;
+  public name!: string;
 
   @Property()
   @IsNumber()
-  public age: number;
+  public age!: number;
 
   @Property({ nullable: true })
   @IsOptional()
   @IsEmail()
-  public email: string;
+  public email?: string;
 
   @OneToOne(() => Address, 'user', { orphanRemoval: true })
-  public address: Address;
+  public address?: Address;
 
   @OneToMany(() => Order, 'user')
   public orders = new Collection<Order>(this);

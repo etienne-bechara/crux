@@ -40,11 +40,11 @@ export abstract class OrmTimestampEntity extends OrmBaseEntity {
 
   @Index()
   @Property({ columnType: 'timestamp', onUpdate: () => new Date() })
-  public updated: Date = new Date();
+  public updated?: Date = new Date();
 
   @Index()
   @Property({ columnType: 'timestamp' })
-  public created: Date = new Date();
+  public created?: Date = new Date();
 
 }
 

@@ -9,12 +9,12 @@ import { RelationRepository } from './relation.repository';
 export class Relation extends OrmBaseEntity {
 
   @ManyToOne(() => User, { primary: true })
-  public child: User;
+  public child!: User;
 
   @ManyToOne(() => User, { primary: true })
-  public parent: User;
+  public parent!: User;
 
   @Property({ columnType: 'timestamp' })
-  public created: Date = new Date();
+  public created?: Date = new Date();
 
 }

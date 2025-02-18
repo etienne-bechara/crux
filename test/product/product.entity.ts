@@ -8,10 +8,10 @@ import { ProductRepository } from './product.repository';
 export class Product extends OrmUuidTimestampEntity {
 
   @Property()
-  public title: string;
+  public title!: string;
 
   @Property({ columnType: 'float' })
-  public price: number;
+  public price!: number;
 
   @ManyToMany(() => Order, 'products')
   public orders = new Collection<Order>(this);

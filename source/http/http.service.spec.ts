@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Module } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
-import { HttpResponse } from './http.interface';
+import { HttpError, HttpResponse } from './http.interface';
 import { HttpModule } from './http.module';
 import { HttpService } from './http.service';
 
@@ -139,45 +139,45 @@ describe('HttpService', () => {
         replacements: { postId: '1' },
       });
 
-      expect(Object.keys(data).length).toBe(0);
+      expect(Object.keys(data || { }).length).toBe(0);
     });
   });
 
   describe('request', () => {
     it('should throw a timeout exception', async () => {
-      let errorMessage: string;
+      let errorMessage: string | undefined;
 
       try {
         await jsonHttpService.get('posts', { timeout: 1 });
       }
       catch (e) {
-        errorMessage = e.message;
+        errorMessage = (e as Error).message;
       }
 
-      expect(errorMessage.includes('Request timed out after')).toBe(true);
+      expect(errorMessage?.includes('Request timed out after')).toBe(true);
     });
 
     it('should throw an internal server error exception', async () => {
-      let errorStatus: number;
+      let errorStatus: number | undefined;
 
       try {
         await jsonHttpService.get('404');
       }
       catch (e) {
-        errorStatus = e.status;
+        errorStatus = (e as HttpError).status;
       }
 
       expect(errorStatus).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     });
 
     it('should throw a not found exception', async () => {
-      let errorStatus: number;
+      let errorStatus: number | undefined;
 
       try {
         await jsonHttpService.get('404', { proxyExceptions: true });
       }
       catch (e) {
-        errorStatus = e.status;
+        errorStatus = (e as HttpError).status;
       }
 
       expect(errorStatus).toEqual(HttpStatus.NOT_FOUND);
@@ -223,9 +223,9 @@ describe('HttpService', () => {
         fullResponse: true,
       });
 
-      expect(res.cookies[0]).toBeDefined();
-      expect(res.cookies[0].domain).toMatch(/google/g);
-      expect(res.cookies[0].expires).toBeInstanceOf(Date);
+      expect(res.cookies?.[0]).toBeDefined();
+      expect(res.cookies?.[0].domain).toMatch(/google/g);
+      expect(res.cookies?.[0].expires).toBeInstanceOf(Date);
     });
   });
 });

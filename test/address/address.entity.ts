@@ -10,14 +10,14 @@ import { AddressRepository } from './address.repository';
 export class Address extends OrmBaseEntity {
 
   @OneToOne(() => User, 'address', { primary: true, owner: true })
-  public user: User;
+  public user!: User;
 
   @Property()
   @IsNumberString()
-  public zip: string;
+  public zip!: string;
 
   @Enum(() => AddressState)
   @IsEnum(AddressState)
-  public state: AddressState;
+  public state!: AddressState;
 
 }
