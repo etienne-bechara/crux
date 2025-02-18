@@ -1,4 +1,4 @@
-export class HttpError extends Error {
+export class HttpFetchError extends Error {
 
   public constructor(
     public readonly message: string,

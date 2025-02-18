@@ -14,8 +14,8 @@ import { MetricService } from '../metric/metric.service';
 import { PromiseService } from '../promise/promise.service';
 import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod, HttpTimeoutMessage } from './http.enum';
-import { HttpError } from './http.error';
-import { HttpCacheSendParams, HttpCookie, HttpExceptionData, HttpModuleOptions, HttpOptions, HttpRequestOptions, HttpRequestSendParams, HttpResponse, HttpRetrySendParams, HttpSendParams, HttpTelemetrySendParams } from './http.interface';
+import { HttpFetchError } from './http.error';
+import { HttpCacheSendParams, HttpCookie, HttpError, HttpErrorResponse, HttpModuleOptions, HttpOptions, HttpRequestOptions, HttpRequestSendParams, HttpResponse, HttpRetrySendParams, HttpSendParams, HttpTelemetrySendParams } from './http.interface';
 import { Span } from '@opentelemetry/sdk-trace-base';
 
 @Injectable({ scope: Scope.TRANSIENT })
@@ -130,7 +130,11 @@ export class HttpService {
       },
     };
 
-    return { spanOptions };
+    return {
+      start: Date.now(),
+      cacheStatus: CacheStatus.DISABLED,
+      spanOptions,
+    };
   }
 
   /**
@@ -244,16 +248,17 @@ export class HttpService {
       response = await this.sendRequestSpanHandler(params);
     }
     catch (e) {
-      const attemptResponse = e.response?.outboundResponse;
+      const error = e as HttpError
+      const attemptResponse = error.response?.outboundResponse;
       const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
       const attemptsLeft = retryLimit - attempt;
 
-      if (!attemptsLeft || !isRetryableCode || e.message === HttpTimeoutMessage.INBOUND) {
-        throw e;
+      if (!attemptsLeft || !isRetryableCode || error.message === HttpTimeoutMessage.INBOUND) {
+        throw error;
       }
 
       const delay = retryDelay(attempt);
-      this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, e as Error);
+      this.logService?.warning({ attempt, retryLimit, retryDelay: delay }, error as Error);
 
       await setTimeout(delay);
     }
@@ -296,8 +301,9 @@ export class HttpService {
       params.response = await this.sendRequestCacheHandler(params);
     }
     catch (e) {
-      params.response = e.response;
-      params.error = e;
+      const error = e as HttpFetchError
+      params.response = error.response;
+      params.error = error;
 
       if (!params.ignoreExceptions) {
         this.handleRequestException(params);
@@ -349,7 +355,7 @@ export class HttpService {
     const { status, data } = response;
 
     if (status >= HttpStatus.BAD_REQUEST) {
-      throw new HttpError(`Request failed with status code ${status}`, response);
+      throw new HttpFetchError(`Request failed with status code ${status}`, response);
     }
 
     if (ttl) {
@@ -509,7 +515,7 @@ export class HttpService {
    */
   private handleRequestException(params: HttpSendParams): void {
     const { proxyExceptions, request, response, error } = params;
-    const { message: errorMessage, cause: errorCause } = error;
+    const { message: errorMessage, cause: errorCause } = error || { };
     const { method, url, timeout } = request;
 
     const code: HttpStatus = proxyExceptions && response?.status
@@ -518,13 +524,13 @@ export class HttpService {
 
     const cause = errorCause as Error;
 
-    const message = errorMessage.startsWith(HttpTimeoutMessage.OUTBOUND)
+    const message = errorMessage?.startsWith(HttpTimeoutMessage.OUTBOUND)
       ? `Request timed out after ${timeout} ms`
       : errorCause
         ? cause.message
         : errorMessage;
 
-    const exceptionData: HttpExceptionData = {
+    const exceptionData: HttpErrorResponse = {
       message: `⯆ ${method} ${url} | ${message}`,
       proxyExceptions,
       outboundRequest: request,

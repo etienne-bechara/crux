@@ -6,7 +6,7 @@ import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
 import { HttpMethod } from '../http/http.enum';
-import { HttpExceptionData, HttpOptions } from '../http/http.interface';
+import { HttpErrorResponse, HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
@@ -177,7 +177,7 @@ export interface AppException {
   details: AppExceptionDetails;
 }
 
-export interface AppExceptionDetails extends Partial<HttpExceptionData>, Record<string, any> {
+export interface AppExceptionDetails extends Partial<HttpErrorResponse>, Record<string, any> {
   constraints?: string[];
 }
 

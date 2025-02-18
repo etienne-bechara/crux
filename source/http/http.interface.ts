@@ -4,7 +4,7 @@ import { StringifyOptions } from 'query-string';
 
 import { CacheStatus } from '../cache/cache.enum';
 import { HttpMethod, HttpRedirect } from './http.enum';
-import { HttpError } from './http.error';
+import { HttpFetchError } from './http.error';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
@@ -121,7 +121,7 @@ export interface HttpSendParams {
   cache: HttpCacheSendParams;
   span?: Span;
   response?: HttpResponse<any>;
-  error?: HttpError;
+  error?: HttpFetchError;
 }
 
 export interface HttpCookie {
@@ -137,7 +137,12 @@ export interface HttpResponse<T = unknown> extends Response {
   data?: T;
 }
 
-export interface HttpExceptionData {
+export interface HttpError extends Error {
+  status: number;
+  response: HttpErrorResponse
+}
+
+export interface HttpErrorResponse {
   message: string;
   proxyExceptions?: boolean;
   outboundRequest: HttpRequestSendParams;
