@@ -44,5 +44,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pnpm i -g semantic-release@24 @semantic-release/changelog@6 @semantic-release/git@10
+          npm i -g semantic-release@24 @semantic-release/changelog@6 @semantic-release/git@10
           semantic-release
