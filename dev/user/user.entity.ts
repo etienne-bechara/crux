@@ -7,7 +7,7 @@ import { UserRepository } from './user.repository';
 export class User extends OrmUuidTimestampEntity {
 
   @Property()
-  public email: string;
+  public email!: string;
 
   @Property({ nullable: true })
   public name?: string;

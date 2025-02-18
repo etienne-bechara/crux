@@ -4,33 +4,33 @@ import { ZipState } from './zip.enum';
 export class Zip {
 
   @IsNumberString()
-  public cep: string;
+  public cep!: string;
 
   @IsString()
-  public logradouro: string;
+  public logradouro!: string;
 
   @IsString()
-  public complemento: string;
+  public complemento!: string;
 
   @IsString()
-  public bairro: string;
+  public bairro!: string;
 
   @IsString()
-  public localidade: string;
+  public localidade!: string;
 
   @IsEnum(ZipState)
-  public uf: string;
+  public uf!: string;
 
   @IsNumberString()
-  public ibge: string;
+  public ibge!: string;
 
   @IsNumberString()
-  public gia: string;
+  public gia!: string;
 
   @IsNumberString()
-  public ddd: string;
+  public ddd!: string;
 
   @IsNumberString()
-  public siafi: string;
+  public siafi!: string;
 
 }

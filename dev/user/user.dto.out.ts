@@ -4,7 +4,7 @@ import { IsBoolean, IsEmail, IsInt, IsNumberString, IsObject, IsOptional, IsStri
 export class UserDto extends OrmUuidTimestampDto {
 
   @IsEmail()
-  public email: string;
+  public email!: string;
 
   @IsOptional()
   @IsString() @MinLength(3)

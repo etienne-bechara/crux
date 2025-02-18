@@ -73,7 +73,7 @@ export class RandomService {
       }
 
       case dice > 55: {
-        const propertyAccess = 'x'['y']['z'];
+        const propertyAccess = 'x'['y' as any]['z' as any];
         return propertyAccess;
       }
 
