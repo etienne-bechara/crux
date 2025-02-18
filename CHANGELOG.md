@@ -1,3 +1,57 @@
+# [6.0.0-alpha.1](https://github.com/etienne-bechara/crux/compare/v5.9.11...v6.0.0-alpha.1) (2025-02-18)
+
+
+### Bug Fixes
+
+* **app:** adjust app domain to strict ([011d29f](https://github.com/etienne-bechara/crux/commit/011d29ff229ab2040d417ba7f9af504932995f49))
+* **cache:** cache domain strict adjs ([daea75e](https://github.com/etienne-bechara/crux/commit/daea75e8772f675e3c249f0dd648d0bd77f033db))
+* **config:** make config domain strict ([64fa140](https://github.com/etienne-bechara/crux/commit/64fa140784e80c4b954a5372856d68c797cd808f))
+* **context:** make context domain strict ([71c5296](https://github.com/etienne-bechara/crux/commit/71c52968781adf73bafe3503f82cad65c2e25bb1))
+* **dev:** add orm and telemetry to dev application ([75c18d1](https://github.com/etienne-bechara/crux/commit/75c18d104ee31e36c2846bce5ab80ff2411b6556))
+* **dev:** strict support ([eedc153](https://github.com/etienne-bechara/crux/commit/eedc153e4cee17a97459085600d5b0059262d9da))
+* **doc:** make doc domain strict ([75f9e3e](https://github.com/etienne-bechara/crux/commit/75f9e3e9b0ace615271766049e69206c256b27ea))
+* **eslint:** remove ([5545c0b](https://github.com/etienne-bechara/crux/commit/5545c0b45a6217e8f76b38c8309c0409488aa738))
+* **http:** strict ([8372588](https://github.com/etienne-bechara/crux/commit/8372588129336428f35a385d9d64f73d4b8c0146))
+* **http:** strict support ([57f8adb](https://github.com/etienne-bechara/crux/commit/57f8adba1420fe6c724f0e8926097dc7720b55ee))
+* **http:** wip strict ([c67f521](https://github.com/etienne-bechara/crux/commit/c67f5214634845d9ed4ef97dfca3289a10aa0159))
+* **jest:** test config ([933b004](https://github.com/etienne-bechara/crux/commit/933b0041dba65e3e6e0d569226182fab7104dbc2))
+* **metric:** make strict ([4e764fd](https://github.com/etienne-bechara/crux/commit/4e764fd5843e46da94970b462045c724059d025d))
+* **orm:** ensure entity manager is cleared after async context is finished ([b6d3d2b](https://github.com/etienne-bechara/crux/commit/b6d3d2b6f5d8ea34f31742954ae793540f81c36e))
+* **orm:** strict ([5d5ce59](https://github.com/etienne-bechara/crux/commit/5d5ce596d808241b7b18b227f2f65a93815334a3))
+* **orm:** strict changes ([be4cce5](https://github.com/etienne-bechara/crux/commit/be4cce5083ca4b69b25623c12b73cf94a59f3423))
+* **orm:** wip strict fix ([7d1e05a](https://github.com/etienne-bechara/crux/commit/7d1e05a5caf57454c5e820c34084865f96d75dda))
+* **orm:** wip strict fixes ([3c7ea09](https://github.com/etienne-bechara/crux/commit/3c7ea093f3418020a77a829f782aee34e7d4c159))
+* **promise:** make strict ([8fdec14](https://github.com/etienne-bechara/crux/commit/8fdec14a6fd05d57926930f7cc7076e6cbe1abdc))
+* **redis:** make strict ([113101d](https://github.com/etienne-bechara/crux/commit/113101db01e229cb48d85546b5ed08511722fb82))
+* remove cycle dep ([586643b](https://github.com/etienne-bechara/crux/commit/586643b655909c82786cd17dca4511c318ce1504))
+* **schema:** make strict ([3ca7b52](https://github.com/etienne-bechara/crux/commit/3ca7b5255c637e434194bf806649244d93c96771))
+* strict adjs ([f117d18](https://github.com/etienne-bechara/crux/commit/f117d1817ae595643248ce6d82b102fb13ae60fc))
+* strict errors ([67c3bba](https://github.com/etienne-bechara/crux/commit/67c3bba97283c47991b872758bb325e05e9d75f6))
+* strict has no initializer error ([0ba209b](https://github.com/etienne-bechara/crux/commit/0ba209b9134865067574d6c01889dfee211501d2))
+* strict tests ([d5ebd8b](https://github.com/etienne-bechara/crux/commit/d5ebd8bb327091cc4cafffeca4a96a13af2b2263))
+* test script ([4240b34](https://github.com/etienne-bechara/crux/commit/4240b34e27cd39de13779abf5d02fd4f440686bc))
+* **test:** ajust tests to strict ([72f5387](https://github.com/etienne-bechara/crux/commit/72f5387b4fd482b07fbf822e701054f17aefbb7c))
+* **trace:** make strict ([b761d50](https://github.com/etienne-bechara/crux/commit/b761d50c1bf4330acd27239481572592c333a256))
+* **transform:** make domain strict ([5011eb0](https://github.com/etienne-bechara/crux/commit/5011eb0ad3d49e50f665a248f5a4d8e7d45dd852))
+* **validate:** make domain strict ([0d74e33](https://github.com/etienne-bechara/crux/commit/0d74e331dc24b380792713cdfaaedf7e1f3097b1))
+
+
+### chore
+
+* remove unnecessary dev deps ([bb9c7c1](https://github.com/etienne-bechara/crux/commit/bb9c7c11e38fb22039abf884459a8222edc860f3))
+
+
+### Features
+
+* add tsconfig strict ([b85495e](https://github.com/etienne-bechara/crux/commit/b85495e33a9a0559339aae2157a386ee18666b46))
+* bump dependencies ([ddbaf17](https://github.com/etienne-bechara/crux/commit/ddbaf17df5dcc09e7a905befd8ab3b3ae5bfec2b))
+* **docs:** switch redoc to scalar ([4829ed5](https://github.com/etienne-bechara/crux/commit/4829ed51b3a644335a02163e2a39933aac919452))
+
+
+### BREAKING CHANGES
+
+* remove bloat to make project easier to maintain
+
 ## [5.9.11](https://github.com/etienne-bechara/crux/compare/v5.9.10...v5.9.11) (2025-01-09)
 
 
