@@ -89,15 +89,16 @@ export interface HttpRequestOptions extends Omit<Partial<HttpOptions>, | 'retryM
   form?: Record<string, any>;
 }
 
-export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'replacements' | 'headers' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'replacements' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
   method: HttpMethod;
   url: string;
   scheme: string;
   host: string;
   path: string;
+  headers: Record<string, string>;
 }
 
-export interface HttpRetrySendParams extends Pick<Partial<HttpOptions>, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
+export interface HttpRetrySendParams extends Pick<HttpOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
   attempt: number;
 }
 
@@ -105,8 +106,8 @@ export type HttpCacheSendParams = Pick<Partial<HttpOptions>, 'cacheTtl' | 'cache
 
 export interface HttpTelemetrySendParams {
   spanOptions: SpanOptions;
-  start?: number;
-  cacheStatus?: CacheStatus;
+  start: number;
+  cacheStatus: CacheStatus;
 }
 
 export interface HttpSendParams {
@@ -126,9 +127,9 @@ export interface HttpSendParams {
 export interface HttpCookie {
   name: string;
   value: string;
-  domain: string;
-  path: string;
-  expires: Date;
+  domain?: string;
+  path?: string;
+  expires?: Date;
 }
 
 export interface HttpResponse<T = unknown> extends Response {
@@ -138,10 +139,10 @@ export interface HttpResponse<T = unknown> extends Response {
 
 export interface HttpExceptionData {
   message: string;
-  proxyExceptions: boolean;
+  proxyExceptions?: boolean;
   outboundRequest: HttpRequestSendParams;
-  outboundResponse: {
-    code: HttpStatus;
+  outboundResponse?: {
+    code?: HttpStatus;
     headers: Record<string, string>;
     body: unknown;
   };

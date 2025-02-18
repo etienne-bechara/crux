@@ -1,5 +1,5 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import { propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
+import { Context, propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
 import qs from 'query-string';
 import { setTimeout } from 'timers/promises';
 
@@ -16,6 +16,7 @@ import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod, HttpTimeoutMessage } from './http.enum';
 import { HttpError } from './http.error';
 import { HttpCacheSendParams, HttpCookie, HttpExceptionData, HttpModuleOptions, HttpOptions, HttpRequestOptions, HttpRequestSendParams, HttpResponse, HttpRetrySendParams, HttpSendParams, HttpTelemetrySendParams } from './http.interface';
+import { Span } from '@opentelemetry/sdk-trace-base';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
@@ -51,7 +52,7 @@ export class HttpService {
    * @param url
    * @param replacements
    */
-  private replaceUrlPlaceholders(url: string, replacements: Record<string, string | number>): string {
+  private replaceUrlPlaceholders(url: string, replacements?: Record<string, string | number>): string {
     let replacedUrl = url;
 
     if (replacements) {
@@ -227,10 +228,10 @@ export class HttpService {
    * the loop handler may try again.
    * @param params
    */
-  private async sendRequestRetryHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
+  private async sendRequestRetryHandler<T>(params: HttpSendParams): Promise<HttpResponse<T> | undefined> {
     const { retry } = params;
     const { retryLimit, retryCodes, retryDelay } = retry;
-    let response: HttpResponse<T>;
+    let response: HttpResponse<T> | undefined;
 
     retry.attempt++;
 
@@ -273,7 +274,7 @@ export class HttpService {
     const spanName = `Http | ⯅ ${method} ${url}`;
 
     return this.traceService
-      ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span) => {
+      ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span: Span) => {
         return this.sendRequestClientHandler({ ...params, span });
       })
       : await this.sendRequestClientHandler(params);
@@ -285,7 +286,7 @@ export class HttpService {
    * the client exception handler.
    * @param params
    */
-  private async sendRequestClientHandler<T>(params: HttpSendParams): Promise<HttpResponse<T>> {
+  private async sendRequestClientHandler<T>(params: HttpSendParams): Promise<HttpResponse<T> | undefined> {
     params.telemetry.start = Date.now();
 
     this.injectPropagationHeaders(params);
@@ -323,18 +324,18 @@ export class HttpService {
     const cacheParams = { traffic, host, method, path, query, timeout: cacheTimeout };
     telemetry.cacheStatus = CacheStatus.DISABLED;
 
-    let response: HttpResponse<T>;
+    let response: HttpResponse<T> | undefined;
 
     if (ttl) {
       try {
-        response = await this.cacheService.getCache(cacheParams);
+        response = await this.cacheService?.getCache(cacheParams);
       }
       catch (e) {
-        this.logService.warning('Failed to acquire outbound cached data', e as Error);
+        this.logService?.warning('Failed to acquire outbound cached data', e as Error);
       }
 
       if (response) {
-        this.logService.debug('Resolving outbound request with cached data');
+        this.logService?.debug('Resolving outbound request with cached data');
         telemetry.cacheStatus = CacheStatus.HIT;
         return response;
       }
@@ -353,7 +354,7 @@ export class HttpService {
 
     if (ttl) {
       telemetry.cacheStatus = CacheStatus.MISS;
-      this.cacheService.setCache({ status, data }, { ...cacheParams, ttl });
+      this.cacheService?.setCache({ status, data }, { ...cacheParams, ttl });
     }
 
     return response;
@@ -370,7 +371,7 @@ export class HttpService {
     const { timeout, dispatcher, username, password, redirect, method, url, replacements } = request;
     const { headers, query, queryOptions, body, json, form } = request;
 
-    const finalQuery = qs.stringify(query, queryOptions);
+    const finalQuery = query ? qs.stringify(query, queryOptions) : undefined;
     const finalUrl = this.replaceUrlPlaceholders(url, replacements);
     let finalBody: any;
 
@@ -412,9 +413,8 @@ export class HttpService {
     const { request, span } = params;
 
     if (span && !this.httpModuleOptions.disablePropagation) {
-      request.headers ??= { };
-      const ctx = this.traceService.getContextBySpan(span);
-      propagation.inject(ctx, request.headers);
+      const ctx = this.traceService?.getContextBySpan(span);
+      propagation.inject(ctx as Context, request.headers);
     }
   }
 
@@ -438,7 +438,7 @@ export class HttpService {
    */
   private parseCookies(response: Response): HttpCookie[] {
     const { headers } = response;
-    const setCookie: string = headers.get('set-cookie');
+    const setCookie = headers.get('set-cookie');
     const cookies: HttpCookie[] = [ ];
     if (!setCookie) return cookies;
 
@@ -455,9 +455,9 @@ export class HttpService {
       cookies.push({
         name: name[1],
         value: value[1],
-        path: path ? path[1] : null,
-        domain: domain ? domain[1] : null,
-        expires: expires ? new Date(expires[1]) : null,
+        path: path ? path[1] : undefined,
+        domain: domain ? domain[1] : undefined,
+        expires: expires ? new Date(expires[1]) : undefined,
       });
     }
 
