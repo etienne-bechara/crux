@@ -1,5 +1,4 @@
 import { Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
-import cycle from 'cycle';
 
 import { ContextService } from '../context/context.service';
 import { LogService } from '../log/log.service';
@@ -112,7 +111,7 @@ export class AppFilter implements ExceptionFilter {
       }
     }
 
-    return cycle.decycle(details);
+    return this.logService.decycle(details);
   }
 
   /**

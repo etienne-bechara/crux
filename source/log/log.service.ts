@@ -1,6 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { context, trace } from '@opentelemetry/api';
-import cycle from 'cycle';
 
 import { AppConfig } from '../app/app.config';
 import { ContextService } from '../context/context.service';
@@ -189,7 +188,7 @@ export class LogService {
     }
 
     if (!decycled) {
-      object = cycle.decycle(object);
+      object = this.decycle(object);
     }
 
     if (isRootArray) {
@@ -230,6 +229,66 @@ export class LogService {
     }
 
     return clone;
+  }
+
+  /**
+   * Produces a deep copy of the given `object` in which any cycles
+   * (duplicate references) are replaced with {$ref: PATH} references.
+   * @param object
+   */
+  public decycle(object: any): any {
+    const objects: any[] = [];
+    const paths: string[] = [];
+    return this.dereference(objects, paths, object, '$');
+  }
+
+  /**
+   * Recursively dereferences an object, replacing cyclical references
+   * with `{$ref: ...}` stubs.
+   */
+  private dereference(objects: any[], paths: string[], value: any, path: string): any {
+    // Check if `value` is a non-null object and not one of the special built-ins
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      !(value instanceof Boolean) &&
+      !(value instanceof Date) &&
+      !(value instanceof Number) &&
+      !(value instanceof RegExp) &&
+      !(value instanceof String)
+    ) {
+      // If we've seen this exact object before, return a {$ref: <path>} object
+      for (let i = 0; i < objects.length; i++) {
+        if (objects[i] === value) {
+          return { $ref: paths[i] };
+        }
+      }
+
+      // Record this object, along with its path
+      objects.push(value);
+      paths.push(path);
+
+      // If it's an array, recurse into its items
+      if (Object.prototype.toString.call(value) === '[object Array]') {
+        const resultArray: any[] = [];
+        for (let i = 0; i < value.length; i++) {
+          resultArray[i] = this.dereference(objects, paths,value[i], `${path}[${i}]`);
+        }
+        return resultArray;
+      } else {
+        // Otherwise, it's a "plain" object, recurse into its properties
+        const resultObj: Record<string, any> = {};
+        for (const name in value) {
+          if (Object.prototype.hasOwnProperty.call(value, name)) {
+            resultObj[name] = this.dereference(objects, paths,value[name], `${path}[${JSON.stringify(name)}]`);
+          }
+        }
+        return resultObj;
+      }
+    }
+
+    // For primitive values or special built-ins, just return as-is
+    return value;
   }
 
   /**
