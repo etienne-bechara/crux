@@ -48,8 +48,12 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       await Promise.all(
         comboArray.map(async ({ entity, data }) => {
           for (const key in entity as any) {
-            if (data?.[key] && entity[key]?.isInitialized && entity[key]?.toArray && !entity[key].isInitialized()) {
-              await entity[key].init();
+            const dataKey = (data as Record<string, any>)?.[key]
+            const entityKey = (entity as Record<string, any>)?.[key]
+            const isUninitializedArray = entityKey?.isInitialized && entityKey?.toArray && !entityKey.isInitialized()
+
+            if (dataKey && isUninitializedArray) {
+              await entityKey.init();
             }
           }
 
