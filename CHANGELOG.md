@@ -1,3 +1,10 @@
+## [5.9.13](https://github.com/etienne-bechara/crux/compare/v5.9.12...v5.9.13) (2025-02-20)
+
+
+### Bug Fixes
+
+* **metric:** fix content type ([3301f17](https://github.com/etienne-bechara/crux/commit/3301f175d67108012af32052d01bd9d579e95627))
+
 ## [5.9.12](https://github.com/etienne-bechara/crux/compare/v5.9.11...v5.9.12) (2025-01-27)
 
 
