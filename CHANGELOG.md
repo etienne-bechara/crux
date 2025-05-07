@@ -1,3 +1,10 @@
+# [6.0.0-alpha.2](https://github.com/etienne-bechara/crux/compare/v6.0.0-alpha.1...v6.0.0-alpha.2) (2025-05-07)
+
+
+### Bug Fixes
+
+* **metric:** fix content type ([3301f17](https://github.com/etienne-bechara/crux/commit/3301f175d67108012af32052d01bd9d579e95627))
+
 # [6.0.0-alpha.1](https://github.com/etienne-bechara/crux/compare/v5.9.11...v6.0.0-alpha.1) (2025-02-18)
 
 
