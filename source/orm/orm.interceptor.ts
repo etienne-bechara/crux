@@ -26,7 +26,7 @@ export class OrmInterceptor implements NestInterceptor {
     const store = this.contextService.getStore();
     const entityManager = this.mikroOrm.em.fork({ clear: true, useContext: true });
 
-    store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+    store?.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
 
     return next
       .handle()
@@ -52,7 +52,7 @@ export class OrmInterceptor implements NestInterceptor {
       data = data.map((d) => d?.toJSON ? d.toJSON() : d);
     }
     else if (data.records && Array.isArray(data.records)) {
-      data.records = data.records.map((d) => d?.toJSON ? d.toJSON() : d);
+      data.records = data.records.map((d: any) => d?.toJSON ? d.toJSON() : d);
     }
     else if (data.toJSON) {
       data = data.toJSON();

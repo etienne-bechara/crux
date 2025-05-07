@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { EntityData, EntityManager, EntityName, RequiredEntityData } from '@mikro-orm/core';
+import { EntityData, EntityManager, EntityName, FromEntityType, RequiredEntityData } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 
 import { OrmException, OrmSpanPrefix } from '../orm.enum';
@@ -48,13 +48,17 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       await Promise.all(
         comboArray.map(async ({ entity, data }) => {
           for (const key in entity as any) {
-            if (data?.[key] && entity[key]?.isInitialized && entity[key]?.toArray && !entity[key].isInitialized()) {
-              await entity[key].init();
+            const dataKey = (data as Record<string, any>)?.[key]
+            const entityKey = (entity as Record<string, any>)?.[key]
+            const isUninitializedArray = entityKey?.isInitialized && entityKey?.toArray && !entityKey.isInitialized()
+
+            if (dataKey && isUninitializedArray) {
+              await entityKey.init();
             }
           }
 
-          const assignedEntity = this.entityManager.assign(entity, data);
-          assignedEntities.push(assignedEntity);
+          const assignedEntity = this.entityManager.assign(entity, data as EntityData<FromEntityType<Entity>, false>);
+          assignedEntities.push(assignedEntity as Entity);
         }),
       );
 
@@ -123,7 +127,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       let createdEntities: Entity[];
 
       // Create clauses to match existing entities
-      const clauses = dataArray.map((data) => {
+      const clauses = dataArray.map((data: Record<string, any>) => {
         const clause: Record<keyof Entity, any> = { } as any;
 
         for (const key of uniqueKey) {
@@ -136,7 +140,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
 
       // Find matching data, ensure to populate array data that are 1:m or m:n relations
       const populate = Array.isArray(options.populate) ? options.populate : [ ];
-      const sampleData = dataArray[0];
+      const sampleData: Record<string, any> = dataArray[0];
 
       for (const key in sampleData) {
         if (Array.isArray(sampleData[key]) && this.entityManager.canPopulate(this.entityName, key)) {
@@ -153,19 +157,17 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
           // Iterate each clause of unique key definition
           for (const key in clauses[i]) {
             // Check if matching a nested entity
-            let isNestedEntity = false;
-            let matchingNestedPk: string;
+            let matchingNestedPk: string | undefined;
 
             for (const nestedPk of nestedPks) {
               if (e[key]?.[nestedPk] || e[key]?.[nestedPk] === 0) {
                 matchingNestedPk = nestedPk;
-                isNestedEntity = true;
                 break;
               }
             }
 
             // Match nested entities or direct values
-            if (isNestedEntity) {
+            if (matchingNestedPk) {
               if (clauses[i][key]?.[matchingNestedPk] || clauses[i][key]?.[matchingNestedPk] === 0) {
                 if (e[key][matchingNestedPk] !== clauses[i][key][matchingNestedPk]) return false;
               }

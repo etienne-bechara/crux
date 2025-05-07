@@ -6,10 +6,10 @@ import { MetricLabel, MetricMessage, MetricSample, MetricTimeseries } from './me
 export class MetricLabelProto extends Message<MetricLabelProto> implements MetricLabel {
 
   @Field.d(1, 'string', 'required')
-  public name: string;
+  public name!: string;
 
   @Field.d(2, 'string', 'required')
-  public value: string;
+  public value!: string;
 
 }
 
@@ -17,10 +17,10 @@ export class MetricLabelProto extends Message<MetricLabelProto> implements Metri
 export class MetricSampleProto extends Message<MetricSampleProto> implements MetricSample {
 
   @Field.d(1, 'double', 'required')
-  public value: number;
+  public value!: number;
 
   @Field.d(2, 'int64', 'required')
-  public timestamp: number;
+  public timestamp!: number;
 
 }
 
@@ -28,10 +28,10 @@ export class MetricSampleProto extends Message<MetricSampleProto> implements Met
 export class MetricTimeseriesProto extends Message<MetricTimeseriesProto> implements MetricTimeseries {
 
   @Field.d(1, MetricLabelProto, 'repeated')
-  public labels: MetricLabel[];
+  public labels!: MetricLabel[];
 
   @Field.d(2, MetricSampleProto, 'repeated')
-  public samples: MetricSample[];
+  public samples!: MetricSample[];
 
 }
 
@@ -39,6 +39,6 @@ export class MetricTimeseriesProto extends Message<MetricTimeseriesProto> implem
 export class MetricMessageProto extends Message<MetricMessageProto> implements MetricMessage {
 
   @Field.d(1, MetricTimeseriesProto, 'repeated')
-  public timeseries: MetricTimeseries[];
+  public timeseries!: MetricTimeseries[];
 
 }

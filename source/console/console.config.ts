@@ -14,6 +14,6 @@ export class ConsoleConfig {
   @InjectConfig()
   @IsOptional()
   @IsEnum(LogSeverity)
-  public readonly CONSOLE_SEVERITY: LogSeverity;
+  public readonly CONSOLE_SEVERITY?: LogSeverity;
 
 }

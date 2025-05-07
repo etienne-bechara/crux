@@ -1,6 +1,6 @@
 import { AppEnvironment } from '../app/app.enum';
 import { Config, InjectConfig } from '../config/config.decorator';
-import { IsBase64, IsEnum, IsIn, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
+import { IsBase64, IsEnum, IsNumberString, IsOptional, IsString } from '../validate/validate.decorator';
 
 @Config()
 export class OrmConfig {
@@ -8,51 +8,46 @@ export class OrmConfig {
   @IsOptional()
   @InjectConfig()
   @IsEnum(AppEnvironment)
-  public readonly NODE_ENV: AppEnvironment;
-
-  @IsOptional()
-  @InjectConfig()
-  @IsIn([ 'mongo', 'mysql', 'mariadb', 'postgresql', 'sqlite' ])
-  public readonly ORM_TYPE: 'mongo' | 'mysql' | 'mariadb' | 'postgresql' | 'sqlite';
+  public readonly NODE_ENV?: AppEnvironment;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_HOST: string;
+  public readonly ORM_HOST?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsNumberString()
-  public readonly ORM_PORT: number;
+  public readonly ORM_PORT?: number;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_USERNAME: string;
+  public readonly ORM_USERNAME?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_PASSWORD: string;
+  public readonly ORM_PASSWORD?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsString()
-  public readonly ORM_DATABASE: string;
+  public readonly ORM_DATABASE?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_SERVER_CA: string;
+  public readonly ORM_SERVER_CA?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_CLIENT_CERTIFICATE: string;
+  public readonly ORM_CLIENT_CERTIFICATE?: string;
 
   @IsOptional()
   @InjectConfig()
   @IsBase64()
-  public readonly ORM_CLIENT_KEY: string;
+  public readonly ORM_CLIENT_KEY?: string;
 
 }

@@ -18,9 +18,9 @@ import { MetricMessageProto } from './metric.proto';
 @Injectable()
 export class MetricService {
 
-  private register: Registry;
+  private register!: Registry;
   private metrics: Map<string, Metric<any>> = new Map();
-  private httpService: HttpService;
+  private httpService!: HttpService;
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -37,7 +37,7 @@ export class MetricService {
   /**
    * Acquires configured metric URL giving priority to environment variable.
    */
-  private buildMetricUrl(): string {
+  private buildMetricUrl(): string | undefined {
     const { metrics } = this.appConfig.APP_OPTIONS || { };
     const { url } = metrics;
     return this.metricConfig.METRIC_URL || url;

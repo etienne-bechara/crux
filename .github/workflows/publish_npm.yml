@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm i -g pnpm
+          npm i -g pnpm@9
           pnpm i --frozen-lockfile
 
       - name: Build Distributable
@@ -43,4 +43,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN  }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm release
+        run: |
+          npm i -g semantic-release@24 @semantic-release/changelog@6 @semantic-release/git@10
+          semantic-release

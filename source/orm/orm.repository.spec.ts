@@ -1,4 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
+import { MySqlDriver } from '@mikro-orm/mysql';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { setTimeout } from 'timers/promises';
 
@@ -27,7 +29,7 @@ it('should export orm repository tests', () => {
 });
 
 // eslint-disable-next-line jest/no-export, @typescript-eslint/naming-convention
-export const OrmRepositorySpec = ({ type, port, user }): void => {
+export const OrmRepositorySpec = ({ type, port, user }: { type: 'mysql' | 'postgresql', port: number, user: string }): void => {
   describe(`OrmRepository - ${type}`, () => {
     ContextStorage.enterWith(new Map());
 
@@ -53,7 +55,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
             disableEntityScan: true,
             entities: [ Address, Metadata, Order, Product, Relation, User ],
             useFactory: () => ({
-              type: type as 'mysql' | 'postgresql',
+              driver: type === 'mysql' ? MySqlDriver : PostgreSqlDriver,
               host: 'localhost',
               port,
               dbName: 'test',
@@ -78,7 +80,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
     beforeEach(() => {
       const mikroOrm = app.get(MikroORM);
       const entityManager = mikroOrm.em.fork({ clear: true, useContext: true });
-      ContextStorage.getStore().set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+      ContextStorage.getStore()?.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
     });
 
     afterAll(async () => {
@@ -207,7 +209,7 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         let error: any;
 
         try {
-          await userRepository.createOne({ name: 'MISSING_AGE' });
+          await userRepository.createOne({ name: 'MISSING_AGE' } as any);
         }
         catch (e) {
           error = e;
@@ -298,10 +300,10 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
         const [ user2 ] = await userRepository.readBy({ name: 'ONE_TO_ONE_NESTED_2' }, { populate });
 
         expect(user1.age).toBe(30);
-        expect(user1.address.zip).toBe('11111111');
+        expect(user1.address?.zip).toBe('11111111');
 
         expect(user2.age).toBe(40);
-        expect(user2.address.zip).toBe('22222222');
+        expect(user2.address?.zip).toBe('22222222');
       });
 
       it('should create entities with nested one-to-many relations', async () => {
@@ -417,8 +419,8 @@ export const OrmRepositorySpec = ({ type, port, user }): void => {
 
         expect(order).toBe(OrmQueryOrder.DESC);
         expect(sort).toBe('address.zip');
-        expect(records[0].address.zip).toBe('22222222');
-        expect(records[2].address.zip).toBe('00000000');
+        expect(records[0].address?.zip).toBe('22222222');
+        expect(records[2].address?.zip).toBe('00000000');
       });
 
       it('should read entities respecting limit', async () => {

@@ -2,7 +2,7 @@ import { LogSeverity } from '../log/log.enum';
 
 export interface LokiOptions {
   /** Loki severity to enable publishing logs. Can be overridden by env `LOKI_SEVERITY`. Default: `HTTP`. */
-  severity?: LogSeverity;
+  severity: LogSeverity;
   /** Loki API URL to publish logs. Can be overridden by env `LOKI_URL`. */
   url?: string;
   /** Loki username to publish logs. Can be overridden by env `LOKI_USERNAME`. */
@@ -10,9 +10,9 @@ export interface LokiOptions {
   /** Loki password to publish logs. Can be overridden by env `LOKI_PASSWORD`. */
   password?: string;
   /** Loki API push interval in milliseconds. Default: 5s. */
-  pushInterval?: number;
+  pushInterval: number;
   /** Loki maximum batch size, will trigger a premature push if necessary. Default: 1000. */
-  batchSize?: number;
+  batchSize: number;
 }
 
 export interface LokiStream {

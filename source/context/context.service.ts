@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ValidationPipeOptions } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException, ValidationPipeOptions } from '@nestjs/common';
 import { Span } from '@opentelemetry/api';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
@@ -13,7 +13,7 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Get local store for current context.
    */
-  public getStore(): Map<string, any> {
+  public getStore(): Map<string, any> | undefined {
     return ContextStorage.getStore();
   }
 
@@ -71,7 +71,7 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestMetadata(): Metadata {
     const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA);
-    return this.validateObjectLength({ ...metadata }) as Metadata;
+    return this.validateObjectLength({ ...metadata } as Record<string, any>) as Metadata;
   }
 
   /**
@@ -127,14 +127,14 @@ export class ContextService<Metadata = Record<string, any>> {
    * if not return as `undefined`.
    * @param obj
    */
-  private validateObjectLength(obj: Record<string, any>): Record<string, any> {
+  private validateObjectLength(obj: Record<string, any>): Record<string, any> | undefined {
     return obj && Object.keys(obj).length > 0 ? obj : undefined;
   }
 
   /**
    * Acquire request path replacement params.
    */
-  public getRequestParams(): Record<string, any> {
+  public getRequestParams(): Record<string, any> | undefined {
     const req = this.getRequest();
 
     if (req?.params) {
@@ -147,7 +147,7 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Acquire request query params.
    */
-  public getRequestQuery(): Record<string, any> {
+  public getRequestQuery(): Record<string, any> | undefined {
     return this.validateObjectLength(this.getRequest()?.query as Record<string, any>);
   }
 
@@ -155,7 +155,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Acquire request body.
    */
   public getRequestBody(): any {
-    return this.validateObjectLength(this.getRequest()?.body as unknown);
+    return this.validateObjectLength(this.getRequest()?.body as Record<string, any>);
   }
 
   /**
@@ -169,7 +169,7 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Acquire all request headers.
    */
-  public getRequestHeaders(): Record<string, any> {
+  public getRequestHeaders(): Record<string, any> | undefined {
     return this.validateObjectLength(this.getRequest()?.headers as Record<string, any>);
   }
 
@@ -186,15 +186,13 @@ export class ContextService<Metadata = Record<string, any>> {
    */
   public getRequestDuration(): number {
     const req = this.getRequest();
-    if (!req) return;
-
     return (Date.now() - req.time) / 1000;
   }
 
   /**
    * Acquire authorization header and decode its payload if applicable.
    */
-  public getRequestJwtPayload(): ContextJwtPayload {
+  public getRequestJwtPayload(): ContextJwtPayload | undefined{
     const token: string = this.getRequestHeader('authorization');
     return this.decodeJwtPayload(token);
   }
@@ -203,7 +201,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Decodes and returns target token payload.
    * @param token
    */
-  private decodeJwtPayload(token: string): ContextJwtPayload {
+  private decodeJwtPayload(token: string): ContextJwtPayload | undefined{
     const payload: string = token?.split('.')?.[1];
     if (!payload) return;
 

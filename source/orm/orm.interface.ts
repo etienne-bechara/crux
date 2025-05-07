@@ -16,10 +16,10 @@ export interface OrmAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   disableEntityScan?: boolean;
   entities?: any[];
   inject?: any[];
-  useFactory?: (...args: any[]) => Promise<OrmModuleOptions> | OrmModuleOptions;
+  useFactory: (...args: any[]) => Promise<OrmModuleOptions> | OrmModuleOptions;
 }
 
-export interface OrmModuleOptions extends MikroOrmModuleOptions {
+export interface OrmModuleOptions extends Omit<MikroOrmModuleOptions, 'type'> {
   sync?: SchemaModuleOptions;
 }
 

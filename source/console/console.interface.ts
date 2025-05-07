@@ -9,7 +9,7 @@ export interface ConsoleOptions {
   /** Format JSON when printing log details at console. */
   prettyPrint?: boolean;
   /** Max length when stringifying details at console. */
-  maxLength?: number;
+  maxLength: number;
   /** Hide detailed data printed below each log message. */
   hideDetails?: boolean;
 }

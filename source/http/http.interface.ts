@@ -4,11 +4,11 @@ import { StringifyOptions } from 'query-string';
 
 import { CacheStatus } from '../cache/cache.enum';
 import { HttpMethod, HttpRedirect } from './http.enum';
-import { HttpError } from './http.error';
+import { HttpFetchError } from './http.error';
 
 export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
-  useFactory?: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
+  useFactory: (...args: any[]) => Promise<HttpModuleOptions> | HttpModuleOptions;
 }
 
 /**
@@ -16,23 +16,23 @@ export interface HttpAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> 
  */
 export interface HttpOptions {
   /** Request timeout in milliseconds. Default: 60s. */
-  timeout?: number;
+  timeout: number;
   /** Response parser. Default: Parse as JSON or text based on response `Content-Type`, otherwise as buffer. */
-  parser?: (res: HttpResponse) => Promise<unknown>;
+  parser: (res: HttpResponse) => Promise<unknown>;
   /** Max amount of retries. Default: 2. */
-  retryLimit?: number;
+  retryLimit: number;
   /** HTTP methods to enable retry. Default: [ 'GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE' ]. */
-  retryMethods?: HttpMethod[];
+  retryMethods: HttpMethod[];
   /** Response codes to attempt a retry. Default: [ 408, 429, 500, 502, 503, 504 ]. */
-  retryCodes?: HttpStatus[];
+  retryCodes: HttpStatus[];
   /** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
-  retryDelay?: (attempts: number) => number;
+  retryDelay: (attempts: number) => number;
   /** Time to live in milliseconds, cache is disable when zero. Default: 0. */
-  cacheTtl?: number;
+  cacheTtl: number;
   /** HTTP methods to enable cache. Default: [ 'GET', 'HEAD' ]. */
-  cacheMethods?: HttpMethod[];
+  cacheMethods: HttpMethod[];
   /** Time in milliseconds to await for cache acquisition before processing regularly. Default: 500ms. */
-  cacheTimeout?: number;
+  cacheTimeout: number;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface HttpSharedOptions {
 /**
  * HTTP options usable at module level.
  */
-export interface HttpModuleOptions extends HttpOptions, HttpSharedOptions {
+export interface HttpModuleOptions extends Partial<HttpOptions>, HttpSharedOptions {
   /** Disable logs, metrics and traces. */
   disableTelemetry?: boolean;
   /** Disable trace propagation. */
@@ -72,7 +72,7 @@ export interface HttpModuleOptions extends HttpOptions, HttpSharedOptions {
 /**
  * HTTP options usable at request level.
  */
-export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
+export interface HttpRequestOptions extends Omit<Partial<HttpOptions>, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
   /** Request method. */
   method?: HttpMethod;
   /** Object containing replacement string for path variables. */
@@ -89,29 +89,31 @@ export interface HttpRequestOptions extends Omit<HttpOptions, | 'retryMethods' |
   form?: Record<string, any>;
 }
 
-export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'method' | 'replacements' | 'headers' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'replacements' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+  method: HttpMethod;
   url: string;
   scheme: string;
   host: string;
   path: string;
+  headers: Record<string, string>;
 }
 
 export interface HttpRetrySendParams extends Pick<HttpOptions, 'retryLimit' | 'retryCodes' | 'retryDelay'> {
   attempt: number;
 }
 
-export type HttpCacheSendParams = Pick<HttpOptions, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
+export type HttpCacheSendParams = Pick<Partial<HttpOptions>, 'cacheTtl' | 'cacheMethods' | 'cacheTimeout'>;
 
 export interface HttpTelemetrySendParams {
   spanOptions: SpanOptions;
-  start?: number;
-  cacheStatus?: CacheStatus;
+  start: number;
+  cacheStatus: CacheStatus;
 }
 
 export interface HttpSendParams {
-  fullResponse: boolean;
-  ignoreExceptions: boolean;
-  proxyExceptions: boolean;
+  fullResponse?: boolean;
+  ignoreExceptions?: boolean;
+  proxyExceptions?: boolean;
   parser: (res: HttpResponse) => Promise<unknown>;
   request: HttpRequestSendParams;
   retry: HttpRetrySendParams;
@@ -119,15 +121,15 @@ export interface HttpSendParams {
   cache: HttpCacheSendParams;
   span?: Span;
   response?: HttpResponse<any>;
-  error?: HttpError;
+  error?: HttpFetchError;
 }
 
 export interface HttpCookie {
   name: string;
   value: string;
-  domain: string;
-  path: string;
-  expires: Date;
+  domain?: string;
+  path?: string;
+  expires?: Date;
 }
 
 export interface HttpResponse<T = unknown> extends Response {
@@ -135,12 +137,17 @@ export interface HttpResponse<T = unknown> extends Response {
   data?: T;
 }
 
-export interface HttpExceptionData {
+export interface HttpError extends Error {
+  status: number;
+  response: HttpErrorResponse
+}
+
+export interface HttpErrorResponse {
   message: string;
-  proxyExceptions: boolean;
+  proxyExceptions?: boolean;
   outboundRequest: HttpRequestSendParams;
-  outboundResponse: {
-    code: HttpStatus;
+  outboundResponse?: {
+    code?: HttpStatus;
     headers: Record<string, string>;
     body: unknown;
   };

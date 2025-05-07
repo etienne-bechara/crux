@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
     "lib": [ "es2023", "dom" ],
+    "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
+    "strict": true,
     "declaration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
   }
 }

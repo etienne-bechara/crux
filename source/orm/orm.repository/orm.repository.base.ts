@@ -23,7 +23,12 @@ export abstract class OrmBaseRepository<Entity extends object> {
    */
   public commit(entities?: Entity | Entity[]): Promise<void> {
     return this.runWithinSpan(OrmSpanPrefix.COMMIT, async () => {
-      await this.entityManager.persistAndFlush(entities);
+      if (entities) {
+        await this.entityManager.persistAndFlush(entities);
+      }
+      else {
+        await this.entityManager.flush();
+      }
     });
   }
 
@@ -31,7 +36,9 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * Creates a query builder instance .
    */
   public createQueryBuilder(): QueryBuilder<Entity> {
-    return this.entityManager['createQueryBuilder'](this.entityName);
+    return (this.entityManager as EntityManager & {
+      createQueryBuilder: (entityName: EntityName<Entity>) => QueryBuilder<Entity>
+    }).createQueryBuilder(this.entityName);
   }
 
   /**
@@ -63,7 +70,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
    */
   protected getValidUniqueKey(uniqueKey?: (keyof Entity)[]): (keyof Entity)[] {
     const defaultKey = this.repositoryOptions.defaultUniqueKey;
-    let validKey: (keyof Entity)[];
+    let validKey: (keyof Entity)[] | undefined;
 
     if (uniqueKey && Array.isArray(uniqueKey) && uniqueKey.length > 0) {
       validKey = uniqueKey;
@@ -108,7 +115,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
       return this.handleException({
         caller: (retries) => this.runWithinSpan(spanPrefix, operation, retries),
         retries,
-        error: e,
+        error: e as Error,
       });
     }
   }
@@ -123,7 +130,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
       const store = ContextStorage.getStore();
       const entityManager = this.entityManager.fork({ clear: true, useContext: true });
 
-      store.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
+      store?.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
       let result: T;
 
       try {

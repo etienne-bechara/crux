@@ -1,12 +1,13 @@
+import { randomUUID } from 'crypto';
 import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
-import { CacheModule, uuidV4 } from '../override';
+import { CacheModule } from '../override';
 import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
 // eslint-disable-next-line @typescript-eslint/require-await
-const mockFailure = async (c): Promise<void> => {
+const mockFailure = async (c: { quantity: number}): Promise<void> => {
   c.quantity++;
   throw new Error('error');
 };
@@ -56,7 +57,7 @@ describe('PromiseService', () => {
     it('should throw error if any resolution fails', async () => {
       const errorMessage = 'RESOLVE_LIMITED_FAILED';
       let counter = 0;
-      let err: Error;
+      let err: Error | undefined;
 
       const promise = (): Promise<void> => new Promise((r) => {
         counter++;
@@ -72,16 +73,16 @@ describe('PromiseService', () => {
         });
       }
       catch (e) {
-        err = e;
+        err = e as Error;
       }
 
-      expect(err.message).toBe(errorMessage);
+      expect(err?.message).toBe(errorMessage);
     });
   });
 
   describe('resolveDeduplicated', () => {
     it('should not duplicate underlying promise execution', async () => {
-      const dedupKey = uuidV4();
+      const dedupKey = randomUUID();
       let counter = 0;
 
       const fn = async (): Promise<number> => {
@@ -108,10 +109,10 @@ describe('PromiseService', () => {
     });
 
     it('should rerun underlying operation if parent deduplication fails', async () => {
-      const dedupKey = uuidV4();
-      const errorKey = uuidV4();
+      const dedupKey = randomUUID();
+      const errorKey = randomUUID();
       let counter = 0;
-      let errorMessage: string;
+      let errorMessage: string | undefined;
 
       const fn = async (): Promise<number> => {
         counter++;
@@ -139,7 +140,7 @@ describe('PromiseService', () => {
         await firstPromise;
       }
       catch (e) {
-        errorMessage = e.message;
+        errorMessage = (e as Error).message;
       }
 
       const second = await secondPromise;

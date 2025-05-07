@@ -1,12 +1,11 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
+import { DynamicModule, Global, INestApplication, InternalServerErrorException, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
-import handlebars from 'handlebars';
 
 import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -32,7 +31,7 @@ import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
 import { AppFilter } from './app.filter';
-import { AppOptions, AppRequest, AppResponse } from './app.interface';
+import { AppModuleOptions, AppOptions, AppRequest, AppResponse } from './app.interface';
 import { AppService } from './app.service';
 
 @Global()
@@ -58,7 +57,6 @@ export class AppModule {
    */
   public static async close(): Promise<void> {
     await this.instance.close();
-    this.instance = undefined;
   }
 
   /**
@@ -68,7 +66,7 @@ export class AppModule {
    * Skips the compile step if a pre-compiled `instance` is provided.
    * @param options
    */
-  public static async boot(options: AppOptions = { }): Promise<INestApplication> {
+  public static async boot(options: AppModuleOptions = { }): Promise<INestApplication> {
     const { app } = options;
 
     if (app) {
@@ -87,7 +85,7 @@ export class AppModule {
    * its reference without starting the adapter.
    * @param options
    */
-  public static async compile(options: AppOptions = { }): Promise<INestApplication> {
+  public static async compile(options: AppModuleOptions = { }): Promise<INestApplication> {
     this.configureOptions(options);
     await this.configureAdapter();
 
@@ -102,9 +100,10 @@ export class AppModule {
    * Merge compile options with default and persist them as configuration .
    * @param options
    */
-  private static configureOptions(options: AppOptions): void {
+  private static configureOptions(options: AppModuleOptions): void {
     const deepMergeProps: (keyof AppOptions)[] = [
       'fastify',
+      'validator',
       'cache',
       'http',
       'logs',
@@ -115,13 +114,13 @@ export class AppModule {
       'docs',
     ];
 
-    this.options = { ...APP_DEFAULT_OPTIONS, ...options };
+    this.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
 
     for (const key of deepMergeProps) {
       const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
       const providedData = options[key] as Record<string, any>;
 
-      this.options[key as string] = { ...defaultData, ...providedData };
+      (this.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
     }
 
     if (this.options.disableAll) {
@@ -143,8 +142,7 @@ export class AppModule {
    * - Add an on request hook which runs prior to all interceptors
    * - Set the global path prefix if any
    * - Enable cors if configured
-   * - Maps a local directory to serve static assets
-   * - Configures handlebars as view engine to support ReDoc.
+   * - Maps a local directory to serve static assets.
    */
   private static async configureAdapter(): Promise<void> {
     const { fastify, globalPrefix, assetsPrefix, cors } = this.options;
@@ -162,17 +160,16 @@ export class AppModule {
       return this.createRequestContext(req, res, next);
     });
 
-    this.instance.setGlobalPrefix(globalPrefix);
+    if (globalPrefix) {
+      this.instance.setGlobalPrefix(globalPrefix);
+    }
+
     this.instance.enableCors(cors);
 
-    this.instance.getHttpAdapter().useStaticAssets({
+    httpAdapter.useStaticAssets({
       // eslint-disable-next-line unicorn/prefer-module
       root: `${process.cwd()}/${assetsPrefix}`,
       prefix: `/${assetsPrefix}/`,
-    });
-
-    this.instance.getHttpAdapter().setViewEngine({
-      engine: { handlebars },
     });
   }
 
@@ -213,8 +210,8 @@ export class AppModule {
 
     ContextStorage.run(new Map(), () => {
       const store = ContextStorage.getStore();
-      store.set(ContextStorageKey.REQUEST, req);
-      store.set(ContextStorageKey.RESPONSE, res);
+      store?.set(ContextStorageKey.REQUEST, req);
+      store?.set(ContextStorageKey.RESPONSE, res);
 
       if (traceEnabled) {
         const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
@@ -226,7 +223,7 @@ export class AppModule {
             const traceId = span.spanContext().traceId;
 
             res.header('trace-id', traceId);
-            store.set(ContextStorageKey.REQUEST_SPAN, span);
+            store?.set(ContextStorageKey.REQUEST_SPAN, span);
 
             next();
           });
@@ -262,11 +259,6 @@ export class AppModule {
    * as entry point for the cascade initialization.
    */
   private static buildEntryModule(): DynamicModule {
-    this.options.controllers ??= [ ];
-    this.options.providers ??= [ ];
-    this.options.imports ??= [ ];
-    this.options.exports ??= [ ];
-
     return {
       module: AppModule,
       imports: this.buildModules('imports'),
@@ -413,7 +405,7 @@ export class AppModule {
 
     const exportsArrays = normalizedFiles.map((file) => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-      const exportsObject: unknown = require(`${cwd}/${file}`);
+      const exportsObject = require(`${cwd}/${file}`);
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });
 

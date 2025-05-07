@@ -1,5 +1,5 @@
-import { EntityManager, EntityName, FindOptions } from '@mikro-orm/core';
-import { AutoPath, FilterQuery } from '@mikro-orm/core/typings';
+import { EntityManager, EntityName, FindOptions, PopulatePath } from '@mikro-orm/core';
+import { AutoPath, FilterQuery, FromEntityType, UnboxArray } from '@mikro-orm/core/typings';
 import { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import crypto from 'crypto';
 
@@ -21,16 +21,16 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
   }
 
   /**
-   * Populate chosen fields of target entities .
+   * Populate chosen fields of target entities in place.
    * @param entities
    * @param populate
    */
   public populate<P extends string = never>(
     entities: Entity | Entity[],
-    populate: AutoPath<Entity, P>[] | boolean,
-  ): Promise<Entity[]> {
+    populate: AutoPath<FromEntityType<Entity> | FromEntityType<UnboxArray<Entity>>, P, PopulatePath.ALL, 9>[],
+  ): Promise<void> {
     return this.runWithinSpan(OrmSpanPrefix.POPULATE, async () => {
-      return this.entityManager.populate(entities, populate);
+      await this.entityManager.populate(entities, populate);
     });
   }
 
@@ -47,7 +47,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     return this.runWithinSpan(OrmSpanPrefix.READ, async () => {
       if (!this.isValidData(params)) return [ ];
 
-      options.populate ??= this.repositoryOptions.defaultPopulate as any ?? false;
+      options.populate ??= this.repositoryOptions.defaultPopulate ?? false;
       options.refresh ??= true;
 
       const readEntities = await this.entityManager.find(this.entityName, params, options as FindOptions<Entity, P>);
@@ -188,7 +188,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     const limit = bLimit ?? 100;
     const offset = bOffset ?? 0;
 
-    let order: OrmQueryOrder;
+    let order: OrmQueryOrder | undefined;
     let orderBy;
 
     if (sort) {
@@ -211,8 +211,8 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     const previousPromise = offset
       ? this.createToken({ ...params, offset: offset - limit })
-      : null
-     ;
+      : null;
+
     const [ next, previous ] = await Promise.all([ nextPromise, previousPromise ]);
 
     return { next, previous, limit, offset, count, sort, order, records };

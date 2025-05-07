@@ -8,7 +8,6 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import { BasicTracerProvider, BatchSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 import { AppConfig } from '../app/app.config';
 import { LogService } from '../log/log.service';
@@ -31,7 +30,7 @@ export class TraceService {
   /**
    * Acquires configured trace URL giving priority to environment variable.
    */
-  private buildTraceUrl(): string {
+  private buildTraceUrl(): string | undefined{
     const { traces } = this.appConfig.APP_OPTIONS || { };
     const { url } = traces;
     return this.traceConfig.TRACE_URL || url;
@@ -99,9 +98,9 @@ export class TraceService {
         root: new TraceIdRatioBasedSampler(samplerRatio),
       }),
       resource: new Resource({
-        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: environment,
-        [SemanticResourceAttributes.SERVICE_NAME]: job,
-        [SemanticResourceAttributes.SERVICE_INSTANCE_ID]: instance,
+        'deployment.environment': environment,
+        'service.name': job,
+        'service.instance.id': instance,
       }),
     });
 
@@ -115,14 +114,14 @@ export class TraceService {
   /**
    * Acquires active span.
    */
-  public getActiveSpan(): Span {
+  public getActiveSpan(): Span | undefined {
     return TraceService.getActiveSpan();
   }
 
   /**
    * Acquires active span.
    */
-  public static getActiveSpan(): Span {
+  public static getActiveSpan(): Span | undefined {
     return trace.getSpan(context.active());
   }
 
@@ -220,7 +219,7 @@ export class TraceService {
         }
         catch (e) {
           span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
           throw e;
         }
         finally {
@@ -235,7 +234,7 @@ export class TraceService {
         }
         catch (e) {
           span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
+          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
           throw e;
         }
         finally {

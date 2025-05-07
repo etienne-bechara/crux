@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { randomUUID } from 'crypto';
 
-import { uuidV4 } from '../override';
 import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUUID, Length, Max, Min } from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
@@ -13,7 +13,7 @@ export class OrmPageDto<T> {
     description: 'Next page token',
     example: '8d47bdcbde4a7a2d4a98d5f555a19701',
   })
-  public next?: string;
+  public next?: string | null;
 
   @IsOptional()
   @IsString()
@@ -22,7 +22,7 @@ export class OrmPageDto<T> {
     description: 'Previous page token',
     example: '331e15ea3754b9cdccb7c698bc094795',
   })
-  public previous?: string;
+  public previous?: string | null;
 
   @IsOptional()
   @IsInt() @Min(1) @Max(1000)
@@ -64,7 +64,7 @@ export class OrmPageDto<T> {
 
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
-  public records: T[];
+  public records!: T[];
 
 }
 
@@ -75,7 +75,7 @@ export class OrmIntDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -86,7 +86,7 @@ export class OrmBigIntDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -97,7 +97,7 @@ export class OrmUuidDto {
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }
 
@@ -108,14 +108,14 @@ export class OrmTimestampDto {
     description: 'Date of last update',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public updated: string;
+  public updated!: string;
 
   @IsISO8601()
   @ApiProperty({
     description: 'Date of creation',
     example: '2024-03-11T17:30:20.757Z',
   })
-  public created: string;
+  public created!: string;
 
 }
 
@@ -126,7 +126,7 @@ export class OrmIntTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -137,7 +137,7 @@ export class OrmBigIntTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: 1,
   })
-  public id: number;
+  public id!: number;
 
 }
 
@@ -148,6 +148,6 @@ export class OrmUuidTimestampDto extends OrmTimestampDto {
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
 }

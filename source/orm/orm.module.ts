@@ -1,4 +1,4 @@
-import { EntityManager, EntityName, MikroORMOptions } from '@mikro-orm/core';
+import { EntityClass, EntityManager, EntityName, MikroORMOptions } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -60,7 +60,7 @@ export class OrmModule {
       }),
 
       MikroOrmModule.forFeature({ entities }),
-    ];
+    ] as DynamicModule[];
   }
 
   /**
@@ -98,7 +98,7 @@ export class OrmModule {
       {
         provide: OrmInjectionToken.ORM_SCHEMA_OPTIONS,
         inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS ],
-        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync,
+        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync || { },
       },
     ];
   }
@@ -122,7 +122,7 @@ export class OrmModule {
       OrmUuidEntity,
       OrmUuidTimestampEntity,
       ...entities,
-    ];
+    ] as EntityClass<Partial<any>>[];
 
     mikroOrmOptions.debug ??= appConfig.NODE_ENV === AppEnvironment.LOCAL;
     mikroOrmOptions.logger ??= (msg): void => logService.trace(msg.replace(/].+?m/, `] ${LogStyle.FG_BRIGHT_BLACK}`));

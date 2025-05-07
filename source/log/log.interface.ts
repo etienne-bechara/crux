@@ -4,7 +4,7 @@ export type LogArguments = string | Error | Record<string, any>;
 
 export interface LogOptions {
   /** Sensitive keys to be removed during logging of objects. */
-  sensitiveKeys?: string[];
+  sensitiveKeys: string[];
   /** Determines whether arrays should be processed when looking for sensitive keys. */
   sensitiveArrays?: boolean;
   /** Enables logging request bodies. */
@@ -19,10 +19,10 @@ export interface LogParams {
   message: string;
   caller: string;
   requestId: string;
-  traceId: string;
-  spanId: string;
-  data: Record<string, any>;
-  error: Error;
+  traceId?: string;
+  spanId?: string;
+  data?: Record<string, any>;
+  error?: Error;
 }
 
 export interface LogTransport {

@@ -25,7 +25,7 @@ export class LokiService implements LogTransport {
   /**
    * Acquires configured Loki URL giving priority to environment variable.
    */
-  private buildLokiUrl(): string {
+  private buildLokiUrl(): string | undefined {
     const { loki } = this.appConfig.APP_OPTIONS || { };
     const { url } = loki;
     return this.lokiConfig.LOKI_URL || url;
@@ -102,7 +102,7 @@ export class LokiService implements LogTransport {
   private async publishCurrentQueue(): Promise<void> {
     if (this.publishQueue.length === 0) return;
 
-    const lokiUrl = this.buildLokiUrl();
+    const lokiUrl = this.buildLokiUrl() as string;
     const logs = [ ...this.publishQueue ];
     this.publishQueue = [ ];
 

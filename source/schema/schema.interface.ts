@@ -9,7 +9,7 @@ export interface SchemaSyncResult {
 
 export interface SchemaAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
-  useFactory?: (...args: any[]) => Promise<SchemaModuleOptions> | SchemaModuleOptions;
+  useFactory: (...args: any[]) => Promise<SchemaModuleOptions> | SchemaModuleOptions;
 }
 
 export interface SchemaModuleOptions {

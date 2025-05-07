@@ -16,13 +16,13 @@ export function Response(status: HttpStatus, type?: any): MethodDecorator;
 export function Response(options: ApiResponseOptions): MethodDecorator;
 // eslint-disable-next-line jsdoc/require-jsdoc, padding-line-between-statements
 export function Response(statusOrOptions: HttpStatus | ApiResponseOptions, type?: any): MethodDecorator {
-  const apiResponseOptions: ApiResponseOptions = typeof statusOrOptions === 'number'
+  const apiResponseOptions: ApiResponseOptions & { type?: any } = typeof statusOrOptions === 'number'
     ? { status: statusOrOptions, type }
     : statusOrOptions;
 
   return applyDecorators(
     HttpCode(Number(apiResponseOptions.status)),
-    SetMetadata(AppMetadataKey.RESPONSE_CLASS, apiResponseOptions['type']),
+    SetMetadata(AppMetadataKey.RESPONSE_CLASS, apiResponseOptions.type),
     ApiResponse(apiResponseOptions),
   );
 }
@@ -152,7 +152,7 @@ export function ToString(options: TransformToStringOptions = { }): any {
  * @param input
  * @param options
  */
-function toArray(input: string | number | string[] | number[], options: TransformToArrayOptions = { }): string[] {
+function toArray(input: string | number | string[] | number[], options: TransformToArrayOptions = { }): string[] | undefined {
   if (input === undefined) return;
   if (!input && input !== 0) return [ ];
 

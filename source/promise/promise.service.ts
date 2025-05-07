@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
-import { uuidV4 } from '../override';
 import { PromiseResolveDedupedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
 
 @Injectable()
@@ -49,7 +49,7 @@ export class PromiseService {
   public async resolveLimited<I, O>(params: PromiseResolveLimitedParams<I, O>): Promise<Awaited<O>[]> {
     const { data, limit, promise: method } = params;
     const resolved: Promise<O>[] = [ ];
-    const executing = [ ];
+    const executing: Promise<any>[] = [ ];
 
     this.logService.debug(`Resolving promises with ${limit} concurrency limit`);
 
@@ -60,7 +60,7 @@ export class PromiseService {
 
       if (limit <= data.length) {
         // eslint-disable-next-line promise/prefer-await-to-then
-        const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+        const e: Promise<any> = p.then(() => executing.splice(executing.indexOf(e), 1));
         executing.push(e);
 
         if (executing.length >= limit) {
@@ -91,7 +91,7 @@ export class PromiseService {
     this.logService.debug(`Deduplicating ${key} promise with ${timeout / 1000}s timeout and ${ttl / 1000}s TTL`);
 
     const provider = this.cacheService.getProvider();
-    const providerId = uuidV4();
+    const providerId = randomUUID();
     const providerKey = `dedupe:${key}:provider`;
     const dataKey = `dedupe:${key}:data`;
     const dataErrorMessage = 'DEDUPE_FAILED';
@@ -122,7 +122,7 @@ export class PromiseService {
         timeout,
         timeoutMessage,
         promise: async () => {
-          let res: T;
+          let res: T | undefined;
 
           while (!res) {
             res = await provider.get(dataKey);
@@ -174,24 +174,25 @@ export class PromiseService {
         break;
       }
       catch (e) {
+        const error = e as Error
         const elapsed = Date.now() - start;
 
         if (
           (retries || retries === 0) && tentative > retries
           || timeout && elapsed > timeout
-          || breakIf?.(e)
+          || breakIf?.(error)
         ) {
-          if (e?.message?.startsWith('promise resolution timed out')) {
-            e.message = `${txtPrefix} timed out after ${timeout / 1000}s`;
+          if (error?.message?.startsWith('promise resolution timed out')) {
+            error.message = `${txtPrefix} timed out after ${(timeout || 0) / 1000}s`;
           }
 
-          throw e;
+          throw error;
         }
 
         tentative++;
 
         const txtElapsed = `${elapsed / 1000}/${txtTimeout}`;
-        const msgRetry = `${txtPrefix} ${e.message} | Attempt #${tentative}/${txtRetry} | Elapsed ${txtElapsed}s`;
+        const msgRetry = `${txtPrefix} ${error.message} | Attempt #${tentative}/${txtRetry} | Elapsed ${txtElapsed}s`;
         this.logService.debug(msgRetry);
 
         await sleep(delay || 0);

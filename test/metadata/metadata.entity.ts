@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { OrmBaseEntity } from '../../source/orm/orm.entity';
 import { User } from '../user/user.entity';
@@ -8,15 +8,15 @@ import { User } from '../user/user.entity';
 export class Metadata extends OrmBaseEntity {
 
   @PrimaryKey()
-  public id: string = uuidV4();
+  public id: string = randomUUID();
 
   @Property()
-  public key: string;
+  public key!: string;
 
   @Property()
-  public value: string;
+  public value!: string;
 
   @ManyToOne(() => User, { hidden: true })
-  public user: User;
+  public user?: User;
 
 }

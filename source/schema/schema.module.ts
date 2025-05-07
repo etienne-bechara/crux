@@ -47,7 +47,7 @@ export class SchemaModule {
    * Register underlying service with provided options asynchronously.
    * @param options
    */
-  public static registerAsync(options: SchemaAsyncModuleOptions = { }): DynamicModule {
+  public static registerAsync(options: SchemaAsyncModuleOptions): DynamicModule {
     return {
       module: SchemaModule,
       imports: options.imports,

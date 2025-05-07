@@ -1,5 +1,5 @@
-import { EntityManager, EntityName, OrmRepository } from '@bechara/crux';
-
+import { OrmRepository } from '../../source/orm/orm.repository';
+import { EntityManager, EntityName } from '../../source/override';
 import { User } from './user.entity';
 
 export class UserRepository extends OrmRepository<User> {

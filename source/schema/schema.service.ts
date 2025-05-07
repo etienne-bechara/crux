@@ -27,9 +27,9 @@ export class SchemaService {
    * @param options
    */
   private removeBlacklistedQueries(queries: string, options: SchemaModuleOptions): string {
-    options.blacklist ??= [ ];
+    const blacklist = options.blacklist ??= [ ];
     queries = queries.replaceAll(/\n+/g, '\n');
-    return queries.split('\n').filter((q) => !options.blacklist.includes(q)).join('\n');
+    return queries.split('\n').filter((q) => !blacklist.includes(q)).join('\n');
   }
 
   /**

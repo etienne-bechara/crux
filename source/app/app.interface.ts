@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, INestApplication, ModuleMetadata } from '@nestjs/common';
+import { Abstract, DynamicModule, ForwardReference, HttpException, HttpStatus, INestApplication, ModuleMetadata, Provider, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import http from 'http';
 
@@ -6,14 +6,14 @@ import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
 import { HttpMethod } from '../http/http.enum';
-import { HttpExceptionData, HttpOptions } from '../http/http.interface';
+import { HttpErrorResponse, HttpOptions } from '../http/http.interface';
 import { LogOptions } from '../log/log.interface';
 import { LokiOptions } from '../loki/loki.interface';
 import { MetricOptions } from '../metric/metric.interface';
 import { TraceOptions } from '../trace/trace.interface';
 import { ValidateOptions } from '../validate/validate.interface';
 
-export interface AppOptions extends ModuleMetadata {
+export interface AppOptions {
   /** Provide an already built instance to skip `.compile()` step. */
   app?: INestApplication;
   /** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
@@ -37,43 +37,72 @@ export interface AppOptions extends ModuleMetadata {
   /** Disables documentation generator and `docs` endpoint. */
   disableDocs?: boolean;
   /** Application name, also used as job name for telemetry. */
-  name?: string;
+  name: string;
   /** Instance ID for telemetry. */
-  instance?: string;
+  instance: string;
   /** Application port. Default: 8080. */
-  port?: number;
+  port: number;
   /** Application hostname. Default: `0.0.0.0`. */
-  hostname?: string;
+  hostname: string;
   /** Application prefix to apply to all endpoints. */
   globalPrefix?: string;
   /** Application static assets path relative to current work directory. Default: `assets`. */
-  assetsPrefix?: string;
+  assetsPrefix: string;
   /** Application request timeout in milliseconds. Default: 60s. */
-  timeout?: number;
+  timeout: number;
+  /** NestJS list of imports. */
+  imports: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+  /** NestJS list of controllers. */
+  controllers: Type<any>[];
+  /** NestJS list of providers. */
+  providers: Provider[];
+  /** NestJS list of exports. */
+  exports: Array<DynamicModule | string | symbol | Provider | ForwardReference | Abstract<any> | Function>;
   /** Application CORS response. */
-  cors?: CorsOptions;
+  cors: CorsOptions;
   /** HTTP exceptions that should be logged as errors. Default: Array of all `5xx` status. */
-  httpErrors?: HttpStatus[];
+  httpErrors: HttpStatus[];
   /** Extra underlying HTTP adapter options. */
-  fastify?: Record<string, any>;
+  fastify: Record<string, any>;
   /** Validation pipe options. Can be overwritten per request using `ContextService`. */
-  validator?: ValidateOptions;
+  validator: ValidateOptions;
   /** Cache configuration. */
-  cache?: CacheOptions;
+  cache: CacheOptions;
   /** Http configuration. */
-  http?: HttpOptions;
+  http: HttpOptions;
   /** Logs configuration. */
-  logs?: LogOptions;
+  logs: LogOptions;
   /** Console logging transport configuration. */
-  console?: ConsoleOptions;
+  console: ConsoleOptions;
   /** Loki logging transport configuration. */
-  loki?: LokiOptions;
+  loki: LokiOptions;
   /** Metrics configuration. */
-  metrics?: MetricOptions;
+  metrics: MetricOptions;
   /** Traces configuration. */
-  traces?: TraceOptions;
+  traces: TraceOptions;
   /** Documentation configuration. */
-  docs?: DocOptions;
+  docs: DocOptions;
+}
+
+export interface AppModuleOptions extends Partial<Omit<AppOptions, 'validator' | 'cache' | 'http' | 'logs' | 'console' | 'loki' | 'metrics' | 'traces' | 'docs'>> {
+  /** Validation pipe options. Can be overwritten per request using `ContextService`. */
+  validator?: Partial<ValidateOptions>;
+  /** Cache configuration. */
+  cache?: Partial<CacheOptions>;
+  /** Http configuration. */
+  http?: Partial<HttpOptions>;
+  /** Logs configuration. */
+  logs?: Partial<LogOptions>;
+  /** Console logging transport configuration. */
+  console?: Partial<ConsoleOptions>;
+  /** Loki logging transport configuration. */
+  loki?: Partial<LokiOptions>;
+  /** Metrics configuration. */
+  metrics?: Partial<MetricOptions>;
+  /** Traces configuration. */
+  traces?: Partial<TraceOptions>;
+  /** Documentation configuration. */
+  docs?: Partial<DocOptions>;
 }
 
 /**
@@ -96,7 +125,6 @@ export interface AppRequest {
   protocol: 'http' | 'https';
   method: HttpMethod;
   url: string;
-  routerMethod: string;
   is404: boolean;
   socket: any;
   context: any;
@@ -149,7 +177,7 @@ export interface AppException {
   details: AppExceptionDetails;
 }
 
-export interface AppExceptionDetails extends Partial<HttpExceptionData>, Record<string, any> {
+export interface AppExceptionDetails extends Partial<HttpErrorResponse>, Record<string, any> {
   constraints?: string[];
 }
 

@@ -20,6 +20,6 @@ export class UserUpdateDto extends PartialType(UserCreateDto) { }
 export class UserPagination extends OrmPageDto<User> {
 
   @IsObject(User, { each: true })
-  public records: User[];
+  public records!: User[];
 
 }

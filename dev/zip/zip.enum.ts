@@ -25,5 +25,5 @@ export enum ZipState {
   SC = 'SC',
   SP = 'SP',
   SE = 'SE',
-  TO = 'TO'
+  TO = 'TO',
 }

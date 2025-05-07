@@ -1,4 +1,4 @@
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { AppModule } from '../app/app.module';
 import { RedisModule } from './redis.module';
@@ -6,10 +6,10 @@ import { RedisService } from './redis.service';
 
 describe('RedisService', () => {
   let redisService: RedisService;
-  const testObjectKey: string = uuidV4();
-  const testBufferKey: string = uuidV4();
+  const testObjectKey: string = randomUUID();
+  const testBufferKey: string = randomUUID();
   const randomNumber = Math.random();
-  const randomBuffer = Buffer.from(uuidV4(), 'utf8');
+  const randomBuffer = Buffer.from(randomUUID(), 'utf8');
 
   beforeAll(async () => {
     const app = await AppModule.compile({
@@ -29,7 +29,7 @@ describe('RedisService', () => {
     it('should obey skip if not exist rule', async () => {
       await redisService.set(testObjectKey, { rng: randomNumber }, { skip: 'IF_NOT_EXIST' });
       const storedNumber = await redisService.get(testObjectKey);
-      expect(storedNumber).toBeNull();
+      expect(storedNumber).toBeUndefined();
     });
 
     it('should persist a random number', async () => {
@@ -63,13 +63,13 @@ describe('RedisService', () => {
     it('should delete persisted random number', async () => {
       await redisService.del(testObjectKey);
       const testValue = await redisService.get(testObjectKey);
-      expect(testValue).toBeNull();
+      expect(testValue).toBeUndefined();
     });
   });
 
   describe('incrbyfloat', () => {
     it('should increment a key by integer amount', async () => {
-      const incrementKey: string = uuidV4();
+      const incrementKey: string = randomUUID();
       const interactions = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
       const incrementAmount = 1;
 
@@ -82,7 +82,7 @@ describe('RedisService', () => {
     });
 
     it('should increment a key by float amount', async () => {
-      const incrementKey: string = uuidV4();
+      const incrementKey: string = randomUUID();
       const scale = 12;
       const interactions = Math.floor(Math.random() * (100 - 50 + 1)) + 50;
       const incrementAmount = Number.parseFloat(Math.random().toFixed(scale));
@@ -96,7 +96,7 @@ describe('RedisService', () => {
     });
 
     it('should increment a key without resetting ttl', async () => {
-      const incrementKey: string = uuidV4();
+      const incrementKey: string = randomUUID();
 
       for (let i = 0; i < 10; i++) {
         void redisService.incrbyfloat(incrementKey, 1, { ttl: 2000 });
@@ -106,11 +106,11 @@ describe('RedisService', () => {
       await new Promise((resolve) => setTimeout(resolve, 1100));
 
       const testValue = await redisService.get(incrementKey);
-      expect(testValue).toBeNull();
+      expect(testValue).toBeUndefined();
     });
 
     it('should decrement a key if input is negative', async () => {
-      const incrementKey: string = uuidV4();
+      const incrementKey: string = randomUUID();
 
       await redisService.incrbyfloat(incrementKey, 10);
       await redisService.incrbyfloat(incrementKey, -3);
@@ -122,7 +122,7 @@ describe('RedisService', () => {
 
   describe('lock', () => {
     it('should disallow locking the same key at the same time', async () => {
-      const lockKey: string = uuidV4();
+      const lockKey: string = randomUUID();
       const start = Date.now();
       const ttl = 500;
       const instances = 5;
@@ -141,7 +141,7 @@ describe('RedisService', () => {
     });
 
     it('should allow locking the same key if it has been unlocked', async () => {
-      const lockKey: string = uuidV4();
+      const lockKey: string = randomUUID();
       const start = Date.now();
       const ttl = 5000;
 
@@ -154,9 +154,9 @@ describe('RedisService', () => {
     });
 
     it('should try once and throw if retries are zero', async () => {
-      const lockKey: string = uuidV4();
+      const lockKey: string = randomUUID();
       const ttl = 1000;
-      let exception: boolean;
+      let exception = false
 
       await redisService.lock(lockKey, { ttl });
 

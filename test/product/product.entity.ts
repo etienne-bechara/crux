@@ -4,14 +4,14 @@ import { OrmUuidTimestampEntity } from '../../source/orm/orm.entity';
 import { Order } from '../order/order.entity';
 import { ProductRepository } from './product.repository';
 
-@Entity({ customRepository: () => ProductRepository })
+@Entity({ repository: () => ProductRepository })
 export class Product extends OrmUuidTimestampEntity {
 
   @Property()
-  public title: string;
+  public title!: string;
 
   @Property({ columnType: 'float' })
-  public price: number;
+  public price!: number;
 
   @ManyToMany(() => Order, 'products')
   public orders = new Collection<Order>(this);

@@ -3,7 +3,7 @@ import { RedisOptions } from 'ioredis';
 
 export interface RedisAsyncModuleOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
-  useFactory?: (...args: any[]) => Promise<RedisModuleOptions> | RedisModuleOptions;
+  useFactory: (...args: any[]) => Promise<RedisModuleOptions> | RedisModuleOptions;
 }
 
 export interface RedisModuleOptions extends Omit<RedisOptions, 'keepAlive'> {

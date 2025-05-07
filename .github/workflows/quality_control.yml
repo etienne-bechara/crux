@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm i -g pnpm
+          npm i -g pnpm@9
           pnpm i --frozen-lockfile
 
       - name: Run Unit Test
@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm i -g pnpm
+          npm i -g pnpm@9
           pnpm i --frozen-lockfile
 
       - name: Run Build Dry Run
@@ -59,7 +59,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm i -g pnpm
+          npm i -g pnpm@9
           pnpm i --frozen-lockfile
 
       - name: Run Lint Check
@@ -82,7 +82,7 @@ jobs:
           name: test-coverage
 
       - name: Run SonarQube Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: sonarsource/sonarqube-scan-action@v5.0.0
         with:
           args: >
             -Dsonar.organization=${{ github.repository_owner }}
@@ -101,6 +101,6 @@ jobs:
 
       - name: Run SonarQube Quality Gate
         if: github.event.repository.name != 'master' && github.event.repository.name != 'beta' && github.event.repository.name != 'alpha'
-        uses: sonarsource/sonarqube-quality-gate-action@master
+        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
