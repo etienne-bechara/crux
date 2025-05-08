@@ -1,7 +1,16 @@
 import { BaseEntity, Index, PrimaryKey, Property } from '@mikro-orm/core';
 import { randomUUID } from 'crypto';
 
-export abstract class OrmBaseEntity extends BaseEntity { }
+export abstract class OrmBaseEntity extends BaseEntity { 
+
+  /**
+   * Serializes entity, can be extended for added functionality.
+   */
+  public toJSON(): any {
+    return super.toObject();
+  }
+
+}
 
 export abstract class OrmIntEntity extends OrmBaseEntity {
 

@@ -47,7 +47,7 @@ export class User extends OrmUuidTimestampEntity {
   public children = new Collection<User>(this);
 
   public toJSON(): UserDto {
-    const user = super.toObject() as any;
+    const user = super.toJSON();
 
     return {
       ...user,

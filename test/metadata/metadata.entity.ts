@@ -21,7 +21,7 @@ export class Metadata extends OrmBaseEntity {
   public user?: User;
 
   public toJSON(): MetadataDto {
-    const metadata = super.toObject() as EntityDTO<Metadata>;
+    const metadata = super.toJSON();
 
     return {
       ...metadata,
