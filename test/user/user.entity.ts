@@ -7,6 +7,7 @@ import { Metadata } from '../metadata/metadata.entity';
 import { Order } from '../order/order.entity';
 import { Relation } from '../relation/relation.entity';
 import { UserRepository } from './user.repository';
+import { UserDto } from './user.dto.out';
 
 @Entity({ repository: () => UserRepository })
 @Unique({ properties: [ 'name' ] })
@@ -44,5 +45,14 @@ export class User extends OrmUuidTimestampEntity {
 
   @ManyToMany(() => User, 'parents')
   public children = new Collection<User>(this);
+
+  public toJSON(): UserDto {
+    const user = super.toObject() as any;
+
+    return {
+      ...user,
+      secret: user.age * 2,
+    }
+  }
 
 }

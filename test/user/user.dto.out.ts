@@ -1,25 +1,20 @@
-import { PartialType, PickType } from '@nestjs/swagger';
+import { OrmUuidTimestampDto } from '../../source/orm/orm.dto.out';
+import { IsArray, IsObject, IsNumber, IsString } from '../../source/validate/validate.decorator';
+import { MetadataDto } from '../metadata/metadata.dto.out';
 
-import { OrmPageReadDto } from '../../source/orm/orm.dto.in';
-import { OrmPageDto } from '../../source/orm/orm.dto.out';
-import { IsObject, IsOptional, IsString } from '../../source/validate/validate.decorator';
-import { User } from './user.entity';
+export class UserDto extends OrmUuidTimestampDto {
 
-export class UserReadDto extends OrmPageReadDto {
-
-  @IsOptional()
   @IsString()
-  public name?: string;
+  public name!: string;
 
-}
+  @IsNumber()
+  public age!: number;
 
-export class UserCreateDto extends PickType(User, [ 'name', 'age', 'email' ]) { }
+  @IsNumber()
+  public secret!: number;
 
-export class UserUpdateDto extends PartialType(UserCreateDto) { }
-
-export class UserPagination extends OrmPageDto<User> {
-
-  @IsObject(User, { each: true })
-  public records!: User[];
+  @IsArray()
+  @IsObject(MetadataDto, { each: true })
+  public metadata!: MetadataDto[];
 
 }

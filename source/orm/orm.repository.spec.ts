@@ -451,6 +451,25 @@ export const OrmRepositorySpec = ({ type, port, user }: { type: 'mysql' | 'postg
         expect(records.length).toBe(1);
         expect(records[0].name).toBe('Z_SORT_1');
       });
+
+      it('should serialize entities applying transformations', async () => {
+        await userRepository.create([
+          {
+            name: 'SERIALIZE_1',
+            age: 50,
+            metadata: [
+              { key: 'SERIALIZE_METADATA_KEY_1', value: 'SERIALIZE_METADATA_VALUE_1' },
+            ],
+          },
+        ]);
+
+        const populate = [ 'metadata' ];
+        const [ user ] = await userRepository.readBy({ name: 'SERIALIZE_1' }, { populate });
+        const serializedUser = user.toJSON();
+
+        expect(serializedUser.secret).toBe(50 * 2);
+        expect(serializedUser.metadata[0].kv).toBe('SERIALIZE_METADATA_KEY_1_SERIALIZE_METADATA_VALUE_1');
+      });
     });
 
     describe('OrmUpdateRepository', () => {

@@ -1,8 +1,9 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, EntityDTO, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { randomUUID } from 'crypto';
 
 import { OrmBaseEntity } from '../../source/orm/orm.entity';
 import { User } from '../user/user.entity';
+import { MetadataDto } from './metadata.dto.out';
 
 @Entity({ tableName: 'metadata' })
 export class Metadata extends OrmBaseEntity {
@@ -18,5 +19,14 @@ export class Metadata extends OrmBaseEntity {
 
   @ManyToOne(() => User, { hidden: true })
   public user?: User;
+
+  public toJSON(): MetadataDto {
+    const metadata = super.toObject() as EntityDTO<Metadata>;
+
+    return {
+      ...metadata,
+      kv: `${metadata.key}_${metadata.value}`,
+    }
+  }
 
 }
