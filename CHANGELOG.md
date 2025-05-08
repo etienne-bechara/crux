@@ -1,3 +1,10 @@
+## [6.0.2](https://github.com/etienne-bechara/crux/compare/v6.0.1...v6.0.2) (2025-05-08)
+
+
+### Bug Fixes
+
+* **orm:** re-add removed toJSON ([0c1a365](https://github.com/etienne-bechara/crux/commit/0c1a365243cb707e6be3769ee9089f5c1c046357))
+
 ## [6.0.1](https://github.com/etienne-bechara/crux/compare/v6.0.0...v6.0.1) (2025-05-08)
 
 
