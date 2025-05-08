@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/etienne-bechara/crux/compare/v6.0.0...v6.0.1) (2025-05-08)
+
+
+### Bug Fixes
+
+* **orm:** add tests for toJSON ([d4cf82a](https://github.com/etienne-bechara/crux/commit/d4cf82aa0c6b611e84037d67a398b39bc4e8d742))
+
 # [6.0.0](https://github.com/etienne-bechara/crux/compare/v5.9.13...v6.0.0) (2025-05-07)
 
 
