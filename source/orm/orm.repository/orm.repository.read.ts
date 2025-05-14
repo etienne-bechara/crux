@@ -1,4 +1,4 @@
-import { EntityManager, EntityName, FindOptions, PopulatePath } from '@mikro-orm/core';
+import { EntityManager, EntityName, FindOptions, LoadStrategy, PopulatePath } from '@mikro-orm/core';
 import { AutoPath, FilterQuery, FromEntityType, UnboxArray } from '@mikro-orm/core/typings';
 import { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import crypto from 'crypto';
@@ -48,6 +48,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
       if (!this.isValidData(params)) return [ ];
 
       options.populate ??= this.repositoryOptions.defaultPopulate ?? false;
+      options.strategy ??= LoadStrategy.SELECT_IN;
       options.refresh ??= true;
 
       const readEntities = await this.entityManager.find(this.entityName, params, options as FindOptions<Entity, P>);
