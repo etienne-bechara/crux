@@ -1,3 +1,10 @@
+## [6.0.3](https://github.com/etienne-bechara/crux/compare/v6.0.2...v6.0.3) (2025-05-14)
+
+
+### Bug Fixes
+
+* **orm:** use select in as default strategy ([29673b2](https://github.com/etienne-bechara/crux/commit/29673b243fad018b26e394397790a22590af430e))
+
 ## [6.0.2](https://github.com/etienne-bechara/crux/compare/v6.0.1...v6.0.2) (2025-05-08)
 
 
