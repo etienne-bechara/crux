@@ -6,8 +6,13 @@ export interface ConsoleOptions {
    * Default: `trace` when local`, otherwise `warning`.
    */
   severity?: LogSeverity;
-  /** Format JSON when printing log details at console. */
-  prettyPrint?: boolean;
+  /**
+   * Print logs in human friendly format.
+   * Default: `true` for `local` environment, `false` otherwise.
+   */
+  pretty?: boolean;
+   /** Applies indentation on stringified JSON data. */
+  indentation?: number;
   /** Max length when stringifying details at console. */
   maxLength: number;
   /** Hide detailed data printed below each log message. */

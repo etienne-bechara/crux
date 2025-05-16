@@ -49,13 +49,15 @@ export class ConsoleService implements LogTransport {
     const environment = this.appConfig.NODE_ENV;
     const { timestamp, severity, message, caller, requestId, traceId, spanId, data, error } = params;
     const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
-    const { prettyPrint, maxLength, hideDetails } = consoleOptions;
+    const { pretty, indentation, maxLength, hideDetails } = consoleOptions;
+
+    const isPretty = pretty || (environment === AppEnvironment.LOCAL && pretty !== false);
     const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
 
-    if (environment === AppEnvironment.LOCAL) {
+    if (isPretty) {
       const strSeverity = severity.toUpperCase().padEnd(7, ' ');
       const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
-      const strData = JSON.stringify(data, null, prettyPrint ? 2 : undefined);
+      const strData = JSON.stringify(data, null, indentation);
 
       const strFilename = caller.length > 25
         ? `${caller.slice(0, 11)}...${caller.slice(-11)}`
