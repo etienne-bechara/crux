@@ -1,3 +1,10 @@
+## [6.0.4](https://github.com/etienne-bechara/crux/compare/v6.0.3...v6.0.4) (2025-05-16)
+
+
+### Bug Fixes
+
+* **console:** allow pretty logs on non-local environments ([4fd755e](https://github.com/etienne-bechara/crux/commit/4fd755e062b322fa37244e077f4215cf1ba40318))
+
 ## [6.0.3](https://github.com/etienne-bechara/crux/compare/v6.0.2...v6.0.3) (2025-05-14)
 
 
