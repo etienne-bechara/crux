@@ -2,45 +2,45 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type as SetType } from 'class-transformer';
 import {
-  ArrayMaxSize as CvArrayMaxSize,
-  ArrayMinSize as CvArrayMinSize,
-  Contains as CvContains,
-  Equals as CvEquals,
-  IsArray as CvIsArray,
-  IsBase64 as CvIsBase64,
-  IsBoolean as CvIsBoolean,
-  IsDate as CvIsDate,
-  IsDefined as CvIsDefined,
-  IsEmail as CvIsEmail,
-  IsEmpty as CvIsEmpty,
-  IsISO8601 as CvIsISO8601,
-  IsIn as CvIsIn,
-  IsInt as CvIsInt,
-  IsJSON as CvIsJSON,
-  IsJWT as CvIsJWT,
-  IsNotEmpty as CvIsNotEmpty,
-  IsNotIn as CvIsNotIn,
-  IsNumber as CvIsNumber,
-  IsNumberString as CvIsNumberString,
-  IsObject as CvIsObject,
-  IsOptional as CvIsOptional,
-  IsString as CvIsString,
-  IsUUID as CvIsUUID,
-  IsUrl as CvIsUrl,
-  Length as CvLength,
-  Matches as CvMatches,
-  Max as CvMax,
-  MaxLength as CvMaxLength,
-  Min as CvMin,
-  MinLength as CvMinLength,
-  NotContains as CvNotContains,
-  NotEquals as CvNotEquals,
-  ValidateIf as CvValidateIf,
-  ValidateNested as CvValidateNested,
-  IsNumberOptions,
-  ValidationArguments,
-  ValidationOptions,
-  registerDecorator,
+	ArrayMaxSize as CvArrayMaxSize,
+	ArrayMinSize as CvArrayMinSize,
+	Contains as CvContains,
+	Equals as CvEquals,
+	IsArray as CvIsArray,
+	IsBase64 as CvIsBase64,
+	IsBoolean as CvIsBoolean,
+	IsDate as CvIsDate,
+	IsDefined as CvIsDefined,
+	IsEmail as CvIsEmail,
+	IsEmpty as CvIsEmpty,
+	IsISO8601 as CvIsISO8601,
+	IsIn as CvIsIn,
+	IsInt as CvIsInt,
+	IsJSON as CvIsJSON,
+	IsJWT as CvIsJWT,
+	IsNotEmpty as CvIsNotEmpty,
+	IsNotIn as CvIsNotIn,
+	IsNumber as CvIsNumber,
+	IsNumberString as CvIsNumberString,
+	IsObject as CvIsObject,
+	IsOptional as CvIsOptional,
+	IsString as CvIsString,
+	IsUUID as CvIsUUID,
+	IsUrl as CvIsUrl,
+	Length as CvLength,
+	Matches as CvMatches,
+	Max as CvMax,
+	MaxLength as CvMaxLength,
+	Min as CvMin,
+	MinLength as CvMinLength,
+	NotContains as CvNotContains,
+	NotEquals as CvNotEquals,
+	ValidateIf as CvValidateIf,
+	ValidateNested as CvValidateNested,
+	IsNumberOptions,
+	ValidationArguments,
+	ValidationOptions,
+	registerDecorator,
 } from 'class-validator';
 
 import { IsStringOptions } from './validate.interface';
@@ -55,19 +55,19 @@ const ValidateStorage: Map<string, any> = new Map();
  * @param validationOptions
  */
 export function OneOf(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const key = `MUTUALLY_EXCLUSIVE_${group}`;
-  const currentKeyLength = ValidateStorage.get(key)?.length || 0;
+	const key = `MUTUALLY_EXCLUSIVE_${group}`;
+	const currentKeyLength = ValidateStorage.get(key)?.length || 0;
 
-  return applyDecorators(
-    Expose(),
-    MutuallyExclusive(group, validationOptions),
-    ValidateIf((o) => {
-      const propKeys: string[] = ValidateStorage.get(key);
-      const isCurrentDefined = o[propKeys[currentKeyLength]] !== undefined;
-      const isGroupUndefined = propKeys.map((k) => o[k]).filter((v) => v === undefined).length === propKeys.length;
-      return isCurrentDefined || isGroupUndefined;
-    }, validationOptions),
-  );
+	return applyDecorators(
+		Expose(),
+		MutuallyExclusive(group, validationOptions),
+		ValidateIf((o) => {
+			const propKeys: string[] = ValidateStorage.get(key);
+			const isCurrentDefined = o[propKeys[currentKeyLength]] !== undefined;
+			const isGroupUndefined = propKeys.map((k) => o[k]).filter((v) => v === undefined).length === propKeys.length;
+			return isCurrentDefined || isGroupUndefined;
+		}, validationOptions),
+	);
 }
 
 /**
@@ -76,38 +76,38 @@ export function OneOf(group: string, validationOptions?: ValidationOptions): Pro
  * @param validationOptions
  */
 export function MutuallyExclusive(group: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  return (object: any, propertyName: string | symbol): any => {
-    const key = `MUTUALLY_EXCLUSIVE_${group}`;
-    const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [];
+	return (object: any, propertyName: string | symbol): any => {
+		const key = `MUTUALLY_EXCLUSIVE_${group}`;
+		const mutuallyExclusiveProperties: string[] = ValidateStorage.get(key) || [];
 
-    mutuallyExclusiveProperties.push(propertyName as string);
-    ValidateStorage.set(key, mutuallyExclusiveProperties);
+		mutuallyExclusiveProperties.push(propertyName as string);
+		ValidateStorage.set(key, mutuallyExclusiveProperties);
 
-    registerDecorator({
-      name: 'mutuallyExclusive',
-      target: object.constructor,
-      propertyName: propertyName as string,
-      constraints: [group],
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const propKeys: string[] = ValidateStorage.get(key);
-          const propObject: Record<string, any> = args.object;
-          const propDefined = propKeys.reduce((p, c) => (propObject[c] === undefined ? p : p + 1), 0);
-          return propDefined === 1;
-        },
-        defaultMessage(args: ValidationArguments) {
-          const propKeys: string[] = ValidateStorage.get(key);
-          const propObject: Record<string, any> = args.object;
-          const propDefined = propKeys.reduce((p, c) => (propObject[c] === undefined ? p : p + 1), 0);
+		registerDecorator({
+			name: 'mutuallyExclusive',
+			target: object.constructor,
+			propertyName: propertyName as string,
+			constraints: [group],
+			options: validationOptions,
+			validator: {
+				validate(value: any, args: ValidationArguments) {
+					const propKeys: string[] = ValidateStorage.get(key);
+					const propObject: Record<string, any> = args.object;
+					const propDefined = propKeys.reduce((p, c) => (propObject[c] === undefined ? p : p + 1), 0);
+					return propDefined === 1;
+				},
+				defaultMessage(args: ValidationArguments) {
+					const propKeys: string[] = ValidateStorage.get(key);
+					const propObject: Record<string, any> = args.object;
+					const propDefined = propKeys.reduce((p, c) => (propObject[c] === undefined ? p : p + 1), 0);
 
-          return propDefined === 0
-            ? `one of ${propKeys.join(', ')} must be defined`
-            : `properties ${propKeys.join(', ')} are mutually exclusive`;
-        },
-      },
-    });
-  };
+					return propDefined === 0
+						? `one of ${propKeys.join(', ')} must be defined`
+						: `properties ${propKeys.join(', ')} are mutually exclusive`;
+				},
+			},
+		});
+	};
 }
 
 // --- Common validation decorators
@@ -118,10 +118,10 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
  * @param validationOptions
  */
 export function ValidateIf(
-  condition: (object: any, value: any) => boolean,
-  validationOptions?: ValidationOptions,
+	condition: (object: any, value: any) => boolean,
+	validationOptions?: ValidationOptions,
 ): PropertyDecorator {
-  return applyDecorators(Expose(), CvValidateIf(condition, validationOptions), ApiProperty({ required: false }));
+	return applyDecorators(Expose(), CvValidateIf(condition, validationOptions), ApiProperty({ required: false }));
 }
 
 /**
@@ -129,7 +129,7 @@ export function ValidateIf(
  * @param validationOptions
  */
 export function ValidateNested(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvValidateNested(validationOptions), ApiProperty());
+	return applyDecorators(Expose(), CvValidateNested(validationOptions), ApiProperty());
 }
 
 /**
@@ -137,7 +137,7 @@ export function ValidateNested(validationOptions?: ValidationOptions): PropertyD
  * @param validationOptions
  */
 export function IsDefined(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsDefined(validationOptions), ApiProperty());
+	return applyDecorators(Expose(), CvIsDefined(validationOptions), ApiProperty());
 }
 
 /**
@@ -145,7 +145,7 @@ export function IsDefined(validationOptions?: ValidationOptions): PropertyDecora
  * @param validationOptions
  */
 export function IsOptional(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsOptional(validationOptions), ApiProperty({ required: false }));
+	return applyDecorators(Expose(), CvIsOptional(validationOptions), ApiProperty({ required: false }));
 }
 
 /**
@@ -154,7 +154,7 @@ export function IsOptional(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function Equals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvEquals(comparison, validationOptions), ApiProperty());
+	return applyDecorators(Expose(), CvEquals(comparison, validationOptions), ApiProperty());
 }
 
 /**
@@ -163,7 +163,7 @@ export function Equals(comparison: any, validationOptions?: ValidationOptions): 
  * @param validationOptions
  */
 export function NotEquals(comparison: any, validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvNotEquals(comparison, validationOptions), ApiProperty());
+	return applyDecorators(Expose(), CvNotEquals(comparison, validationOptions), ApiProperty());
 }
 
 /**
@@ -171,7 +171,7 @@ export function NotEquals(comparison: any, validationOptions?: ValidationOptions
  * @param validationOptions
  */
 export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsEmpty(validationOptions), ApiProperty({ format: 'empty' }));
+	return applyDecorators(Expose(), CvIsEmpty(validationOptions), ApiProperty({ format: 'empty' }));
 }
 
 /**
@@ -179,7 +179,7 @@ export function IsEmpty(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsNotEmpty(validationOptions), ApiProperty({ format: 'empty' }));
+	return applyDecorators(Expose(), CvIsNotEmpty(validationOptions), ApiProperty({ format: 'empty' }));
 }
 
 /**
@@ -188,7 +188,7 @@ export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecor
  * @param validationOptions
  */
 export function IsIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsIn(values, validationOptions), ApiProperty({ enum: values }));
+	return applyDecorators(Expose(), CvIsIn(values, validationOptions), ApiProperty({ enum: values }));
 }
 
 /**
@@ -197,11 +197,11 @@ export function IsIn(values: any[], validationOptions?: ValidationOptions): Prop
  * @param validationOptions
  */
 export function IsNotIn(values: any[], validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(
-    Expose(),
-    CvIsNotIn(values, validationOptions),
-    ApiProperty({ format: `not in ${values.join(', ')}` }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsNotIn(values, validationOptions),
+		ApiProperty({ format: `not in ${values.join(', ')}` }),
+	);
 }
 
 // --- Type validation decorators
@@ -211,9 +211,9 @@ export function IsNotIn(values: any[], validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function IsBoolean(validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(Expose(), CvIsBoolean(validationOptions), ApiProperty({ type: Boolean, isArray: each }));
+	return applyDecorators(Expose(), CvIsBoolean(validationOptions), ApiProperty({ type: Boolean, isArray: each }));
 }
 
 /**
@@ -221,9 +221,9 @@ export function IsBoolean(validationOptions?: ValidationOptions): PropertyDecora
  * @param validationOptions
  */
 export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(Expose(), CvIsDate(validationOptions), ApiProperty({ type: Date, isArray: each }));
+	return applyDecorators(Expose(), CvIsDate(validationOptions), ApiProperty({ type: Date, isArray: each }));
 }
 
 /**
@@ -232,17 +232,17 @@ export function IsDate(validationOptions?: ValidationOptions): PropertyDecorator
  * @param validationOptions
  */
 export function IsString(options: IsStringOptions = {}, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { allowEmpty } = options;
-  const { each } = validationOptions || {};
+	const { allowEmpty } = options;
+	const { each } = validationOptions || {};
 
-  return allowEmpty
-    ? applyDecorators(Expose(), CvIsString(validationOptions), ApiProperty({ type: String, isArray: each }))
-    : applyDecorators(
-        Expose(),
-        CvIsString(validationOptions),
-        CvIsNotEmpty(validationOptions),
-        ApiProperty({ type: String, isArray: each, format: 'not empty' }),
-      );
+	return allowEmpty
+		? applyDecorators(Expose(), CvIsString(validationOptions), ApiProperty({ type: String, isArray: each }))
+		: applyDecorators(
+				Expose(),
+				CvIsString(validationOptions),
+				CvIsNotEmpty(validationOptions),
+				ApiProperty({ type: String, isArray: each, format: 'not empty' }),
+			);
 }
 
 /**
@@ -251,13 +251,13 @@ export function IsString(options: IsStringOptions = {}, validationOptions?: Vali
  * @param validationOptions
  */
 export function IsNumber(options: IsNumberOptions = {}, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsNumber(options, validationOptions),
-    ApiProperty({ type: Number, isArray: each, format: 'float' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsNumber(options, validationOptions),
+		ApiProperty({ type: Number, isArray: each, format: 'float' }),
+	);
 }
 
 /**
@@ -265,13 +265,13 @@ export function IsNumber(options: IsNumberOptions = {}, validationOptions?: Vali
  * @param validationOptions
  */
 export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsInt(validationOptions),
-    ApiProperty({ type: Number, isArray: each, format: 'integer' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsInt(validationOptions),
+		ApiProperty({ type: Number, isArray: each, format: 'integer' }),
+	);
 }
 
 /**
@@ -279,7 +279,7 @@ export function IsInt(validationOptions?: ValidationOptions): PropertyDecorator 
  * @param validationOptions
  */
 export function IsArray(validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvIsArray(validationOptions), ApiProperty({ isArray: true }));
+	return applyDecorators(Expose(), CvIsArray(validationOptions), ApiProperty({ isArray: true }));
 }
 
 /**
@@ -288,21 +288,21 @@ export function IsArray(validationOptions?: ValidationOptions): PropertyDecorato
  * @param validationOptions
  */
 export function IsEnum(entity: object, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
-  const isNumeric = Object.keys(entity).some((k) => /^\d+$/.test(k));
-  const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
+	const { each } = validationOptions || {};
+	const isNumeric = Object.keys(entity).some((k) => /^\d+$/.test(k));
+	const numericValues = Object.values(entity).filter((v) => Number(v) >= 0);
 
-  return isNumeric
-    ? applyDecorators(
-        Expose(),
-        CvIsIn(numericValues, validationOptions),
-        ApiProperty({ isArray: each, enum: numericValues }),
-      )
-    : applyDecorators(
-        Expose(),
-        CvIsIn(Object.values(entity), validationOptions),
-        ApiProperty({ isArray: each, enum: Object.values(entity) }),
-      );
+	return isNumeric
+		? applyDecorators(
+				Expose(),
+				CvIsIn(numericValues, validationOptions),
+				ApiProperty({ isArray: each, enum: numericValues }),
+			)
+		: applyDecorators(
+				Expose(),
+				CvIsIn(Object.values(entity), validationOptions),
+				ApiProperty({ isArray: each, enum: Object.values(entity) }),
+			);
 }
 
 // --- Number validation decorators
@@ -317,13 +317,13 @@ export function IsEnum(entity: object, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function Min(minValue: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvMin(minValue, validationOptions),
-    ApiProperty({ type: Number, isArray: each, minimum: minValue }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvMin(minValue, validationOptions),
+		ApiProperty({ type: Number, isArray: each, minimum: minValue }),
+	);
 }
 
 /**
@@ -332,13 +332,13 @@ export function Min(minValue: number, validationOptions?: ValidationOptions): Pr
  * @param validationOptions
  */
 export function Max(maxValue: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvMax(maxValue, validationOptions),
-    ApiProperty({ type: Number, isArray: each, maximum: maxValue }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvMax(maxValue, validationOptions),
+		ApiProperty({ type: Number, isArray: each, maximum: maxValue }),
+	);
 }
 
 // --- Date validation decorators
@@ -357,16 +357,16 @@ export function Max(maxValue: number, validationOptions?: ValidationOptions): Pr
  * @param validationOptions
  */
 export function IsNumberString(
-  options?: validator.IsNumericOptions,
-  validationOptions?: ValidationOptions,
+	options?: validator.IsNumericOptions,
+	validationOptions?: ValidationOptions,
 ): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsNumberString(options, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'numeric' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsNumberString(options, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'numeric' }),
+	);
 }
 
 // --- String validation decorators
@@ -378,13 +378,13 @@ export function IsNumberString(
  * @param validationOptions
  */
 export function Contains(seed: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvContains(seed, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: `contains '${seed}'` }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvContains(seed, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: `contains '${seed}'` }),
+	);
 }
 
 /**
@@ -394,13 +394,13 @@ export function Contains(seed: string, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function NotContains(seed: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvNotContains(seed, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: `not contains '${seed}'` }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvNotContains(seed, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: `not contains '${seed}'` }),
+	);
 }
 
 // @IsAlpha()	Checks if the string contains only letters (a-zA-Z).
@@ -415,16 +415,16 @@ export function NotContains(seed: string, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function IsBase64(
-  options?: validator.IsBase64Options,
-  validationOptions?: ValidationOptions,
+	options?: validator.IsBase64Options,
+	validationOptions?: ValidationOptions,
 ): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsBase64(options, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'base64' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsBase64(options, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'base64' }),
+	);
 }
 
 // @IsIBAN()	Checks if a string is a IBAN (International Bank Account Number).
@@ -442,13 +442,13 @@ export function IsBase64(
  * @param validationOptions
  */
 export function IsEmail(options?: validator.IsEmailOptions, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsEmail(options, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'e-mail' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsEmail(options, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'e-mail' }),
+	);
 }
 
 // @IsFQDN(options?: IsFQDNOptions)	Checks if the string is a fully qualified domain name (e.g. domain.com).
@@ -479,16 +479,16 @@ export function IsEmail(options?: validator.IsEmailOptions, validationOptions?: 
  * @param validationOptions
  */
 export function IsISO8601(
-  options?: validator.IsISO8601Options,
-  validationOptions?: ValidationOptions,
+	options?: validator.IsISO8601Options,
+	validationOptions?: ValidationOptions,
 ): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsISO8601(options, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'iso8601' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsISO8601(options, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'iso8601' }),
+	);
 }
 
 /**
@@ -496,13 +496,13 @@ export function IsISO8601(
  * @param validationOptions
  */
 export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsJSON(validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'json' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsJSON(validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'json' }),
+	);
 }
 
 /**
@@ -510,13 +510,13 @@ export function IsJSON(validationOptions?: ValidationOptions): PropertyDecorator
  * @param validationOptions
  */
 export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsJWT(validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'jwt' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsJWT(validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'jwt' }),
+	);
 }
 
 /**
@@ -525,22 +525,22 @@ export function IsJWT(validationOptions?: ValidationOptions): PropertyDecorator 
  * @param validationOptions
  */
 export function IsObject(type: any = {}, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  const decorators = [CvIsObject(validationOptions), ApiProperty({ type, isArray: each })];
+	const decorators = [CvIsObject(validationOptions), ApiProperty({ type, isArray: each })];
 
-  if (typeof type === 'function') {
-    decorators.push(
-      ValidateNested(validationOptions),
-      SetType(() => type),
-    );
-  }
+	if (typeof type === 'function') {
+		decorators.push(
+			ValidateNested(validationOptions),
+			SetType(() => type),
+		);
+	}
 
-  if (validationOptions?.each) {
-    decorators.push(IsArray());
-  }
+	if (validationOptions?.each) {
+		decorators.push(IsArray());
+	}
 
-  return applyDecorators(Expose(), ...decorators);
+	return applyDecorators(Expose(), ...decorators);
 }
 
 // @IsNotEmptyObject()	Checks if the object is not empty.
@@ -564,13 +564,13 @@ export function IsObject(type: any = {}, validationOptions?: ValidationOptions):
  * @param validationOptions
  */
 export function IsUrl(options?: validator.IsURLOptions, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsUrl(options, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'url' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsUrl(options, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'url' }),
+	);
 }
 
 // @IsMagnetURI()	Checks if the string is a magnet uri format.
@@ -581,13 +581,13 @@ export function IsUrl(options?: validator.IsURLOptions, validationOptions?: Vali
  * @param validationOptions
  */
 export function IsUUID(version?: validator.UUIDVersion, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvIsUUID(version, validationOptions),
-    ApiProperty({ type: String, isArray: each, format: 'uuid' }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvIsUUID(version, validationOptions),
+		ApiProperty({ type: String, isArray: each, format: 'uuid' }),
+	);
 }
 
 // @IsFirebasePushId()	Checks if the string is a Firebase Push ID
@@ -600,13 +600,13 @@ export function IsUUID(version?: validator.UUIDVersion, validationOptions?: Vali
  * @param validationOptions
  */
 export function Length(min: number, max?: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvLength(min, max, validationOptions),
-    ApiProperty({ type: String, isArray: each, minLength: min, maxLength: max }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvLength(min, max, validationOptions),
+		ApiProperty({ type: String, isArray: each, minLength: min, maxLength: max }),
+	);
 }
 
 /**
@@ -615,13 +615,13 @@ export function Length(min: number, max?: number, validationOptions?: Validation
  * @param validationOptions
  */
 export function MinLength(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvMinLength(min, validationOptions),
-    ApiProperty({ type: String, isArray: each, minLength: min }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvMinLength(min, validationOptions),
+		ApiProperty({ type: String, isArray: each, minLength: min }),
+	);
 }
 
 /**
@@ -630,13 +630,13 @@ export function MinLength(min: number, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function MaxLength(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvMaxLength(max, validationOptions),
-    ApiProperty({ type: String, isArray: each, maxLength: max }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvMaxLength(max, validationOptions),
+		ApiProperty({ type: String, isArray: each, maxLength: max }),
+	);
 }
 
 /**
@@ -646,13 +646,13 @@ export function MaxLength(max: number, validationOptions?: ValidationOptions): P
  * @param validationOptions
  */
 export function Matches(regexPattern: RegExp, validationOptions?: ValidationOptions): PropertyDecorator {
-  const { each } = validationOptions || {};
+	const { each } = validationOptions || {};
 
-  return applyDecorators(
-    Expose(),
-    CvMatches(regexPattern, validationOptions),
-    ApiProperty({ type: String, isArray: each, pattern: regexPattern.source }),
-  );
+	return applyDecorators(
+		Expose(),
+		CvMatches(regexPattern, validationOptions),
+		ApiProperty({ type: String, isArray: each, pattern: regexPattern.source }),
+	);
 }
 
 // @IsMilitaryTime()	Checks if the string is a valid representation of military time in the format HH:MM.
@@ -675,7 +675,7 @@ export function Matches(regexPattern: RegExp, validationOptions?: ValidationOpti
  * @param validationOptions
  */
 export function ArrayMinSize(min: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvArrayMinSize(min, validationOptions), ApiProperty({ minItems: min }));
+	return applyDecorators(Expose(), CvArrayMinSize(min, validationOptions), ApiProperty({ minItems: min }));
 }
 
 /**
@@ -685,7 +685,7 @@ export function ArrayMinSize(min: number, validationOptions?: ValidationOptions)
  * @param validationOptions
  */
 export function ArrayMaxSize(max: number, validationOptions?: ValidationOptions): PropertyDecorator {
-  return applyDecorators(Expose(), CvArrayMaxSize(max, validationOptions), ApiProperty({ maxItems: max }));
+	return applyDecorators(Expose(), CvArrayMaxSize(max, validationOptions), ApiProperty({ maxItems: max }));
 }
 // @ArrayUnique(identifier?: (o) => any)	Checks if all array's values are unique. Comparison for objects is reference-based. Optional function can be speciefied which return value will be used for the comparsion.
 

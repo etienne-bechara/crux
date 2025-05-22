@@ -6,12 +6,12 @@ import { ProductRepository } from './product.repository';
 
 @Entity({ repository: () => ProductRepository })
 export class Product extends OrmUuidTimestampEntity {
-  @Property()
-  public title!: string;
+	@Property()
+	public title!: string;
 
-  @Property({ columnType: 'float' })
-  public price!: number;
+	@Property({ columnType: 'float' })
+	public price!: number;
 
-  @ManyToMany(() => Order, 'products')
-  public orders = new Collection<Order>(this);
+	@ManyToMany(() => Order, 'products')
+	public orders = new Collection<Order>(this);
 }

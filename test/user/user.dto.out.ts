@@ -3,16 +3,16 @@ import { IsArray, IsNumber, IsObject, IsString } from '../../source/validate/val
 import { MetadataDto } from '../metadata/metadata.dto.out';
 
 export class UserDto extends OrmUuidTimestampDto {
-  @IsString()
-  public name!: string;
+	@IsString()
+	public name!: string;
 
-  @IsNumber()
-  public age!: number;
+	@IsNumber()
+	public age!: number;
 
-  @IsNumber()
-  public secret!: number;
+	@IsNumber()
+	public secret!: number;
 
-  @IsArray()
-  @IsObject(MetadataDto, { each: true })
-  public metadata!: MetadataDto[];
+	@IsArray()
+	@IsObject(MetadataDto, { each: true })
+	public metadata!: MetadataDto[];
 }

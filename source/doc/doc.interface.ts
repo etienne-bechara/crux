@@ -1,50 +1,50 @@
 import {
-  ComponentsObject,
-  ExternalDocumentationObject,
-  OpenAPIObject,
-  SecuritySchemeObject,
+	ComponentsObject,
+	ExternalDocumentationObject,
+	OpenAPIObject,
+	SecuritySchemeObject,
 } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export interface DocSecurity {
-  name: string;
-  options: SecuritySchemeObject;
+	name: string;
+	options: SecuritySchemeObject;
 }
 
 export interface DocServer {
-  url: string;
-  description?: string;
+	url: string;
+	description?: string;
 }
 
 export interface DogLogo {
-  url?: string;
-  backgroundColor?: string;
-  altText?: string;
-  href?: string;
+	url?: string;
+	backgroundColor?: string;
+	altText?: string;
+	href?: string;
 }
 
 export interface DocTag {
-  name: string;
-  description?: string;
-  externalDocs?: ExternalDocumentationObject;
+	name: string;
+	description?: string;
+	externalDocs?: ExternalDocumentationObject;
 }
 
 export interface DocTagGroup {
-  name: string;
-  tags: string[];
+	name: string;
+	tags: string[];
 }
 
 export interface DocOptions {
-  title: string;
-  version: string;
-  description?: string;
-  favicon: string;
-  servers?: DocServer[];
-  security?: DocSecurity[];
-  tags?: DocTag[];
-  tagGroups?: DocTagGroup[];
+	title: string;
+	version: string;
+	description?: string;
+	favicon: string;
+	servers?: DocServer[];
+	security?: DocSecurity[];
+	tags?: DocTag[];
+	tagGroups?: DocTagGroup[];
 }
 
 export interface DocOpenApi extends Omit<OpenAPIObject, 'components'> {
-  components: ComponentsObject;
-  'x-tagGroups'?: DocTagGroup[];
+	components: ComponentsObject;
+	'x-tagGroups'?: DocTagGroup[];
 }

@@ -4,18 +4,18 @@ import { AppConfig } from '../app/app.config';
 
 @Injectable()
 export class DocService {
-  public constructor(private readonly appConfig: AppConfig) {}
+	public constructor(private readonly appConfig: AppConfig) {}
 
-  /**
-   * Creates a simple HTMl page which will render the generated
-   * OpenAPI specification using Scalar:
-   * https://guides.scalar.com/scalar/scalar-api-references/html.
-   */
-  public generateScalarHtml(): string {
-    const { docs } = this.appConfig.APP_OPTIONS;
-    const { title, favicon } = docs;
+	/**
+	 * Creates a simple HTMl page which will render the generated
+	 * OpenAPI specification using Scalar:
+	 * https://guides.scalar.com/scalar/scalar-api-references/html.
+	 */
+	public generateScalarHtml(): string {
+		const { docs } = this.appConfig.APP_OPTIONS;
+		const { title, favicon } = docs;
 
-    return `
+		return `
 <!doctype html>
 <html>
   <head>
@@ -34,5 +34,5 @@ export class DocService {
   </body>
 </html>
 `;
-  }
+	}
 }

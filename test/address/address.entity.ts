@@ -7,12 +7,12 @@ import { AddressRepository } from './address.repository';
 
 @Entity({ repository: () => AddressRepository })
 export class Address extends OrmBaseEntity {
-  @OneToOne(() => User, 'address', { primary: true, owner: true })
-  public user!: User;
+	@OneToOne(() => User, 'address', { primary: true, owner: true })
+	public user!: User;
 
-  @Property()
-  public zip!: string;
+	@Property()
+	public zip!: string;
 
-  @Enum(() => AddressState)
-  public state!: AddressState;
+	@Enum(() => AddressState)
+	public state!: AddressState;
 }

@@ -7,12 +7,12 @@ import { RelationRepository } from './relation.repository';
 @Entity({ repository: () => RelationRepository })
 @Index({ properties: ['created'] })
 export class Relation extends OrmBaseEntity {
-  @ManyToOne(() => User, { primary: true })
-  public child!: User;
+	@ManyToOne(() => User, { primary: true })
+	public child!: User;
 
-  @ManyToOne(() => User, { primary: true })
-  public parent!: User;
+	@ManyToOne(() => User, { primary: true })
+	public parent!: User;
 
-  @Property({ columnType: 'timestamp' })
-  public created?: Date = new Date();
+	@Property({ columnType: 'timestamp' })
+	public created?: Date = new Date();
 }

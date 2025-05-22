@@ -37,354 +37,354 @@ import { AppService } from './app.service';
 @Global()
 @Module({})
 export class AppModule {
-  private static instance: INestApplication;
-  private static options: AppOptions;
+	private static instance: INestApplication;
+	private static options: AppOptions;
 
-  /**
-   * Returns application instance.
-   */
-  public static getInstance(): INestApplication {
-    if (!AppModule.instance) {
-      throw new Error('application instance not configured');
-    }
+	/**
+	 * Returns application instance.
+	 */
+	public static getInstance(): INestApplication {
+		if (!AppModule.instance) {
+			throw new Error('application instance not configured');
+		}
 
-    return AppModule.instance;
-  }
+		return AppModule.instance;
+	}
 
-  /**
-   * Closes application instance.
-   */
-  public static async close(): Promise<void> {
-    await AppModule.instance.close();
-  }
+	/**
+	 * Closes application instance.
+	 */
+	public static async close(): Promise<void> {
+		await AppModule.instance.close();
+	}
 
-  /**
-   * Boots an instance of a Nest Application using Fastify, and listen
-   * on desired port and hostname.
-   *
-   * Skips the compile step if a pre-compiled `instance` is provided.
-   * @param options
-   */
-  public static async boot(options: AppModuleOptions = {}): Promise<INestApplication> {
-    const { app } = options;
+	/**
+	 * Boots an instance of a Nest Application using Fastify, and listen
+	 * on desired port and hostname.
+	 *
+	 * Skips the compile step if a pre-compiled `instance` is provided.
+	 * @param options
+	 */
+	public static async boot(options: AppModuleOptions = {}): Promise<INestApplication> {
+		const { app } = options;
 
-    if (app) {
-      AppModule.instance = app;
-    } else {
-      await AppModule.compile(options);
-    }
+		if (app) {
+			AppModule.instance = app;
+		} else {
+			await AppModule.compile(options);
+		}
 
-    await AppModule.listen();
-    return AppModule.instance;
-  }
+		await AppModule.listen();
+		return AppModule.instance;
+	}
 
-  /**
-   * Builds and configures an instance of a Nest Application, returning
-   * its reference without starting the adapter.
-   * @param options
-   */
-  public static async compile(options: AppModuleOptions = {}): Promise<INestApplication> {
-    AppModule.configureOptions(options);
-    await AppModule.configureAdapter();
+	/**
+	 * Builds and configures an instance of a Nest Application, returning
+	 * its reference without starting the adapter.
+	 * @param options
+	 */
+	public static async compile(options: AppModuleOptions = {}): Promise<INestApplication> {
+		AppModule.configureOptions(options);
+		await AppModule.configureAdapter();
 
-    if (!AppModule.options.disableDocs) {
-      DocModule.configureDocumentation(AppModule.instance, AppModule.options);
-    }
+		if (!AppModule.options.disableDocs) {
+			DocModule.configureDocumentation(AppModule.instance, AppModule.options);
+		}
 
-    return AppModule.instance;
-  }
+		return AppModule.instance;
+	}
 
-  /**
-   * Merge compile options with default and persist them as configuration .
-   * @param options
-   */
-  private static configureOptions(options: AppModuleOptions): void {
-    const deepMergeProps: (keyof AppOptions)[] = [
-      'fastify',
-      'validator',
-      'cache',
-      'http',
-      'logs',
-      'console',
-      'loki',
-      'metrics',
-      'traces',
-      'docs',
-    ];
+	/**
+	 * Merge compile options with default and persist them as configuration .
+	 * @param options
+	 */
+	private static configureOptions(options: AppModuleOptions): void {
+		const deepMergeProps: (keyof AppOptions)[] = [
+			'fastify',
+			'validator',
+			'cache',
+			'http',
+			'logs',
+			'console',
+			'loki',
+			'metrics',
+			'traces',
+			'docs',
+		];
 
-    AppModule.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
+		AppModule.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
 
-    for (const key of deepMergeProps) {
-      const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
-      const providedData = options[key] as Record<string, any>;
+		for (const key of deepMergeProps) {
+			const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
+			const providedData = options[key] as Record<string, any>;
 
-      (AppModule.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
-    }
+			(AppModule.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
+		}
 
-    if (AppModule.options.disableAll) {
-      AppModule.options.disableCache = true;
-      AppModule.options.disableDocs = true;
-      AppModule.options.disableFilter = true;
-      AppModule.options.disableLogs = true;
-      AppModule.options.disableMetrics = true;
-      AppModule.options.disableScan = true;
-      AppModule.options.disableValidator = true;
-    }
+		if (AppModule.options.disableAll) {
+			AppModule.options.disableCache = true;
+			AppModule.options.disableDocs = true;
+			AppModule.options.disableFilter = true;
+			AppModule.options.disableLogs = true;
+			AppModule.options.disableMetrics = true;
+			AppModule.options.disableScan = true;
+			AppModule.options.disableValidator = true;
+		}
 
-    ConfigModule.set({ key: 'APP_OPTIONS', value: AppModule.options });
-  }
+		ConfigModule.set({ key: 'APP_OPTIONS', value: AppModule.options });
+	}
 
-  /**
-   * Creates NestJS instance using Fastify as underlying adapter,
-   * then configures the following framework specific settings:
-   * - Add an on request hook which runs prior to all interceptors
-   * - Set the global path prefix if any
-   * - Enable cors if configured
-   * - Maps a local directory to serve static assets.
-   */
-  private static async configureAdapter(): Promise<void> {
-    const { fastify, globalPrefix, assetsPrefix, cors } = AppModule.options;
-    const entryModule = AppModule.buildEntryModule();
-    const httpAdapter = new FastifyAdapter(fastify);
+	/**
+	 * Creates NestJS instance using Fastify as underlying adapter,
+	 * then configures the following framework specific settings:
+	 * - Add an on request hook which runs prior to all interceptors
+	 * - Set the global path prefix if any
+	 * - Enable cors if configured
+	 * - Maps a local directory to serve static assets.
+	 */
+	private static async configureAdapter(): Promise<void> {
+		const { fastify, globalPrefix, assetsPrefix, cors } = AppModule.options;
+		const entryModule = AppModule.buildEntryModule();
+		const httpAdapter = new FastifyAdapter(fastify);
 
-    AppModule.instance = await NestFactory.create(entryModule, httpAdapter, {
-      logger: ['error', 'warn'],
-    });
+		AppModule.instance = await NestFactory.create(entryModule, httpAdapter, {
+			logger: ['error', 'warn'],
+		});
 
-    const fastifyInstance = AppModule.instance.getHttpAdapter().getInstance();
+		const fastifyInstance = AppModule.instance.getHttpAdapter().getInstance();
 
-    fastifyInstance.addHook('onRequest', (req: AppRequest, res: AppResponse, next: () => void) => {
-      AppModule.sanitizeRequestHeaders(req);
-      return AppModule.createRequestContext(req, res, next);
-    });
+		fastifyInstance.addHook('onRequest', (req: AppRequest, res: AppResponse, next: () => void) => {
+			AppModule.sanitizeRequestHeaders(req);
+			return AppModule.createRequestContext(req, res, next);
+		});
 
-    if (globalPrefix) {
-      AppModule.instance.setGlobalPrefix(globalPrefix);
-    }
+		if (globalPrefix) {
+			AppModule.instance.setGlobalPrefix(globalPrefix);
+		}
 
-    AppModule.instance.enableCors(cors);
+		AppModule.instance.enableCors(cors);
 
-    httpAdapter.useStaticAssets({
-      root: `${process.cwd()}/${assetsPrefix}`,
-      prefix: `/${assetsPrefix}/`,
-    });
-  }
+		httpAdapter.useStaticAssets({
+			root: `${process.cwd()}/${assetsPrefix}`,
+			prefix: `/${assetsPrefix}/`,
+		});
+	}
 
-  /**
-   * Fastify will attempt to parse request body even if content length
-   * is set as zero, this leads to unintended bad requests for some
-   * common http clients.
-   * @param req
-   */
-  private static sanitizeRequestHeaders(req: AppRequest): void {
-    const { headers } = req;
+	/**
+	 * Fastify will attempt to parse request body even if content length
+	 * is set as zero, this leads to unintended bad requests for some
+	 * common http clients.
+	 * @param req
+	 */
+	private static sanitizeRequestHeaders(req: AppRequest): void {
+		const { headers } = req;
 
-    if (headers['content-length'] === '0') {
-      headers['content-type'] = undefined;
-    }
-  }
+		if (headers['content-length'] === '0') {
+			headers['content-type'] = undefined;
+		}
+	}
 
-  /**
-   * Implements a request hook intended to run prior to any NestJS
-   * component like guards and interceptors, which:
-   * - Adds starting time to request in order to control timeout
-   * - Set the automatically generated request id as response header
-   * - Wraps the request into a context managed by async local storage
-   * - Wraps the context into a trace span
-   * - Set the trace id as response header.
-   * @param req
-   * @param res
-   * @param next
-   */
-  private static createRequestContext(req: AppRequest, res: AppResponse, next: () => void): void {
-    const { name } = AppModule.options;
-    const contextService = AppModule.instance.get(ContextService);
-    const traceService = AppModule.instance.get(TraceService);
-    const traceEnabled = traceService?.isEnabled();
+	/**
+	 * Implements a request hook intended to run prior to any NestJS
+	 * component like guards and interceptors, which:
+	 * - Adds starting time to request in order to control timeout
+	 * - Set the automatically generated request id as response header
+	 * - Wraps the request into a context managed by async local storage
+	 * - Wraps the context into a trace span
+	 * - Set the trace id as response header.
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	private static createRequestContext(req: AppRequest, res: AppResponse, next: () => void): void {
+		const { name } = AppModule.options;
+		const contextService = AppModule.instance.get(ContextService);
+		const traceService = AppModule.instance.get(TraceService);
+		const traceEnabled = traceService?.isEnabled();
 
-    req.time = Date.now();
-    res.header('request-id', req.id);
+		req.time = Date.now();
+		res.header('request-id', req.id);
 
-    ContextStorage.run(new Map(), () => {
-      const store = ContextStorage.getStore();
-      store?.set(ContextStorageKey.REQUEST, req);
-      store?.set(ContextStorageKey.RESPONSE, res);
+		ContextStorage.run(new Map(), () => {
+			const store = ContextStorage.getStore();
+			store?.set(ContextStorageKey.REQUEST, req);
+			store?.set(ContextStorageKey.RESPONSE, res);
 
-      if (traceEnabled) {
-        const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
-        const description = contextService.getRequestDescription('in');
-        const spanName = `Http | ${description}`;
+			if (traceEnabled) {
+				const ctx = propagation.extract(ROOT_CONTEXT, req.headers);
+				const description = contextService.getRequestDescription('in');
+				const spanName = `Http | ${description}`;
 
-        context.with(ctx, () => {
-          trace.getTracer(name).startActiveSpan(spanName, {}, (span) => {
-            const traceId = span.spanContext().traceId;
+				context.with(ctx, () => {
+					trace.getTracer(name).startActiveSpan(spanName, {}, (span) => {
+						const traceId = span.spanContext().traceId;
 
-            res.header('trace-id', traceId);
-            store?.set(ContextStorageKey.REQUEST_SPAN, span);
+						res.header('trace-id', traceId);
+						store?.set(ContextStorageKey.REQUEST_SPAN, span);
 
-            next();
-          });
-        });
-      } else {
-        next();
-      }
-    });
-  }
+						next();
+					});
+				});
+			} else {
+				next();
+			}
+		});
+	}
 
-  /**
-   * Acquire current instance and list on desired port and hostname,
-   * using and interceptor to manage configured timeout.
-   */
-  private static async listen(): Promise<void> {
-    const { instance, port, hostname, timeout } = AppModule.options;
+	/**
+	 * Acquire current instance and list on desired port and hostname,
+	 * using and interceptor to manage configured timeout.
+	 */
+	private static async listen(): Promise<void> {
+		const { instance, port, hostname, timeout } = AppModule.options;
 
-    const app = AppModule.getInstance();
-    const logService = app.get(LogService);
+		const app = AppModule.getInstance();
+		const logService = app.get(LogService);
 
-    const httpServer = await app.listen(port, hostname);
+		const httpServer = await app.listen(port, hostname);
 
-    // TimeoutInterceptor should take care of timeout, but set adapter level
-    // timeout as a failsafe in case a request is stuck at a guard
-    httpServer.setTimeout(timeout * 1.1);
+		// TimeoutInterceptor should take care of timeout, but set adapter level
+		// timeout as a failsafe in case a request is stuck at a guard
+		httpServer.setTimeout(timeout * 1.1);
 
-    logService.info(`Instance ${instance} listening on port ${port}`);
-  }
+		logService.info(`Instance ${instance} listening on port ${port}`);
+	}
 
-  /**
-   * Given desired boot options, build the module that will act
-   * as entry point for the cascade initialization.
-   */
-  private static buildEntryModule(): DynamicModule {
-    return {
-      module: AppModule,
-      imports: AppModule.buildModules('imports'),
-      controllers: [...AppModule.options.controllers, AppController],
-      providers: AppModule.buildProviders(),
-      exports: [AppConfig, AppService, ...AppModule.options.providers, ...AppModule.buildModules('exports')],
-    };
-  }
+	/**
+	 * Given desired boot options, build the module that will act
+	 * as entry point for the cascade initialization.
+	 */
+	private static buildEntryModule(): DynamicModule {
+		return {
+			module: AppModule,
+			imports: AppModule.buildModules('imports'),
+			controllers: [...AppModule.options.controllers, AppController],
+			providers: AppModule.buildProviders(),
+			exports: [AppConfig, AppService, ...AppModule.options.providers, ...AppModule.buildModules('exports')],
+		};
+	}
 
-  /**
-   * Merge defaults, project source and user provided modules.
-   * @param type
-   */
-  private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = AppModule.options;
-    const { envPath, imports: importedModules, exports: exportedModules } = AppModule.options;
-    const preloadedModules: any[] = [];
-    let sourceModules: unknown[] = [];
+	/**
+	 * Merge defaults, project source and user provided modules.
+	 * @param type
+	 */
+	private static buildModules(type: 'imports' | 'exports'): any[] {
+		const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = AppModule.options;
+		const { envPath, imports: importedModules, exports: exportedModules } = AppModule.options;
+		const preloadedModules: any[] = [];
+		let sourceModules: unknown[] = [];
 
-    const defaultModules = [ContextModule, LogModule, MemoryModule, PromiseModule];
+		const defaultModules = [ContextModule, LogModule, MemoryModule, PromiseModule];
 
-    if (disableCache) {
-      defaultModules.push(CacheDisabledModule);
-    } else {
-      defaultModules.push(CacheModule);
-    }
+		if (disableCache) {
+			defaultModules.push(CacheDisabledModule);
+		} else {
+			defaultModules.push(CacheModule);
+		}
 
-    if (!disableLogs) {
-      defaultModules.push(ConsoleModule, LokiModule);
-    }
+		if (!disableLogs) {
+			defaultModules.push(ConsoleModule, LokiModule);
+		}
 
-    if (disableMetrics) {
-      defaultModules.push(MetricDisabledModule);
-    } else {
-      defaultModules.push(MetricModule);
-    }
+		if (disableMetrics) {
+			defaultModules.push(MetricDisabledModule);
+		} else {
+			defaultModules.push(MetricModule);
+		}
 
-    if (disableTraces) {
-      defaultModules.push(TraceDisabledModule);
-    } else {
-      defaultModules.push(TraceModule);
-    }
+		if (disableTraces) {
+			defaultModules.push(TraceDisabledModule);
+		} else {
+			defaultModules.push(TraceModule);
+		}
 
-    if (!disableDocs) {
-      defaultModules.push(DocModule);
-    }
+		if (!disableDocs) {
+			defaultModules.push(DocModule);
+		}
 
-    if (!disableScan) {
-      sourceModules = AppModule.globRequire(['s*rc*/**/*.module.{js,ts}']).reverse();
-    }
+		if (!disableScan) {
+			sourceModules = AppModule.globRequire(['s*rc*/**/*.module.{js,ts}']).reverse();
+		}
 
-    if (type === 'imports') {
-      preloadedModules.push(
-        ConfigModule.registerAsync({ envPath }),
-        ...defaultModules,
-        ...sourceModules,
-        ...importedModules,
-      );
-    } else {
-      preloadedModules.push(ConfigModule, ...defaultModules, ...sourceModules, ...exportedModules);
-    }
+		if (type === 'imports') {
+			preloadedModules.push(
+				ConfigModule.registerAsync({ envPath }),
+				...defaultModules,
+				...sourceModules,
+				...importedModules,
+			);
+		} else {
+			preloadedModules.push(ConfigModule, ...defaultModules, ...sourceModules, ...exportedModules);
+		}
 
-    return preloadedModules;
-  }
+		return preloadedModules;
+	}
 
-  /**
-   * Adds exception filter, serializer, timeout and validation pipe.
-   */
-  private static buildProviders(): any[] {
-    const { disableFilter, disableValidator, timeout, providers } = AppModule.options;
+	/**
+	 * Adds exception filter, serializer, timeout and validation pipe.
+	 */
+	private static buildProviders(): any[] {
+		const { disableFilter, disableValidator, timeout, providers } = AppModule.options;
 
-    const preloadedProviders: any[] = [
-      { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
-      { provide: APP_INTERCEPTOR, useClass: RateInterceptor },
-      AppConfig,
-      AppService,
-    ];
+		const preloadedProviders: any[] = [
+			{ provide: APP_INTERCEPTOR, useClass: LogInterceptor },
+			{ provide: APP_INTERCEPTOR, useClass: RateInterceptor },
+			AppConfig,
+			AppService,
+		];
 
-    if (timeout) {
-      preloadedProviders.push({
-        provide: APP_INTERCEPTOR,
-        useClass: TimeoutInterceptor,
-      });
-    }
+		if (timeout) {
+			preloadedProviders.push({
+				provide: APP_INTERCEPTOR,
+				useClass: TimeoutInterceptor,
+			});
+		}
 
-    if (!disableFilter) {
-      preloadedProviders.push({
-        provide: APP_FILTER,
-        useClass: AppFilter,
-      });
-    }
+		if (!disableFilter) {
+			preloadedProviders.push({
+				provide: APP_FILTER,
+				useClass: AppFilter,
+			});
+		}
 
-    if (!disableValidator) {
-      preloadedProviders.push(
-        {
-          provide: APP_PIPE,
-          useClass: ValidatePipe,
-        },
-        {
-          provide: APP_INTERCEPTOR,
-          useClass: ValidateInterceptor,
-        },
-      );
-    }
+		if (!disableValidator) {
+			preloadedProviders.push(
+				{
+					provide: APP_PIPE,
+					useClass: ValidatePipe,
+				},
+				{
+					provide: APP_INTERCEPTOR,
+					useClass: ValidateInterceptor,
+				},
+			);
+		}
 
-    return [...preloadedProviders, ...providers];
-  }
+		return [...preloadedProviders, ...providers];
+	}
 
-  /**
-   * Given a glob path string, find all matching files
-   * and return an array of their exports.
-   *
-   * If there is a mix of sources and maps, keep only
-   * the JavaScript version.
-   * @param globPathArray
-   * @param root
-   */
-  public static globRequire(globPath: string | string[], root?: string): any[] {
-    const globPathArray = Array.isArray(globPath) ? globPath : [globPath];
-    const cwd = root || process.cwd();
+	/**
+	 * Given a glob path string, find all matching files
+	 * and return an array of their exports.
+	 *
+	 * If there is a mix of sources and maps, keep only
+	 * the JavaScript version.
+	 * @param globPathArray
+	 * @param root
+	 */
+	public static globRequire(globPath: string | string[], root?: string): any[] {
+		const globPathArray = Array.isArray(globPath) ? globPath : [globPath];
+		const cwd = root || process.cwd();
 
-    const matchingFiles = fg.sync(globPathArray, { cwd });
-    const jsFiles = matchingFiles.filter((file) => file.match(/\.js$/g));
-    const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
+		const matchingFiles = fg.sync(globPathArray, { cwd });
+		const jsFiles = matchingFiles.filter((file) => file.match(/\.js$/g));
+		const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
 
-    const exportsArrays = normalizedFiles.map((file) => {
-      const exportsObject = require(`${cwd}/${file}`);
-      return Object.keys(exportsObject).map((key) => exportsObject[key]);
-    });
+		const exportsArrays = normalizedFiles.map((file) => {
+			const exportsObject = require(`${cwd}/${file}`);
+			return Object.keys(exportsObject).map((key) => exportsObject[key]);
+		});
 
-    return exportsArrays.flat();
-  }
+		return exportsArrays.flat();
+	}
 }

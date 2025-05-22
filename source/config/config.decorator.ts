@@ -8,11 +8,11 @@ import { ConfigModule } from './config.module';
  * Loads decorated class as a config.
  */
 export function Config(): ClassDecorator {
-  const loadTargetAsConfig = (target: unknown): void => {
-    ConfigModule.setClass(target);
-  };
+	const loadTargetAsConfig = (target: unknown): void => {
+		ConfigModule.setClass(target);
+	};
 
-  return applyDecorators(Injectable(), loadTargetAsConfig);
+	return applyDecorators(Injectable(), loadTargetAsConfig);
 }
 
 /**
@@ -24,18 +24,18 @@ export function Config(): ClassDecorator {
  * @param options
  */
 export function InjectConfig(options: Partial<ConfigInjectionOptions> = {}): PropertyDecorator {
-  const { key: baseKey, json, fallback } = options;
+	const { key: baseKey, json, fallback } = options;
 
-  return (target: any, propertyKey: string | symbol): void => {
-    const key = baseKey || (propertyKey as string);
-    Reflect.defineMetadata(ConfigMetadata.CONFIG_KEY, key, target, propertyKey);
-    ConfigModule.set({ key, fallback, json });
+	return (target: any, propertyKey: string | symbol): void => {
+		const key = baseKey || (propertyKey as string);
+		Reflect.defineMetadata(ConfigMetadata.CONFIG_KEY, key, target, propertyKey);
+		ConfigModule.set({ key, fallback, json });
 
-    Object.defineProperty(target, propertyKey, {
-      get: () => ConfigModule.get(key),
-      set: (value) => {
-        ConfigModule.set({ key, value });
-      },
-    });
-  };
+		Object.defineProperty(target, propertyKey, {
+			get: () => ConfigModule.get(key),
+			set: (value) => {
+				ConfigModule.set({ key, value });
+			},
+		});
+	};
 }

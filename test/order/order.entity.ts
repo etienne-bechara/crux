@@ -8,12 +8,12 @@ import { OrderRepository } from './order.repository';
 
 @Entity({ repository: () => OrderRepository })
 export class Order extends OrmUuidTimestampEntity {
-  @Enum(() => OrderStatus)
-  public status? = OrderStatus.PENDING;
+	@Enum(() => OrderStatus)
+	public status? = OrderStatus.PENDING;
 
-  @ManyToMany(() => Product, 'orders', { owner: true })
-  public products = new Collection<Product>(this);
+	@ManyToMany(() => Product, 'orders', { owner: true })
+	public products = new Collection<Product>(this);
 
-  @ManyToOne(() => User)
-  public user!: User;
+	@ManyToOne(() => User)
+	public user!: User;
 }

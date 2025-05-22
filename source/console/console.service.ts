@@ -9,121 +9,121 @@ import { ConsoleConfig } from './console.config';
 
 @Injectable()
 export class ConsoleService implements LogTransport {
-  public constructor(
-    private readonly appConfig: AppConfig,
-    private readonly consoleConfig: ConsoleConfig,
-    private readonly logService: LogService,
-  ) {
-    this.logService.registerTransport(this);
-  }
+	public constructor(
+		private readonly appConfig: AppConfig,
+		private readonly consoleConfig: ConsoleConfig,
+		private readonly logService: LogService,
+	) {
+		this.logService.registerTransport(this);
+	}
 
-  /**
-   * Acquires this transport name.
-   */
-  public getName(): LogTransportName {
-    return LogTransportName.CONSOLE;
-  }
+	/**
+	 * Acquires this transport name.
+	 */
+	public getName(): LogTransportName {
+		return LogTransportName.CONSOLE;
+	}
 
-  /**
-   * Returns minimum level for logging this transport.
-   */
-  public getSeverity(): LogSeverity {
-    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
-    const { severity } = consoleOptions;
+	/**
+	 * Returns minimum level for logging this transport.
+	 */
+	public getSeverity(): LogSeverity {
+		const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
+		const { severity } = consoleOptions;
 
-    const environment = this.appConfig.NODE_ENV;
-    const envSeverity = environment === AppEnvironment.LOCAL ? LogSeverity.TRACE : LogSeverity.WARNING;
+		const environment = this.appConfig.NODE_ENV;
+		const envSeverity = environment === AppEnvironment.LOCAL ? LogSeverity.TRACE : LogSeverity.WARNING;
 
-    return this.consoleConfig.CONSOLE_SEVERITY || severity || envSeverity;
-  }
+		return this.consoleConfig.CONSOLE_SEVERITY || severity || envSeverity;
+	}
 
-  /**
-   * Logs a message on the console, if the environment is set
-   * to LOCAL applies colorization based on severity.
-   * @param params
-   */
-  public log(params: LogParams): void {
-    const environment = this.appConfig.NODE_ENV;
-    const { timestamp, severity, message, caller, requestId, traceId, spanId, data, error } = params;
-    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
-    const { pretty, indentation, maxLength, hideDetails } = consoleOptions;
+	/**
+	 * Logs a message on the console, if the environment is set
+	 * to LOCAL applies colorization based on severity.
+	 * @param params
+	 */
+	public log(params: LogParams): void {
+		const environment = this.appConfig.NODE_ENV;
+		const { timestamp, severity, message, caller, requestId, traceId, spanId, data, error } = params;
+		const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
+		const { pretty, indentation, maxLength, hideDetails } = consoleOptions;
 
-    const isPretty = pretty || (environment === AppEnvironment.LOCAL && pretty !== false);
-    const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
+		const isPretty = pretty || (environment === AppEnvironment.LOCAL && pretty !== false);
+		const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
 
-    if (isPretty) {
-      const strSeverity = severity.toUpperCase().padEnd(7, ' ');
-      const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
-      const strData = JSON.stringify(data, null, indentation);
+		if (isPretty) {
+			const strSeverity = severity.toUpperCase().padEnd(7, ' ');
+			const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
+			const strData = JSON.stringify(data, null, indentation);
 
-      const strFilename = caller.length > 25 ? `${caller.slice(0, 11)}...${caller.slice(-11)}` : caller.padEnd(25, ' ');
+			const strFilename = caller.length > 25 ? `${caller.slice(0, 11)}...${caller.slice(-11)}` : caller.padEnd(25, ' ');
 
-      const slicedData = strData?.length > maxLength ? `${strData.slice(0, maxLength - 6)} [...]` : strData;
+			const slicedData = strData?.length > maxLength ? `${strData.slice(0, maxLength - 6)} [...]` : strData;
 
-      const gray = LogStyle.FG_BRIGHT_BLACK;
-      const reset = LogStyle.RESET;
-      const separator = `${gray} | ${reset}`;
+			const gray = LogStyle.FG_BRIGHT_BLACK;
+			const reset = LogStyle.RESET;
+			const separator = `${gray} | ${reset}`;
 
-      let severityColor: LogStyle;
+			let severityColor: LogStyle;
 
-      switch (severity) {
-        case LogSeverity.FATAL: {
-          severityColor = LogStyle.FG_MAGENTA;
-          break;
-        }
+			switch (severity) {
+				case LogSeverity.FATAL: {
+					severityColor = LogStyle.FG_MAGENTA;
+					break;
+				}
 
-        case LogSeverity.ERROR: {
-          severityColor = LogStyle.FG_RED;
-          break;
-        }
+				case LogSeverity.ERROR: {
+					severityColor = LogStyle.FG_RED;
+					break;
+				}
 
-        case LogSeverity.WARNING: {
-          severityColor = LogStyle.FG_YELLOW;
-          break;
-        }
+				case LogSeverity.WARNING: {
+					severityColor = LogStyle.FG_YELLOW;
+					break;
+				}
 
-        case LogSeverity.NOTICE: {
-          severityColor = LogStyle.FG_GREEN;
-          break;
-        }
+				case LogSeverity.NOTICE: {
+					severityColor = LogStyle.FG_GREEN;
+					break;
+				}
 
-        case LogSeverity.INFO: {
-          severityColor = LogStyle.FG_WHITE;
-          break;
-        }
+				case LogSeverity.INFO: {
+					severityColor = LogStyle.FG_WHITE;
+					break;
+				}
 
-        case LogSeverity.HTTP: {
-          severityColor = LogStyle.FG_BLUE;
-          break;
-        }
+				case LogSeverity.HTTP: {
+					severityColor = LogStyle.FG_BLUE;
+					break;
+				}
 
-        case LogSeverity.DEBUG: {
-          severityColor = LogStyle.FG_BRIGHT_BLACK;
-          break;
-        }
+				case LogSeverity.DEBUG: {
+					severityColor = LogStyle.FG_BRIGHT_BLACK;
+					break;
+				}
 
-        case LogSeverity.TRACE: {
-          severityColor = LogStyle.FG_BRIGHT_BLACK;
-          break;
-        }
-      }
+				case LogSeverity.TRACE: {
+					severityColor = LogStyle.FG_BRIGHT_BLACK;
+					break;
+				}
+			}
 
-      console[isError ? 'error' : 'log'](
-        `${gray}${timestamp}${reset}${separator}` +
-          `${severityColor}${strSeverity}${reset}${separator}` +
-          `${severityColor}${strRequestId}${reset}${separator}` +
-          `${severityColor}${strFilename}${reset}${separator}` +
-          `${severityColor}${message}${reset}` +
-          `${data && !hideDetails ? `${gray}\n${slicedData}${reset}` : ''}`,
-      );
+			console[isError ? 'error' : 'log'](
+				`${gray}${timestamp}${reset}${separator}` +
+					`${severityColor}${strSeverity}${reset}${separator}` +
+					`${severityColor}${strRequestId}${reset}${separator}` +
+					`${severityColor}${strFilename}${reset}${separator}` +
+					`${severityColor}${message}${reset}` +
+					`${data && !hideDetails ? `${gray}\n${slicedData}${reset}` : ''}`,
+			);
 
-      if (error) {
-        const { message, stack } = error;
-        console.error(`${severityColor}${message}${reset}${gray}\n${stack}${reset}`);
-      }
-    } else {
-      const logParams = { timestamp, severity, message, caller, requestId, traceId, spanId, data };
-      console[isError ? 'error' : 'log'](JSON.stringify(logParams));
-    }
-  }
+			if (error) {
+				const { message, stack } = error;
+				console.error(`${severityColor}${message}${reset}${gray}\n${stack}${reset}`);
+			}
+		} else {
+			const logParams = { timestamp, severity, message, caller, requestId, traceId, spanId, data };
+			console[isError ? 'error' : 'log'](JSON.stringify(logParams));
+		}
+	}
 }

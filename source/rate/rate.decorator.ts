@@ -9,5 +9,5 @@ import { RateLimitOptions } from './rate.interface';
  * @param options
  */
 export function RateLimit(options: RateLimitOptions): MethodDecorator {
-  return SetMetadata(AppMetadataKey.RATE_LIMIT_OPTIONS, options);
+	return SetMetadata(AppMetadataKey.RATE_LIMIT_OPTIONS, options);
 }

@@ -9,5 +9,5 @@ import { CacheRouteOptions } from './cache.interface';
  * @param options
  */
 export function Cache<T>(options: CacheRouteOptions<T> = {}): any {
-  return applyDecorators(SetMetadata(AppMetadataKey.CACHE_OPTIONS, options), UseInterceptors(CacheInterceptor));
+	return applyDecorators(SetMetadata(AppMetadataKey.CACHE_OPTIONS, options), UseInterceptors(CacheInterceptor));
 }

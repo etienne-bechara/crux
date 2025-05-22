@@ -8,21 +8,21 @@ import { TraceService } from './trace.service';
  * @param options
  */
 export function Span(name?: string, options?: SpanOptions) {
-  return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor): void => {
-    const spanName = name || `${target.constructor.name.replace('Service', '')} | ${propertyKey}`;
-    const sourceMethod = propertyDescriptor.value;
-    const isAsync = sourceMethod.constructor.name === 'AsyncFunction';
+	return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor): void => {
+		const spanName = name || `${target.constructor.name.replace('Service', '')} | ${propertyKey}`;
+		const sourceMethod = propertyDescriptor.value;
+		const isAsync = sourceMethod.constructor.name === 'AsyncFunction';
 
-    const wrapperMethod = function PropertyDescriptor(this: any, ...args: any[]): any {
-      return isAsync
-        ? TraceService.startManagedSpan(spanName, options || {}, async () => {
-            return await sourceMethod.apply(this, args);
-          })
-        : TraceService.startManagedSpan(spanName, options || {}, () => {
-            return sourceMethod.apply(this, args);
-          });
-    };
+		const wrapperMethod = function PropertyDescriptor(this: any, ...args: any[]): any {
+			return isAsync
+				? TraceService.startManagedSpan(spanName, options || {}, async () => {
+						return await sourceMethod.apply(this, args);
+					})
+				: TraceService.startManagedSpan(spanName, options || {}, () => {
+						return sourceMethod.apply(this, args);
+					});
+		};
 
-    propertyDescriptor.value = wrapperMethod;
-  };
+		propertyDescriptor.value = wrapperMethod;
+	};
 }

@@ -17,57 +17,57 @@ import { AppEnvironment } from './app.enum';
 import { AppOptions } from './app.interface';
 
 export const CORS_DEFAULT_OPTIONS: CorsOptions = {
-  origin: '*',
-  methods: '*',
-  allowedHeaders: '*',
-  exposedHeaders: '*',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+	origin: '*',
+	methods: '*',
+	allowedHeaders: '*',
+	exposedHeaders: '*',
+	preflightContinue: false,
+	optionsSuccessStatus: 204,
 };
 
 export const FASTIFY_DEFAULT_OPTIONS: Record<string, any> = {
-  trustProxy: true,
-  genReqId: () => crypto.randomBytes(16).toString('hex'),
+	trustProxy: true,
+	genReqId: () => crypto.randomBytes(16).toString('hex'),
 };
 
 export const APP_DEFAULT_OPTIONS: AppOptions = {
-  name: 'unknown',
-  instance: crypto.randomBytes(8).toString('hex'),
-  assetsPrefix: 'assets',
-  port: 8080,
-  hostname: '0.0.0.0',
-  timeout: 60_000,
-  controllers: [],
-  imports: [],
-  exports: [],
-  providers: [],
-  cors: CORS_DEFAULT_OPTIONS,
-  httpErrors: [
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    HttpStatus.NOT_IMPLEMENTED,
-    HttpStatus.BAD_GATEWAY,
-    HttpStatus.SERVICE_UNAVAILABLE,
-    HttpStatus.GATEWAY_TIMEOUT,
-    HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
-  ],
-  fastify: FASTIFY_DEFAULT_OPTIONS,
-  validator: VALIDATE_DEFAULT_OPTIONS,
-  cache: CACHE_DEFAULT_OPTIONS,
-  http: HTTP_DEFAULT_OPTIONS,
-  logs: LOG_DEFAULT_OPTIONS,
-  console: CONSOLE_DEFAULT_OPTIONS,
-  loki: LOKI_DEFAULT_OPTIONS,
-  metrics: METRIC_DEFAULT_OPTIONS,
-  traces: TRACE_DEFAULT_OPTIONS,
-  docs: DOC_DEFAULT_OPTIONS,
+	name: 'unknown',
+	instance: crypto.randomBytes(8).toString('hex'),
+	assetsPrefix: 'assets',
+	port: 8080,
+	hostname: '0.0.0.0',
+	timeout: 60_000,
+	controllers: [],
+	imports: [],
+	exports: [],
+	providers: [],
+	cors: CORS_DEFAULT_OPTIONS,
+	httpErrors: [
+		HttpStatus.INTERNAL_SERVER_ERROR,
+		HttpStatus.NOT_IMPLEMENTED,
+		HttpStatus.BAD_GATEWAY,
+		HttpStatus.SERVICE_UNAVAILABLE,
+		HttpStatus.GATEWAY_TIMEOUT,
+		HttpStatus.HTTP_VERSION_NOT_SUPPORTED,
+	],
+	fastify: FASTIFY_DEFAULT_OPTIONS,
+	validator: VALIDATE_DEFAULT_OPTIONS,
+	cache: CACHE_DEFAULT_OPTIONS,
+	http: HTTP_DEFAULT_OPTIONS,
+	logs: LOG_DEFAULT_OPTIONS,
+	console: CONSOLE_DEFAULT_OPTIONS,
+	loki: LOKI_DEFAULT_OPTIONS,
+	metrics: METRIC_DEFAULT_OPTIONS,
+	traces: TRACE_DEFAULT_OPTIONS,
+	docs: DOC_DEFAULT_OPTIONS,
 };
 
 @Config()
 export class AppConfig {
-  @InjectConfig()
-  @IsEnum(AppEnvironment)
-  public readonly NODE_ENV!: AppEnvironment;
+	@InjectConfig()
+	@IsEnum(AppEnvironment)
+	public readonly NODE_ENV!: AppEnvironment;
 
-  @InjectConfig()
-  public readonly APP_OPTIONS!: AppOptions;
+	@InjectConfig()
+	public readonly APP_OPTIONS!: AppOptions;
 }

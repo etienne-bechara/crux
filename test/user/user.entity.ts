@@ -12,45 +12,45 @@ import { UserRepository } from './user.repository';
 @Entity({ repository: () => UserRepository })
 @Unique({ properties: ['name'] })
 export class User extends OrmUuidTimestampEntity {
-  @IsString()
-  @Property()
-  public name!: string;
+	@IsString()
+	@Property()
+	public name!: string;
 
-  @Property()
-  @IsNumber()
-  public age!: number;
+	@Property()
+	@IsNumber()
+	public age!: number;
 
-  @Property({ nullable: true })
-  @IsOptional()
-  @IsEmail()
-  public email?: string;
+	@Property({ nullable: true })
+	@IsOptional()
+	@IsEmail()
+	public email?: string;
 
-  @OneToOne(() => Address, 'user', { orphanRemoval: true })
-  public address?: Address;
+	@OneToOne(() => Address, 'user', { orphanRemoval: true })
+	public address?: Address;
 
-  @OneToMany(() => Order, 'user')
-  public orders = new Collection<Order>(this);
+	@OneToMany(() => Order, 'user')
+	public orders = new Collection<Order>(this);
 
-  @OneToMany(() => Metadata, 'user', { orphanRemoval: true })
-  public metadata = new Collection<Metadata>(this);
+	@OneToMany(() => Metadata, 'user', { orphanRemoval: true })
+	public metadata = new Collection<Metadata>(this);
 
-  @ManyToMany(() => User, 'children', {
-    owner: true,
-    pivotEntity: () => Relation,
-    inverseJoinColumn: 'parent_id',
-    joinColumn: 'child_id',
-  })
-  public parents = new Collection<User>(this);
+	@ManyToMany(() => User, 'children', {
+		owner: true,
+		pivotEntity: () => Relation,
+		inverseJoinColumn: 'parent_id',
+		joinColumn: 'child_id',
+	})
+	public parents = new Collection<User>(this);
 
-  @ManyToMany(() => User, 'parents')
-  public children = new Collection<User>(this);
+	@ManyToMany(() => User, 'parents')
+	public children = new Collection<User>(this);
 
-  public toJSON(): UserDto {
-    const user = super.toJSON();
+	public toJSON(): UserDto {
+		const user = super.toJSON();
 
-    return {
-      ...user,
-      secret: user.age * 2,
-    };
-  }
+		return {
+			...user,
+			secret: user.age * 2,
+		};
+	}
 }

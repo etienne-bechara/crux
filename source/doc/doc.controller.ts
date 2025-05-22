@@ -9,19 +9,19 @@ import { DocService } from './doc.service';
 @Controller('docs')
 @ApiExcludeController()
 export class DocController {
-  public constructor(
-    private readonly docService: DocService,
-    private readonly memoryService: MemoryService,
-  ) {}
+	public constructor(
+		private readonly docService: DocService,
+		private readonly memoryService: MemoryService,
+	) {}
 
-  @Get()
-  @Header('Content-Type', 'text/html')
-  public getDocs(): string {
-    return this.docService.generateScalarHtml();
-  }
+	@Get()
+	@Header('Content-Type', 'text/html')
+	public getDocs(): string {
+		return this.docService.generateScalarHtml();
+	}
 
-  @Get('json')
-  public getDocsJson(): DocJsonDto {
-    return this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
-  }
+	@Get('json')
+	public getDocsJson(): DocJsonDto {
+		return this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
+	}
 }

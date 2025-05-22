@@ -1,5 +1,5 @@
 export enum CacheStatus {
-  DISABLED = 'disabled',
-  HIT = 'hit',
-  MISS = 'miss',
+	DISABLED = 'disabled',
+	HIT = 'hit',
+	MISS = 'miss',
 }
