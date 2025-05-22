@@ -1,6 +1,15 @@
-import { Abstract, DynamicModule, ForwardReference, HttpException, HttpStatus, INestApplication, ModuleMetadata, Provider, Type } from '@nestjs/common';
+import http from 'node:http';
+import {
+  Abstract,
+  DynamicModule,
+  ForwardReference,
+  HttpException,
+  HttpStatus,
+  INestApplication,
+  Provider,
+  Type,
+} from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import http from 'http';
 
 import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
@@ -57,7 +66,7 @@ export interface AppOptions {
   /** NestJS list of providers. */
   providers: Provider[];
   /** NestJS list of exports. */
-  exports: Array<DynamicModule | string | symbol | Provider | ForwardReference | Abstract<any> | Function>;
+  exports: Array<DynamicModule | string | symbol | Provider | ForwardReference | Abstract<any>>;
   /** Application CORS response. */
   cors: CorsOptions;
   /** HTTP exceptions that should be logged as errors. Default: Array of all `5xx` status. */
@@ -84,7 +93,10 @@ export interface AppOptions {
   docs: DocOptions;
 }
 
-export interface AppModuleOptions extends Partial<Omit<AppOptions, 'validator' | 'cache' | 'http' | 'logs' | 'console' | 'loki' | 'metrics' | 'traces' | 'docs'>> {
+export interface AppModuleOptions
+  extends Partial<
+    Omit<AppOptions, 'validator' | 'cache' | 'http' | 'logs' | 'console' | 'loki' | 'metrics' | 'traces' | 'docs'>
+  > {
   /** Validation pipe options. Can be overwritten per request using `ContextService`. */
   validator?: Partial<ValidateOptions>;
   /** Cache configuration. */

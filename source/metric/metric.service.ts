@@ -1,7 +1,19 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
+import { setTimeout } from 'node:timers/promises';
+import { Inject, Injectable, InternalServerErrorException, forwardRef } from '@nestjs/common';
+import {
+  Counter,
+  CounterConfiguration,
+  Gauge,
+  GaugeConfiguration,
+  Histogram,
+  HistogramConfiguration,
+  Metric,
+  Registry,
+  Summary,
+  SummaryConfiguration,
+  collectDefaultMetrics,
+} from 'prom-client';
 import { compress } from 'snappyjs';
-import { setTimeout } from 'timers/promises';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
@@ -16,7 +28,6 @@ import { MetricMessageProto } from './metric.proto';
 
 @Injectable()
 export class MetricService {
-
   private register!: Registry;
   private metrics: Map<string, Metric<any>> = new Map();
   private httpService!: HttpService;
@@ -37,7 +48,7 @@ export class MetricService {
    * Acquires configured metric URL giving priority to environment variable.
    */
   private buildMetricUrl(): string | undefined {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { url } = metrics;
     return this.metricConfig.METRIC_URL || url;
   }
@@ -46,7 +57,7 @@ export class MetricService {
    * Create Prometheus metrics registry and start collection defaults.
    */
   private setupRegistry(): void {
-    const { name: job, instance, metrics } = this.appConfig.APP_OPTIONS || { };
+    const { name: job, instance, metrics } = this.appConfig.APP_OPTIONS || {};
     const { defaultPrefix, defaultLabels, defaultBuckets } = metrics;
     const environment = this.appConfig.NODE_ENV;
 
@@ -65,20 +76,19 @@ export class MetricService {
    * Setup custom metrics used by application.
    */
   private setupMetrics(): void {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { httpStrategy, httpPercentiles, httpBuckets } = metrics;
 
     if (httpStrategy === MetricHttpStrategy.SUMMARY) {
       this.getSummary(AppMetric.HTTP_REQUEST_DURATION, {
         help: 'Duration of inbound HTTP requests in seconds.',
-        labelNames: [ 'traffic', 'method', 'host', 'path', 'code', 'cache' ],
+        labelNames: ['traffic', 'method', 'host', 'path', 'code', 'cache'],
         percentiles: httpPercentiles,
       });
-    }
-    else {
+    } else {
       this.getHistogram(AppMetric.HTTP_REQUEST_DURATION, {
         help: 'Duration of inbound HTTP requests in seconds.',
-        labelNames: [ 'traffic', 'method', 'host', 'path', 'code', 'cache' ],
+        labelNames: ['traffic', 'method', 'host', 'path', 'code', 'cache'],
         buckets: httpBuckets,
       });
     }
@@ -91,13 +101,17 @@ export class MetricService {
     const metricUrl = this.buildMetricUrl();
     if (!metricUrl) return;
 
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { username, password, pushInterval } = metrics;
 
-    this.httpService = new HttpService({
-      username: this.metricConfig.METRIC_USERNAME ?? username,
-      password: this.metricConfig.METRIC_PASSWORD ?? password,
-    }, this.appConfig, this.promiseService);
+    this.httpService = new HttpService(
+      {
+        username: this.metricConfig.METRIC_USERNAME ?? username,
+        password: this.metricConfig.METRIC_PASSWORD ?? password,
+      },
+      this.appConfig,
+      this.promiseService,
+    );
 
     while (true) {
       await setTimeout(pushInterval);
@@ -107,15 +121,15 @@ export class MetricService {
         const timestamp = Date.now();
 
         const messageData: MetricMessage = {
-          timeseries: currentMetrics.flatMap((m) => m.values.map((v) => ({
-            labels: [
-              { name: '__name__', value: v.metricName || m.name },
-              ...Object.keys(v.labels || { }).map((k) => ({ name: k, value: String(v.labels[k]) })),
-            ],
-            samples: [
-              { value: v.value, timestamp },
-            ],
-          }))),
+          timeseries: currentMetrics.flatMap((m) =>
+            m.values.map((v) => ({
+              labels: [
+                { name: '__name__', value: v.metricName || m.name },
+                ...Object.keys(v.labels || {}).map((k) => ({ name: k, value: String(v.labels[k]) })),
+              ],
+              samples: [{ value: v.value, timestamp }],
+            })),
+          ),
         };
 
         const message = new MetricMessageProto(messageData);
@@ -128,8 +142,7 @@ export class MetricService {
           body: compress(buffer),
           retryLimit: 2,
         });
-      }
-      catch (e) {
+      } catch (e) {
         this.logService.error('Failed to push metrics', e as Error);
       }
     }
@@ -181,13 +194,13 @@ export class MetricService {
    * Read metrics in Prometheus string format.
    */
   public async readMetrics(): Promise<string> {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { defaultFilter } = metrics;
 
     let currentMetrics = await this.register.metrics();
 
     if (defaultFilter) {
-      const reportMetrics = [ ...defaultFilter, ...this.metrics.keys() ];
+      const reportMetrics = [...defaultFilter, ...this.metrics.keys()];
       const metricsArray = currentMetrics.split('\n');
 
       const filteredMetrics = metricsArray.filter((m) => {
@@ -208,13 +221,13 @@ export class MetricService {
    * Read metrics in Prometheus JSON format.
    */
   public async readMetricsJson(): Promise<MetricDataDto[]> {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { defaultFilter } = metrics;
 
-    let currentMetrics: MetricDataDto[] = await this.register.getMetricsAsJSON() as any;
+    let currentMetrics: MetricDataDto[] = (await this.register.getMetricsAsJSON()) as any;
 
     if (defaultFilter) {
-      const reportMetrics = new Set([ ...defaultFilter, ...this.metrics.keys() ]);
+      const reportMetrics = new Set([...defaultFilter, ...this.metrics.keys()]);
       currentMetrics = currentMetrics.filter((m) => reportMetrics.has(m.name));
     }
 
@@ -227,12 +240,10 @@ export class MetricService {
    */
   public observeHttpDuration(params: MetricHttpDurationParams): void {
     const { traffic, method, host, path, code: rawCode, cache, duration } = params;
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { httpCodeBin } = metrics;
 
-    const code = rawCode && httpCodeBin
-      ? `${Math.floor(rawCode / 100)}xx`
-      : String(rawCode) || '';
+    const code = rawCode && httpCodeBin ? `${Math.floor(rawCode / 100)}xx` : String(rawCode) || '';
 
     this.getHttpMetric().labels(traffic, method, host, path, code, cache).observe(duration);
   }
@@ -241,9 +252,10 @@ export class MetricService {
    * Acquires the HTTP metric collector which might be either
    * a summary or histogram depending on app configuration.
    */
-  private getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code' | 'cache' >(
-  ): Summary<T> | Histogram<T> {
-    const { metrics } = this.appConfig.APP_OPTIONS || { };
+  private getHttpMetric<T extends string = 'traffic' | 'method' | 'host' | 'path' | 'code' | 'cache'>():
+    | Summary<T>
+    | Histogram<T> {
+    const { metrics } = this.appConfig.APP_OPTIONS || {};
     const { httpStrategy } = metrics;
 
     return httpStrategy === MetricHttpStrategy.SUMMARY
@@ -257,9 +269,7 @@ export class MetricService {
    * @param name
    * @param params
    */
-  public getCounter<T extends string>(
-    name: string, params?: Omit<CounterConfiguration<string>, 'name'>,
-  ): Counter<T> {
+  public getCounter<T extends string>(name: string, params?: Omit<CounterConfiguration<string>, 'name'>): Counter<T> {
     return this.getMetric(MetricDataType.COUNTER, name, params);
   }
 
@@ -269,9 +279,7 @@ export class MetricService {
    * @param name
    * @param params
    */
-  public getGauge<T extends string>(
-    name: string, params?: Omit<GaugeConfiguration<string>, 'name'>,
-  ): Gauge<T> {
+  public getGauge<T extends string>(name: string, params?: Omit<GaugeConfiguration<string>, 'name'>): Gauge<T> {
     return this.getMetric(MetricDataType.GAUGE, name, params);
   }
 
@@ -282,7 +290,8 @@ export class MetricService {
    * @param params
    */
   public getHistogram<T extends string>(
-    name: string, params?: Omit<HistogramConfiguration<string>, 'name'>,
+    name: string,
+    params?: Omit<HistogramConfiguration<string>, 'name'>,
   ): Histogram<T> {
     return this.getMetric(MetricDataType.HISTOGRAM, name, params);
   }
@@ -293,10 +302,7 @@ export class MetricService {
    * @param name
    * @param params
    */
-  public getSummary<T extends string>(
-    name: string, params?: Omit<SummaryConfiguration<string>, 'name'>,
-  ): Summary<T> {
+  public getSummary<T extends string>(name: string, params?: Omit<SummaryConfiguration<string>, 'name'>): Summary<T> {
     return this.getMetric(MetricDataType.SUMMARY, name, params);
   }
-
 }

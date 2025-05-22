@@ -1,16 +1,15 @@
+import { setTimeout } from 'node:timers/promises';
 import { Controller, Get, HttpStatus, INestApplication, Module, Patch } from '@nestjs/common';
 import supertest from 'supertest';
-import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
 import { Cache } from './cache.decorator';
 
 @Controller('cache')
 class CacheTestController {
-
   @Cache({
     ttl: 1000,
-    buckets: () => [ ],
+    buckets: () => [],
   })
   @Get('no-buckets')
   public getCacheNoBuckets(): { rng: number } {
@@ -19,7 +18,7 @@ class CacheTestController {
 
   @Cache({
     ttl: 1000,
-    buckets: ({ req }) => [ req.params.id, '10' ],
+    buckets: ({ req }) => [req.params.id, '10'],
   })
   @Get(':id')
   public getCacheById(): { rng: number } {
@@ -27,21 +26,18 @@ class CacheTestController {
   }
 
   @Cache({
-    invalidate: ({ req }) => [ req.params.id ],
+    invalidate: ({ req }) => [req.params.id],
   })
   @Patch(':id')
   public patchCache(): void {
     return;
   }
-
 }
 
 @Module({
-  controllers: [
-    CacheTestController,
-  ],
+  controllers: [CacheTestController],
 })
-class CacheTestModule { }
+class CacheTestModule {}
 
 describe('CacheService', () => {
   let app: INestApplication;
@@ -54,7 +50,7 @@ describe('CacheService', () => {
       disableMetrics: true,
       disableTraces: true,
       port: 0,
-      imports: [ CacheTestModule ],
+      imports: [CacheTestModule],
       cache: {
         host: 'localhost',
         port: 6379,

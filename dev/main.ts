@@ -43,8 +43,8 @@ void AppModule.boot({
   },
   docs: {
     tagGroups: [
-      { name: 'User Management', tags: [ 'User' ] },
-      { name: 'ZIP Code', tags: [ 'ZIP' ] },
+      { name: 'User Management', tags: ['User'] },
+      { name: 'ZIP Code', tags: ['ZIP'] },
     ],
   },
   imports: [
@@ -53,9 +53,7 @@ void AppModule.boot({
     ZipModule,
     OrmModule.registerAsync({
       disableEntityScan: true,
-      entities: [
-        User,
-      ],
+      entities: [User],
       useFactory: () => ({
         driver: MySqlDriver,
         host: 'localhost',
@@ -67,7 +65,5 @@ void AppModule.boot({
       }),
     }),
   ],
-  exports: [
-    OrmModule,
-  ],
+  exports: [OrmModule],
 });

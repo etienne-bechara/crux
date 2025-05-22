@@ -1,6 +1,6 @@
+import crypto from 'node:crypto';
 import { HttpStatus } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import crypto from 'crypto';
 
 import { CACHE_DEFAULT_OPTIONS } from '../cache/cache.config';
 import { Config, InjectConfig } from '../config/config.decorator';
@@ -37,10 +37,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
   port: 8080,
   hostname: '0.0.0.0',
   timeout: 60_000,
-  controllers: [ ],
-  imports: [ ],
-  exports: [ ],
-  providers: [ ],
+  controllers: [],
+  imports: [],
+  exports: [],
+  providers: [],
   cors: CORS_DEFAULT_OPTIONS,
   httpErrors: [
     HttpStatus.INTERNAL_SERVER_ERROR,
@@ -64,12 +64,10 @@ export const APP_DEFAULT_OPTIONS: AppOptions = {
 
 @Config()
 export class AppConfig {
-
   @InjectConfig()
   @IsEnum(AppEnvironment)
   public readonly NODE_ENV!: AppEnvironment;
 
   @InjectConfig()
   public readonly APP_OPTIONS!: AppOptions;
-
 }

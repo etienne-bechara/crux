@@ -7,10 +7,10 @@ import { SchemaModuleOptions, SchemaSyncResult } from './schema.interface';
 
 @Injectable()
 export class SchemaService {
-
   public constructor(
+    // biome-ignore lint/style/useDefaultParameterLast: <explanation>
     @Inject(SchemaInjectionToken.MODULE_OPTIONS)
-    private readonly syncModuleOptions: SchemaModuleOptions = { },
+    private readonly syncModuleOptions: SchemaModuleOptions = {},
     private readonly mikroOrm: MikroORM,
     private readonly logService: LogService,
   ) {
@@ -27,9 +27,13 @@ export class SchemaService {
    * @param options
    */
   private removeBlacklistedQueries(queries: string, options: SchemaModuleOptions): string {
-    const blacklist = options.blacklist ??= [ ];
-    queries = queries.replaceAll(/\n+/g, '\n');
-    return queries.split('\n').filter((q) => !blacklist.includes(q)).join('\n');
+    options.blacklist ??= [];
+
+    return queries
+      .replaceAll(/\n+/g, '\n')
+      .split('\n')
+      .filter((q) => !options.blacklist?.includes(q))
+      .join('\n');
   }
 
   /**
@@ -37,7 +41,7 @@ export class SchemaService {
    * configured entities.
    * @param options
    */
-  public async syncSchema(options: SchemaModuleOptions = { }): Promise<SchemaSyncResult> {
+  public async syncSchema(options: SchemaModuleOptions = {}): Promise<SchemaSyncResult> {
     const { safe } = options;
     this.logService.info('Starting database schema sync...');
 
@@ -57,8 +61,7 @@ export class SchemaService {
     try {
       await generator.execute(syncQueries);
       this.logService.notice('Database schema successfully updated');
-    }
-    catch (e) {
+    } catch (e) {
       status = SchemaSyncStatus.MIGRATION_FAILED;
       this.logService.error('Database schema update failed', e as Error, { syncQueries });
     }
@@ -81,5 +84,4 @@ export class SchemaService {
 
     this.logService.notice('Database schema successfully reset');
   }
-
 }

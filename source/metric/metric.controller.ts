@@ -7,10 +7,7 @@ import { MetricService } from './metric.service';
 @Controller('metrics')
 @ApiExcludeController()
 export class MetricController {
-
-  public constructor(
-    private readonly metricService: MetricService,
-  ) { }
+  public constructor(private readonly metricService: MetricService) {}
 
   @Get()
   @ApiProduces('text/plain')
@@ -22,5 +19,4 @@ export class MetricController {
   public getMetricsJson(): Promise<MetricDataDto[]> {
     return this.metricService.readMetricsJson();
   }
-
 }

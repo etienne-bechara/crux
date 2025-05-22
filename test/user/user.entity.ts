@@ -6,13 +6,12 @@ import { Address } from '../address/address.entity';
 import { Metadata } from '../metadata/metadata.entity';
 import { Order } from '../order/order.entity';
 import { Relation } from '../relation/relation.entity';
-import { UserRepository } from './user.repository';
 import { UserDto } from './user.dto.out';
+import { UserRepository } from './user.repository';
 
 @Entity({ repository: () => UserRepository })
-@Unique({ properties: [ 'name' ] })
+@Unique({ properties: ['name'] })
 export class User extends OrmUuidTimestampEntity {
-
   @IsString()
   @Property()
   public name!: string;
@@ -52,7 +51,6 @@ export class User extends OrmUuidTimestampEntity {
     return {
       ...user,
       secret: user.age * 2,
-    }
+    };
   }
-
 }

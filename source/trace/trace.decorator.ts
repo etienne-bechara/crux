@@ -1,4 +1,4 @@
-import { Span, SpanOptions } from '@opentelemetry/api';
+import { SpanOptions } from '@opentelemetry/api';
 
 import { TraceService } from './trace.service';
 
@@ -15,12 +15,12 @@ export function Span(name?: string, options?: SpanOptions) {
 
     const wrapperMethod = function PropertyDescriptor(this: any, ...args: any[]): any {
       return isAsync
-        ? TraceService.startManagedSpan(spanName, options || { }, async () => {
-          return await sourceMethod.apply(this, args);
-        })
-        : TraceService.startManagedSpan(spanName, options || { }, () => {
-          return sourceMethod.apply(this, args);
-        });
+        ? TraceService.startManagedSpan(spanName, options || {}, async () => {
+            return await sourceMethod.apply(this, args);
+          })
+        : TraceService.startManagedSpan(spanName, options || {}, () => {
+            return sourceMethod.apply(this, args);
+          });
     };
 
     propertyDescriptor.value = wrapperMethod;

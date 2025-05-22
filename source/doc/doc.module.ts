@@ -1,28 +1,21 @@
 import { INestApplication, Module } from '@nestjs/common';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { OperationObject, PathItemObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
 import { MemoryService } from '../memory/memory.service';
 import { DocController } from './doc.controller';
 import { DocTagStorage } from './doc.decorator';
-import { DocService } from './doc.service';
 import { DocOpenApi } from './doc.interface';
-import { OperationObject, PathItemObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { DocService } from './doc.service';
 
 @Module({
-  controllers: [
-    DocController,
-  ],
-  providers: [
-    DocService,
-  ],
-  exports: [
-    DocService,
-  ],
+  controllers: [DocController],
+  providers: [DocService],
+  exports: [DocService],
 })
 export class DocModule {
-
   /**
    * Creates the OpenAPI specification document.
    * @param instance
@@ -32,11 +25,11 @@ export class DocModule {
     const { docs } = options;
     const { tagGroups } = docs;
 
-    const builder = this.configureBuilder(options);
-    const document = this.buildOpenApiObject(instance, builder);
+    const builder = DocModule.configureBuilder(options);
+    const document = DocModule.buildOpenApiObject(instance, builder);
 
-    this.coalesceSchemaTitles(document);
-    this.coalescePathSummaries(document);
+    DocModule.coalesceSchemaTitles(document);
+    DocModule.coalescePathSummaries(document);
 
     document['x-tagGroups'] = tagGroups;
 
@@ -110,7 +103,7 @@ export class DocModule {
     const { schemas } = components;
 
     for (const key in schemas) {
-      const schema = schemas[key] as SchemaObject
+      const schema = schemas[key] as SchemaObject;
       schema.title ||= key;
     }
   }
@@ -123,12 +116,10 @@ export class DocModule {
     const { paths } = document;
 
     for (const path in paths) {
-
       for (const method in paths[path]) {
-        const operation = paths[path][method as keyof PathItemObject] as OperationObject
+        const operation = paths[path][method as keyof PathItemObject] as OperationObject;
         operation.summary ||= operation.operationId;
       }
     }
   }
-
 }

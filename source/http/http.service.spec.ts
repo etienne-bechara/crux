@@ -1,5 +1,5 @@
+import { setTimeout } from 'node:timers/promises';
 import { HttpStatus, Injectable, Module } from '@nestjs/common';
-import { setTimeout } from 'timers/promises';
 
 import { AppModule } from '../app/app.module';
 import { HttpError, HttpResponse } from './http.interface';
@@ -8,20 +8,12 @@ import { HttpService } from './http.service';
 
 @Injectable()
 class JsonService {
-
-  public constructor(
-    private readonly httpService: HttpService,
-  ) { }
-
+  public constructor(private readonly httpService: HttpService) {}
 }
 
 @Injectable()
 class GoogleService {
-
-  public constructor(
-    private readonly httpService: HttpService,
-  ) { }
-
+  public constructor(private readonly httpService: HttpService) {}
 }
 
 @Module({
@@ -31,14 +23,10 @@ class GoogleService {
       cacheTtl: 1000,
     }),
   ],
-  providers: [
-    JsonService,
-  ],
-  exports: [
-    JsonService,
-  ],
+  providers: [JsonService],
+  exports: [JsonService],
 })
-class JsonModule { }
+class JsonModule {}
 
 @Module({
   imports: [
@@ -46,14 +34,10 @@ class JsonModule { }
       baseUrl: 'https://www.google.com',
     }),
   ],
-  providers: [
-    GoogleService,
-  ],
-  exports: [
-    GoogleService,
-  ],
+  providers: [GoogleService],
+  exports: [GoogleService],
 })
-class GoogleModule { }
+class GoogleModule {}
 
 describe('HttpService', () => {
   let googleHttpService: HttpService;
@@ -65,10 +49,12 @@ describe('HttpService', () => {
       disableLogs: true,
       disableMetrics: true,
       disableTraces: true,
-      imports: [ GoogleModule, JsonModule ],
+      imports: [GoogleModule, JsonModule],
     });
 
+    // biome-ignore lint/complexity/useLiteralKeys: <explanation>
     jsonHttpService = app.get(JsonService)['httpService'];
+    // biome-ignore lint/complexity/useLiteralKeys: <explanation>
     googleHttpService = app.get(GoogleService)['httpService'];
   });
 
@@ -139,7 +125,7 @@ describe('HttpService', () => {
         replacements: { postId: '1' },
       });
 
-      expect(Object.keys(data || { }).length).toBe(0);
+      expect(Object.keys(data || {}).length).toBe(0);
     });
   });
 
@@ -149,8 +135,7 @@ describe('HttpService', () => {
 
       try {
         await jsonHttpService.get('posts', { timeout: 1 });
-      }
-      catch (e) {
+      } catch (e) {
         errorMessage = (e as Error).message;
       }
 
@@ -162,8 +147,7 @@ describe('HttpService', () => {
 
       try {
         await jsonHttpService.get('404');
-      }
-      catch (e) {
+      } catch (e) {
         errorStatus = (e as HttpError).status;
       }
 
@@ -175,8 +159,7 @@ describe('HttpService', () => {
 
       try {
         await jsonHttpService.get('404', { proxyExceptions: true });
-      }
-      catch (e) {
+      } catch (e) {
         errorStatus = (e as HttpError).status;
       }
 
@@ -190,10 +173,9 @@ describe('HttpService', () => {
       try {
         await jsonHttpService.get('404', {
           retryLimit: 2,
-          retryCodes: [ HttpStatus.NOT_FOUND ],
+          retryCodes: [HttpStatus.NOT_FOUND],
         });
-      }
-      catch {
+      } catch {
         // Silent fail
       }
 
@@ -208,8 +190,7 @@ describe('HttpService', () => {
         await jsonHttpService.get('404', {
           retryLimit: 2,
         });
-      }
-      catch {
+      } catch {
         // Silent fail
       }
 

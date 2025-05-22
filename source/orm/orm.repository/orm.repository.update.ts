@@ -2,11 +2,16 @@ import { EntityData, EntityManager, EntityName, FromEntityType, RequiredEntityDa
 import { ConflictException } from '@nestjs/common';
 
 import { OrmException, OrmSpanPrefix } from '../orm.enum';
-import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions, OrmUpdateParams, OrmUpsertOptions } from '../orm.interface';
+import {
+  OrmReadOptions,
+  OrmReadParams,
+  OrmRepositoryOptions,
+  OrmUpdateParams,
+  OrmUpsertOptions,
+} from '../orm.interface';
 import { OrmCreateRepository } from './orm.repository.create';
 
 export abstract class OrmUpdateRepository<Entity extends object> extends OrmCreateRepository<Entity> {
-
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
@@ -28,18 +33,17 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
     data?: EntityData<Entity>,
   ): Promise<Entity[]> {
     return this.runWithinSpan(OrmSpanPrefix.UPDATE, async () => {
-      if (!this.isValidData(params)) return [ ];
+      if (!this.isValidData(params)) return [];
 
-      const paramsArray = Array.isArray(params) ? params : [ params ];
-      const assignedEntities: Entity[] = [ ];
+      const paramsArray = Array.isArray(params) ? params : [params];
+      const assignedEntities: Entity[] = [];
       let comboArray: OrmUpdateParams<Entity>[];
 
       // Normalize update data into the combo standard
       if (data) {
         const entityArray: Entity[] = paramsArray as any;
         comboArray = entityArray.map((e) => ({ entity: e, data }));
-      }
-      else {
+      } else {
         comboArray = paramsArray as any;
       }
 
@@ -47,9 +51,9 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       await Promise.all(
         comboArray.map(async ({ entity, data }) => {
           for (const key in entity as any) {
-            const dataKey = (data as Record<string, any>)?.[key]
-            const entityKey = (entity as Record<string, any>)?.[key]
-            const isUninitializedArray = entityKey?.isInitialized && entityKey?.toArray && !entityKey.isInitialized()
+            const dataKey = (data as Record<string, any>)?.[key];
+            const entityKey = (entity as Record<string, any>)?.[key];
+            const isUninitializedArray = entityKey?.isInitialized && entityKey?.toArray && !entityKey.isInitialized();
 
             if (dataKey && isUninitializedArray) {
               await entityKey.init();
@@ -75,7 +79,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
   public async updateBy<P extends string = never>(
     params: OrmReadParams<Entity>,
     data: EntityData<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity[]> {
     const entities = await this.readBy(params, options);
     return this.update(entities, data);
@@ -88,7 +92,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
    */
   public async updateById(id: string | number, data: EntityData<Entity>): Promise<Entity> {
     const entity = await this.readByIdOrFail(id);
-    const [ updatedEntity ] = await this.update(entity, data);
+    const [updatedEntity] = await this.update(entity, data);
     return updatedEntity;
   }
 
@@ -98,7 +102,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
    * @param data
    */
   public async updateOne(entity: Entity, data: EntityData<Entity>): Promise<Entity> {
-    const [ updatedEntity ] = await this.update(entity, data);
+    const [updatedEntity] = await this.update(entity, data);
     return updatedEntity;
   }
 
@@ -110,24 +114,24 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
    */
   public upsert<P extends string = never>(
     data: EntityData<Entity> | EntityData<Entity>[],
-    options: OrmUpsertOptions<Entity, P> = { },
+    options: OrmUpsertOptions<Entity, P> = {},
   ): Promise<Entity[]> {
     return this.runWithinSpan(OrmSpanPrefix.UPSERT, async () => {
-      if (!this.isValidData(data)) return [ ];
+      if (!this.isValidData(data)) return [];
 
-      const dataArray = Array.isArray(data) ? data : [ data ];
+      const dataArray = Array.isArray(data) ? data : [data];
       const uniqueKey = this.getValidUniqueKey(options.uniqueKey);
       const nestedPks = this.getNestedPrimaryKeys();
 
-      const resultMap: { index: number; target: 'read' | 'create' | 'update' }[] = [ ];
-      const updateParams: OrmUpdateParams<Entity>[] = [ ];
-      const createData: RequiredEntityData<Entity>[] = [ ];
-      const existingEntities: Entity[] = [ ];
+      const resultMap: { index: number; target: 'read' | 'create' | 'update' }[] = [];
+      const updateParams: OrmUpdateParams<Entity>[] = [];
+      const createData: RequiredEntityData<Entity>[] = [];
+      const existingEntities: Entity[] = [];
       let createdEntities: Entity[];
 
       // Create clauses to match existing entities
       const clauses = dataArray.map((data: Record<string, any>) => {
-        const clause: Record<keyof Entity, any> = { } as any;
+        const clause: Record<keyof Entity, any> = {} as any;
 
         for (const key of uniqueKey) {
           const stringKey = key as string;
@@ -138,7 +142,7 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       });
 
       // Find matching data, ensure to populate array data that are 1:m or m:n relations
-      const populate = Array.isArray(options.populate) ? options.populate : [ ];
+      const populate = Array.isArray(options.populate) ? options.populate : [];
       const sampleData: Record<string, any> = dataArray[0];
 
       for (const key in sampleData) {
@@ -168,12 +172,10 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
             if (matchingNestedPk) {
               if (clauses[i][key]?.[matchingNestedPk] || clauses[i][key]?.[matchingNestedPk] === 0) {
                 if (e[key][matchingNestedPk] !== clauses[i][key][matchingNestedPk]) return false;
-              }
-              else {
+              } else {
                 if (e[key][matchingNestedPk] !== clauses[i][key]) return false;
               }
-            }
-            else {
+            } else {
               if (e[key] !== clauses[i][key]) return false;
             }
           }
@@ -199,13 +201,11 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
           if (options.disallowUpdate) {
             resultMap.push({ index: existingEntities.length, target: 'read' });
             existingEntities.push(match.entity[0]);
-          }
-          else {
+          } else {
             resultMap.push({ index: updateParams.length, target: 'update' });
             updateParams.push({ entity: match.entity[0], data: match.data });
           }
-        }
-        else {
+        } else {
           resultMap.push({ index: createData.length, target: 'create' });
           createData.push(match.data as RequiredEntityData<Entity>);
         }
@@ -214,18 +214,13 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
       // If two upsert operations run concurrently the second creation will likely fail
       // Allow a single retry to prevent this scenario unless `disallowRetry` is set
       try {
-        createdEntities = createData.length > 0
-          ? await this.create(createData)
-          : [ ];
-      }
-      catch (e) {
+        createdEntities = createData.length > 0 ? await this.create(createData) : [];
+      } catch (e) {
         if (options.disallowRetry) throw e;
         return this.upsert(data, { ...options, disallowRetry: true });
       }
 
-      const updatedEntities = updateParams.length > 0
-        ? await this.update(updateParams)
-        : [ ];
+      const updatedEntities = updateParams.length > 0 ? await this.update(updateParams) : [];
 
       const resultEntities = resultMap.map((i) => {
         switch (i.target) {
@@ -255,10 +250,9 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
    */
   public async upsertOne<P extends string = never>(
     data: EntityData<Entity>,
-    options: OrmUpsertOptions<Entity, P> = { },
+    options: OrmUpsertOptions<Entity, P> = {},
   ): Promise<Entity> {
-    const [ resultEntity ] = await this.upsert(data, options);
+    const [resultEntity] = await this.upsert(data, options);
     return resultEntity;
   }
-
 }

@@ -8,7 +8,7 @@ import { CacheService } from './cache.service';
 @Module({
   imports: [
     RedisModule.registerAsync({
-      inject: [ AppConfig, CacheConfig ],
+      inject: [AppConfig, CacheConfig],
       useFactory: (appConfig: AppConfig, cacheConfig: CacheConfig) => ({
         host: cacheConfig.CACHE_HOST ?? appConfig.APP_OPTIONS.cache?.host,
         port: cacheConfig.CACHE_PORT ?? appConfig.APP_OPTIONS.cache?.port,
@@ -17,23 +17,13 @@ import { CacheService } from './cache.service';
       }),
     }),
   ],
-  providers: [
-    CacheConfig,
-    CacheService,
-  ],
-  exports: [
-    CacheConfig,
-    CacheService,
-  ],
+  providers: [CacheConfig, CacheService],
+  exports: [CacheConfig, CacheService],
 })
-export class CacheModule { }
+export class CacheModule {}
 
 @Module({
-  providers: [
-    { provide: CacheService, useValue: null },
-  ],
-  exports: [
-    { provide: CacheService, useValue: null },
-  ],
+  providers: [{ provide: CacheService, useValue: null }],
+  exports: [{ provide: CacheService, useValue: null }],
 })
-export class CacheDisabledModule { }
+export class CacheDisabledModule {}

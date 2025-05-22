@@ -3,10 +3,7 @@ import { RandomService } from './random.service';
 
 @Controller('random')
 export class RandomController {
-
-  public constructor(
-    private readonly randomService: RandomService,
-  ) { }
+  public constructor(private readonly randomService: RandomService) {}
 
   @Get()
   public getRandom(): Promise<any> {
@@ -23,5 +20,4 @@ export class RandomController {
 
     return this.randomService.doRandomSplit(numericAmount);
   }
-
 }

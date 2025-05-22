@@ -12,28 +12,36 @@ import { LogStyle } from '../log/log.enum';
 import { LogService } from '../log/log.service';
 import { SchemaModuleOptions } from '../schema/schema.interface';
 import { SchemaModule } from '../schema/schema.module';
-import { OrmBaseEntity, OrmBigIntEntity, OrmBigIntTimestampEntity, OrmIntEntity, OrmIntTimestampEntity, OrmTimestampEntity, OrmUuidEntity, OrmUuidTimestampEntity } from './orm.entity';
+import {
+  OrmBaseEntity,
+  OrmBigIntEntity,
+  OrmBigIntTimestampEntity,
+  OrmIntEntity,
+  OrmIntTimestampEntity,
+  OrmTimestampEntity,
+  OrmUuidEntity,
+  OrmUuidTimestampEntity,
+} from './orm.entity';
 import { OrmInjectionToken } from './orm.enum';
 import { OrmInterceptor } from './orm.interceptor';
 import { OrmAsyncModuleOptions, OrmBuildMikroOrmOptionsParams, OrmModuleOptions } from './orm.interface';
 
-@Module({ })
+@Module({})
 export class OrmModule {
-
   /**
    * Configure the underlying ORM component.
    * @param options
    */
   public static registerAsync(options: OrmAsyncModuleOptions): DynamicModule {
     const entities: EntityName<Partial<any>>[] = options.disableEntityScan
-      ? options.entities || [ ]
-      : AppModule.globRequire([ 's*rc*/**/*.entity.{js,ts}' ]);
+      ? options.entities || []
+      : AppModule.globRequire(['s*rc*/**/*.entity.{js,ts}']);
 
     return {
       module: OrmModule,
-      imports: this.buildImports(entities),
-      providers: this.buildProviders(options, entities),
-      exports: this.buildExports(entities),
+      imports: OrmModule.buildImports(entities),
+      providers: OrmModule.buildProviders(options, entities),
+      exports: OrmModule.buildExports(entities),
     };
   }
 
@@ -46,7 +54,7 @@ export class OrmModule {
   private static buildImports(entities: EntityName<Partial<any>>[]): DynamicModule[] {
     return [
       MikroOrmModule.forRootAsync({
-        inject: [ OrmInjectionToken.ORM_PROVIDER_OPTIONS ],
+        inject: [OrmInjectionToken.ORM_PROVIDER_OPTIONS],
         useFactory: (mikroOrmOptions: OrmModuleOptions) => ({
           ...mikroOrmOptions,
           registerRequestContext: false,
@@ -55,7 +63,7 @@ export class OrmModule {
       }),
 
       SchemaModule.registerAsync({
-        inject: [ OrmInjectionToken.ORM_SCHEMA_OPTIONS ],
+        inject: [OrmInjectionToken.ORM_SCHEMA_OPTIONS],
         useFactory: (schemaModuleOptions: SchemaModuleOptions) => schemaModuleOptions,
       }),
 
@@ -78,27 +86,28 @@ export class OrmModule {
       },
       {
         provide: OrmInjectionToken.ORM_MODULE_OPTIONS,
-        inject: options.inject || [ ],
+        inject: options.inject || [],
         useFactory: options.useFactory,
       },
       {
         provide: OrmInjectionToken.ORM_PROVIDER_OPTIONS,
-        inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS, LogService, AppConfig ],
+        inject: [OrmInjectionToken.ORM_MODULE_OPTIONS, LogService, AppConfig],
         useFactory: (
           ormModuleOptions: OrmModuleOptions,
           logService: LogService,
           appConfig: AppConfig,
-        ): MikroORMOptions => this.buildMikroOrmOptions({
-          options: ormModuleOptions,
-          entities,
-          logService,
-          appConfig,
-        }),
+        ): MikroORMOptions =>
+          OrmModule.buildMikroOrmOptions({
+            options: ormModuleOptions,
+            entities,
+            logService,
+            appConfig,
+          }),
       },
       {
         provide: OrmInjectionToken.ORM_SCHEMA_OPTIONS,
-        inject: [ OrmInjectionToken.ORM_MODULE_OPTIONS ],
-        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync || { },
+        inject: [OrmInjectionToken.ORM_MODULE_OPTIONS],
+        useFactory: (ormModuleOptions: OrmModuleOptions): SchemaModuleOptions => ormModuleOptions.sync || {},
       },
     ];
   }
@@ -146,5 +155,4 @@ export class OrmModule {
       SchemaModule,
     ];
   }
-
 }

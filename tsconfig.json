@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [ "es2023", "dom" ],
+    "lib": ["es2023", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
@@ -10,6 +10,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   }
 }

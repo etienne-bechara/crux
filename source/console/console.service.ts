@@ -9,7 +9,6 @@ import { ConsoleConfig } from './console.config';
 
 @Injectable()
 export class ConsoleService implements LogTransport {
-
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly consoleConfig: ConsoleConfig,
@@ -29,7 +28,7 @@ export class ConsoleService implements LogTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LogSeverity {
-    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
+    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
     const { severity } = consoleOptions;
 
     const environment = this.appConfig.NODE_ENV;
@@ -46,7 +45,7 @@ export class ConsoleService implements LogTransport {
   public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { timestamp, severity, message, caller, requestId, traceId, spanId, data, error } = params;
-    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || { };
+    const { console: consoleOptions } = this.appConfig.APP_OPTIONS || {};
     const { pretty, indentation, maxLength, hideDetails } = consoleOptions;
 
     const isPretty = pretty || (environment === AppEnvironment.LOCAL && pretty !== false);
@@ -57,13 +56,9 @@ export class ConsoleService implements LogTransport {
       const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
       const strData = JSON.stringify(data, null, indentation);
 
-      const strFilename = caller.length > 25
-        ? `${caller.slice(0, 11)}...${caller.slice(-11)}`
-        : caller.padEnd(25, ' ');
+      const strFilename = caller.length > 25 ? `${caller.slice(0, 11)}...${caller.slice(-11)}` : caller.padEnd(25, ' ');
 
-      const slicedData = strData?.length > maxLength
-        ? `${strData.slice(0, maxLength - 6)} [...]`
-        : strData;
+      const slicedData = strData?.length > maxLength ? `${strData.slice(0, maxLength - 6)} [...]` : strData;
 
       const gray = LogStyle.FG_BRIGHT_BLACK;
       const reset = LogStyle.RESET;
@@ -114,23 +109,21 @@ export class ConsoleService implements LogTransport {
       }
 
       console[isError ? 'error' : 'log'](
-        `${gray}${timestamp}${reset}${separator}`
-        + `${severityColor}${strSeverity}${reset}${separator}`
-        + `${severityColor}${strRequestId}${reset}${separator}`
-        + `${severityColor}${strFilename}${reset}${separator}`
-        + `${severityColor}${message}${reset}`
-        + `${data && !hideDetails ? `${gray}\n${slicedData}${reset}` : ''}`,
+        `${gray}${timestamp}${reset}${separator}` +
+          `${severityColor}${strSeverity}${reset}${separator}` +
+          `${severityColor}${strRequestId}${reset}${separator}` +
+          `${severityColor}${strFilename}${reset}${separator}` +
+          `${severityColor}${message}${reset}` +
+          `${data && !hideDetails ? `${gray}\n${slicedData}${reset}` : ''}`,
       );
 
       if (error) {
         const { message, stack } = error;
         console.error(`${severityColor}${message}${reset}${gray}\n${stack}${reset}`);
       }
-    }
-    else {
+    } else {
       const logParams = { timestamp, severity, message, caller, requestId, traceId, spanId, data };
       console[isError ? 'error' : 'log'](JSON.stringify(logParams));
     }
   }
-
 }

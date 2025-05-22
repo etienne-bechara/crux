@@ -1,5 +1,5 @@
+import crypto from 'node:crypto';
 import { DynamicModule, Module } from '@nestjs/common';
-import crypto from 'crypto';
 
 import { RedisInjectionToken } from './redis.enum';
 import { RedisAsyncModuleOptions, RedisModuleOptions } from './redis.interface';
@@ -10,21 +10,17 @@ import { RedisService } from './redis.service';
     RedisService,
     {
       provide: RedisInjectionToken.REDIS_MODULE_OPTIONS,
-      useValue: { },
+      useValue: {},
     },
   ],
-  exports: [
-    RedisService,
-    RedisInjectionToken.REDIS_MODULE_OPTIONS,
-  ],
+  exports: [RedisService, RedisInjectionToken.REDIS_MODULE_OPTIONS],
 })
 export class RedisModule {
-
   /**
    * Configures the underlying Redis service synchronously.
    * @param options
    */
-  public static register(options: RedisModuleOptions = { }): DynamicModule {
+  public static register(options: RedisModuleOptions = {}): DynamicModule {
     return {
       module: RedisModule,
       providers: [
@@ -62,5 +58,4 @@ export class RedisModule {
       ],
     };
   }
-
 }

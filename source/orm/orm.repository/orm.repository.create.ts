@@ -5,7 +5,6 @@ import { OrmRepositoryOptions } from '../orm.interface';
 import { OrmReadRepository } from './orm.repository.read';
 
 export abstract class OrmCreateRepository<Entity extends object> extends OrmReadRepository<Entity> {
-
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
@@ -19,13 +18,15 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * @param data
    */
   public build(data: RequiredEntityData<Entity> | RequiredEntityData<Entity>[]): Entity[] {
-    if (!this.isValidData(data)) return [ ];
+    if (!this.isValidData(data)) return [];
 
-    const dataArray = Array.isArray(data) ? data : [ data ];
+    const dataArray = Array.isArray(data) ? data : [data];
 
-    return dataArray.map((d) => this.entityManager.create(this.entityName, d, {
-      persist: false,
-    }));
+    return dataArray.map((d) =>
+      this.entityManager.create(this.entityName, d, {
+        persist: false,
+      }),
+    );
   }
 
   /**
@@ -54,8 +55,7 @@ export abstract class OrmCreateRepository<Entity extends object> extends OrmRead
    * @param data
    */
   public async createOne(data: RequiredEntityData<Entity>): Promise<Entity> {
-    const [ newEntity ] = await this.create(data);
+    const [newEntity] = await this.create(data);
     return newEntity;
   }
-
 }

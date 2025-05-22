@@ -5,26 +5,14 @@ import { MetricController } from './metric.controller';
 import { MetricService } from './metric.service';
 
 @Module({
-  controllers: [
-    MetricController,
-  ],
-  providers: [
-    MetricConfig,
-    MetricService,
-  ],
-  exports: [
-    MetricConfig,
-    MetricService,
-  ],
+  controllers: [MetricController],
+  providers: [MetricConfig, MetricService],
+  exports: [MetricConfig, MetricService],
 })
-export class MetricModule { }
+export class MetricModule {}
 
 @Module({
-  providers: [
-    { provide: MetricService, useValue: null },
-  ],
-  exports: [
-    { provide: MetricService, useValue: null },
-  ],
+  providers: [{ provide: MetricService, useValue: null }],
+  exports: [{ provide: MetricService, useValue: null }],
 })
-export class MetricDisabledModule { }
+export class MetricDisabledModule {}

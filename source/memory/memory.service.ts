@@ -4,7 +4,6 @@ import { CacheProvider, CacheSetOptions, CacheTtlOptions } from '../cache/cache.
 
 @Injectable()
 export class MemoryService implements CacheProvider {
-
   private memoryData = new Map<string, any>();
   private memoryExpiration = new Map<string, number>();
 
@@ -47,7 +46,7 @@ export class MemoryService implements CacheProvider {
    * @param value
    * @param options
    */
-  public set(key: string, value: any, options: CacheSetOptions = { }): void {
+  public set(key: string, value: any, options: CacheSetOptions = {}): void {
     const { ttl, skip } = options;
     let skipped = false;
 
@@ -57,8 +56,7 @@ export class MemoryService implements CacheProvider {
 
         if (exists) {
           skipped = true;
-        }
-        else {
+        } else {
           this.memoryData.set(key, value);
         }
 
@@ -70,8 +68,7 @@ export class MemoryService implements CacheProvider {
 
         if (exists) {
           this.memoryData.set(key, value);
-        }
-        else {
+        } else {
           skipped = true;
         }
 
@@ -108,7 +105,7 @@ export class MemoryService implements CacheProvider {
    * @param amount
    * @param options
    */
-  public incrbyfloat(key: string, amount: number = 1, options: CacheTtlOptions = { }): number {
+  public incrbyfloat(key: string, amount = 1, options: CacheTtlOptions = {}): number {
     const value: number = this.get(key);
     const newValue = !value && value !== 0 ? amount : value + amount;
 
@@ -122,7 +119,7 @@ export class MemoryService implements CacheProvider {
    */
   public smembers(key: string): string[] {
     const set: Set<string> = this.get(key);
-    return set ? [ ...set ] : [ ];
+    return set ? [...set] : [];
   }
 
   /**
@@ -131,15 +128,13 @@ export class MemoryService implements CacheProvider {
    * @param value
    * @param options
    */
-  public sadd(key: string, value: string, options: CacheTtlOptions = { }): void {
+  public sadd(key: string, value: string, options: CacheTtlOptions = {}): void {
     const set: Set<string> = this.get(key);
 
     if (set) {
       set.add(value);
-    }
-    else {
-      this.set(key, new Set([ value ]), options);
+    } else {
+      this.set(key, new Set([value]), options);
     }
   }
-
 }

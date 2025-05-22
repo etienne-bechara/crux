@@ -4,7 +4,6 @@ import { IsBase64, IsEnum, IsNumberString, IsOptional, IsString } from '../valid
 
 @Config()
 export class OrmConfig {
-
   @IsOptional()
   @InjectConfig()
   @IsEnum(AppEnvironment)
@@ -49,5 +48,4 @@ export class OrmConfig {
   @InjectConfig()
   @IsBase64()
   public readonly ORM_CLIENT_KEY?: string;
-
 }

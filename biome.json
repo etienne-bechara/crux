@@ -20,6 +20,12 @@
       "complexity": {
         "noStaticOnlyClass": "off"
       },
+      "correctness": {
+        "noUnusedImports": "error"
+      },
+      "style": {
+        "useImportType": "off"
+      },
       "suspicious": {
         "noExplicitAny": "off"
       }

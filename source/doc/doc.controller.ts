@@ -9,11 +9,10 @@ import { DocService } from './doc.service';
 @Controller('docs')
 @ApiExcludeController()
 export class DocController {
-
   public constructor(
     private readonly docService: DocService,
     private readonly memoryService: MemoryService,
-  ) { }
+  ) {}
 
   @Get()
   @Header('Content-Type', 'text/html')
@@ -25,5 +24,4 @@ export class DocController {
   public getDocsJson(): DocJsonDto {
     return this.memoryService.get(AppMemoryKey.OPEN_API_SPECIFICATION);
   }
-
 }

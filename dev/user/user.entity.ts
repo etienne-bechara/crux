@@ -3,9 +3,8 @@ import { Entity, Property, Unique } from '../../source/override';
 import { UserRepository } from './user.repository';
 
 @Entity({ repository: () => UserRepository })
-@Unique({ properties: [ 'email' ] })
+@Unique({ properties: ['email'] })
 export class User extends OrmUuidTimestampEntity {
-
   @Property()
   public email!: string;
 
@@ -23,5 +22,4 @@ export class User extends OrmUuidTimestampEntity {
 
   @Property({ nullable: true })
   public phone?: string;
-
 }

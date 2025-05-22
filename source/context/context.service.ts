@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException, ValidationPipeOptions } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ValidationPipeOptions } from '@nestjs/common';
 import { Span } from '@opentelemetry/api';
 
 import { AppRequest, AppResponse } from '../app/app.interface';
@@ -9,7 +9,6 @@ import { ContextStorage } from './context.storage';
 
 @Injectable()
 export class ContextService<Metadata = Record<string, any>> {
-
   /**
    * Get local store for current context.
    */
@@ -50,7 +49,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param key
    */
   public getMetadata<K extends keyof Metadata>(key: K): Metadata[K] {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || {};
     return metadata[key];
   }
 
@@ -60,7 +59,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * @param value
    */
   public setMetadata<K extends keyof Metadata>(key: K, value: Metadata[K]): void {
-    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || { };
+    const metadata: Metadata = this.getStore()?.get(ContextStorageKey.REQUEST_METADATA) || {};
     metadata[key] = value;
     this.getStore()?.set(ContextStorageKey.REQUEST_METADATA, metadata);
   }
@@ -117,9 +116,7 @@ export class ContextService<Metadata = Record<string, any>> {
   public getRequestDescription(step: 'in' | 'out'): string {
     const description = `${this.getRequestMethod()} ${this.getRequestPath()}`;
 
-    return step === 'in'
-      ? `⯈ ${description}`
-      : `⯇ ${description}`;
+    return step === 'in' ? `⯈ ${description}` : `⯇ ${description}`;
   }
 
   /**
@@ -138,7 +135,7 @@ export class ContextService<Metadata = Record<string, any>> {
     const req = this.getRequest();
 
     if (req?.params) {
-      delete req.params['*'];
+      req.params['*'] = undefined;
     }
 
     return this.validateObjectLength(req?.params as Record<string, any>);
@@ -192,7 +189,7 @@ export class ContextService<Metadata = Record<string, any>> {
   /**
    * Acquire authorization header and decode its payload if applicable.
    */
-  public getRequestJwtPayload(): ContextJwtPayload | undefined{
+  public getRequestJwtPayload(): ContextJwtPayload | undefined {
     const token: string = this.getRequestHeader('authorization');
     return this.decodeJwtPayload(token);
   }
@@ -201,7 +198,7 @@ export class ContextService<Metadata = Record<string, any>> {
    * Decodes and returns target token payload.
    * @param token
    */
-  private decodeJwtPayload(token: string): ContextJwtPayload | undefined{
+  private decodeJwtPayload(token: string): ContextJwtPayload | undefined {
     const payload: string = token?.split('.')?.[1];
     if (!payload) return;
 
@@ -209,19 +206,17 @@ export class ContextService<Metadata = Record<string, any>> {
 
     try {
       decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
-    }
-    catch {
+    } catch {
       throw new UnauthorizedException('invalid jwt payload');
     }
 
-    decoded.app_metadata ??= { };
-    decoded.user_metadata ??= { };
+    decoded.app_metadata ??= {};
+    decoded.user_metadata ??= {};
 
     for (const key in decoded) {
       if (key.includes('app_metadata')) {
         decoded.app_metadata = { ...decoded.app_metadata, ...decoded[key] };
-      }
-      else if (key.includes('user_metadata')) {
+      } else if (key.includes('user_metadata')) {
         decoded.user_metadata = { ...decoded.user_metadata, ...decoded[key] };
       }
     }
@@ -281,5 +276,4 @@ export class ContextService<Metadata = Record<string, any>> {
   public setCacheStatus(status: CacheStatus): void {
     this.getStore()?.set(ContextStorageKey.CACHE_STATUS, status);
   }
-
 }

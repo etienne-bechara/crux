@@ -72,7 +72,7 @@ describe('LogService', () => {
             user: 'john.doe',
             password: '1234',
           },
-          { },
+          {},
         ],
         data: '<Buffer>',
       });

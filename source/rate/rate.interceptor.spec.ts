@@ -6,7 +6,6 @@ import { RateLimit } from './rate.decorator';
 
 @Controller('rate')
 class RateTestController {
-
   @RateLimit({ limit: 3 })
   @Get('limited')
   public getLimited(): { rng: number } {
@@ -17,15 +16,12 @@ class RateTestController {
   public getUnlimited(): { rng: number } {
     return { rng: Math.random() };
   }
-
 }
 
 @Module({
-  controllers: [
-    RateTestController,
-  ],
+  controllers: [RateTestController],
 })
-class RateTestModule { }
+class RateTestModule {}
 
 describe('RateInterceptor', () => {
   let app: INestApplication;
@@ -38,7 +34,7 @@ describe('RateInterceptor', () => {
       disableMetrics: true,
       disableTraces: true,
       port: 0,
-      imports: [ RateTestModule ],
+      imports: [RateTestModule],
       cache: {
         host: 'localhost',
         port: 6379,

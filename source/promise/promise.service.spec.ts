@@ -1,12 +1,12 @@
-import { randomUUID } from 'crypto';
-import { setTimeout } from 'timers/promises';
+import { randomUUID } from 'node:crypto';
+import { setTimeout } from 'node:timers/promises';
 
 import { AppModule } from '../app/app.module';
 import { CacheModule } from '../override';
 import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
-const mockFailure = async (c: { quantity: number}): Promise<void> => {
+const mockFailure = async (c: { quantity: number }): Promise<void> => {
   c.quantity++;
   throw new Error('error');
 };
@@ -20,7 +20,7 @@ describe('PromiseService', () => {
       disableLogs: true,
       disableMetrics: true,
       disableTraces: true,
-      imports: [ PromiseModule, CacheModule ],
+      imports: [PromiseModule, CacheModule],
     });
 
     promiseService = app.get(PromiseService);
@@ -31,7 +31,7 @@ describe('PromiseService', () => {
       const start = Date.now();
 
       await promiseService.resolveLimited({
-        data: [ 100, 200, 300, 400 ],
+        data: [100, 200, 300, 400],
         promise: (t) => setTimeout(t),
         limit: 1,
       });
@@ -44,7 +44,7 @@ describe('PromiseService', () => {
       const start = Date.now();
 
       await promiseService.resolveLimited({
-        data: [ 100, 200, 300, 400 ],
+        data: [100, 200, 300, 400],
         promise: (t) => setTimeout(t),
         limit: 4,
       });
@@ -58,20 +58,20 @@ describe('PromiseService', () => {
       let counter = 0;
       let err: Error | undefined;
 
-      const promise = (): Promise<void> => new Promise((r) => {
-        counter++;
-        if (counter > 50) throw new Error(errorMessage);
-        r();
-      });
+      const promise = (): Promise<void> =>
+        new Promise((r) => {
+          counter++;
+          if (counter > 50) throw new Error(errorMessage);
+          r();
+        });
 
       try {
         await promiseService.resolveLimited({
-          data: [ ...Array.from({ length: 100 }).keys() ],
+          data: [...Array.from({ length: 100 }).keys()],
           promise,
           limit: 10,
         });
-      }
-      catch (e) {
+      } catch (e) {
         err = e as Error;
       }
 
@@ -90,17 +90,18 @@ describe('PromiseService', () => {
         return Math.random();
       };
 
-      const dedup = (): Promise<number> => promiseService.resolveDeduped({
-        key: dedupKey,
-        timeout: 10_000,
-        promise: fn,
-      });
+      const dedup = (): Promise<number> =>
+        promiseService.resolveDeduped({
+          key: dedupKey,
+          timeout: 10_000,
+          promise: fn,
+        });
 
       const firstPromise = dedup();
       const secondPromise = dedup();
       const thirdPromise = dedup();
 
-      const [ first, second, third ] = await Promise.all([ firstPromise, secondPromise, thirdPromise ]);
+      const [first, second, third] = await Promise.all([firstPromise, secondPromise, thirdPromise]);
 
       expect(counter).toBe(1);
       expect(second).toEqual(first);
@@ -125,11 +126,12 @@ describe('PromiseService', () => {
         return Math.random();
       };
 
-      const dedup = (): Promise<number> => promiseService.resolveDeduped({
-        key: dedupKey,
-        timeout: 10_000,
-        promise: fn,
-      });
+      const dedup = (): Promise<number> =>
+        promiseService.resolveDeduped({
+          key: dedupKey,
+          timeout: 10_000,
+          promise: fn,
+        });
 
       const firstPromise = dedup();
       const secondPromise = dedup();
@@ -137,8 +139,7 @@ describe('PromiseService', () => {
 
       try {
         await firstPromise;
-      }
-      catch (e) {
+      } catch (e) {
         errorMessage = (e as Error).message;
       }
 
@@ -161,8 +162,9 @@ describe('PromiseService', () => {
           promise: () => mockFailure(counter),
           retries,
         });
+      } catch {
+        /* Handled by expect */
       }
-      catch { /* Handled by expect */ }
 
       expect(counter.quantity).toBe(retries + 1);
     });
@@ -178,8 +180,9 @@ describe('PromiseService', () => {
           timeout,
           delay,
         });
+      } catch {
+        /* Handled by expect */
       }
-      catch { /* Handled by expect */ }
 
       expect(counter.quantity).toBe(Math.ceil(timeout / delay) + 1);
     });
@@ -193,8 +196,9 @@ describe('PromiseService', () => {
           promise: () => setTimeout(2000),
           timeout,
         });
+      } catch {
+        /* Handled by expect */
       }
-      catch { /* Handled by expect */ }
 
       const elapsed = Date.now() - start;
       expect(elapsed).toBeLessThan(timeout * 1.1);
@@ -209,11 +213,11 @@ describe('PromiseService', () => {
           promise: () => mockFailure(counter),
           retries,
         });
+      } catch {
+        /* Handled by expect */
       }
-      catch { /* Handled by expect */ }
 
       expect(counter.quantity).toBe(1);
     });
   });
 });
-

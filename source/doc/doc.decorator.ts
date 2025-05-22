@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { DocTag } from './doc.interface';
 
-export const DocTagStorage: DocTag[] = [ ];
+export const DocTagStorage: DocTag[] = [];
 
 /**
  * Sets a documentation tag to target with description and
@@ -17,8 +17,7 @@ export function ApiTag(tag: DocTag): MethodDecorator & ClassDecorator {
   if (matchingTag) {
     matchingTag.description ??= description;
     matchingTag.externalDocs ??= externalDocs;
-  }
-  else {
+  } else {
     DocTagStorage.push({ name, description });
   }
 

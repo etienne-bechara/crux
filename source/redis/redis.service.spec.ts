@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import { AppModule } from '../app/app.module';
 import { RedisModule } from './redis.module';
@@ -126,12 +126,10 @@ describe('RedisService', () => {
       const start = Date.now();
       const ttl = 500;
       const instances = 5;
-      const lockPromises = [ ];
+      const lockPromises = [];
 
       for (let i = 0; i < instances; i++) {
-        lockPromises.push(
-          redisService.lock(lockKey, { ttl }),
-        );
+        lockPromises.push(redisService.lock(lockKey, { ttl }));
       }
 
       await Promise.all(lockPromises);
@@ -156,7 +154,7 @@ describe('RedisService', () => {
     it('should try once and throw if retries are zero', async () => {
       const lockKey: string = randomUUID();
       const ttl = 1000;
-      let exception = false
+      let exception = false;
 
       await redisService.lock(lockKey, { ttl });
 
@@ -166,8 +164,7 @@ describe('RedisService', () => {
           delay: ttl * 2,
           ttl,
         });
-      }
-      catch {
+      } catch {
         exception = true;
       }
 

@@ -4,10 +4,7 @@ import { AppConfig } from '../app/app.config';
 
 @Injectable()
 export class DocService {
-
-  public constructor(
-    private readonly appConfig: AppConfig,
-  ) { }
+  public constructor(private readonly appConfig: AppConfig) {}
 
   /**
    * Creates a simple HTMl page which will render the generated
@@ -38,5 +35,4 @@ export class DocService {
 </html>
 `;
   }
-
 }

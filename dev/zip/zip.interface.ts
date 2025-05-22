@@ -2,7 +2,6 @@ import { IsEnum, IsNumberString, IsString } from '../../source/override';
 import { ZipState } from './zip.enum';
 
 export class Zip {
-
   @IsNumberString()
   public cep!: string;
 
@@ -32,5 +31,4 @@ export class Zip {
 
   @IsNumberString()
   public siafi!: string;
-
 }

@@ -9,11 +9,10 @@ import { ContextStorage } from '../context/context.storage';
 
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
-  ) { }
+  ) {}
 
   /**
    * Creates a true server side timer that ends any requests
@@ -33,17 +32,15 @@ export class TimeoutInterceptor implements NestInterceptor {
     const remaining = appTimeout - elapsed;
     const finalTimeout = remaining > 1 ? remaining : 1;
 
-    return next
-      .handle()
-      .pipe(
-        timeout({
-          first: finalTimeout,
-          with: () => throwError(() => {
+    return next.handle().pipe(
+      timeout({
+        first: finalTimeout,
+        with: () =>
+          throwError(() => {
             ContextStorage.getStore()?.set(ContextStorageKey.REQUEST_TIMED_OUT, true);
             return new GatewayTimeoutException('failed to fulfill request within timeout');
           }),
-        }),
-      );
+      }),
+    );
   }
-
 }

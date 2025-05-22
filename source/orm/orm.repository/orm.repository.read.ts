@@ -1,7 +1,12 @@
+import crypto from 'node:crypto';
 import { EntityManager, EntityName, FindOptions, LoadStrategy, PopulatePath } from '@mikro-orm/core';
 import { AutoPath, FilterQuery, FromEntityType, UnboxArray } from '@mikro-orm/core/typings';
-import { BadRequestException, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import crypto from 'crypto';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { AppModule } from '../../app/app.module';
 import { CacheService } from '../../cache/cache.service';
@@ -11,7 +16,6 @@ import { OrmReadOptions, OrmReadPaginatedParams, OrmReadParams, OrmRepositoryOpt
 import { OrmBaseRepository } from './orm.repository.base';
 
 export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRepository<Entity> {
-
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
@@ -42,10 +46,10 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readBy<P extends string = never>(
     params: OrmReadParams<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity[]> {
     return this.runWithinSpan(OrmSpanPrefix.READ, async () => {
-      if (!this.isValidData(params)) return [ ];
+      if (!this.isValidData(params)) return [];
 
       options.populate ??= this.repositoryOptions.defaultPopulate ?? false;
       options.strategy ??= LoadStrategy.SELECT_IN;
@@ -57,7 +61,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
         throw new NotFoundException(OrmException.ENTITY_NOT_FOUND);
       }
 
-      return readEntities || [ ];
+      return readEntities || [];
     });
   }
 
@@ -68,7 +72,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readById<P extends string = never>(
     id: string | number,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity> {
     const pks = this.getPrimaryKeys();
 
@@ -89,7 +93,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readByIdOrFail<P extends string = never>(
     id: string | number,
-    options: Omit<OrmReadOptions<Entity, P>, 'findOrFail'> = { },
+    options: Omit<OrmReadOptions<Entity, P>, 'findOrFail'> = {},
   ): Promise<Entity> {
     return this.readById(id, { ...options, findOrFail: true });
   }
@@ -102,7 +106,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readUnique<P extends string = never>(
     params: OrmReadParams<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity> {
     const entities = await this.readBy(params, options);
 
@@ -125,7 +129,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readUniqueOrFail<P extends string = never>(
     params: OrmReadParams<Entity>,
-    options: Omit<OrmReadOptions<Entity, P>, 'findOrFail'> = { },
+    options: Omit<OrmReadOptions<Entity, P>, 'findOrFail'> = {},
   ): Promise<Entity> {
     return this.readUnique(params, { ...options, findOrFail: true });
   }
@@ -153,7 +157,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   public async readPaginatedBy<P extends string = never>(
     params: OrmReadPaginatedParams<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<OrmPageDto<Entity>> {
     const { token } = params;
 
@@ -166,8 +170,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     if (token) {
       const context = await this.readTokenContext(token);
       page = await this.readPageBy(context, options);
-    }
-    else {
+    } else {
       page = await this.readPageBy(params, options);
     }
 
@@ -182,7 +185,7 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
    */
   private async readPageBy<P extends string = never>(
     params: OrmReadPaginatedParams<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<OrmPageDto<Entity>> {
     const { limit: bLimit, offset: bOffset, count: hasCount, sort, order: bOrder, populate, ...remainder } = params;
 
@@ -190,31 +193,30 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
     const offset = bOffset ?? 0;
 
     let order: OrmQueryOrder | undefined;
-    let orderBy;
+    let orderBy: any;
 
     if (sort) {
       order = bOrder || OrmQueryOrder.ASC;
-      orderBy = [ sort.split('.').reverse().reduce((acc: unknown, v) => ({ [v]: acc }), order) ];
+      orderBy = [
+        sort
+          .split('.')
+          .reverse()
+          .reduce((acc: unknown, v) => ({ [v]: acc }), order),
+      ];
     }
 
     const readParams: OrmReadParams<Entity> = remainder as any;
     const readPromise = this.readBy(readParams, { ...options, orderBy, limit, offset, populate });
 
-    const countPromise = hasCount
-      ? this.countBy(readParams)
-      : undefined;
+    const countPromise = hasCount ? this.countBy(readParams) : undefined;
 
-    const [ count, records ] = await Promise.all([ countPromise, readPromise ]);
+    const [count, records] = await Promise.all([countPromise, readPromise]);
 
-    const nextPromise = records.length === limit
-      ? this.createToken({ ...params, offset: offset + limit })
-      : null;
+    const nextPromise = records.length === limit ? this.createToken({ ...params, offset: offset + limit }) : null;
 
-    const previousPromise = offset
-      ? this.createToken({ ...params, offset: offset - limit })
-      : null;
+    const previousPromise = offset ? this.createToken({ ...params, offset: offset - limit }) : null;
 
-    const [ next, previous ] = await Promise.all([ nextPromise, previousPromise ]);
+    const [next, previous] = await Promise.all([nextPromise, previousPromise]);
 
     return { next, previous, limit, offset, count, sort, order, records };
   }
@@ -249,5 +251,4 @@ export abstract class OrmReadRepository<Entity extends object> extends OrmBaseRe
 
     return params as OrmReadPaginatedParams<Entity>;
   }
-
 }

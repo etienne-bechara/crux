@@ -8,7 +8,7 @@ import { LokiService } from './loki.service';
 @Module({
   imports: [
     HttpModule.registerAsync({
-      inject: [ AppConfig, LokiConfig ],
+      inject: [AppConfig, LokiConfig],
       useFactory: (appConfig: AppConfig, lokiConfig: LokiConfig) => ({
         name: 'LokiModule',
         disableTelemetry: true,
@@ -17,13 +17,7 @@ import { LokiService } from './loki.service';
       }),
     }),
   ],
-  providers: [
-    LokiConfig,
-    LokiService,
-  ],
-  exports: [
-    LokiConfig,
-    LokiService,
-  ],
+  providers: [LokiConfig, LokiService],
+  exports: [LokiConfig, LokiService],
 })
-export class LokiModule { }
+export class LokiModule {}

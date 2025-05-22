@@ -1,10 +1,10 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { DynamicModule, Global, INestApplication, InternalServerErrorException, Module } from '@nestjs/common';
+import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, context, propagation, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 
 import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
@@ -35,9 +35,8 @@ import { AppModuleOptions, AppOptions, AppRequest, AppResponse } from './app.int
 import { AppService } from './app.service';
 
 @Global()
-@Module({ })
+@Module({})
 export class AppModule {
-
   private static instance: INestApplication;
   private static options: AppOptions;
 
@@ -45,18 +44,18 @@ export class AppModule {
    * Returns application instance.
    */
   public static getInstance(): INestApplication {
-    if (!this.instance) {
+    if (!AppModule.instance) {
       throw new Error('application instance not configured');
     }
 
-    return this.instance;
+    return AppModule.instance;
   }
 
   /**
    * Closes application instance.
    */
   public static async close(): Promise<void> {
-    await this.instance.close();
+    await AppModule.instance.close();
   }
 
   /**
@@ -66,18 +65,17 @@ export class AppModule {
    * Skips the compile step if a pre-compiled `instance` is provided.
    * @param options
    */
-  public static async boot(options: AppModuleOptions = { }): Promise<INestApplication> {
+  public static async boot(options: AppModuleOptions = {}): Promise<INestApplication> {
     const { app } = options;
 
     if (app) {
-      this.instance = app;
-    }
-    else {
-      await this.compile(options);
+      AppModule.instance = app;
+    } else {
+      await AppModule.compile(options);
     }
 
-    await this.listen();
-    return this.instance;
+    await AppModule.listen();
+    return AppModule.instance;
   }
 
   /**
@@ -85,15 +83,15 @@ export class AppModule {
    * its reference without starting the adapter.
    * @param options
    */
-  public static async compile(options: AppModuleOptions = { }): Promise<INestApplication> {
-    this.configureOptions(options);
-    await this.configureAdapter();
+  public static async compile(options: AppModuleOptions = {}): Promise<INestApplication> {
+    AppModule.configureOptions(options);
+    await AppModule.configureAdapter();
 
-    if (!this.options.disableDocs) {
-      DocModule.configureDocumentation(this.instance, this.options);
+    if (!AppModule.options.disableDocs) {
+      DocModule.configureDocumentation(AppModule.instance, AppModule.options);
     }
 
-    return this.instance;
+    return AppModule.instance;
   }
 
   /**
@@ -114,26 +112,26 @@ export class AppModule {
       'docs',
     ];
 
-    this.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
+    AppModule.options = { ...APP_DEFAULT_OPTIONS, ...options } as AppOptions;
 
     for (const key of deepMergeProps) {
       const defaultData = APP_DEFAULT_OPTIONS[key] as Record<string, any>;
       const providedData = options[key] as Record<string, any>;
 
-      (this.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
+      (AppModule.options[key] as Record<string, any>) = { ...defaultData, ...providedData };
     }
 
-    if (this.options.disableAll) {
-      this.options.disableCache = true;
-      this.options.disableDocs = true;
-      this.options.disableFilter = true;
-      this.options.disableLogs = true;
-      this.options.disableMetrics = true;
-      this.options.disableScan = true;
-      this.options.disableValidator = true;
+    if (AppModule.options.disableAll) {
+      AppModule.options.disableCache = true;
+      AppModule.options.disableDocs = true;
+      AppModule.options.disableFilter = true;
+      AppModule.options.disableLogs = true;
+      AppModule.options.disableMetrics = true;
+      AppModule.options.disableScan = true;
+      AppModule.options.disableValidator = true;
     }
 
-    ConfigModule.set({ key: 'APP_OPTIONS', value: this.options });
+    ConfigModule.set({ key: 'APP_OPTIONS', value: AppModule.options });
   }
 
   /**
@@ -145,26 +143,26 @@ export class AppModule {
    * - Maps a local directory to serve static assets.
    */
   private static async configureAdapter(): Promise<void> {
-    const { fastify, globalPrefix, assetsPrefix, cors } = this.options;
-    const entryModule = this.buildEntryModule();
+    const { fastify, globalPrefix, assetsPrefix, cors } = AppModule.options;
+    const entryModule = AppModule.buildEntryModule();
     const httpAdapter = new FastifyAdapter(fastify);
 
-    this.instance = await NestFactory.create(entryModule, httpAdapter, {
-      logger: [ 'error', 'warn' ],
+    AppModule.instance = await NestFactory.create(entryModule, httpAdapter, {
+      logger: ['error', 'warn'],
     });
 
-    const fastifyInstance = this.instance.getHttpAdapter().getInstance();
+    const fastifyInstance = AppModule.instance.getHttpAdapter().getInstance();
 
     fastifyInstance.addHook('onRequest', (req: AppRequest, res: AppResponse, next: () => void) => {
-      this.sanitizeRequestHeaders(req);
-      return this.createRequestContext(req, res, next);
+      AppModule.sanitizeRequestHeaders(req);
+      return AppModule.createRequestContext(req, res, next);
     });
 
     if (globalPrefix) {
-      this.instance.setGlobalPrefix(globalPrefix);
+      AppModule.instance.setGlobalPrefix(globalPrefix);
     }
 
-    this.instance.enableCors(cors);
+    AppModule.instance.enableCors(cors);
 
     httpAdapter.useStaticAssets({
       root: `${process.cwd()}/${assetsPrefix}`,
@@ -182,7 +180,7 @@ export class AppModule {
     const { headers } = req;
 
     if (headers['content-length'] === '0') {
-      delete headers['content-type'];
+      headers['content-type'] = undefined;
     }
   }
 
@@ -199,9 +197,9 @@ export class AppModule {
    * @param next
    */
   private static createRequestContext(req: AppRequest, res: AppResponse, next: () => void): void {
-    const { name } = this.options;
-    const contextService = this.instance.get(ContextService);
-    const traceService = this.instance.get(TraceService);
+    const { name } = AppModule.options;
+    const contextService = AppModule.instance.get(ContextService);
+    const traceService = AppModule.instance.get(TraceService);
     const traceEnabled = traceService?.isEnabled();
 
     req.time = Date.now();
@@ -218,7 +216,7 @@ export class AppModule {
         const spanName = `Http | ${description}`;
 
         context.with(ctx, () => {
-          trace.getTracer(name).startActiveSpan(spanName, { }, (span) => {
+          trace.getTracer(name).startActiveSpan(spanName, {}, (span) => {
             const traceId = span.spanContext().traceId;
 
             res.header('trace-id', traceId);
@@ -227,8 +225,7 @@ export class AppModule {
             next();
           });
         });
-      }
-      else {
+      } else {
         next();
       }
     });
@@ -239,9 +236,9 @@ export class AppModule {
    * using and interceptor to manage configured timeout.
    */
   private static async listen(): Promise<void> {
-    const { instance, port, hostname, timeout } = this.options;
+    const { instance, port, hostname, timeout } = AppModule.options;
 
-    const app = this.getInstance();
+    const app = AppModule.getInstance();
     const logService = app.get(LogService);
 
     const httpServer = await app.listen(port, hostname);
@@ -260,15 +257,10 @@ export class AppModule {
   private static buildEntryModule(): DynamicModule {
     return {
       module: AppModule,
-      imports: this.buildModules('imports'),
-      controllers: [ ...this.options.controllers, AppController ],
-      providers: this.buildProviders(),
-      exports: [
-        AppConfig,
-        AppService,
-        ...this.options.providers,
-        ...this.buildModules('exports'),
-      ],
+      imports: AppModule.buildModules('imports'),
+      controllers: [...AppModule.options.controllers, AppController],
+      providers: AppModule.buildProviders(),
+      exports: [AppConfig, AppService, ...AppModule.options.providers, ...AppModule.buildModules('exports')],
     };
   }
 
@@ -277,43 +269,32 @@ export class AppModule {
    * @param type
    */
   private static buildModules(type: 'imports' | 'exports'): any[] {
-    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = this.options;
-    const { envPath, imports: importedModules, exports: exportedModules } = this.options;
-    const preloadedModules: any[] = [ ];
-    let sourceModules: unknown[] = [ ];
+    const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = AppModule.options;
+    const { envPath, imports: importedModules, exports: exportedModules } = AppModule.options;
+    const preloadedModules: any[] = [];
+    let sourceModules: unknown[] = [];
 
-    const defaultModules = [
-      ContextModule,
-      LogModule,
-      MemoryModule,
-      PromiseModule,
-    ];
+    const defaultModules = [ContextModule, LogModule, MemoryModule, PromiseModule];
 
     if (disableCache) {
       defaultModules.push(CacheDisabledModule);
-    }
-    else {
+    } else {
       defaultModules.push(CacheModule);
     }
 
     if (!disableLogs) {
-      defaultModules.push(
-        ConsoleModule,
-        LokiModule,
-      );
+      defaultModules.push(ConsoleModule, LokiModule);
     }
 
     if (disableMetrics) {
       defaultModules.push(MetricDisabledModule);
-    }
-    else {
+    } else {
       defaultModules.push(MetricModule);
     }
 
     if (disableTraces) {
       defaultModules.push(TraceDisabledModule);
-    }
-    else {
+    } else {
       defaultModules.push(TraceModule);
     }
 
@@ -322,7 +303,7 @@ export class AppModule {
     }
 
     if (!disableScan) {
-      sourceModules = AppModule.globRequire([ 's*rc*/**/*.module.{js,ts}' ]).reverse();
+      sourceModules = AppModule.globRequire(['s*rc*/**/*.module.{js,ts}']).reverse();
     }
 
     if (type === 'imports') {
@@ -332,14 +313,8 @@ export class AppModule {
         ...sourceModules,
         ...importedModules,
       );
-    }
-    else {
-      preloadedModules.push(
-        ConfigModule,
-        ...defaultModules,
-        ...sourceModules,
-        ...exportedModules,
-      );
+    } else {
+      preloadedModules.push(ConfigModule, ...defaultModules, ...sourceModules, ...exportedModules);
     }
 
     return preloadedModules;
@@ -349,7 +324,7 @@ export class AppModule {
    * Adds exception filter, serializer, timeout and validation pipe.
    */
   private static buildProviders(): any[] {
-    const { disableFilter, disableValidator, timeout, providers } = this.options;
+    const { disableFilter, disableValidator, timeout, providers } = AppModule.options;
 
     const preloadedProviders: any[] = [
       { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
@@ -373,16 +348,19 @@ export class AppModule {
     }
 
     if (!disableValidator) {
-      preloadedProviders.push({
-        provide: APP_PIPE,
-        useClass: ValidatePipe,
-      }, {
-        provide: APP_INTERCEPTOR,
-        useClass: ValidateInterceptor,
-      });
+      preloadedProviders.push(
+        {
+          provide: APP_PIPE,
+          useClass: ValidatePipe,
+        },
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: ValidateInterceptor,
+        },
+      );
     }
 
-    return [ ...preloadedProviders, ...providers ];
+    return [...preloadedProviders, ...providers];
   }
 
   /**
@@ -391,14 +369,14 @@ export class AppModule {
    *
    * If there is a mix of sources and maps, keep only
    * the JavaScript version.
-   * @param globPath
+   * @param globPathArray
    * @param root
    */
   public static globRequire(globPath: string | string[], root?: string): any[] {
-    globPath = Array.isArray(globPath) ? globPath : [ globPath ];
+    const globPathArray = Array.isArray(globPath) ? globPath : [globPath];
     const cwd = root || process.cwd();
 
-    const matchingFiles = fg.sync(globPath, { cwd });
+    const matchingFiles = fg.sync(globPathArray, { cwd });
     const jsFiles = matchingFiles.filter((file) => file.match(/\.js$/g));
     const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
 
@@ -409,5 +387,4 @@ export class AppModule {
 
     return exportsArrays.flat();
   }
-
 }

@@ -6,7 +6,6 @@ import { ConfigModule } from './config.module';
 
 @Config()
 class TestConfig {
-
   @InjectConfig()
   @IsEnum(AppEnvironment)
   public readonly NODE_ENV!: AppEnvironment;
@@ -25,7 +24,6 @@ class TestConfig {
   @InjectConfig({ fallback: '100' })
   @IsNumber()
   public readonly TEST_CONFIG_VALIDATION!: number;
-
 }
 
 describe('ConfigModule', () => {
@@ -62,6 +60,7 @@ describe('ConfigModule', () => {
 
   describe('validateConfigs', () => {
     it('should flag a configuration error', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       const validationErrors = await ConfigModule['validateConfigs']({ allowValidationErrors: true });
       expect(validationErrors.length).toBeGreaterThanOrEqual(1);
       expect(validationErrors[0].property).toBe('TEST_CONFIG_VALIDATION');

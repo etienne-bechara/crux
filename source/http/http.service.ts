@@ -1,8 +1,17 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import { Context, propagation, SpanOptions, SpanStatusCode } from '@opentelemetry/api';
+import { setTimeout } from 'node:timers/promises';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Scope,
+  forwardRef,
+} from '@nestjs/common';
+import { Context, SpanOptions, SpanStatusCode, propagation } from '@opentelemetry/api';
 import qs from 'query-string';
-import { setTimeout } from 'timers/promises';
 
+import { Span } from '@opentelemetry/sdk-trace-base';
 import { AppConfig } from '../app/app.config';
 import { AppTraffic } from '../app/app.enum';
 import { CacheStatus } from '../cache/cache.enum';
@@ -15,17 +24,29 @@ import { PromiseService } from '../promise/promise.service';
 import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod, HttpTimeoutMessage } from './http.enum';
 import { HttpFetchError } from './http.error';
-import { HttpCacheSendParams, HttpCookie, HttpError, HttpErrorResponse, HttpModuleOptions, HttpOptions, HttpRequestOptions, HttpRequestSendParams, HttpResponse, HttpRetrySendParams, HttpSendParams, HttpTelemetrySendParams } from './http.interface';
-import { Span } from '@opentelemetry/sdk-trace-base';
+import {
+  HttpCacheSendParams,
+  HttpCookie,
+  HttpError,
+  HttpErrorResponse,
+  HttpModuleOptions,
+  HttpOptions,
+  HttpRequestOptions,
+  HttpRequestSendParams,
+  HttpResponse,
+  HttpRetrySendParams,
+  HttpSendParams,
+  HttpTelemetrySendParams,
+} from './http.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpService {
-
   private defaultOptions: HttpOptions;
 
   public constructor(
+    // biome-ignore lint/style/useDefaultParameterLast: <explanation>
     @Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
-    private readonly httpModuleOptions: HttpModuleOptions = { },
+    private readonly httpModuleOptions: HttpModuleOptions = {},
     private readonly appConfig: AppConfig,
     @Inject(forwardRef(() => PromiseService))
     private readonly promiseService: PromiseService,
@@ -80,13 +101,11 @@ export class HttpService {
     const { timeout, dispatcher, username, password, redirect, method, replacements } = params;
     const { headers, query, queryOptions, body, json, form } = params;
 
-    if ([ body, json, form ].filter(Boolean).length > 1) {
+    if ([body, json, form].filter(Boolean).length > 1) {
       throw new Error('body, json and form are mutually exclusive');
     }
 
-    const joinedUrl = this.httpModuleOptions.baseUrl
-      ? `${this.httpModuleOptions.baseUrl}/${url}`
-      : url;
+    const joinedUrl = this.httpModuleOptions.baseUrl ? `${this.httpModuleOptions.baseUrl}/${url}` : url;
 
     const { protocol, host, pathname: path } = new URL(joinedUrl);
     const scheme = protocol.replace(':', '');
@@ -103,9 +122,7 @@ export class HttpService {
       host,
       path,
       replacements,
-      headers: this.httpModuleOptions.headers
-        ? { ...this.httpModuleOptions.headers, ...headers }
-        : headers || { },
+      headers: this.httpModuleOptions.headers ? { ...this.httpModuleOptions.headers, ...headers } : headers || {},
       query,
       queryOptions,
       body,
@@ -221,9 +238,7 @@ export class HttpService {
       response = await this.sendRequestRetryHandler(sendParams);
     }
 
-    return fullResponse
-      ? response as T
-      : response.data as T;
+    return fullResponse ? (response as T) : (response.data as T);
   }
 
   /**
@@ -246,9 +261,8 @@ export class HttpService {
       if (isTimedOut) throw new Error(HttpTimeoutMessage.INBOUND);
 
       response = await this.sendRequestSpanHandler(params);
-    }
-    catch (e) {
-      const error = e as HttpError
+    } catch (e) {
+      const error = e as HttpError;
       const attemptResponse = error.response?.outboundResponse;
       const isRetryableCode = !attemptResponse?.code || retryCodes.includes(attemptResponse?.code as HttpStatus);
       const attemptsLeft = retryLimit - attempt;
@@ -280,8 +294,8 @@ export class HttpService {
 
     return this.traceService
       ? await this.traceService.startActiveSpan(spanName, spanOptions, async (span: Span) => {
-        return this.sendRequestClientHandler({ ...params, span });
-      })
+          return this.sendRequestClientHandler({ ...params, span });
+        })
       : await this.sendRequestClientHandler(params);
   }
 
@@ -299,17 +313,15 @@ export class HttpService {
 
     try {
       params.response = await this.sendRequestCacheHandler(params);
-    }
-    catch (e) {
-      const error = e as HttpFetchError
+    } catch (e) {
+      const error = e as HttpFetchError;
       params.response = error.response;
       params.error = error;
 
       if (!params.ignoreExceptions) {
         this.handleRequestException(params);
       }
-    }
-    finally {
+    } finally {
       this.collectOutboundTelemetry(params);
     }
 
@@ -335,8 +347,7 @@ export class HttpService {
     if (ttl) {
       try {
         response = await this.cacheService?.getCache(cacheParams);
-      }
-      catch (e) {
+      } catch (e) {
         this.logService?.warning('Failed to acquire outbound cached data', e as Error);
       }
 
@@ -350,7 +361,7 @@ export class HttpService {
     response = await this.sendRequestFetchHandler(params);
 
     response.cookies = this.parseCookies(response);
-    response.data = await parser(response) as T;
+    response.data = (await parser(response)) as T;
 
     const { status, data } = response;
 
@@ -384,17 +395,15 @@ export class HttpService {
     if (json) {
       headers['Content-Type'] = 'application/json';
       finalBody = JSON.stringify(json);
-    }
-    else if (form) {
-      headers['Content-Type'] = 'application/x-www-form-urlencoded',
+    } else if (form) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
       finalBody = new URLSearchParams(form);
-    }
-    else {
+    } else {
       finalBody = body;
     }
 
     if (username) {
-      headers['Authorization'] = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+      headers.Authorization = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
     }
 
     const fetchOptions = {
@@ -403,9 +412,7 @@ export class HttpService {
       method,
       headers,
       body: finalBody,
-      signal: timeout
-        ? AbortSignal.timeout(timeout)
-        : undefined,
+      signal: timeout ? AbortSignal.timeout(timeout) : undefined,
     };
 
     return fetch(`${finalUrl}${finalQuery ? `?${finalQuery}` : ''}`, fetchOptions);
@@ -434,7 +441,14 @@ export class HttpService {
     const body = this.appConfig.APP_OPTIONS.logs?.enableRequestBody ? reqBody : undefined;
 
     this.logService?.http(`⯅ ${method} ${url}`, {
-      method, scheme, host, path, replacements, query, body, headers,
+      method,
+      scheme,
+      host,
+      path,
+      replacements,
+      query,
+      body,
+      headers,
     });
   }
 
@@ -445,7 +459,7 @@ export class HttpService {
   private parseCookies(response: Response): HttpCookie[] {
     const { headers } = response;
     const setCookie = headers.get('set-cookie');
-    const cookies: HttpCookie[] = [ ];
+    const cookies: HttpCookie[] = [];
     if (!setCookie) return cookies;
 
     const setCookieArray = setCookie.split(/(?<!expires=\w{3}),/).map((c) => c.trim());
@@ -478,7 +492,7 @@ export class HttpService {
     const { telemetry, span, request, response, error } = params;
     const { start, cacheStatus: cache } = telemetry;
     const { url, method, host, path } = request;
-    const { status, data: resBody, headers } = response || { };
+    const { status, data: resBody, headers } = response || {};
     const duration = (Date.now() - start) / 1000;
 
     const traffic = AppTraffic.OUTBOUND;
@@ -497,8 +511,7 @@ export class HttpService {
       if (error) {
         span.recordException(error);
         span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-      }
-      else {
+      } else {
         span.setStatus({ code: SpanStatusCode.OK });
       }
 
@@ -515,12 +528,10 @@ export class HttpService {
    */
   private handleRequestException(params: HttpSendParams): void {
     const { proxyExceptions, request, response, error } = params;
-    const { message: errorMessage, cause: errorCause } = error || { };
+    const { message: errorMessage, cause: errorCause } = error || {};
     const { method, url, timeout } = request;
 
-    const code: HttpStatus = proxyExceptions && response?.status
-      ? response?.status
-      : HttpStatus.INTERNAL_SERVER_ERROR;
+    const code: HttpStatus = proxyExceptions && response?.status ? response?.status : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const cause = errorCause as Error;
 
@@ -537,12 +548,12 @@ export class HttpService {
       outboundResponse: cause
         ? undefined
         : {
-          code: response?.status,
-          headers: response?.headers
-            ? Object.fromEntries(response.headers as unknown as Iterable<readonly [PropertyKey, string]>)
-            : { },
-          body: response?.data,
-        },
+            code: response?.status,
+            headers: response?.headers
+              ? Object.fromEntries(response.headers as unknown as Iterable<readonly [PropertyKey, string]>)
+              : {},
+            body: response?.data,
+          },
     };
 
     throw new HttpException(exceptionData, code);
@@ -553,7 +564,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async get<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async get<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.GET });
   }
 
@@ -562,7 +573,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async head<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async head<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.HEAD });
   }
 
@@ -571,7 +582,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async post<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async post<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.POST });
   }
 
@@ -580,7 +591,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async put<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async put<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.PUT });
   }
 
@@ -589,7 +600,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async delete<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async delete<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.DELETE });
   }
 
@@ -598,7 +609,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async options<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async options<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.OPTIONS });
   }
 
@@ -607,8 +618,7 @@ export class HttpService {
    * @param url
    * @param params
    */
-  public async patch<T>(url: string, params: HttpRequestOptions = { }): Promise<T> {
+  public async patch<T>(url: string, params: HttpRequestOptions = {}): Promise<T> {
     return this.request<T>(url, { ...params, method: HttpMethod.PATCH });
   }
-
 }

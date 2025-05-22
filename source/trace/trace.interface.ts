@@ -1,4 +1,3 @@
-
 export interface TraceOptions {
   /** Open Telemetry API URL to publish traces. Can be overridden by env `TRACE_URL`. */
   url?: string;

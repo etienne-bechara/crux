@@ -1,4 +1,9 @@
-import { ComponentsObject, ExternalDocumentationObject, OpenAPIObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import {
+  ComponentsObject,
+  ExternalDocumentationObject,
+  OpenAPIObject,
+  SecuritySchemeObject,
+} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export interface DocSecurity {
   name: string;
@@ -41,5 +46,5 @@ export interface DocOptions {
 
 export interface DocOpenApi extends Omit<OpenAPIObject, 'components'> {
   components: ComponentsObject;
-  ['x-tagGroups']?: DocTagGroup[]
+  'x-tagGroups'?: DocTagGroup[];
 }

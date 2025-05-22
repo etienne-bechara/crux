@@ -6,7 +6,6 @@ import { ProductRepository } from './product.repository';
 
 @Entity({ repository: () => ProductRepository })
 export class Product extends OrmUuidTimestampEntity {
-
   @Property()
   public title!: string;
 
@@ -15,5 +14,4 @@ export class Product extends OrmUuidTimestampEntity {
 
   @ManyToMany(() => Order, 'products')
   public orders = new Collection<Order>(this);
-
 }

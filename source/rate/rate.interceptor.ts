@@ -9,12 +9,11 @@ import { RateLimitOptions } from './rate.interface';
 
 @Injectable()
 export class RateInterceptor implements NestInterceptor {
-
   public constructor(
     private readonly cacheService: CacheService,
     private readonly contextService: ContextService,
     private readonly reflector: Reflector,
-  ) { }
+  ) {}
 
   /**
    * Add tracing and response body validation support.
@@ -23,19 +22,17 @@ export class RateInterceptor implements NestInterceptor {
    */
   public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const options: RateLimitOptions = this.reflector.get(AppMetadataKey.RATE_LIMIT_OPTIONS, context.getHandler());
-    const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options || { };
+    const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options || {};
 
-    const limit = typeof optionsLimit === 'function'
-      ? optionsLimit(this.contextService)
-      : optionsLimit;
+    const limit = typeof optionsLimit === 'function' ? optionsLimit(this.contextService) : optionsLimit;
 
-    const key = typeof optionsKey === 'function'
-      ? optionsKey(this.contextService)
-      : optionsKey || this.contextService.getRequestIp();
+    const key =
+      typeof optionsKey === 'function'
+        ? optionsKey(this.contextService)
+        : optionsKey || this.contextService.getRequestIp();
 
-    const window = typeof optionsWindow === 'function'
-      ? optionsWindow(this.contextService)
-      : optionsWindow || 60 * 1000;
+    const window =
+      typeof optionsWindow === 'function' ? optionsWindow(this.contextService) : optionsWindow || 60 * 1000;
 
     if (limit) {
       const rateKey = `rate:${key}`;
@@ -45,15 +42,17 @@ export class RateInterceptor implements NestInterceptor {
       if (current > limit) {
         const ttl = await provider.ttl(rateKey);
 
-        throw new HttpException({
-          message: 'rate limit exceeded',
-          limit,
-          ttl,
-        }, HttpStatus.TOO_MANY_REQUESTS);
+        throw new HttpException(
+          {
+            message: 'rate limit exceeded',
+            limit,
+            ttl,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
       }
     }
 
     return next.handle();
   }
-
 }

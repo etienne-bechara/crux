@@ -8,11 +8,10 @@ import { AppTraffic } from './app.enum';
 
 @Injectable()
 export class AppService {
-
   public constructor(
     private readonly contextService: ContextService,
     private readonly metricService: MetricService,
-  ) { }
+  ) {}
 
   /**
    * Register logs, metrics and tracing of inbound request.
@@ -31,9 +30,10 @@ export class AppService {
     const duration = this.contextService.getRequestDuration();
     const cache = this.contextService.getCacheStatus();
 
-    const path = code === HttpStatus.NOT_FOUND && error?.message?.startsWith('Cannot')
-      ? '/*'
-      : this.contextService.getRequestPath();
+    const path =
+      code === HttpStatus.NOT_FOUND && error?.message?.startsWith('Cannot')
+        ? '/*'
+        : this.contextService.getRequestPath();
 
     this.metricService?.observeHttpDuration({ traffic, method, host, path, code, cache, duration });
 
@@ -48,13 +48,11 @@ export class AppService {
       if (error) {
         span.recordException(error);
         span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-      }
-      else {
+      } else {
         span.setStatus({ code: SpanStatusCode.OK });
       }
 
       span.end();
     }
   }
-
 }

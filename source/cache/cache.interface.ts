@@ -39,7 +39,7 @@ export interface CacheRouteBucketParams<T> {
   data: T;
 }
 
-export interface CacheInterceptParams extends CacheRouteOptions{
+export interface CacheInterceptParams extends CacheRouteOptions {
   ttl?: number;
 }
 

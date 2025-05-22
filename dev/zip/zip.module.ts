@@ -6,24 +6,16 @@ import { ZipService } from './zip.service';
 @Module({
   imports: [
     HttpModule.registerAsync({
-      imports: [ ZipModule ],
-      inject: [ ZipConfig ],
+      imports: [ZipModule],
+      inject: [ZipConfig],
       useFactory: (zipConfig: ZipConfig) => ({
         baseUrl: zipConfig.ZIP_HOST,
         cacheTtl: 60_000,
       }),
     }),
   ],
-  controllers: [
-    ZipController,
-  ],
-  providers: [
-    ZipConfig,
-    ZipService,
-  ],
-  exports: [
-    ZipConfig,
-    ZipService,
-  ],
+  controllers: [ZipController],
+  providers: [ZipConfig, ZipService],
+  exports: [ZipConfig, ZipService],
 })
-export class ZipModule { }
+export class ZipModule {}

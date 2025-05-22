@@ -8,7 +8,6 @@ import { VALIDATE_REQUEST_DEFAULT_OPTIONS } from './validate.config';
 
 @Injectable()
 export class ValidatePipe extends ValidationPipe implements PipeTransform {
-
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly contextService: ContextService,
@@ -22,9 +21,8 @@ export class ValidatePipe extends ValidationPipe implements PipeTransform {
    * @param object
    */
   protected validate(object: object): Promise<ValidationError[]> | ValidationError[] {
-    const defaultOptions = this.appConfig.APP_OPTIONS.validator?.request || { };
+    const defaultOptions = this.appConfig.APP_OPTIONS.validator?.request || {};
     const options = this.contextService.getValidatorOptions() || defaultOptions;
-    return TraceService.startManagedSpan('App | Validation Pipe', { }, () => super.validate(object, options));
+    return TraceService.startManagedSpan('App | Validation Pipe', {}, () => super.validate(object, options));
   }
-
 }

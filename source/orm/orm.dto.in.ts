@@ -1,11 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ToBoolean, ToNumber, ToStringArray } from '../transform/transform.decorator';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Length, Max, Min } from '../validate/validate.decorator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
+  Max,
+  Min,
+} from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageReadDto {
-
   @IsOptional()
   @IsString()
   @Length(32, 32)
@@ -17,7 +26,9 @@ export class OrmPageReadDto {
 
   @IsOptional()
   @ToNumber()
-  @IsInt() @Min(1) @Max(1000)
+  @IsInt()
+  @Min(1)
+  @Max(1000)
   @ApiProperty({
     description: 'Amount of records to read, returns all if available entries are less than specified',
     default: 100,
@@ -26,7 +37,8 @@ export class OrmPageReadDto {
 
   @IsOptional()
   @ToNumber()
-  @IsInt() @Min(0)
+  @IsInt()
+  @Min(0)
   @ApiProperty({
     description: 'Amount of records to skip, paginate by specifying multipliers of provided limit',
     default: 0,
@@ -59,10 +71,9 @@ export class OrmPageReadDto {
   @IsOptional()
   @ToStringArray()
   @IsArray()
-  @IsString({ }, { each: true })
+  @IsString({}, { each: true })
   @ApiProperty({
     description: 'Nested entities to expand separated by comma',
   })
   public populate?: string[];
-
 }

@@ -1,5 +1,5 @@
+import crypto from 'node:crypto';
 import { DynamicModule, Module } from '@nestjs/common';
-import crypto from 'crypto';
 
 import { HttpInjectionToken } from './http.enum';
 import { HttpAsyncModuleOptions, HttpModuleOptions } from './http.interface';
@@ -10,21 +10,17 @@ import { HttpService } from './http.service';
     HttpService,
     {
       provide: HttpInjectionToken.HTTP_MODULE_OPTIONS,
-      useValue: { },
+      useValue: {},
     },
   ],
-  exports: [
-    HttpService,
-    HttpInjectionToken.HTTP_MODULE_OPTIONS,
-  ],
+  exports: [HttpService, HttpInjectionToken.HTTP_MODULE_OPTIONS],
 })
 export class HttpModule {
-
   /**
    * Configures the underlying https service synchronously.
    * @param options
    */
-  public static register(options: Partial<HttpModuleOptions> = { }): DynamicModule {
+  public static register(options: Partial<HttpModuleOptions> = {}): DynamicModule {
     return {
       module: HttpModule,
       providers: [
@@ -62,5 +58,4 @@ export class HttpModule {
       ],
     };
   }
-
 }

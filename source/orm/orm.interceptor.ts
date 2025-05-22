@@ -7,11 +7,10 @@ import { ContextService } from '../context/context.service';
 
 @Injectable()
 export class OrmInterceptor implements NestInterceptor {
-
   public constructor(
     private readonly mikroOrm: MikroORM,
     private readonly contextService: ContextService,
-  ) { }
+  ) {}
 
   /**
    * Before a new request arrives at controller, creates a fresh entity
@@ -28,14 +27,12 @@ export class OrmInterceptor implements NestInterceptor {
 
     store?.set(ContextStorageKey.ORM_ENTITY_MANAGER, entityManager);
 
-    return next
-      .handle()
-      .pipe(
-        mergeMap(async (data) => {
-          entityManager.clear();
-          return this.stringifyEntities(data);
-        }),
-      );
+    return next.handle().pipe(
+      mergeMap(async (data) => {
+        entityManager.clear();
+        return this.stringifyEntities(data);
+      }),
+    );
   }
 
   /**
@@ -47,17 +44,20 @@ export class OrmInterceptor implements NestInterceptor {
     if (!data || Buffer.isBuffer(data)) {
       return data;
     }
-    else if (Array.isArray(data)) {
-      data = data.map((d) => d?.toJSON ? d.toJSON() : d);
+
+    if (Array.isArray(data)) {
+      return data.map((d) => (d?.toJSON ? d.toJSON() : d));
     }
-    else if (data.records && Array.isArray(data.records)) {
-      data.records = data.records.map((d: any) => d?.toJSON ? d.toJSON() : d);
+
+    if (data.records && Array.isArray(data.records)) {
+      data.records = data.records.map((d: any) => (d?.toJSON ? d.toJSON() : d));
+      return data;
     }
-    else if (data.toJSON) {
-      data = data.toJSON();
+
+    if (data.toJSON) {
+      return data.toJSON();
     }
 
     return data;
   }
-
 }

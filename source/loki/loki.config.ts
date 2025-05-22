@@ -11,7 +11,6 @@ export const LOKI_DEFAULT_OPTIONS: LokiOptions = {
 
 @Config()
 export class LokiConfig {
-
   @InjectConfig()
   @IsOptional()
   @IsUrl()
@@ -31,5 +30,4 @@ export class LokiConfig {
   @IsOptional()
   @IsEnum(LogSeverity)
   public readonly LOKI_SEVERITY?: LogSeverity;
-
 }

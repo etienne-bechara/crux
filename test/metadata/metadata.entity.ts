@@ -1,5 +1,5 @@
-import { Entity, EntityDTO, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 
 import { OrmBaseEntity } from '../../source/orm/orm.entity';
 import { User } from '../user/user.entity';
@@ -7,7 +7,6 @@ import { MetadataDto } from './metadata.dto.out';
 
 @Entity({ tableName: 'metadata' })
 export class Metadata extends OrmBaseEntity {
-
   @PrimaryKey()
   public id: string = randomUUID();
 
@@ -26,7 +25,6 @@ export class Metadata extends OrmBaseEntity {
     return {
       ...metadata,
       kv: `${metadata.key}_${metadata.value}`,
-    }
+    };
   }
-
 }

@@ -9,10 +9,8 @@ export const CONSOLE_DEFAULT_OPTIONS: ConsoleOptions = {
 
 @Config()
 export class ConsoleConfig {
-
   @InjectConfig()
   @IsOptional()
   @IsEnum(LogSeverity)
   public readonly CONSOLE_SEVERITY?: LogSeverity;
-
 }

@@ -6,10 +6,7 @@ import { UserRepository } from './user.repository';
 
 @Controller('user')
 export class UserController {
-
-  public constructor(
-    private readonly userRepository: UserRepository,
-  ) { }
+  public constructor(private readonly userRepository: UserRepository) {}
 
   @Get()
   public get(@Query() query: UserReadDto): Promise<UserPagination> {
@@ -18,7 +15,7 @@ export class UserController {
 
   @Get(':id')
   public getById(@Param('id') id: string): Promise<User> {
-    const populate = [ 'address' ];
+    const populate = ['address'];
     return this.userRepository.readByIdOrFail(id, { populate });
   }
 
@@ -46,5 +43,4 @@ export class UserController {
   public deleteById(@Param('id') id: string): Promise<User> {
     return this.userRepository.deleteById(id);
   }
-
 }

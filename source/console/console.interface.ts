@@ -11,7 +11,7 @@ export interface ConsoleOptions {
    * Default: `true` for `local` environment, `false` otherwise.
    */
   pretty?: boolean;
-   /** Applies indentation on stringified JSON data. */
+  /** Applies indentation on stringified JSON data. */
   indentation?: number;
   /** Max length when stringifying details at console. */
   maxLength: number;

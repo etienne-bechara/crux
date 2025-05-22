@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { mergeMap, Observable, of } from 'rxjs';
+import { Observable, mergeMap, of } from 'rxjs';
 
 import { AppConfig } from '../app/app.config';
 import { AppMetadataKey } from '../app/app.enum';
@@ -12,14 +12,13 @@ import { CacheService } from './cache.service';
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
-
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly cacheService: CacheService,
     private readonly contextService: ContextService,
     private readonly logService: LogService,
     private readonly reflector: Reflector,
-  ) { }
+  ) {}
 
   /**
    * Attempt to acquire cached data, if present, resolve with it
@@ -37,8 +36,7 @@ export class CacheInterceptor implements NestInterceptor {
     if (enabled) {
       try {
         cache = await this.cacheService.getCache({ timeout });
-      }
-      catch (e) {
+      } catch (e) {
         this.logService.warning('Failed to acquire inbound cached data', e as Error);
       }
 
@@ -49,11 +47,7 @@ export class CacheInterceptor implements NestInterceptor {
       }
     }
 
-    return next
-      .handle()
-      .pipe(
-        mergeMap(async (data) => this.handleOutputData(data, params)),
-      );
+    return next.handle().pipe(mergeMap(async (data) => this.handleOutputData(data, params)));
   }
 
   /**
@@ -67,7 +61,7 @@ export class CacheInterceptor implements NestInterceptor {
     const options: CacheRouteOptions = this.reflector.get(AppMetadataKey.CACHE_OPTIONS, context.getHandler());
     const { enabled: routeEnabled, timeout: routeTimeout, ttl: routeTtl, buckets, invalidate } = options;
 
-    const enabled = routeEnabled ?? [ 'GET', 'HEAD' ].includes(method);
+    const enabled = routeEnabled ?? ['GET', 'HEAD'].includes(method);
     const timeout = routeTimeout || this.appConfig.APP_OPTIONS.cache?.defaultTimeout;
     const ttl = routeTtl || this.appConfig.APP_OPTIONS.cache?.defaultTtl;
 
@@ -98,13 +92,11 @@ export class CacheInterceptor implements NestInterceptor {
           this.cacheService.setBuckets(bucketValues);
           this.cacheService.setCache(data, { ttl });
         }
-      }
-      else {
+      } else {
         this.cacheService.setCache(data, { ttl });
       }
     }
 
     return data;
   }
-
 }

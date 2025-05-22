@@ -1,7 +1,6 @@
 import { IsString } from '../../source/validate/validate.decorator';
 
 export class MetadataDto {
-
   @IsString()
   public id!: string;
 
@@ -13,5 +12,4 @@ export class MetadataDto {
 
   @IsString()
   public kv!: string;
-
 }

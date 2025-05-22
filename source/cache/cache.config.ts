@@ -13,7 +13,6 @@ export const CACHE_DEFAULT_OPTIONS: CacheOptions = {
 
 @Config()
 export class CacheConfig {
-
   @InjectConfig()
   @IsOptional()
   @IsString()
@@ -34,5 +33,4 @@ export class CacheConfig {
   @IsOptional()
   @IsString()
   public readonly CACHE_PASSWORD?: string;
-
 }

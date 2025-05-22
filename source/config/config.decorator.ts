@@ -1,4 +1,4 @@
-import { applyDecorators, Injectable } from '@nestjs/common';
+import { Injectable, applyDecorators } from '@nestjs/common';
 
 import { ConfigMetadata } from './config.enum';
 import { ConfigInjectionOptions } from './config.interface';
@@ -12,10 +12,7 @@ export function Config(): ClassDecorator {
     ConfigModule.setClass(target);
   };
 
-  return applyDecorators(
-    Injectable(),
-    loadTargetAsConfig,
-  );
+  return applyDecorators(Injectable(), loadTargetAsConfig);
 }
 
 /**
@@ -26,17 +23,19 @@ export function Config(): ClassDecorator {
  * be interpreted by secret service when building its path.
  * @param options
  */
-export function InjectConfig(options: Partial<ConfigInjectionOptions> = { }): PropertyDecorator {
+export function InjectConfig(options: Partial<ConfigInjectionOptions> = {}): PropertyDecorator {
   const { key: baseKey, json, fallback } = options;
 
-  return function (target: Object, propertyKey: string | symbol): void {
-    const key = baseKey || propertyKey as string;
+  return (target: any, propertyKey: string | symbol): void => {
+    const key = baseKey || (propertyKey as string);
     Reflect.defineMetadata(ConfigMetadata.CONFIG_KEY, key, target, propertyKey);
     ConfigModule.set({ key, fallback, json });
 
     Object.defineProperty(target, propertyKey, {
       get: () => ConfigModule.get(key),
-      set: (value) => { ConfigModule.set({ key, value }); },
+      set: (value) => {
+        ConfigModule.set({ key, value });
+      },
     });
   };
 }

@@ -10,7 +10,7 @@ const config = {
   testResultsProcessor: 'jest-sonar-reporter',
   testTimeout: 30000,
   transform: {
-    ts$: 'ts-jest'
+    ts$: 'ts-jest',
   },
 };
 

@@ -8,8 +8,7 @@ import { LogArguments, LogParams, LogTransport } from './log.interface';
 
 @Injectable()
 export class LogService {
-
-  private transports: LogTransport[] = [ ];
+  private transports: LogTransport[] = [];
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -50,7 +49,7 @@ export class LogService {
    */
   private log(severity: LogSeverity, ...args: LogArguments[]): void {
     const message = this.getLogMessage(...args);
-    let paramsGenerated = false
+    let paramsGenerated = false;
     let params!: LogParams;
 
     for (const transport of this.transports) {
@@ -73,7 +72,7 @@ export class LogService {
             error: this.getLogError(...args),
           };
 
-          paramsGenerated = true
+          paramsGenerated = true;
         }
 
         transport.log(params);
@@ -106,13 +105,13 @@ export class LogService {
    * @param args
    */
   private getCaller(...args: LogArguments[]): string {
-    const error = args.find((a) => a instanceof Error) as Error || new Error('-');
+    const error = (args.find((a) => a instanceof Error) as Error) || new Error('-');
     const matches = error.stack?.matchAll(/at .*[/\\](.+?\.(?:js|ts):\d+):/g);
 
     if (matches) {
       for (const match of matches) {
         const filename = match[1];
-  
+
         if (!filename.includes('log.service')) {
           return filename;
         }
@@ -132,12 +131,12 @@ export class LogService {
       if (typeof arg === 'string') {
         return arg;
       }
-      else if (arg?.message) {
+      if (arg?.message) {
         return arg.message;
       }
     }
 
-    return ''
+    return '';
   }
 
   /**
@@ -145,22 +144,19 @@ export class LogService {
    * @param args
    */
   private getLogData(...args: LogArguments[]): Record<string, any> {
-    let data: Record<string, any> = { };
+    let data: Record<string, any> = {};
 
     for (const arg of args) {
       if (arg instanceof HttpException) {
         const details = arg.getResponse();
         const detailsObj = typeof details === 'string' ? { details } : details;
         data = { ...data, ...detailsObj };
-      }
-      else if (typeof arg === 'object') {
+      } else if (typeof arg === 'object') {
         data = { ...data, ...arg };
       }
     }
 
-    return Object.keys(data).length > 0
-      ? this.sanitize(data)
-      : undefined;
+    return Object.keys(data).length > 0 ? this.sanitize(data) : {};
   }
 
   /**
@@ -177,25 +173,23 @@ export class LogService {
    * @param object
    * @param decycled
    */
-  public sanitize(object: any, decycled: boolean = false): any {
-    const { sensitiveKeys, sensitiveArrays } = this.appConfig.APP_OPTIONS.logs || { };
-    const sensitiveSet = new Set(sensitiveKeys || [ ]);
+  public sanitize(object: any, decycled = false): any {
+    const { sensitiveKeys, sensitiveArrays } = this.appConfig.APP_OPTIONS.logs || {};
+    const sensitiveSet = new Set(sensitiveKeys || []);
     const isRootArray = Array.isArray(object);
 
-    if (typeof object !== 'object' || isRootArray && !sensitiveArrays) {
+    if (typeof object !== 'object' || (isRootArray && !sensitiveArrays)) {
       return object;
     }
 
-    if (!decycled) {
-      object = this.decycle(object);
-    }
+    const decycledObject = decycled ? object : this.decycle(object);
 
     if (isRootArray) {
-      const clone = [ ...object ];
+      const clone = [...decycledObject];
       return clone.map((o) => this.sanitize(o, true));
     }
 
-    const clone = { ...object };
+    const clone = { ...decycledObject };
 
     for (const key in clone) {
       if (clone[key] === undefined) {
@@ -219,10 +213,9 @@ export class LogService {
       const isObject = typeof clone[key] === 'object';
       const hasZeroKey = isObject && clone[key] && (clone[key]['0'] || clone[key]['0'] === 0);
 
-      if (isArray || isObject && !hasZeroKey) {
+      if (isArray || (isObject && !hasZeroKey)) {
         clone[key] = this.sanitize(clone[key], true);
-      }
-      else if (isObject && hasZeroKey) {
+      } else if (isObject && hasZeroKey) {
         clone[key] = '<Buffer>';
       }
     }
@@ -271,19 +264,18 @@ export class LogService {
       if (Object.prototype.toString.call(value) === '[object Array]') {
         const resultArray: any[] = [];
         for (let i = 0; i < value.length; i++) {
-          resultArray[i] = this.dereference(objects, paths,value[i], `${path}[${i}]`);
+          resultArray[i] = this.dereference(objects, paths, value[i], `${path}[${i}]`);
         }
         return resultArray;
-      } else {
-        // Otherwise, it's a "plain" object, recurse into its properties
-        const resultObj: Record<string, any> = {};
-        for (const name in value) {
-          if (Object.prototype.hasOwnProperty.call(value, name)) {
-            resultObj[name] = this.dereference(objects, paths,value[name], `${path}[${JSON.stringify(name)}]`);
-          }
-        }
-        return resultObj;
       }
+      // Otherwise, it's a "plain" object, recurse into its properties
+      const resultObj: Record<string, any> = {};
+      for (const name in value) {
+        if (Object.prototype.hasOwnProperty.call(value, name)) {
+          resultObj[name] = this.dereference(objects, paths, value[name], `${path}[${JSON.stringify(name)}]`);
+        }
+      }
+      return resultObj;
     }
 
     // For primitive values or special built-ins, just return as-is
@@ -295,7 +287,7 @@ export class LogService {
    * @param args
    */
   public fatal(...args: LogArguments[]): void {
-    return this.log(LogSeverity.FATAL, ...args);
+    this.log(LogSeverity.FATAL, ...args);
   }
 
   /**
@@ -303,7 +295,7 @@ export class LogService {
    * @param args
    */
   public error(...args: LogArguments[]): void {
-    return this.log(LogSeverity.ERROR, ...args);
+    this.log(LogSeverity.ERROR, ...args);
   }
 
   /**
@@ -311,7 +303,7 @@ export class LogService {
    * @param args
    */
   public warning(...args: LogArguments[]): void {
-    return this.log(LogSeverity.WARNING, ...args);
+    this.log(LogSeverity.WARNING, ...args);
   }
 
   /**
@@ -319,7 +311,7 @@ export class LogService {
    * @param args
    */
   public notice(...args: LogArguments[]): void {
-    return this.log(LogSeverity.NOTICE, ...args);
+    this.log(LogSeverity.NOTICE, ...args);
   }
 
   /**
@@ -327,7 +319,7 @@ export class LogService {
    * @param args
    */
   public info(...args: LogArguments[]): void {
-    return this.log(LogSeverity.INFO, ...args);
+    this.log(LogSeverity.INFO, ...args);
   }
 
   /**
@@ -335,7 +327,7 @@ export class LogService {
    * @param args
    */
   public http(...args: LogArguments[]): void {
-    return this.log(LogSeverity.HTTP, ...args);
+    this.log(LogSeverity.HTTP, ...args);
   }
 
   /**
@@ -343,7 +335,7 @@ export class LogService {
    * @param args
    */
   public debug(...args: LogArguments[]): void {
-    return this.log(LogSeverity.DEBUG, ...args);
+    this.log(LogSeverity.DEBUG, ...args);
   }
 
   /**
@@ -351,7 +343,6 @@ export class LogService {
    * @param args
    */
   public trace(...args: LogArguments[]): void {
-    return this.log(LogSeverity.TRACE, ...args);
+    this.log(LogSeverity.TRACE, ...args);
   }
-
 }

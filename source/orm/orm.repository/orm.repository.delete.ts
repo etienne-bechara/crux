@@ -5,7 +5,6 @@ import { OrmReadOptions, OrmReadParams, OrmRepositoryOptions } from '../orm.inte
 import { OrmUpdateRepository } from './orm.repository.update';
 
 export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpdateRepository<Entity> {
-
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
@@ -21,13 +20,13 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public delete<P extends string = never>(
     entities: Entity | Entity[],
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity[]> {
     return this.runWithinSpan(OrmSpanPrefix.DELETE, async () => {
-      if (!this.isValidData(entities)) return [ ];
+      if (!this.isValidData(entities)) return [];
 
       const { populate } = options;
-      const entityArray = Array.isArray(entities) ? entities : [ entities ];
+      const entityArray = Array.isArray(entities) ? entities : [entities];
 
       if (populate) {
         await this.populate(entityArray, populate as any);
@@ -45,7 +44,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteBy<P extends string = never>(
     params: OrmReadParams<Entity>,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity[]> {
     const entities = await this.readBy(params, options);
     return this.delete(entities, options);
@@ -58,7 +57,7 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteById<P extends string = never>(
     id: string | number,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity> {
     const entity = await this.readByIdOrFail(id);
     await this.delete(entity, options);
@@ -72,10 +71,9 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
    */
   public async deleteOne<P extends string = never>(
     entity: Entity,
-    options: OrmReadOptions<Entity, P> = { },
+    options: OrmReadOptions<Entity, P> = {},
   ): Promise<Entity> {
-    const [ deletedEntity ] = await this.delete(entity, options);
+    const [deletedEntity] = await this.delete(entity, options);
     return deletedEntity;
   }
-
 }

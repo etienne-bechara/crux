@@ -8,7 +8,6 @@ import { OrderRepository } from './order.repository';
 
 @Entity({ repository: () => OrderRepository })
 export class Order extends OrmUuidTimestampEntity {
-
   @Enum(() => OrderStatus)
   public status? = OrderStatus.PENDING;
 
@@ -17,5 +16,4 @@ export class Order extends OrmUuidTimestampEntity {
 
   @ManyToOne(() => User)
   public user!: User;
-
 }

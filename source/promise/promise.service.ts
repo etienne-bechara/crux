@@ -1,21 +1,25 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { setTimeout as sleep } from 'timers/promises';
+import { randomUUID } from 'node:crypto';
+import { setTimeout as sleep } from 'node:timers/promises';
+import { Inject, Injectable, InternalServerErrorException, forwardRef } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
 import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
-import { PromiseResolveDedupedParams, PromiseResolveLimitedParams, PromiseResolveOrTimeoutParams, PromiseRetryParams } from './promise.interface';
+import {
+  PromiseResolveDedupedParams,
+  PromiseResolveLimitedParams,
+  PromiseResolveOrTimeoutParams,
+  PromiseRetryParams,
+} from './promise.interface';
 
 @Injectable()
 export class PromiseService {
-
   public constructor(
     private readonly appConfig: AppConfig,
     @Inject(forwardRef(() => CacheService))
     private readonly cacheService: CacheService,
     private readonly logService: LogService,
-  ) { }
+  ) {}
 
   /**
    * Wait for target promise resolution withing desired timeout.
@@ -48,8 +52,8 @@ export class PromiseService {
    */
   public async resolveLimited<I, O>(params: PromiseResolveLimitedParams<I, O>): Promise<Awaited<O>[]> {
     const { data, limit, promise: method } = params;
-    const resolved: Promise<O>[] = [ ];
-    const executing: Promise<any>[] = [ ];
+    const resolved: Promise<O>[] = [];
+    const executing: Promise<any>[] = [];
 
     this.logService.debug(`Resolving promises with ${limit} concurrency limit`);
 
@@ -102,20 +106,15 @@ export class PromiseService {
     if (keyValue === providerId) {
       try {
         data = await promise();
-      }
-      catch (e) {
-        await Promise.all([
-          provider.set(dataKey, dataErrorMessage, { ttl }),
-          provider.del(providerKey),
-        ]);
+      } catch (e) {
+        await Promise.all([provider.set(dataKey, dataErrorMessage, { ttl }), provider.del(providerKey)]);
 
         throw e;
       }
 
       await provider.set(dataKey, data, { ttl });
       this.logService.debug(`Promise ${key} resolved successfully with source data`);
-    }
-    else {
+    } else {
       data = await this.resolveOrTimeout({
         timeout,
         timeoutMessage,
@@ -163,21 +162,14 @@ export class PromiseService {
       try {
         const elapsed = Date.now() - start;
 
-        result = timeout
-          ? await this.resolveOrTimeout({ promise, timeout: timeout - elapsed })
-          : await promise();
+        result = timeout ? await this.resolveOrTimeout({ promise, timeout: timeout - elapsed }) : await promise();
 
         break;
-      }
-      catch (e) {
-        const error = e as Error
+      } catch (e) {
+        const error = e as Error;
         const elapsed = Date.now() - start;
 
-        if (
-          (retries || retries === 0) && tentative > retries
-          || timeout && elapsed > timeout
-          || breakIf?.(error)
-        ) {
+        if (((retries || retries === 0) && tentative > retries) || (timeout && elapsed > timeout) || breakIf?.(error)) {
           if (error?.message?.startsWith('promise resolution timed out')) {
             error.message = `${txtPrefix} timed out after ${(timeout || 0) / 1000}s`;
           }
@@ -198,5 +190,4 @@ export class PromiseService {
     this.logService.debug(`${txtPrefix} finished successfully`);
     return result;
   }
-
 }

@@ -25,5 +25,5 @@ export enum AddressState {
   SC = 'SC',
   SP = 'SP',
   SE = 'SE',
-  TO = 'TO'
+  TO = 'TO',
 }

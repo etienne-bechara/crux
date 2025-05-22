@@ -1,11 +1,21 @@
+import { randomUUID } from 'node:crypto';
 import { ApiProperty } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
 
-import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUUID, Length, Max, Min } from '../validate/validate.decorator';
+import {
+  IsArray,
+  IsEnum,
+  IsISO8601,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+} from '../validate/validate.decorator';
 import { OrmQueryOrder } from './orm.enum';
 
 export class OrmPageDto<T> {
-
   @IsOptional()
   @IsString()
   @Length(32, 32)
@@ -25,7 +35,9 @@ export class OrmPageDto<T> {
   public previous?: string | null;
 
   @IsOptional()
-  @IsInt() @Min(1) @Max(1000)
+  @IsInt()
+  @Min(1)
+  @Max(1000)
   @ApiProperty({
     description: 'Amount of records read',
     example: 100,
@@ -33,7 +45,8 @@ export class OrmPageDto<T> {
   public limit?: number;
 
   @IsOptional()
-  @IsInt() @Min(0)
+  @IsInt()
+  @Min(0)
   @ApiProperty({
     description: 'Amount of records skipped',
     example: 0,
@@ -42,7 +55,8 @@ export class OrmPageDto<T> {
 
   @IsOptional()
   @IsOptional()
-  @IsInt() @Min(0)
+  @IsInt()
+  @Min(0)
   @ApiProperty({
     description: 'Amount of records available',
     example: 345,
@@ -65,44 +79,36 @@ export class OrmPageDto<T> {
   @IsArray()
   @ApiProperty({ description: 'Array of resulting records' })
   public records!: T[];
-
 }
 
 export class OrmIntDto {
-
   @IsInt()
   @ApiProperty({
     description: 'Unique identifier',
     example: 1,
   })
   public id!: number;
-
 }
 
 export class OrmBigIntDto {
-
   @IsInt()
   @ApiProperty({
     description: 'Unique identifier',
     example: 1,
   })
   public id!: number;
-
 }
 
 export class OrmUuidDto {
-
   @IsUUID()
   @ApiProperty({
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
   public id: string = randomUUID();
-
 }
 
 export class OrmTimestampDto {
-
   @IsISO8601()
   @ApiProperty({
     description: 'Date of last update',
@@ -116,38 +122,31 @@ export class OrmTimestampDto {
     example: '2024-03-11T17:30:20.757Z',
   })
   public created!: string;
-
 }
 
 export class OrmIntTimestampDto extends OrmTimestampDto {
-
   @IsInt()
   @ApiProperty({
     description: 'Unique identifier',
     example: 1,
   })
   public id!: number;
-
 }
 
 export class OrmBigIntTimestampDto extends OrmTimestampDto {
-
   @IsInt()
   @ApiProperty({
     description: 'Unique identifier',
     example: 1,
   })
   public id!: number;
-
 }
 
 export class OrmUuidTimestampDto extends OrmTimestampDto {
-
   @IsUUID()
   @ApiProperty({
     description: 'Unique identifier',
     example: '5680a75e-750e-4c31-a1a1-e61e0e4f5618',
   })
   public id: string = randomUUID();
-
 }

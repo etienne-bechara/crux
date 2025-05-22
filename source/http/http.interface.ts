@@ -72,7 +72,9 @@ export interface HttpModuleOptions extends Partial<HttpOptions>, HttpSharedOptio
 /**
  * HTTP options usable at request level.
  */
-export interface HttpRequestOptions extends Omit<Partial<HttpOptions>, | 'retryMethods' | 'cacheMethods'>, HttpSharedOptions {
+export interface HttpRequestOptions
+  extends Omit<Partial<HttpOptions>, 'retryMethods' | 'cacheMethods'>,
+    HttpSharedOptions {
   /** Request method. */
   method?: HttpMethod;
   /** Object containing replacement string for path variables. */
@@ -89,7 +91,21 @@ export interface HttpRequestOptions extends Omit<Partial<HttpOptions>, | 'retryM
   form?: Record<string, any>;
 }
 
-export interface HttpRequestSendParams extends Pick<HttpRequestOptions, 'timeout' | 'dispatcher' | 'username' | 'password' | 'redirect' | 'replacements' | 'query' | 'queryOptions' | 'body' | 'json' | 'form'> {
+export interface HttpRequestSendParams
+  extends Pick<
+    HttpRequestOptions,
+    | 'timeout'
+    | 'dispatcher'
+    | 'username'
+    | 'password'
+    | 'redirect'
+    | 'replacements'
+    | 'query'
+    | 'queryOptions'
+    | 'body'
+    | 'json'
+    | 'form'
+  > {
   method: HttpMethod;
   url: string;
   scheme: string;
@@ -139,7 +155,7 @@ export interface HttpResponse<T = unknown> extends Response {
 
 export interface HttpError extends Error {
   status: number;
-  response: HttpErrorResponse
+  response: HttpErrorResponse;
 }
 
 export interface HttpErrorResponse {

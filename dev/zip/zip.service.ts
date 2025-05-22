@@ -4,10 +4,7 @@ import { Zip } from './zip.interface';
 
 @Injectable()
 export class ZipService {
-
-  public constructor(
-    private readonly httpService: HttpService,
-  ) { }
+  public constructor(private readonly httpService: HttpService) {}
 
   /**
    * Reads target brazilian zip address.
@@ -19,5 +16,4 @@ export class ZipService {
       replacements: { zip },
     });
   }
-
 }

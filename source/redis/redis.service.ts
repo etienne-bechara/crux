@@ -1,5 +1,5 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
+import { Inject, Injectable, InternalServerErrorException, Scope, forwardRef } from '@nestjs/common';
 import Redis, { RedisOptions } from 'ioredis';
 
 import { CacheProvider } from '../cache/cache.interface';
@@ -11,9 +11,8 @@ import { RedisLockOptions, RedisModuleOptions, RedisSetOptions, RedisTtlOptions 
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class RedisService implements CacheProvider {
-
   private redisClient!: Redis;
-  private initialized = false
+  private initialized = false;
 
   public constructor(
     @Inject(RedisInjectionToken.REDIS_MODULE_OPTIONS)
@@ -40,7 +39,7 @@ export class RedisService implements CacheProvider {
     this.redisModuleOptions.keepAlive ??= 1000;
 
     // On connection failure: attempt to reconnect after delay
-    this.redisModuleOptions.retryStrategy = (times: number): number | void => {
+    this.redisModuleOptions.retryStrategy = (times: number): number | undefined => {
       const retryDelay = Math.min(times * 1000, 60_000);
 
       if (times > 2) {
@@ -71,7 +70,7 @@ export class RedisService implements CacheProvider {
    * @param ttl
    */
   private resolveTtl(ttl: number | undefined): number {
-    return ttl ?? this.redisModuleOptions.defaultTtl ?? 60_000
+    return ttl ?? this.redisModuleOptions.defaultTtl ?? 60_000;
   }
 
   /**
@@ -98,7 +97,7 @@ export class RedisService implements CacheProvider {
    * @param ttl
    */
   public expire(key: string, ttl: number): Promise<void> {
-    return TraceService.startManagedSpan(`Redis | EXPIRE ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | EXPIRE ${key}`, {}, async () => {
       this.logService.trace(`EXPIRE ${key} ${ttl}`);
       await this.getClient().expire(key, ttl / 1000);
     });
@@ -109,7 +108,7 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public ttl(key: string): number {
-    return TraceService.startManagedSpan(`Redis | TTL ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | TTL ${key}`, {}, async () => {
       this.logService.trace(`TTL ${key}`);
       return this.getClient().ttl(key);
     });
@@ -120,7 +119,7 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public get<T>(key: string): Promise<T> {
-    return TraceService.startManagedSpan(`Redis | GET ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | GET ${key}`, {}, async () => {
       this.logService.trace(`GET ${key}`);
       const value = await this.getClient().get(key);
       return value ? JSON.parse(value) : undefined;
@@ -132,7 +131,7 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public getBuffer(key: string): Promise<Buffer> {
-    return TraceService.startManagedSpan(`Redis | GET ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | GET ${key}`, {}, async () => {
       this.logService.trace(`GET ${key}`);
       return this.getClient().getBuffer(key);
     });
@@ -144,30 +143,28 @@ export class RedisService implements CacheProvider {
    * @param value
    * @param options
    */
-  public set<T>(key: string, value: any, options: RedisSetOptions = { }): Promise<T> {
-    return TraceService.startManagedSpan(`Redis | SET ${key}`, { }, async () => {
+  public set<T>(key: string, value: any, options: RedisSetOptions = {}): Promise<T> {
+    return TraceService.startManagedSpan(`Redis | SET ${key}`, {}, async () => {
       this.logService.trace(`SET ${key}`);
 
       const { skip, get, keepTtl, ttl: optionsTtl } = options;
-      const ttl = this.resolveTtl(optionsTtl)
+      const ttl = this.resolveTtl(optionsTtl);
       const data = Buffer.isBuffer(value) ? value : JSON.stringify(value);
-      const extraParams: string[] = [ ];
+      const extraParams: string[] = [];
 
       if (skip === 'IF_EXIST') {
         extraParams.push('NX');
-      }
-      else if (skip === 'IF_NOT_EXIST') {
+      } else if (skip === 'IF_NOT_EXIST') {
         extraParams.push('XX');
       }
 
       if (keepTtl) {
         extraParams.push('KEEPTTL');
-      }
-      else if (ttl) {
+      } else if (ttl) {
         extraParams.push('PX', ttl.toString());
       }
 
-      await this.getClient().set(key, data, ...extraParams as any);
+      await this.getClient().set(key, data, ...(extraParams as any));
       return get ? this.get(key) : undefined;
     });
   }
@@ -177,7 +174,7 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public del(key: string): Promise<void> {
-    return TraceService.startManagedSpan(`Redis | DEL ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | DEL ${key}`, {}, async () => {
       this.logService.trace(`DEL ${key}`);
       await this.getClient().del(key);
     });
@@ -190,8 +187,8 @@ export class RedisService implements CacheProvider {
    * @param amount
    * @param options
    */
-  public incrbyfloat(key: string, amount: number = 1, options: RedisTtlOptions = { }): Promise<number> {
-    return TraceService.startManagedSpan(`Redis | INCRBYFLOAT ${key}`, { }, async () => {
+  public incrbyfloat(key: string, amount = 1, options: RedisTtlOptions = {}): Promise<number> {
+    return TraceService.startManagedSpan(`Redis | INCRBYFLOAT ${key}`, {}, async () => {
       this.logService.trace(`INCRBYFLOAT ${key} ${amount >= 0 ? '+' : ''}${amount}`);
 
       const stringValue = await this.getClient().incrbyfloat(key, amount);
@@ -210,7 +207,7 @@ export class RedisService implements CacheProvider {
    * @param key
    */
   public smembers(key: string): Promise<string[]> {
-    return TraceService.startManagedSpan(`Redis | SMEMBERS ${key}`, { }, async () => {
+    return TraceService.startManagedSpan(`Redis | SMEMBERS ${key}`, {}, async () => {
       this.logService.trace(`SMEMBERS ${key}`);
       return this.getClient().smembers(key);
     });
@@ -222,8 +219,8 @@ export class RedisService implements CacheProvider {
    * @param value
    * @param options
    */
-  public sadd(key: string, value: string, options: RedisTtlOptions = { }): Promise<void> {
-    return TraceService.startManagedSpan(`Redis | SADD ${key}`, { }, async () => {
+  public sadd(key: string, value: string, options: RedisTtlOptions = {}): Promise<void> {
+    return TraceService.startManagedSpan(`Redis | SADD ${key}`, {}, async () => {
       this.logService.trace(`SADD ${key} ${value}`);
 
       const setLength = await this.getClient().sadd(key, value);
@@ -241,7 +238,7 @@ export class RedisService implements CacheProvider {
    * @param key
    * @param options
    */
-  public async lock(key: string, options: RedisLockOptions = { }): Promise<void> {
+  public async lock(key: string, options: RedisLockOptions = {}): Promise<void> {
     const { ttl: optionsTtl, delay: optionsDelay, timeout: optionsTimeout, retries } = options;
     const ttl = this.resolveTtl(optionsTtl);
     const timeout = this.resolveTtl(optionsTimeout);
@@ -275,5 +272,4 @@ export class RedisService implements CacheProvider {
     this.logService.trace(`UNLOCK ${key}`);
     return this.del(`lock:${key}`);
   }
-
 }

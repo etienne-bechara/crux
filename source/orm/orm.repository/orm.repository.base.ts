@@ -1,7 +1,12 @@
+import { setTimeout } from 'node:timers/promises';
 import { EntityManager, EntityName } from '@mikro-orm/core';
 import { QueryBuilder } from '@mikro-orm/mysql';
-import { BadRequestException, ConflictException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { setTimeout } from 'timers/promises';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  NotImplementedException,
+} from '@nestjs/common';
 
 import { ContextStorageKey } from '../../context/context.enum';
 import { ContextStorage } from '../../context/context.storage';
@@ -10,12 +15,11 @@ import { OrmException, OrmSpanPrefix } from '../orm.enum';
 import { OrmExceptionHandlerParams, OrmRepositoryOptions } from '../orm.interface';
 
 export abstract class OrmBaseRepository<Entity extends object> {
-
   public constructor(
     protected readonly entityManager: EntityManager,
     protected readonly entityName: EntityName<Entity>,
     protected readonly repositoryOptions: OrmRepositoryOptions<Entity>,
-  ) { }
+  ) {}
 
   /**
    * Persist changes to provided entities.
@@ -25,8 +29,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
     return this.runWithinSpan(OrmSpanPrefix.COMMIT, async () => {
       if (entities) {
         await this.entityManager.persistAndFlush(entities);
-      }
-      else {
+      } else {
         await this.entityManager.flush();
       }
     });
@@ -36,9 +39,11 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * Creates a query builder instance .
    */
   public createQueryBuilder(): QueryBuilder<Entity> {
-    return (this.entityManager as EntityManager & {
-      createQueryBuilder: (entityName: EntityName<Entity>) => QueryBuilder<Entity>
-    }).createQueryBuilder(this.entityName);
+    return (
+      this.entityManager as EntityManager & {
+        createQueryBuilder: (entityName: EntityName<Entity>) => QueryBuilder<Entity>;
+      }
+    ).createQueryBuilder(this.entityName);
   }
 
   /**
@@ -60,8 +65,8 @@ export abstract class OrmBaseRepository<Entity extends object> {
    * Returns custom nested primary keys.
    */
   protected getNestedPrimaryKeys(): string[] {
-    this.repositoryOptions.nestedPrimaryKeys ??= [ ];
-    return [ 'id', ...this.repositoryOptions.nestedPrimaryKeys ];
+    this.repositoryOptions.nestedPrimaryKeys ??= [];
+    return ['id', ...this.repositoryOptions.nestedPrimaryKeys];
   }
 
   /**
@@ -99,19 +104,16 @@ export abstract class OrmBaseRepository<Entity extends object> {
   protected async runWithinSpan<T>(spanPrefix: OrmSpanPrefix, operation: () => Promise<T>, retries = 0): Promise<T> {
     const spanName = `Orm | ${spanPrefix} ${this.entityName as string}`;
     const hasContext = !!ContextStorage.getStore();
-    const shareableContext = [ OrmSpanPrefix.READ, OrmSpanPrefix.COUNT, OrmSpanPrefix.POPULATE ];
+    const shareableContext = [OrmSpanPrefix.READ, OrmSpanPrefix.COUNT, OrmSpanPrefix.POPULATE];
     const cleanContext = !hasContext || !shareableContext.includes(spanPrefix);
 
     try {
-      const traceResult = await TraceService.startManagedSpan(spanName, { }, async () => {
-        return cleanContext
-          ? await this.runWithinCleanContext(operation)
-          : await operation();
+      const traceResult = await TraceService.startManagedSpan(spanName, {}, async () => {
+        return cleanContext ? await this.runWithinCleanContext(operation) : await operation();
       });
 
       return traceResult;
-    }
-    catch (e) {
+    } catch (e) {
       return this.handleException({
         caller: (retries) => this.runWithinSpan(spanPrefix, operation, retries),
         retries,
@@ -135,8 +137,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
 
       try {
         result = await operation();
-      }
-      finally {
+      } finally {
         entityManager.clear();
       }
 
@@ -158,7 +159,7 @@ export abstract class OrmBaseRepository<Entity extends object> {
     const { caller, error, retries } = params;
     const { message } = error;
 
-    const retryableExceptions = [ 'read ECONNRESET' ];
+    const retryableExceptions = ['read ECONNRESET'];
     const retryDelay = 500;
     const retryMax = 4;
 
@@ -189,29 +190,28 @@ export abstract class OrmBaseRepository<Entity extends object> {
         constraint,
       });
     }
-    else if (isDuplicateError) {
+    if (isDuplicateError) {
       throw new ConflictException({
         message: OrmException.ENTITY_CONFLICT,
         constraint,
       });
     }
-    else if (isInsertFkError) {
+    if (isInsertFkError) {
       throw new ConflictException({
         message: OrmException.FOREIGN_KEY_NOT_FOUND,
         constraint,
       });
     }
-    else if (isDeleteFkError) {
+    if (isDeleteFkError) {
       throw new ConflictException({
         message: OrmException.FOREIGN_KEY_FAIL,
         constraint,
       });
     }
-    else if (isInvalidFieldError || isInvalidConditionError) {
+    if (isInvalidFieldError || isInvalidConditionError) {
       throw new BadRequestException(constraint?.toLowerCase());
     }
 
     throw new InternalServerErrorException(error);
   }
-
 }

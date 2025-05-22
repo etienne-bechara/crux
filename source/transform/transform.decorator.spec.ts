@@ -3,7 +3,6 @@ import { plainToClass } from 'class-transformer';
 import { ToBoolean, ToNumber, ToNumberArray, ToString, ToStringArray } from './transform.decorator';
 
 class TransformDto {
-
   @ToBoolean() public toBoolean01!: boolean;
   @ToBoolean() public toBoolean02!: boolean;
   @ToBoolean() public toBoolean03!: boolean;
@@ -33,8 +32,8 @@ class TransformDto {
   @ToString() public toString09!: string;
   @ToStringArray() public toStringArray01!: string[];
   @ToStringArray() public toStringArray02!: string[];
-  @ToStringArray({ splitBy: [ ',', '|' ] }) public toStringArray03!: string[];
-  @ToStringArray({ splitBy: [ ';' ] }) public toStringArray04!: string[];
+  @ToStringArray({ splitBy: [',', '|'] }) public toStringArray03!: string[];
+  @ToStringArray({ splitBy: [';'] }) public toStringArray04!: string[];
   @ToStringArray() public toStringArray05!: string[];
   @ToStringArray() public toStringArray06!: string[];
   @ToStringArray() public toStringArray07!: string[];
@@ -42,8 +41,8 @@ class TransformDto {
   @ToStringArray() public toStringArray09!: string[];
   @ToNumberArray() public toNumberArray01!: string[];
   @ToNumberArray() public toNumberArray02!: string[];
-  @ToNumberArray({ splitBy: [ ',', '|' ] }) public toNumberArray03!: string[];
-  @ToNumberArray({ splitBy: [ ';' ] }) public toNumberArray04!: string[];
+  @ToNumberArray({ splitBy: [',', '|'] }) public toNumberArray03!: string[];
+  @ToNumberArray({ splitBy: [';'] }) public toNumberArray04!: string[];
   @ToNumberArray() public toNumberArray05!: string[];
   @ToNumberArray() public toNumberArray06!: string[];
   @ToNumberArray() public toNumberArray07!: string[];
@@ -52,7 +51,6 @@ class TransformDto {
   @ToNumberArray() public toNumberArray10!: string[];
   @ToNumberArray() public toNumberArray11!: string[];
   @ToNumberArray() public toNumberArray12!: string[];
-
 }
 
 const transformSubject = {
@@ -84,26 +82,26 @@ const transformSubject = {
   toString08: null,
   toString09: undefined,
   toStringArray01: 'a',
-  toStringArray02: [ 'a', 'b' ],
+  toStringArray02: ['a', 'b'],
   toStringArray03: 'a,b|c',
-  toStringArray04: [ 'a;b', 'b' ],
-  toStringArray05: [ 'a,b', 'c' ],
-  toStringArray06: [ '' ],
-  toStringArray07: [ ],
+  toStringArray04: ['a;b', 'b'],
+  toStringArray05: ['a,b', 'c'],
+  toStringArray06: [''],
+  toStringArray07: [],
   toStringArray08: null,
   toStringArray09: undefined,
   toNumberArray01: '1',
-  toNumberArray02: [ 1, '2' ],
+  toNumberArray02: [1, '2'],
   toNumberArray03: '1,2|3',
-  toNumberArray04: [ '1;2', 2, 'x' ],
-  toNumberArray05: [ '1,2', 3 ],
-  toNumberArray06: [ 'x' ],
-  toNumberArray07: [ ],
+  toNumberArray04: ['1;2', 2, 'x'],
+  toNumberArray05: ['1,2', 3],
+  toNumberArray06: ['x'],
+  toNumberArray07: [],
   toNumberArray08: null,
   toNumberArray09: undefined,
   toNumberArray10: 0,
   toNumberArray11: '0',
-  toNumberArray12: [ 0, '123.45', 678.9 ],
+  toNumberArray12: [0, '123.45', 678.9],
 };
 
 describe('ToBoolean', () => {
@@ -156,14 +154,14 @@ describe('ToStringArray', () => {
   it('should transform separated strings or array of strings into an array of unique strings', () => {
     const dto = plainToClass(TransformDto, transformSubject);
 
-    expect(dto.toStringArray01).toStrictEqual([ 'a' ]);
-    expect(dto.toStringArray02).toStrictEqual([ 'a', 'b' ]);
-    expect(dto.toStringArray03).toStrictEqual([ 'a', 'b', 'c' ]);
-    expect(dto.toStringArray04).toStrictEqual([ 'a', 'b' ]);
-    expect(dto.toStringArray05).toStrictEqual([ 'a', 'b', 'c' ]);
-    expect(dto.toStringArray06).toStrictEqual([ '' ]);
-    expect(dto.toStringArray07).toStrictEqual([ ]);
-    expect(dto.toStringArray08).toStrictEqual([ ]);
+    expect(dto.toStringArray01).toStrictEqual(['a']);
+    expect(dto.toStringArray02).toStrictEqual(['a', 'b']);
+    expect(dto.toStringArray03).toStrictEqual(['a', 'b', 'c']);
+    expect(dto.toStringArray04).toStrictEqual(['a', 'b']);
+    expect(dto.toStringArray05).toStrictEqual(['a', 'b', 'c']);
+    expect(dto.toStringArray06).toStrictEqual(['']);
+    expect(dto.toStringArray07).toStrictEqual([]);
+    expect(dto.toStringArray08).toStrictEqual([]);
     expect(dto.toStringArray09).toStrictEqual(undefined);
   });
 });
@@ -172,17 +170,17 @@ describe('ToNumberArray', () => {
   it('should transform separated strings or array of strings into an array of unique numbers', () => {
     const dto = plainToClass(TransformDto, transformSubject);
 
-    expect(dto.toNumberArray01).toStrictEqual([ 1 ]);
-    expect(dto.toNumberArray02).toStrictEqual([ 1, 2 ]);
-    expect(dto.toNumberArray03).toStrictEqual([ 1, 2, 3 ]);
-    expect(dto.toNumberArray04).toStrictEqual([ 1, 2, Number.NaN ]);
-    expect(dto.toNumberArray05).toStrictEqual([ 1, 2, 3 ]);
-    expect(dto.toNumberArray06).toStrictEqual([ Number.NaN ]);
-    expect(dto.toNumberArray07).toStrictEqual([ ]);
-    expect(dto.toNumberArray08).toStrictEqual([ ]);
+    expect(dto.toNumberArray01).toStrictEqual([1]);
+    expect(dto.toNumberArray02).toStrictEqual([1, 2]);
+    expect(dto.toNumberArray03).toStrictEqual([1, 2, 3]);
+    expect(dto.toNumberArray04).toStrictEqual([1, 2, Number.NaN]);
+    expect(dto.toNumberArray05).toStrictEqual([1, 2, 3]);
+    expect(dto.toNumberArray06).toStrictEqual([Number.NaN]);
+    expect(dto.toNumberArray07).toStrictEqual([]);
+    expect(dto.toNumberArray08).toStrictEqual([]);
     expect(dto.toNumberArray09).toStrictEqual(undefined);
-    expect(dto.toNumberArray10).toStrictEqual([ 0 ]);
-    expect(dto.toNumberArray11).toStrictEqual([ 0 ]);
-    expect(dto.toNumberArray12).toStrictEqual([ 0, 123.45, 678.9 ]);
+    expect(dto.toNumberArray10).toStrictEqual([0]);
+    expect(dto.toNumberArray11).toStrictEqual([0]);
+    expect(dto.toNumberArray12).toStrictEqual([0, 123.45, 678.9]);
   });
 });

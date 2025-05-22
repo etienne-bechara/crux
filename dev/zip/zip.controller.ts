@@ -11,10 +11,7 @@ import { ZipService } from './zip.service';
 to a postal address to assist the sorting of mail.`,
 })
 export class ZipController {
-
-  public constructor(
-    private readonly zipService: ZipService,
-  ) { }
+  public constructor(private readonly zipService: ZipService) {}
 
   @Get(':code')
   @Cache({ ttl: 10_000 })
@@ -22,5 +19,4 @@ export class ZipController {
   public getZipCode(@Param('code') code: string): Promise<Zip> {
     return this.zipService.readZip(code);
   }
-
 }

@@ -1,5 +1,5 @@
+import crypto from 'node:crypto';
 import { DynamicModule, Module } from '@nestjs/common';
-import crypto from 'crypto';
 
 import { LogModule } from '../log/log.module';
 import { SchemaInjectionToken } from './schema.enum';
@@ -7,22 +7,17 @@ import { SchemaAsyncModuleOptions, SchemaModuleOptions } from './schema.interfac
 import { SchemaService } from './schema.service';
 
 @Module({
-  imports: [
-    LogModule,
-  ],
+  imports: [LogModule],
   providers: [
     SchemaService,
     {
       provide: SchemaInjectionToken.MODULE_OPTIONS,
-      useValue: { },
+      useValue: {},
     },
   ],
-  exports: [
-    SchemaService,
-  ],
+  exports: [SchemaService],
 })
 export class SchemaModule {
-
   /**
    * Registers underlying service with provided options.
    * @param options
@@ -64,5 +59,4 @@ export class SchemaModule {
       ],
     };
   }
-
 }

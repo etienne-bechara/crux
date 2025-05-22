@@ -10,7 +10,6 @@ export const TRACE_DEFAULT_OPTIONS: TraceOptions = {
 
 @Config()
 export class TraceConfig {
-
   @InjectConfig()
   @IsOptional()
   @IsUrl()
@@ -25,5 +24,4 @@ export class TraceConfig {
   @IsOptional()
   @IsString()
   public readonly TRACE_PASSWORD?: string;
-
 }

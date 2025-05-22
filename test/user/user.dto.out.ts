@@ -1,9 +1,8 @@
 import { OrmUuidTimestampDto } from '../../source/orm/orm.dto.out';
-import { IsArray, IsObject, IsNumber, IsString } from '../../source/validate/validate.decorator';
+import { IsArray, IsNumber, IsObject, IsString } from '../../source/validate/validate.decorator';
 import { MetadataDto } from '../metadata/metadata.dto.out';
 
 export class UserDto extends OrmUuidTimestampDto {
-
   @IsString()
   public name!: string;
 
@@ -16,5 +15,4 @@ export class UserDto extends OrmUuidTimestampDto {
   @IsArray()
   @IsObject(MetadataDto, { each: true })
   public metadata!: MetadataDto[];
-
 }

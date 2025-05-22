@@ -6,9 +6,9 @@ describe('MemoryService', () => {
   const testString = 'hello world';
   const testNumber = 1_234_567_890;
   const testBuffer = Buffer.from('buffer');
-  const testObject = { hello: 'world', numbers: [ 1, 2, 3 ] };
-  const testArray = [ 'hello', 'world', 1, 2, 3, testObject ];
-  const testSet = [ 'a', 'b' ];
+  const testObject = { hello: 'world', numbers: [1, 2, 3] };
+  const testArray = ['hello', 'world', 1, 2, 3, testObject];
+  const testSet = ['a', 'b'];
   const testTtl = testString;
   const ttl = 2000;
 
@@ -50,6 +50,7 @@ describe('MemoryService', () => {
       await new Promise((r) => setTimeout(r, delay));
 
       memoryService.set('testTtl', testTtl, { ttl });
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       const exp = memoryService['memoryExpiration'].get('testTtl') as number;
 
       expect(exp - Date.now()).toBeLessThanOrEqual(ttl - delay);

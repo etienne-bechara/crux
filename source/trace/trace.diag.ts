@@ -3,10 +3,7 @@ import { DiagLogger } from '@opentelemetry/api';
 import { LogService } from '../log/log.service';
 
 export class TraceDiagConsoleLogger implements DiagLogger {
-
-  public constructor(
-    private readonly logService: LogService,
-  ) { }
+  public constructor(private readonly logService: LogService) {}
 
   /**
    * Logs an error message.
@@ -24,8 +21,7 @@ export class TraceDiagConsoleLogger implements DiagLogger {
   public warn(message: string): void {
     if (message.startsWith('Dropped')) {
       this.logService.warning('Dropped spans because maxQueueSize reached');
-    }
-    else {
+    } else {
       this.logService.warning(message);
     }
   }
@@ -53,5 +49,4 @@ export class TraceDiagConsoleLogger implements DiagLogger {
   public verbose(message: string): void {
     this.logService.trace(message);
   }
-
 }

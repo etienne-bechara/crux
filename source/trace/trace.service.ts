@@ -1,11 +1,16 @@
 import * as grpc from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
-import { Context, context, diag, DiagLogLevel, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';
+import { Context, DiagLogLevel, Span, SpanOptions, SpanStatusCode, context, diag, trace } from '@opentelemetry/api';
 import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
-import { BasicTracerProvider, BatchSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
+import {
+  BasicTracerProvider,
+  BatchSpanProcessor,
+  ParentBasedSampler,
+  TraceIdRatioBasedSampler,
+} from '@opentelemetry/sdk-trace-base';
 
 import { AppConfig } from '../app/app.config';
 import { LogService } from '../log/log.service';
@@ -14,7 +19,6 @@ import { TraceDiagConsoleLogger } from './trace.diag';
 
 @Injectable()
 export class TraceService {
-
   private static job: string;
 
   public constructor(
@@ -28,8 +32,8 @@ export class TraceService {
   /**
    * Acquires configured trace URL giving priority to environment variable.
    */
-  private buildTraceUrl(): string | undefined{
-    const { traces } = this.appConfig.APP_OPTIONS || { };
+  private buildTraceUrl(): string | undefined {
+    const { traces } = this.appConfig.APP_OPTIONS || {};
     const { url } = traces;
     return this.traceConfig.TRACE_URL || url;
   }
@@ -65,7 +69,7 @@ export class TraceService {
    * - Context tracking using async hooks.
    */
   private setupOpenTelemetryComponents(): void {
-    const { name: job, instance, traces } = this.appConfig.APP_OPTIONS || { };
+    const { name: job, instance, traces } = this.appConfig.APP_OPTIONS || {};
     const { username, password, pushInterval, batchSize, samplerRatio } = traces;
 
     const environment = this.appConfig.NODE_ENV;
@@ -158,7 +162,7 @@ export class TraceService {
    * @param context
    */
   public static startSpan(name: string, options?: SpanOptions, context?: Context): Span {
-    return trace.getTracer(this.job).startSpan(name, options, context);
+    return trace.getTracer(TraceService.job).startSpan(name, options, context);
   }
 
   /**
@@ -182,7 +186,7 @@ export class TraceService {
    * @param fn
    */
   public static startActiveSpan(name: string, options: SpanOptions, fn: any): any {
-    return trace.getTracer(this.job).startActiveSpan(name, options, fn);
+    return trace.getTracer(TraceService.job).startActiveSpan(name, options, fn);
   }
 
   /**
@@ -210,35 +214,30 @@ export class TraceService {
 
     return isAsync
       ? TraceService.startActiveSpan(name, options, async (span: Span) => {
-        try {
-          const result = await fn();
-          span.setStatus({ code: SpanStatusCode.OK });
-          return result;
-        }
-        catch (e) {
-          span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
-          throw e;
-        }
-        finally {
-          span.end();
-        }
-      })
+          try {
+            const result = await fn();
+            span.setStatus({ code: SpanStatusCode.OK });
+            return result;
+          } catch (e) {
+            span.recordException(e as Error);
+            span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
+            throw e;
+          } finally {
+            span.end();
+          }
+        })
       : TraceService.startActiveSpan(name, options, (span: Span) => {
-        try {
-          const result = fn();
-          span.setStatus({ code: SpanStatusCode.OK });
-          return result;
-        }
-        catch (e) {
-          span.recordException(e as Error);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
-          throw e;
-        }
-        finally {
-          span.end();
-        }
-      });
+          try {
+            const result = fn();
+            span.setStatus({ code: SpanStatusCode.OK });
+            return result;
+          } catch (e) {
+            span.recordException(e as Error);
+            span.setStatus({ code: SpanStatusCode.ERROR, message: (e as Error).message });
+            throw e;
+          } finally {
+            span.end();
+          }
+        });
   }
-
 }

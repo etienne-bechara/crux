@@ -10,13 +10,12 @@ import { AppService } from './app.service';
 
 @Catch()
 export class AppFilter implements ExceptionFilter {
-
   public constructor(
     private readonly appConfig: AppConfig,
     private readonly appService: AppService,
     private readonly contextService: ContextService,
     private readonly logService: LogService,
-  ) { }
+  ) {}
 
   /**
    * Intercepts all errors and standardize the output.
@@ -26,7 +25,7 @@ export class AppFilter implements ExceptionFilter {
     try {
       let appExceptionResponse!: AppExceptionResponse;
 
-      TraceService.startManagedSpan('App | Exception Handler', { }, () => {
+      TraceService.startManagedSpan('App | Exception Handler', {}, () => {
         const appException: AppException = {
           exception,
           code: this.buildCode(exception),
@@ -40,8 +39,7 @@ export class AppFilter implements ExceptionFilter {
 
       this.appService.collectInboundTelemetry(appExceptionResponse.code, exception);
       this.sendResponse(appExceptionResponse);
-    }
-    catch (e) {
+    } catch (e) {
       this.logService.error('Failed to handle exception', e as Error);
     }
   }
@@ -50,10 +48,10 @@ export class AppFilter implements ExceptionFilter {
    * Given an exception, determines the correct status code.
    * @param exception
    */
-  private buildCode(exception: HttpException | Error & { statusCode?: number }): HttpStatus {
-   return exception instanceof HttpException
-    ? exception.getStatus()
-    : exception.statusCode || HttpStatus.INTERNAL_SERVER_ERROR
+  private buildCode(exception: HttpException | (Error & { statusCode?: number })): HttpStatus {
+    return exception instanceof HttpException
+      ? exception.getStatus()
+      : exception.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   /**
@@ -61,7 +59,7 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   private buildMessage(exception: HttpException | Error): string {
-    let message;
+    let message: any;
 
     if (exception instanceof HttpException) {
       const details = exception.getResponse() as Record<string, any>;
@@ -69,18 +67,14 @@ export class AppFilter implements ExceptionFilter {
 
       if (code === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
         message = 'request validation failed';
-      }
-      else if (details?.message && typeof details.message === 'string') {
+      } else if (details?.message && typeof details.message === 'string') {
         message = details.message;
       }
-    }
-    else {
+    } else {
       message = exception.message;
     }
 
-    return message && typeof message === 'string'
-      ? message
-      : 'unexpected error';
+    return message && typeof message === 'string' ? message : 'unexpected error';
   }
 
   /**
@@ -89,25 +83,22 @@ export class AppFilter implements ExceptionFilter {
    * @param exception
    */
   private buildDetails(exception: HttpException | Error): AppExceptionDetails {
-    let details: AppExceptionDetails = { };
+    let details: AppExceptionDetails = {};
 
     if (exception instanceof HttpException) {
       details = exception.getResponse() as Record<string, any>;
       const code = exception.getStatus();
 
       if (code === HttpStatus.BAD_REQUEST && !details?.outboundResponse) {
-        const arrayConstraints = Array.isArray(details.message)
-          ? details.message
-          : [ details.message ];
+        const arrayConstraints = Array.isArray(details.message) ? details.message : [details.message];
 
-        const uniqueConstraints = [ ...new Set(arrayConstraints) ];
+        const uniqueConstraints = [...new Set(arrayConstraints)];
 
         details = { constraints: uniqueConstraints };
-      }
-      else if (details && typeof details === 'object') {
-        delete details.statusCode;
-        delete details.message;
-        delete details.error;
+      } else if (details && typeof details === 'object') {
+        details.statusCode = undefined;
+        details.message = undefined;
+        details.error = undefined;
       }
     }
 
@@ -120,7 +111,7 @@ export class AppFilter implements ExceptionFilter {
    */
   private buildResponse(params: AppException): AppExceptionResponse {
     const { details, message, code } = params;
-    const { enableResponseBody } = this.appConfig.APP_OPTIONS.logs || { };
+    const { enableResponseBody } = this.appConfig.APP_OPTIONS.logs || {};
 
     const isProduction = this.appConfig.NODE_ENV === AppEnvironment.PRODUCTION;
     const isInternalError = code === HttpStatus.INTERNAL_SERVER_ERROR;
@@ -132,15 +123,14 @@ export class AppFilter implements ExceptionFilter {
       message: isProduction && isInternalError ? 'unexpected error' : message,
       traceId: isServerError ? traceId : undefined,
       requestId: !isServerError || traceId ? undefined : this.contextService.getRequestId(),
-      ...isProduction && isInternalError ? { } : details,
+      ...(isProduction && isInternalError ? {} : details),
     };
 
     const { proxyExceptions, outboundResponse } = details;
     const exceptionBody = outboundResponse?.body;
 
-    const clientResponse: AppExceptionResponse = proxyExceptions && exceptionBody
-      ? { code, body: exceptionBody }
-      : { code, body: filteredResponse };
+    const clientResponse: AppExceptionResponse =
+      proxyExceptions && exceptionBody ? { code, body: exceptionBody } : { code, body: filteredResponse };
 
     this.logService.http(this.contextService.getRequestDescription('out'), {
       duration: this.contextService.getRequestDuration(),
@@ -173,9 +163,7 @@ export class AppFilter implements ExceptionFilter {
 
     const data = { message, inboundRequest, ...details };
 
-    return httpErrors.includes(code)
-      ? this.logService.error(exception, data)
-      : this.logService.info(exception, data);
+    httpErrors.includes(code) ? this.logService.error(exception, data) : this.logService.info(exception, data);
   }
 
   /**
@@ -190,5 +178,4 @@ export class AppFilter implements ExceptionFilter {
     res.header('Content-Type', 'application/json');
     res.send(body);
   }
-
 }

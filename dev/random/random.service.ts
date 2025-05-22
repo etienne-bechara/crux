@@ -1,23 +1,32 @@
-import crypto from 'crypto';
-import { setTimeout } from 'timers/promises';
+import crypto from 'node:crypto';
+import { setTimeout } from 'node:timers/promises';
 
 import { LogService } from '../../source/log/log.service';
-import { BadRequestException, ForbiddenException, GatewayTimeoutException, HttpException, HttpService, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '../../source/override';
+import {
+  BadRequestException,
+  ForbiddenException,
+  GatewayTimeoutException,
+  HttpException,
+  HttpService,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '../../source/override';
 
 @Injectable()
 export class RandomService {
-
   public constructor(
     private readonly httpService: HttpService,
     private readonly logService: LogService,
-  ) { }
+  ) {}
 
   /**
    * Do multiple random calls through parallel http.
    * @param amount
    */
   public async doRandomSplit(amount: number): Promise<any> {
-    const promises = [ ];
+    const promises = [];
 
     for (let i = 0; i < amount; i++) {
       promises.push(this.httpService.get('http://localhost:8080/random'));
@@ -85,7 +94,7 @@ export class RandomService {
 
       case dice > 45: {
         const notFound = await this.httpService.get('https://www.google.com/404', {
-          retryCodes: [ 404 ],
+          retryCodes: [404],
         });
 
         return notFound;
@@ -150,5 +159,4 @@ export class RandomService {
       }
     }
   }
-
 }

@@ -5,9 +5,8 @@ import { User } from '../user/user.entity';
 import { RelationRepository } from './relation.repository';
 
 @Entity({ repository: () => RelationRepository })
-@Index({ properties: [ 'created' ] })
+@Index({ properties: ['created'] })
 export class Relation extends OrmBaseEntity {
-
   @ManyToOne(() => User, { primary: true })
   public child!: User;
 
@@ -16,5 +15,4 @@ export class Relation extends OrmBaseEntity {
 
   @Property({ columnType: 'timestamp' })
   public created?: Date = new Date();
-
 }

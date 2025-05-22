@@ -1,4 +1,4 @@
-import { applyDecorators, HttpCode, HttpStatus, SetMetadata } from '@nestjs/common';
+import { HttpCode, HttpStatus, SetMetadata, applyDecorators } from '@nestjs/common';
 import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -14,9 +14,8 @@ import { TransformToArrayOptions, TransformToStringOptions } from './transform.i
 export function Response(status: HttpStatus, type?: any): MethodDecorator;
 export function Response(options: ApiResponseOptions): MethodDecorator;
 export function Response(statusOrOptions: HttpStatus | ApiResponseOptions, type?: any): MethodDecorator {
-  const apiResponseOptions: ApiResponseOptions & { type?: any } = typeof statusOrOptions === 'number'
-    ? { status: statusOrOptions, type }
-    : statusOrOptions;
+  const apiResponseOptions: ApiResponseOptions & { type?: any } =
+    typeof statusOrOptions === 'number' ? { status: statusOrOptions, type } : statusOrOptions;
 
   return applyDecorators(
     HttpCode(Number(apiResponseOptions.status)),
@@ -30,42 +29,45 @@ export function Response(statusOrOptions: HttpStatus | ApiResponseOptions, type?
  */
 export function ToBoolean(): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      if (value === undefined) return;
+    Transform(
+      (o) => {
+        const { value } = o;
+        if (value === undefined) return;
 
-      switch (value) {
-        case 'false': {
-          return false;
-        }
+        switch (value) {
+          case 'false': {
+            return false;
+          }
 
-        case 'true': {
-          return true;
-        }
+          case 'true': {
+            return true;
+          }
 
-        case 0: {
-          return false;
-        }
+          case 0: {
+            return false;
+          }
 
-        case 1: {
-          return true;
-        }
+          case 1: {
+            return true;
+          }
 
-        case false: {
-          return false;
-        }
+          case false: {
+            return false;
+          }
 
-        case true: {
-          return true;
-        }
+          case true: {
+            return true;
+          }
 
-        default: {
-          return null;
+          default: {
+            return null;
+          }
         }
-      }
-    }, {
-      toClassOnly: true,
-    }),
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }
 
@@ -74,19 +76,21 @@ export function ToBoolean(): any {
  */
 export function ToDate(): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      if (value === undefined) return;
+    Transform(
+      (o) => {
+        const { value } = o;
+        if (value === undefined) return;
 
-      try {
-        return new Date(value as string);
-      }
-      catch {
-        return null;
-      }
-    }, {
-      toClassOnly: true,
-    }),
+        try {
+          return new Date(value as string);
+        } catch {
+          return null;
+        }
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }
 
@@ -95,17 +99,20 @@ export function ToDate(): any {
  */
 export function ToNumber(): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      if (value === undefined || value === null) return value;
+    Transform(
+      (o) => {
+        const { value } = o;
+        if (value === undefined || value === null) return value;
 
-      const number = Number(value);
-      if (!number && number !== 0) return null;
+        const number = Number(value);
+        if (!number && number !== 0) return null;
 
-      return number;
-    }, {
-      toClassOnly: true,
-    }),
+        return number;
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }
 
@@ -113,34 +120,38 @@ export function ToNumber(): any {
  * Transforms to string and desired case.
  * @param options
  */
-export function ToString(options: TransformToStringOptions = { }): any {
+export function ToString(options: TransformToStringOptions = {}): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      if (value === undefined) return;
+    Transform(
+      (o) => {
+        const { value } = o;
+        if (value === undefined) return;
 
-      const str: string = value?.toString?.();
-      if (!str && str !== '') return null;
+        const str: string = value?.toString?.();
+        if (!str && str !== '') return null;
 
-      switch (options.case) {
-        case 'lower': {
-          return str.toLowerCase();
+        switch (options.case) {
+          case 'lower': {
+            return str.toLowerCase();
+          }
+
+          case 'upper': {
+            return str.toUpperCase();
+          }
+
+          case 'title': {
+            return str.toLowerCase().replaceAll(/\b[a-z]/g, (x) => x.toUpperCase());
+          }
+
+          default: {
+            return str;
+          }
         }
-
-        case 'upper': {
-          return str.toUpperCase();
-        }
-
-        case 'title': {
-          return str.toLowerCase().replaceAll(/\b[a-z]/g, (x) => x.toUpperCase());
-        }
-
-        default: { return str;
-        }
-      }
-    }, {
-      toClassOnly: true,
-    }),
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }
 
@@ -150,17 +161,20 @@ export function ToString(options: TransformToStringOptions = { }): any {
  * @param input
  * @param options
  */
-function toArray(input: string | number | string[] | number[], options: TransformToArrayOptions = { }): string[] | undefined {
+function toArray(
+  input: string | number | string[] | number[],
+  options: TransformToArrayOptions = {},
+): string[] | undefined {
   if (input === undefined) return;
-  if (!input && input !== 0) return [ ];
+  if (!input && input !== 0) return [];
 
-  options.splitBy ??= [ ',' ];
+  options.splitBy ??= [','];
 
-  const inputArray: string[] = Array.isArray(input) ? input.map(String) : [ String(input) ];
+  const inputArray: string[] = Array.isArray(input) ? input.map(String) : [String(input)];
   const splitRegex = new RegExp(`[${options.splitBy.join('')}]`, 'g');
   const splitArray = inputArray.flatMap((s) => s.split(splitRegex));
 
-  return [ ...new Set(splitArray) ];
+  return [...new Set(splitArray)];
 }
 
 /**
@@ -170,14 +184,17 @@ function toArray(input: string | number | string[] | number[], options: Transfor
  * Separators can be configured by `splitBy`, which defaults to comma.
  * @param options
  */
-export function ToStringArray(options: TransformToArrayOptions = { }): any {
+export function ToStringArray(options: TransformToArrayOptions = {}): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      return toArray(value as string | string[], options);
-    }, {
-      toClassOnly: true,
-    }),
+    Transform(
+      (o) => {
+        const { value } = o;
+        return toArray(value as string | string[], options);
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }
 
@@ -188,13 +205,16 @@ export function ToStringArray(options: TransformToArrayOptions = { }): any {
  * Separators can be configured by `splitBy`, which defaults to comma.
  * @param options
  */
-export function ToNumberArray(options: TransformToArrayOptions = { }): any {
+export function ToNumberArray(options: TransformToArrayOptions = {}): any {
   return applyDecorators(
-    Transform((o) => {
-      const { value } = o;
-      return toArray(value as string | string[] | number | number[], options)?.map(Number);
-    }, {
-      toClassOnly: true,
-    }),
+    Transform(
+      (o) => {
+        const { value } = o;
+        return toArray(value as string | string[] | number | number[], options)?.map(Number);
+      },
+      {
+        toClassOnly: true,
+      },
+    ),
   );
 }

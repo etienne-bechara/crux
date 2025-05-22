@@ -10,8 +10,7 @@ import { LokiMessage, LokiStream } from './loki.interface';
 
 @Injectable()
 export class LokiService implements LogTransport {
-
-  private publishQueue: LogParams[] = [ ];
+  private publishQueue: LogParams[] = [];
 
   public constructor(
     private readonly appConfig: AppConfig,
@@ -26,7 +25,7 @@ export class LokiService implements LogTransport {
    * Acquires configured Loki URL giving priority to environment variable.
    */
   private buildLokiUrl(): string | undefined {
-    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { loki } = this.appConfig.APP_OPTIONS || {};
     const { url } = loki;
     return this.lokiConfig.LOKI_URL || url;
   }
@@ -59,7 +58,7 @@ export class LokiService implements LogTransport {
    * Returns minimum level for logging this transport.
    */
   public getSeverity(): LogSeverity {
-    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { loki } = this.appConfig.APP_OPTIONS || {};
     const { severity } = loki;
     return this.lokiConfig.LOKI_SEVERITY || severity;
   }
@@ -70,7 +69,7 @@ export class LokiService implements LogTransport {
    * @param params
    */
   public log(params: LogParams): void {
-    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { loki } = this.appConfig.APP_OPTIONS || {};
     const { batchSize } = loki;
 
     this.publishQueue.push(params);
@@ -84,7 +83,7 @@ export class LokiService implements LogTransport {
    * Publish logs once at every configured interval.
    */
   private async setupPush(): Promise<void> {
-    const { loki } = this.appConfig.APP_OPTIONS || { };
+    const { loki } = this.appConfig.APP_OPTIONS || {};
     const { pushInterval } = loki;
     if (!pushInterval) return;
 
@@ -102,8 +101,8 @@ export class LokiService implements LogTransport {
     if (this.publishQueue.length === 0) return;
 
     const lokiUrl = this.buildLokiUrl() as string;
-    const logs = [ ...this.publishQueue ];
-    this.publishQueue = [ ];
+    const logs = [...this.publishQueue];
+    this.publishQueue = [];
 
     const messageData = this.buildLokiMessage(logs);
 
@@ -112,8 +111,7 @@ export class LokiService implements LogTransport {
         json: messageData,
         retryLimit: 2,
       });
-    }
-    catch (e) {
+    } catch (e) {
       this.logService.error(LogException.PUSH_FAILED, e as Error);
     }
   }
@@ -124,7 +122,7 @@ export class LokiService implements LogTransport {
    * @param logs
    */
   private buildLokiMessage(logs: LogParams[]): LokiMessage {
-    const streams: LokiStream[] = [ ];
+    const streams: LokiStream[] = [];
 
     for (const severity of Object.values(LogSeverity)) {
       const matchingLogs = logs.filter((l) => l.severity === severity);
@@ -148,9 +146,7 @@ export class LokiService implements LogTransport {
    * @param severity
    */
   private getLokiLevel(severity: LogSeverity): string {
-    return severity === LogSeverity.HTTP
-      ? 'info'
-      : severity;
+    return severity === LogSeverity.HTTP ? 'info' : severity;
   }
 
   /**
@@ -172,8 +168,7 @@ export class LokiService implements LogTransport {
       const { timestamp, message, caller, requestId, traceId, spanId, data } = l;
       const timeMs = new Date(timestamp).getTime();
       const line = JSON.stringify({ message, caller, requestId, traceId, spanId, data });
-      return [ String(timeMs * 1_000_000), line ];
+      return [String(timeMs * 1_000_000), line];
     });
   }
-
 }

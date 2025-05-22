@@ -12,20 +12,15 @@ export const HTTP_DEFAULT_OPTIONS: HttpOptions = {
     if (contentType?.startsWith('application/json')) {
       return res.json();
     }
-    else if (contentType?.startsWith('text')) {
+    if (contentType?.startsWith('text')) {
       return res.text();
     }
-    else {
-      const arrayBuffer = await res.arrayBuffer();
-      return Buffer.from(arrayBuffer);
-    }
+    const arrayBuffer = await res.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   },
   cacheTtl: 0,
   cacheTimeout: 500,
-  cacheMethods: [
-    HttpMethod.GET,
-    HttpMethod.HEAD,
-  ],
+  cacheMethods: [HttpMethod.GET, HttpMethod.HEAD],
   retryLimit: 2,
   retryMethods: [
     HttpMethod.GET,
