@@ -30,6 +30,7 @@ import { ValidateInterceptor } from '../validate/validate.interceptor';
 import { ValidatePipe } from '../validate/validate.pipe';
 import { APP_DEFAULT_OPTIONS, AppConfig } from './app.config';
 import { AppController } from './app.controller';
+import { AppEnvironment } from './app.enum';
 import { AppFilter } from './app.filter';
 import { AppModuleOptions, AppOptions, AppRequest, AppResponse } from './app.interface';
 import { AppService } from './app.service';
@@ -271,6 +272,7 @@ export class AppModule {
 	private static buildModules(type: 'imports' | 'exports'): any[] {
 		const { disableScan, disableCache, disableLogs, disableMetrics, disableTraces, disableDocs } = AppModule.options;
 		const { envPath, imports: importedModules, exports: exportedModules } = AppModule.options;
+		const allowValidationErrors = process.env.NODE_ENV === AppEnvironment.TEST;
 		const preloadedModules: any[] = [];
 		let sourceModules: unknown[] = [];
 
@@ -308,7 +310,7 @@ export class AppModule {
 
 		if (type === 'imports') {
 			preloadedModules.push(
-				ConfigModule.registerAsync({ envPath }),
+				ConfigModule.registerAsync({ envPath, allowValidationErrors }),
 				...defaultModules,
 				...sourceModules,
 				...importedModules,
