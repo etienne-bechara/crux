@@ -1,3 +1,17 @@
+# [6.1.0](https://github.com/etienne-bechara/crux/compare/v6.0.4...v6.1.0) (2025-05-22)
+
+
+### Bug Fixes
+
+* **app:** allow validation errors on test environments ([e83cf1e](https://github.com/etienne-bechara/crux/commit/e83cf1e80166b1820acf91652201d255deb162b0))
+* apply biome lint fixes ([c4fa9b9](https://github.com/etienne-bechara/crux/commit/c4fa9b94b2f9d53a205c9d73b5079a43b4fb12b1))
+* use tab indent ([877ae4f](https://github.com/etienne-bechara/crux/commit/877ae4fc719643e3bfa4a1d2cc00a8399654c05f))
+
+
+### Features
+
+* **package:** add biome and settings ([8acc452](https://github.com/etienne-bechara/crux/commit/8acc4520c0bb84a561fc3069aea0fd2477c68e41))
+
 ## [6.0.4](https://github.com/etienne-bechara/crux/compare/v6.0.3...v6.0.4) (2025-05-16)
 
 

@@ -1,6 +1,6 @@
 {
 	"name": "@bechara/crux",
-	"version": "6.0.4",
+	"version": "6.1.0",
 	"description": "Node.js backend package including: framework (NestJS), HTTP server (Fastify), HTTP client (Fetch), distributed caching (ioredis), ORM (MikroORM), documentation (OpenAPI), logger (Loki), metrics (Prometheus) and tracing (Tempo with OpenTelemetry).",
 	"author": {
 		"name": "Etienne Bechara",
@@ -12,7 +12,9 @@
 	},
 	"license": "MIT",
 	"main": "dist/index.js",
-	"files": ["dist/**"],
+	"files": [
+		"dist/**"
+	],
 	"release": {
 		"plugins": [
 			"@semantic-release/commit-analyzer",
