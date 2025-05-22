@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { applyDecorators, HttpCode, HttpStatus, SetMetadata } from '@nestjs/common';
 import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
@@ -14,7 +13,6 @@ import { TransformToArrayOptions, TransformToStringOptions } from './transform.i
  */
 export function Response(status: HttpStatus, type?: any): MethodDecorator;
 export function Response(options: ApiResponseOptions): MethodDecorator;
-// eslint-disable-next-line jsdoc/require-jsdoc, padding-line-between-statements
 export function Response(statusOrOptions: HttpStatus | ApiResponseOptions, type?: any): MethodDecorator {
   const apiResponseOptions: ApiResponseOptions & { type?: any } = typeof statusOrOptions === 'number'
     ? { status: statusOrOptions, type }

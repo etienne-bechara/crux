@@ -1,5 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
-/* eslint-disable max-len */
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 

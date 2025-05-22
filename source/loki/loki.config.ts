@@ -3,7 +3,6 @@ import { LogSeverity } from '../log/log.enum';
 import { IsEnum, IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { LokiOptions } from './loki.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const LOKI_DEFAULT_OPTIONS: LokiOptions = {
   severity: LogSeverity.HTTP,
   pushInterval: 5000,

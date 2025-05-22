@@ -136,9 +136,7 @@ export class ConfigModule {
         data: { constraints: validationErrors },
       };
 
-      // eslint-disable-next-line no-console
       console.error(JSON.stringify(logMessage, null, 2));
-      // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     }
 

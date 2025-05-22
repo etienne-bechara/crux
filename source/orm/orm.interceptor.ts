@@ -31,7 +31,6 @@ export class OrmInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
           entityManager.clear();
           return this.stringifyEntities(data);

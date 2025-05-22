@@ -6,7 +6,6 @@ import { CacheModule } from '../override';
 import { PromiseModule } from './promise.module';
 import { PromiseService } from './promise.service';
 
-// eslint-disable-next-line @typescript-eslint/require-await
 const mockFailure = async (c: { quantity: number}): Promise<void> => {
   c.quantity++;
   throw new Error('error');

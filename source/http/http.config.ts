@@ -3,7 +3,6 @@ import { HttpStatus } from '@nestjs/common';
 import { HttpMethod } from './http.enum';
 import { HttpOptions, HttpResponse } from './http.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HTTP_DEFAULT_OPTIONS: HttpOptions = {
   timeout: 60 * 1000,
   parser: async (res: HttpResponse) => {

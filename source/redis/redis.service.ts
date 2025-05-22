@@ -167,7 +167,6 @@ export class RedisService implements CacheProvider {
         extraParams.push('PX', ttl.toString());
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.getClient().set(key, data, ...extraParams as any);
       return get ? this.get(key) : undefined;
     });

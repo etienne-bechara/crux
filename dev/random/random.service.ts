@@ -29,7 +29,6 @@ export class RandomService {
   /**
    * Does something completely random for debugging purposes.
    */
-  // eslint-disable-next-line complexity
   public async doRandom(): Promise<any> {
     const metadata = { random: crypto.randomBytes(7).toString('hex') };
     const inLatency = Math.random() * 1000;

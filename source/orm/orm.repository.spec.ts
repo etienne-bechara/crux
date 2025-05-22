@@ -28,7 +28,6 @@ it('should export orm repository tests', () => {
   expect(true).toBeTruthy();
 });
 
-// eslint-disable-next-line jest/no-export, @typescript-eslint/naming-convention
 export const OrmRepositorySpec = ({ type, port, user }: { type: 'mysql' | 'postgresql', port: number, user: string }): void => {
   describe(`OrmRepository - ${type}`, () => {
     ContextStorage.enterWith(new Map());

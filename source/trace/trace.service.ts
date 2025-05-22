@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable no-import-assign */
 import * as grpc from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
 import { Context, context, diag, DiagLogLevel, Span, SpanOptions, SpanStatusCode, trace } from '@opentelemetry/api';

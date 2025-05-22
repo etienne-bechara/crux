@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { AppModule } from '../app/app.module';
 import { LogService } from './log.service';
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AppEnvironment } from '../app/app.enum';
 import { ToNumber } from '../transform/transform.decorator';
 import { IsEnum, IsNumber, IsObject } from '../validate/validate.decorator';

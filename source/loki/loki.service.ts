@@ -88,7 +88,6 @@ export class LokiService implements LogTransport {
     const { pushInterval } = loki;
     if (!pushInterval) return;
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       await new Promise((r) => setTimeout(r, pushInterval));
       void this.publishCurrentQueue();

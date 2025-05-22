@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { DocTag } from './doc.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const DocTagStorage: DocTag[] = [ ];
 
 /**

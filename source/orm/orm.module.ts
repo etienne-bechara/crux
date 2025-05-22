@@ -109,7 +109,6 @@ export class OrmModule {
    */
   private static buildMikroOrmOptions(params: OrmBuildMikroOrmOptionsParams): MikroORMOptions {
     const { options, entities, appConfig, logService } = params;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { sync, ...mikroOrmOptions } = options;
 
     mikroOrmOptions.entities = [

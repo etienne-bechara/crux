@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { DocOptions } from './doc.interface';
 
 export const DOC_DEFAULT_OPTIONS: DocOptions = {

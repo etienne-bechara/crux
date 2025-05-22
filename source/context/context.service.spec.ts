@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { AppModule } from '../app/app.module';
@@ -14,7 +13,6 @@ describe('ContextService', () => {
 
   describe('decodeJwtPayload', () => {
     it('should decode jwt payload flattening metadata claims', () => {
-      // eslint-disable-next-line max-len
       const token = 'xxx.ew0KICAiaXNzIjogImh0dHBzOi8vbW9jay5hdXRoMC5jb20vIiwNCiAgInN1YiI6ICJhdXRoMHwxMjMiLA0KICAiYXVkIjogImFiYyIsDQogICJpYXQiOiAxNjM0MTQ4MjAzLA0KICAiZXhwIjogMTYzNDMyODIwMywNCiAgImF0X2hhc2giOiAiZGVmIiwNCiAgIm5vbmNlIjogImdoaSIsDQogICJodHRwczovL21vY2suY29tL2FwcF9tZXRhZGF0YSI6IHsNCiAgICAiaWQiOiAxMjMNCiAgfSwNCiAgImh0dHBzOi8vbW9jay5jb20vdXNlcl9tZXRhZGF0YSI6IHsNCiAgICAiaWQiOiA0NTYNCiAgfQ0KfQ==.xxx';
       const payload = contextService['decodeJwtPayload'](token);
 

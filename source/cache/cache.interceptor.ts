@@ -52,7 +52,6 @@ export class CacheInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => this.handleOutputData(data, params)),
       );
   }

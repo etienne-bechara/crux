@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable jsdoc/require-jsdoc */
 import { Body, CallHandler, Controller, ExecutionContext, HttpStatus, INestApplication, Injectable, Module, NestInterceptor, ParseArrayPipe, Post, Put, UseInterceptors } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import supertest from 'supertest';
@@ -82,7 +80,7 @@ class ValidatorController {
   @Post('bulk')
   public postValidatorBulk(
     @Body(new ParseArrayPipe({ items: ValidatorCreateDto, strictGroups: true }))
-    body: ValidatorCreateDto[], // eslint-disable-line @typescript-eslint/indent
+    body: ValidatorCreateDto[],
   ): ValidatorCreateDto[] {
     return body;
   }

@@ -8,7 +8,6 @@ import { ConfigModule } from './config.module';
  * Loads decorated class as a config.
  */
 export function Config(): ClassDecorator {
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   const loadTargetAsConfig = (target: unknown): void => {
     ConfigModule.setClass(target);
   };

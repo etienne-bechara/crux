@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/exports */
 export * from '@mikro-orm/core';
 export * from '@mikro-orm/nestjs';
 export * from '@nestjs/common';

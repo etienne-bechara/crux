@@ -1,7 +1,6 @@
 import { AppModule } from './app.module';
 
 describe('AppModule', () => {
-  // eslint-disable-next-line no-console
   console.log = jest.fn();
 
   describe('boot', () => {

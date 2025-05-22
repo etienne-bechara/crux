@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable jsdoc/require-jsdoc */
 import { Controller, Get, HttpStatus, INestApplication, Module } from '@nestjs/common';
 import supertest from 'supertest';
 

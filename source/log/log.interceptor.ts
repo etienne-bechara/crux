@@ -38,7 +38,6 @@ export class LogInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        // eslint-disable-next-line @typescript-eslint/require-await
         mergeMap(async (data) => {
           const code = this.contextService.getResponseCode() || HttpStatus.OK;
 

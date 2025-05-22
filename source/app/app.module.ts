@@ -167,7 +167,6 @@ export class AppModule {
     this.instance.enableCors(cors);
 
     httpAdapter.useStaticAssets({
-      // eslint-disable-next-line unicorn/prefer-module
       root: `${process.cwd()}/${assetsPrefix}`,
       prefix: `/${assetsPrefix}/`,
     });
@@ -404,7 +403,6 @@ export class AppModule {
     const normalizedFiles = jsFiles.length > 0 ? jsFiles : matchingFiles;
 
     const exportsArrays = normalizedFiles.map((file) => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
       const exportsObject = require(`${cwd}/${file}`);
       return Object.keys(exportsObject).map((key) => exportsObject[key]);
     });

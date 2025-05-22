@@ -2,7 +2,6 @@ import { Config, InjectConfig } from '../config/config.decorator';
 import { IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { TraceOptions } from './trace.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const TRACE_DEFAULT_OPTIONS: TraceOptions = {
   pushInterval: 5000,
   batchSize: 1000,

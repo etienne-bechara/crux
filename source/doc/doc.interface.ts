@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { ComponentsObject, ExternalDocumentationObject, OpenAPIObject, ReferenceObject, SchemaObject, SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export interface DocSecurity {

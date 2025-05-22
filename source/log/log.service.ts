@@ -177,7 +177,6 @@ export class LogService {
    * @param object
    * @param decycled
    */
-  // eslint-disable-next-line complexity
   public sanitize(object: any, decycled: boolean = false): any {
     const { sensitiveKeys, sensitiveArrays } = this.appConfig.APP_OPTIONS.logs || { };
     const sensitiveSet = new Set(sensitiveKeys || [ ]);

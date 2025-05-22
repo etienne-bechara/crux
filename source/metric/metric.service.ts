@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-condition */
 import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { collectDefaultMetrics, Counter, CounterConfiguration, Gauge, GaugeConfiguration, Histogram, HistogramConfiguration, Metric, Registry, Summary, SummaryConfiguration } from 'prom-client';
 import { compress } from 'snappyjs';
@@ -124,7 +123,6 @@ export class MetricService {
 
         await this.httpService.post(metricUrl, {
           headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             'content-type': 'application/x-protobuf',
           },
           body: compress(buffer),

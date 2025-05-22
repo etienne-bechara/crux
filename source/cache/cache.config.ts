@@ -3,7 +3,6 @@ import { ToNumber } from '../transform/transform.decorator';
 import { IsNumber, IsOptional, IsString } from '../validate/validate.decorator';
 import { CacheOptions } from './cache.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const CACHE_DEFAULT_OPTIONS: CacheOptions = {
   defaultTimeout: 500,
   defaultTtl: 60_000,

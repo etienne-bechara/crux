@@ -3,7 +3,6 @@ import { LogSeverity } from '../log/log.enum';
 import { IsEnum, IsOptional } from '../validate/validate.decorator';
 import { ConsoleOptions } from './console.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const CONSOLE_DEFAULT_OPTIONS: ConsoleOptions = {
   maxLength: 1000,
 };

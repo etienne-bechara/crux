@@ -3,7 +3,6 @@ import { IsOptional, IsString, IsUrl } from '../validate/validate.decorator';
 import { MetricHttpStrategy } from './metric.enum';
 import { MetricOptions } from './metric.interface';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const METRIC_DEFAULT_OPTIONS: MetricOptions = {
   pushInterval: 30_000,
   httpStrategy: MetricHttpStrategy.HISTOGRAM,

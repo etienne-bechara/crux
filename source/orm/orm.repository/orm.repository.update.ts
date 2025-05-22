@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import { EntityData, EntityManager, EntityName, FromEntityType, RequiredEntityData } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 
@@ -148,7 +147,6 @@ export abstract class OrmUpdateRepository<Entity extends object> extends OrmCrea
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const matchingEntities = await this.readBy({ $or: clauses } as any, { populate });
 
       // Find matching entities for each item on original data

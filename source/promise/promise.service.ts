@@ -54,12 +54,10 @@ export class PromiseService {
     this.logService.debug(`Resolving promises with ${limit} concurrency limit`);
 
     for (const item of data) {
-      // eslint-disable-next-line promise/prefer-await-to-then
       const p = Promise.resolve().then(() => method(item));
       resolved.push(p);
 
       if (limit <= data.length) {
-        // eslint-disable-next-line promise/prefer-await-to-then
         const e: Promise<any> = p.then(() => executing.splice(executing.indexOf(e), 1));
         executing.push(e);
 
@@ -147,7 +145,6 @@ export class PromiseService {
    * Retry a method for configured times or until desired timeout.
    * @param params
    */
-  // eslint-disable-next-line complexity
   public async retryOnRejection<T>(params: PromiseRetryParams<T>): Promise<T> {
     const { name, retries, timeout, promise, breakIf, delay } = params;
     const start = Date.now();
@@ -162,7 +159,6 @@ export class PromiseService {
     let tentative = 1;
     let result: T;
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         const elapsed = Date.now() - start;

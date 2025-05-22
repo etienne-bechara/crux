@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-useless-undefined */
 import { plainToClass } from 'class-transformer';
 
 import { ToBoolean, ToNumber, ToNumberArray, ToString, ToStringArray } from './transform.decorator';

@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable jsdoc/require-jsdoc */
 import { Controller, Get, HttpStatus, INestApplication, Module, Patch } from '@nestjs/common';
 import supertest from 'supertest';
 import { setTimeout } from 'timers/promises';

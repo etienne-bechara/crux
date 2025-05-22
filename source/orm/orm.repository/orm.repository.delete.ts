@@ -30,7 +30,6 @@ export abstract class OrmDeleteRepository<Entity extends object> extends OrmUpda
       const entityArray = Array.isArray(entities) ? entities : [ entities ];
 
       if (populate) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         await this.populate(entityArray, populate as any);
       }
 

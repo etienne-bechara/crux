@@ -1,5 +1,3 @@
-/* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Span, SpanOptions } from '@opentelemetry/api';
 
 import { TraceService } from './trace.service';

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
 
 import { AppConfig } from '../app/app.config';
@@ -44,7 +43,6 @@ export class ConsoleService implements LogTransport {
    * to LOCAL applies colorization based on severity.
    * @param params
    */
-  // eslint-disable-next-line complexity
   public log(params: LogParams): void {
     const environment = this.appConfig.NODE_ENV;
     const { timestamp, severity, message, caller, requestId, traceId, spanId, data, error } = params;
