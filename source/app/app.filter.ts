@@ -96,9 +96,9 @@ export class AppFilter implements ExceptionFilter {
 
 				details = { constraints: uniqueConstraints };
 			} else if (details && typeof details === 'object') {
-				details.statusCode = undefined;
-				details.message = undefined;
-				details.error = undefined;
+				delete details.statusCode;
+				delete details.message;
+				delete details.error;
 			}
 		}
 

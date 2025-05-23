@@ -25,6 +25,9 @@
 			"style": {
 				"useImportType": "off"
 			},
+			"performance": {
+				"noDelete": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off"
 			}

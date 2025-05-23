@@ -181,7 +181,7 @@ export class AppModule {
 		const { headers } = req;
 
 		if (headers['content-length'] === '0') {
-			headers['content-type'] = undefined;
+			delete headers['content-type'];
 		}
 	}
 

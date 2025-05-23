@@ -135,7 +135,7 @@ export class ContextService<Metadata = Record<string, any>> {
 		const req = this.getRequest();
 
 		if (req?.params) {
-			req.params['*'] = undefined;
+			delete req.params['*'];
 		}
 
 		return this.validateObjectLength(req?.params as Record<string, any>);
