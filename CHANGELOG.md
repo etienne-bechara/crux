@@ -1,3 +1,11 @@
+## [6.1.1](https://github.com/etienne-bechara/crux/compare/v6.1.0...v6.1.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* disable noDelete rule and revert changes ([6ea1fd9](https://github.com/etienne-bechara/crux/commit/6ea1fd9a719a9775ceafae8fbeaa7c62cad5cc55))
+* **package:** lint ([96f6070](https://github.com/etienne-bechara/crux/commit/96f6070cfe2a169071320b15da2e967078c447e4))
+
 # [6.1.0](https://github.com/etienne-bechara/crux/compare/v6.0.4...v6.1.0) (2025-05-22)
 
 
