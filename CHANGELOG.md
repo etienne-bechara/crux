@@ -1,3 +1,11 @@
+## [6.1.2](https://github.com/etienne-bechara/crux/compare/v6.1.1...v6.1.2) (2025-05-29)
+
+
+### Bug Fixes
+
+* **biome:** add package.json to ignore ([4e866b0](https://github.com/etienne-bechara/crux/commit/4e866b0a5a9a22f58caac9ac7576bbb8f6b96373))
+* **log:** return log data as undefined if none was provided ([14b1a8d](https://github.com/etienne-bechara/crux/commit/14b1a8dd3ebf41257024f6e9dac97fa40ab6ddb3))
+
 ## [6.1.1](https://github.com/etienne-bechara/crux/compare/v6.1.0...v6.1.1) (2025-05-23)
 
 
