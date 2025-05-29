@@ -143,7 +143,7 @@ export class LogService {
 	 * Given an event to log, extract it details.
 	 * @param args
 	 */
-	private getLogData(...args: LogArguments[]): Record<string, any> {
+	private getLogData(...args: LogArguments[]): Record<string, any> | undefined {
 		let data: Record<string, any> = {};
 
 		for (const arg of args) {
@@ -156,7 +156,7 @@ export class LogService {
 			}
 		}
 
-		return Object.keys(data).length > 0 ? this.sanitize(data) : {};
+		return Object.keys(data).length > 0 ? this.sanitize(data) : undefined;
 	}
 
 	/**
