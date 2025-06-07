@@ -79,6 +79,48 @@ describe('PromiseService', () => {
 		});
 	});
 
+	describe('resolveInBatches', () => {
+		it('should respect batch size', async () => {
+			const length = 100;
+			const size = 10;
+			const data = Array.from({ length }, (_, i) => i);
+			let count = 0;
+
+			await promiseService.resolveInBatches({
+				data,
+				size,
+				limit: length,
+				promise: async (d) => {
+					count++;
+					return d;
+				},
+			});
+
+			expect(count).toBe(length / size);
+		});
+
+		it('should keep data sorting', async () => {
+			const length = 100;
+			const size = 10;
+			const data = Array.from({ length }, (_, i) => i);
+
+			data.reverse();
+
+			const result = await promiseService.resolveInBatches({
+				data,
+				size,
+				limit: length,
+				promise: async (d) => {
+					await setTimeout(d[0] * 10);
+					return d;
+				},
+			});
+
+			expect(result[0]).toBe(data[0]);
+			expect(result[length - 1]).toBe(data[length - 1]);
+		});
+	});
+
 	describe('resolveDeduplicated', () => {
 		it('should not duplicate underlying promise execution', async () => {
 			const dedupKey = randomUUID();

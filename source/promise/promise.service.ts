@@ -7,6 +7,7 @@ import { CacheService } from '../cache/cache.service';
 import { LogService } from '../log/log.service';
 import {
 	PromiseResolveDedupedParams,
+	PromiseResolveInBatchesParams,
 	PromiseResolveLimitedParams,
 	PromiseResolveOrTimeoutParams,
 	PromiseRetryParams,
@@ -75,6 +76,31 @@ export class PromiseService {
 
 		this.logService.debug(`Promises resolved successfully with ${limit} concurrency limit`);
 		return allResolved;
+	}
+
+	/**
+	 * Runs underlying operation in multiple batches,
+	 * controlling size and concurrency.
+	 * @param params
+	 */
+	public async resolveInBatches<I, O>(params: PromiseResolveInBatchesParams<I, O>): Promise<O[]> {
+		const { data, promise, size, limit } = params;
+		const batches: I[][] = [];
+
+		this.logService.debug(`Resolving promises in ${Math.ceil(data.length / size)} batches`);
+
+		for (let i = 0; i < data.length; i += size) {
+			batches.push(data.slice(i, i + size));
+		}
+
+		const result = await this.resolveLimited({
+			data: batches,
+			promise: (d) => promise(d),
+			limit,
+		});
+
+		this.logService.debug(`Promises resolved successfully in ${Math.ceil(data.length / size)} batches`);
+		return result.flat();
 	}
 
 	/**

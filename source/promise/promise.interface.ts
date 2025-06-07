@@ -8,10 +8,21 @@ export interface PromiseResolveOrTimeoutParams<T> {
 }
 
 export interface PromiseResolveLimitedParams<I, O> {
-	/** Array of underlying operation input parameters. */
+	/** Data array input. */
 	data: I[];
 	/** Underlying operation to run, receiving data item as input parameter. */
 	promise: (d: I) => Promise<O>;
+	/** Maximum concurrency. */
+	limit: number;
+}
+
+export interface PromiseResolveInBatchesParams<I, O> {
+	/** Data array input. */
+	data: I[];
+	/** Underlying operation to run, receiving data batches. */
+	promise: (d: I[]) => Promise<O[]>;
+	/** Batch size. */
+	size: number;
 	/** Maximum concurrency. */
 	limit: number;
 }
