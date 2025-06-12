@@ -55,8 +55,6 @@ export interface AppOptions {
 	hostname: string;
 	/** Application prefix to apply to all endpoints. */
 	globalPrefix?: string;
-	/** Application static assets path relative to current work directory. Default: `assets`. */
-	assetsPrefix: string;
 	/** Application request timeout in milliseconds. Default: 60s. */
 	timeout: number;
 	/** NestJS list of imports. */
