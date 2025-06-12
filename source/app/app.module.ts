@@ -141,9 +141,10 @@ export class AppModule {
 	 * - Add an on request hook which runs prior to all interceptors
 	 * - Set the global path prefix if any
 	 * - Enable cors if configured
+	 * - Maps a local directory to serve static assets.
 	 */
 	private static async configureAdapter(): Promise<void> {
-		const { fastify, globalPrefix, cors } = AppModule.options;
+		const { fastify, globalPrefix, assetsPrefix, cors } = AppModule.options;
 		const entryModule = AppModule.buildEntryModule();
 		const httpAdapter = new FastifyAdapter(fastify);
 
@@ -163,6 +164,11 @@ export class AppModule {
 		}
 
 		AppModule.instance.enableCors(cors);
+
+		httpAdapter.useStaticAssets({
+			root: `${process.cwd()}/${assetsPrefix}`,
+			prefix: `/${assetsPrefix}/`,
+		});
 	}
 
 	/**
