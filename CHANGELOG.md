@@ -1,3 +1,10 @@
+## [6.2.4](https://github.com/etienne-bechara/crux/compare/v6.2.3...v6.2.4) (2025-06-12)
+
+
+### Bug Fixes
+
+* **app:** remove serving static assets ([5500654](https://github.com/etienne-bechara/crux/commit/550065464a829e27d1bd1a12ffc1f2bb441c52d8))
+
 ## [6.2.3](https://github.com/etienne-bechara/crux/compare/v6.2.2...v6.2.3) (2025-06-12)
 
 
