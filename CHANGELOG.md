@@ -1,3 +1,10 @@
+## [6.2.1](https://github.com/etienne-bechara/crux/compare/v6.2.0...v6.2.1) (2025-06-12)
+
+
+### Bug Fixes
+
+* **app:** remove asset serving support ([6eaf3db](https://github.com/etienne-bechara/crux/commit/6eaf3dbb18f078f67a55728df0cf2d6b047c1d75))
+
 # [6.2.0](https://github.com/etienne-bechara/crux/compare/v6.1.2...v6.2.0) (2025-06-07)
 
 
