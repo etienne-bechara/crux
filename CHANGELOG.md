@@ -1,3 +1,15 @@
+## [6.2.3](https://github.com/etienne-bechara/crux/compare/v6.2.2...v6.2.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* **package:** remove unnecessary fastify static ([3104bef](https://github.com/etienne-bechara/crux/commit/3104bef19f9e389a76db585a958a2c5a800a51a6))
+
+
+### Reverts
+
+* Revert "fix(app): remove asset serving support" ([4409546](https://github.com/etienne-bechara/crux/commit/440954693b23ba8f98f52342665fae22b27ce0b5))
+
 ## [6.2.2](https://github.com/etienne-bechara/crux/compare/v6.2.1...v6.2.2) (2025-06-12)
 
 
