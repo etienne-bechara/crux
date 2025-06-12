@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/etienne-bechara/crux/compare/v6.1.2...v6.2.0) (2025-06-07)
+
+
+### Features
+
+* **promise:** add resolve in batches support ([bd36869](https://github.com/etienne-bechara/crux/commit/bd368699dc973d466cd37c752f45c9da7f046424))
+
 ## [6.1.2](https://github.com/etienne-bechara/crux/compare/v6.1.1...v6.1.2) (2025-05-29)
 
 
