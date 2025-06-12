@@ -33,7 +33,6 @@ export const FASTIFY_DEFAULT_OPTIONS: Record<string, any> = {
 export const APP_DEFAULT_OPTIONS: AppOptions = {
 	name: 'unknown',
 	instance: crypto.randomBytes(8).toString('hex'),
-	assetsPrefix: 'assets',
 	port: 8080,
 	hostname: '0.0.0.0',
 	timeout: 60_000,
