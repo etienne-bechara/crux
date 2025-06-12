@@ -35,8 +35,6 @@ export class DocModule {
 
 		const memoryService: MemoryService = instance.get(MemoryService);
 		memoryService.set(AppMemoryKey.OPEN_API_SPECIFICATION, document);
-
-		SwaggerModule.setup('openapi', instance, document, { useGlobalPrefix: true });
 	}
 
 	/**
