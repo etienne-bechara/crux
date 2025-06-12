@@ -1,3 +1,10 @@
+## [6.2.2](https://github.com/etienne-bechara/crux/compare/v6.2.1...v6.2.2) (2025-06-12)
+
+
+### Bug Fixes
+
+* **doc:** remove swagger setup since ui and spec are manually handled ([8ca452f](https://github.com/etienne-bechara/crux/commit/8ca452ffb1fe135c27ab292dd2704f3d24eb03f8))
+
 ## [6.2.1](https://github.com/etienne-bechara/crux/compare/v6.2.0...v6.2.1) (2025-06-12)
 
 
