@@ -1,3 +1,11 @@
+## [6.3.1](https://github.com/etienne-bechara/crux/compare/v6.3.0...v6.3.1) (2025-07-04)
+
+
+### Bug Fixes
+
+* **app:** add missing await to register promise ([412fbad](https://github.com/etienne-bechara/crux/commit/412fbadc2b7d0ea40581dbae56a1f57b2b1949de))
+* **random:** add doc example for multipart form-data ([34cc086](https://github.com/etienne-bechara/crux/commit/34cc0868d6bfaa767b6c11867e4d05cdde98c22b))
+
 # [6.3.0](https://github.com/etienne-bechara/crux/compare/v6.2.4...v6.3.0) (2025-07-04)
 
 
