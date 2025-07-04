@@ -2,8 +2,9 @@ import { setTimeout } from 'node:timers/promises';
 import { MikroORM } from '@mikro-orm/core';
 import { MySqlDriver } from '@mikro-orm/mysql';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Address } from '../../test/address/address.entity';
 import { AddressState } from '../../test/address/address.enum';
 import { AddressRepository } from '../../test/address/address.repository';
@@ -37,7 +38,7 @@ export const OrmRepositorySpec = ({
 	describe(`OrmRepository - ${type}`, () => {
 		ContextStorage.enterWith(new Map());
 
-		let app: INestApplication;
+		let app: NestFastifyApplication;
 		let schemaService: SchemaService;
 		let addressRepository: AddressRepository;
 		let orderRepository: OrderRepository;

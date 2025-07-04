@@ -110,6 +110,30 @@ export function MutuallyExclusive(group: string, validationOptions?: ValidationO
 	};
 }
 
+/**
+ * Checks if a given value is a buffer.
+ * @param group
+ * @param validationOptions
+ */
+export function IsBuffer(validationOptions?: ValidationOptions): PropertyDecorator {
+	return (object: any, propertyName: string | symbol): any => {
+		registerDecorator({
+			name: 'isBuffer',
+			target: object.constructor,
+			propertyName: propertyName as string,
+			options: validationOptions,
+			validator: {
+				validate(value: any) {
+					return value?.length > 0 && Buffer.isBuffer(value);
+				},
+				defaultMessage() {
+					return `${propertyName as string} must be a buffer`;
+				},
+			},
+		});
+	};
+}
+
 // --- Common validation decorators
 
 /**

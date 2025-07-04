@@ -1,7 +1,8 @@
 import { setTimeout } from 'node:timers/promises';
-import { Controller, Get, HttpStatus, INestApplication, Module, Patch } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Module, Patch } from '@nestjs/common';
 import supertest from 'supertest';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from '../app/app.module';
 import { Cache } from './cache.decorator';
 
@@ -40,7 +41,7 @@ class CacheTestController {
 class CacheTestModule {}
 
 describe('CacheService', () => {
-	let app: INestApplication;
+	let app: NestFastifyApplication;
 	let httpServer: any;
 
 	beforeAll(async () => {

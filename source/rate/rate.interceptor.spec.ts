@@ -1,6 +1,7 @@
-import { Controller, Get, HttpStatus, INestApplication, Module } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Module } from '@nestjs/common';
 import supertest from 'supertest';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from '../app/app.module';
 import { RateLimit } from './rate.decorator';
 
@@ -24,7 +25,7 @@ class RateTestController {
 class RateTestModule {}
 
 describe('RateInterceptor', () => {
-	let app: INestApplication;
+	let app: NestFastifyApplication;
 	let httpServer: any;
 
 	beforeAll(async () => {

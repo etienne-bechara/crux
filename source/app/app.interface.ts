@@ -1,16 +1,8 @@
 import http from 'node:http';
-import {
-	Abstract,
-	DynamicModule,
-	ForwardReference,
-	HttpException,
-	HttpStatus,
-	INestApplication,
-	Provider,
-	Type,
-} from '@nestjs/common';
+import { Abstract, DynamicModule, ForwardReference, HttpException, HttpStatus, Provider, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { CacheOptions } from '../cache/cache.interface';
 import { ConsoleOptions } from '../console/console.interface';
 import { DocOptions } from '../doc/doc.interface';
@@ -24,7 +16,7 @@ import { ValidateOptions } from '../validate/validate.interface';
 
 export interface AppOptions {
 	/** Provide an already built instance to skip `.compile()` step. */
-	app?: INestApplication;
+	app?: NestFastifyApplication;
 	/** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
 	envPath?: string;
 	/** Disables all custom implementations (which can also be individually disabled). */

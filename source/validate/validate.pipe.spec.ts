@@ -4,7 +4,6 @@ import {
 	Controller,
 	ExecutionContext,
 	HttpStatus,
-	INestApplication,
 	Injectable,
 	Module,
 	NestInterceptor,
@@ -16,6 +15,7 @@ import {
 import { Observable } from 'rxjs';
 import supertest from 'supertest';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from '../app/app.module';
 import { ContextService } from '../context/context.service';
 import { ToNumber } from '../transform/transform.decorator';
@@ -97,7 +97,7 @@ class ValidatorController {
 class ValidatorModule {}
 
 describe('AppValidator', () => {
-	let app: INestApplication;
+	let app: NestFastifyApplication;
 	let httpServer: any;
 
 	beforeAll(async () => {

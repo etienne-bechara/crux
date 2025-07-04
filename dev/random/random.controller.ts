@@ -1,4 +1,5 @@
-import { BadRequestException, Controller, Get, Param } from '../../source/override';
+import { BadRequestException, Body, Controller, Get, Param, Post } from '../../source/override';
+import { RandomFileCreateDto } from './random.dto.in';
 import { RandomService } from './random.service';
 
 @Controller('random')
@@ -19,5 +20,10 @@ export class RandomController {
 		}
 
 		return this.randomService.doRandomSplit(numericAmount);
+	}
+
+	@Post('file')
+	public postRandomFile(@Body() body: RandomFileCreateDto): Buffer {
+		return body.file;
 	}
 }

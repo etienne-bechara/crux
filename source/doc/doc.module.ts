@@ -1,6 +1,7 @@
-import { INestApplication, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { OperationObject, PathItemObject, SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { AppMemoryKey } from '../app/app.enum';
 import { AppOptions } from '../app/app.interface';
@@ -21,7 +22,7 @@ export class DocModule {
 	 * @param instance
 	 * @param options
 	 */
-	public static configureDocumentation(instance: INestApplication, options: AppOptions): void {
+	public static configureDocumentation(instance: NestFastifyApplication, options: AppOptions): void {
 		const { docs } = options;
 		const { tagGroups } = docs;
 
@@ -82,7 +83,7 @@ export class DocModule {
 	 * @param instance
 	 * @param builder
 	 */
-	private static buildOpenApiObject(instance: INestApplication, builder: DocumentBuilder): DocOpenApi {
+	private static buildOpenApiObject(instance: NestFastifyApplication, builder: DocumentBuilder): DocOpenApi {
 		return SwaggerModule.createDocument(instance, builder.build(), {
 			ignoreGlobalPrefix: true,
 			operationIdFactory: (controllerKey: string, methodKey: string) => {

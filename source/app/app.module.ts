@@ -1,12 +1,13 @@
 import 'source-map-support/register';
 import 'reflect-metadata';
 
-import { DynamicModule, Global, INestApplication, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, NestFactory } from '@nestjs/core';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ROOT_CONTEXT, context, propagation, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 
+import fastifyMultipart from '@fastify/multipart';
 import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { ConsoleModule } from '../console/console.module';
@@ -38,13 +39,13 @@ import { AppService } from './app.service';
 @Global()
 @Module({})
 export class AppModule {
-	private static instance: INestApplication;
+	private static instance: NestFastifyApplication;
 	private static options: AppOptions;
 
 	/**
 	 * Returns application instance.
 	 */
-	public static getInstance(): INestApplication {
+	public static getInstance(): NestFastifyApplication {
 		if (!AppModule.instance) {
 			throw new Error('application instance not configured');
 		}
@@ -66,7 +67,7 @@ export class AppModule {
 	 * Skips the compile step if a pre-compiled `instance` is provided.
 	 * @param options
 	 */
-	public static async boot(options: AppModuleOptions = {}): Promise<INestApplication> {
+	public static async boot(options: AppModuleOptions = {}): Promise<NestFastifyApplication> {
 		const { app } = options;
 
 		if (app) {
@@ -84,7 +85,7 @@ export class AppModule {
 	 * its reference without starting the adapter.
 	 * @param options
 	 */
-	public static async compile(options: AppModuleOptions = {}): Promise<INestApplication> {
+	public static async compile(options: AppModuleOptions = {}): Promise<NestFastifyApplication> {
 		AppModule.configureOptions(options);
 		await AppModule.configureAdapter();
 
@@ -141,6 +142,7 @@ export class AppModule {
 	 * - Add an on request hook which runs prior to all interceptors
 	 * - Set the global path prefix if any
 	 * - Enable cors if configured
+	 * - Enable multipart form-data support
 	 */
 	private static async configureAdapter(): Promise<void> {
 		const { fastify, globalPrefix, cors } = AppModule.options;
@@ -153,7 +155,7 @@ export class AppModule {
 
 		const fastifyInstance = AppModule.instance.getHttpAdapter().getInstance();
 
-		fastifyInstance.addHook('onRequest', (req: AppRequest, res: AppResponse, next: () => void) => {
+		fastifyInstance.addHook('onRequest', (req: any, res: any, next: () => void) => {
 			AppModule.sanitizeRequestHeaders(req);
 			return AppModule.createRequestContext(req, res, next);
 		});
@@ -162,7 +164,11 @@ export class AppModule {
 			AppModule.instance.setGlobalPrefix(globalPrefix);
 		}
 
-		AppModule.instance.enableCors(cors);
+		AppModule.instance.enableCors(cors as any);
+
+		AppModule.instance.register(fastifyMultipart, {
+			attachFieldsToBody: 'keyValues',
+		});
 	}
 
 	/**
