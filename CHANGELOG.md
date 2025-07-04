@@ -1,3 +1,15 @@
+# [6.3.0](https://github.com/etienne-bechara/crux/compare/v6.2.4...v6.3.0) (2025-07-04)
+
+
+### Bug Fixes
+
+* **http:** remove unused service ([8a669ac](https://github.com/etienne-bechara/crux/commit/8a669ac2ab4dc53bf58994adbd22fb5160725cc1))
+
+
+### Features
+
+* **app:** add multipart form data support ([1b149ed](https://github.com/etienne-bechara/crux/commit/1b149ed6bb347662126bee448368e33527983561))
+
 ## [6.2.4](https://github.com/etienne-bechara/crux/compare/v6.2.3...v6.2.4) (2025-06-12)
 
 
