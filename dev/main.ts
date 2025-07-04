@@ -45,6 +45,7 @@ void AppModule.boot({
 		tagGroups: [
 			{ name: 'User Management', tags: ['User'] },
 			{ name: 'ZIP Code', tags: ['ZIP'] },
+			{ name: 'Random', tags: ['Random'] },
 		],
 	},
 	imports: [
