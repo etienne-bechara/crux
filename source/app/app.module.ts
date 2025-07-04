@@ -166,7 +166,7 @@ export class AppModule {
 
 		AppModule.instance.enableCors(cors as any);
 
-		AppModule.instance.register(fastifyMultipart, {
+		await AppModule.instance.register(fastifyMultipart, {
 			attachFieldsToBody: 'keyValues',
 		});
 	}
