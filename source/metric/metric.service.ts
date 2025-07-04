@@ -1,5 +1,5 @@
 import { setTimeout } from 'node:timers/promises';
-import { Inject, Injectable, InternalServerErrorException, forwardRef } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	Counter,
 	CounterConfiguration,
@@ -19,7 +19,6 @@ import { AppConfig } from '../app/app.config';
 import { AppMetric } from '../app/app.enum';
 import { HttpService } from '../http/http.service';
 import { LogService } from '../log/log.service';
-import { PromiseService } from '../promise/promise.service';
 import { MetricConfig } from './metric.config';
 import { MetricDataDto } from './metric.dto.out';
 import { MetricDataType, MetricHttpStrategy } from './metric.enum';
@@ -34,8 +33,6 @@ export class MetricService {
 
 	public constructor(
 		private readonly appConfig: AppConfig,
-		@Inject(forwardRef(() => PromiseService))
-		private readonly promiseService: PromiseService,
 		private readonly logService: LogService,
 		private readonly metricConfig: MetricConfig,
 	) {
@@ -110,7 +107,6 @@ export class MetricService {
 				password: this.metricConfig.METRIC_PASSWORD ?? password,
 			},
 			this.appConfig,
-			this.promiseService,
 		);
 
 		while (true) {

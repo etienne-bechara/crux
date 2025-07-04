@@ -20,7 +20,6 @@ import { ContextStorageKey } from '../context/context.enum';
 import { ContextStorage } from '../context/context.storage';
 import { LogService } from '../log/log.service';
 import { MetricService } from '../metric/metric.service';
-import { PromiseService } from '../promise/promise.service';
 import { TraceService } from '../trace/trace.service';
 import { HttpInjectionToken, HttpMethod, HttpTimeoutMessage } from './http.enum';
 import { HttpFetchError } from './http.error';
@@ -48,8 +47,6 @@ export class HttpService {
 		@Inject(HttpInjectionToken.HTTP_MODULE_OPTIONS)
 		private readonly httpModuleOptions: HttpModuleOptions = {},
 		private readonly appConfig: AppConfig,
-		@Inject(forwardRef(() => PromiseService))
-		private readonly promiseService: PromiseService,
 		private readonly logService?: LogService,
 		@Inject(forwardRef(() => MetricService))
 		private readonly metricService?: MetricService,
