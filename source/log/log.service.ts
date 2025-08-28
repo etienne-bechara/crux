@@ -88,6 +88,7 @@ export class LogService {
 	public isHigherOrEqualSeverity(a: LogSeverity, b: LogSeverity): boolean {
 		const severity = [
 			LogSeverity.FATAL,
+			LogSeverity.CRITICAL,
 			LogSeverity.ERROR,
 			LogSeverity.WARNING,
 			LogSeverity.NOTICE,
@@ -288,6 +289,14 @@ export class LogService {
 	 */
 	public fatal(...args: LogArguments[]): void {
 		this.log(LogSeverity.FATAL, ...args);
+	}
+
+	/**
+	 * Logs a CRITICAL event.
+	 * @param args
+	 */
+	public critical(...args: LogArguments[]): void {
+		this.log(LogSeverity.CRITICAL, ...args);
 	}
 
 	/**

@@ -9,6 +9,7 @@ export enum LogTransportName {
 
 export enum LogSeverity {
 	FATAL = 'fatal',
+	CRITICAL = 'critical',
 	ERROR = 'error',
 	WARNING = 'warning',
 	NOTICE = 'notice',

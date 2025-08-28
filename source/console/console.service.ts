@@ -52,7 +52,7 @@ export class ConsoleService implements LogTransport {
 		const isError = this.logService.isHigherOrEqualSeverity(severity, LogSeverity.ERROR);
 
 		if (isPretty) {
-			const strSeverity = severity.toUpperCase().padEnd(7, ' ');
+			const strSeverity = severity.toUpperCase().padEnd(8, ' ');
 			const strRequestId = requestId?.slice(0, 6) || '-'.repeat(6);
 			const strData = JSON.stringify(data, null, indentation);
 
@@ -64,10 +64,15 @@ export class ConsoleService implements LogTransport {
 			const reset = LogStyle.RESET;
 			const separator = `${gray} | ${reset}`;
 
-			let severityColor: LogStyle;
+			let severityColor = LogStyle.FG_BRIGHT_BLACK;
 
 			switch (severity) {
 				case LogSeverity.FATAL: {
+					severityColor = LogStyle.FG_MAGENTA;
+					break;
+				}
+
+				case LogSeverity.CRITICAL: {
 					severityColor = LogStyle.FG_MAGENTA;
 					break;
 				}
@@ -94,16 +99,6 @@ export class ConsoleService implements LogTransport {
 
 				case LogSeverity.HTTP: {
 					severityColor = LogStyle.FG_BLUE;
-					break;
-				}
-
-				case LogSeverity.DEBUG: {
-					severityColor = LogStyle.FG_BRIGHT_BLACK;
-					break;
-				}
-
-				case LogSeverity.TRACE: {
-					severityColor = LogStyle.FG_BRIGHT_BLACK;
 					break;
 				}
 			}
