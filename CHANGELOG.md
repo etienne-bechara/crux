@@ -1,3 +1,10 @@
+# [6.4.0](https://github.com/etienne-bechara/crux/compare/v6.3.1...v6.4.0) (2025-08-28)
+
+
+### Features
+
+* **log:** add critical level ([d79d793](https://github.com/etienne-bechara/crux/commit/d79d7934be9999570bf3179ca1910a8d549807a0))
+
 ## [6.3.1](https://github.com/etienne-bechara/crux/compare/v6.3.0...v6.3.1) (2025-07-04)
 
 
