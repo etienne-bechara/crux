@@ -160,27 +160,26 @@ export class MetricService {
 
 		switch (type) {
 			case MetricDataType.COUNTER: {
-				metric = new Counter({ name, ...params } as CounterConfiguration<any>);
+				metric = new Counter({ name, ...params, registers: [this.register] } as CounterConfiguration<any>);
 				break;
 			}
 
 			case MetricDataType.GAUGE: {
-				metric = new Gauge({ name, ...params } as GaugeConfiguration<any>);
+				metric = new Gauge({ name, ...params, registers: [this.register] } as GaugeConfiguration<any>);
 				break;
 			}
 
 			case MetricDataType.HISTOGRAM: {
-				metric = new Histogram({ name, ...params } as HistogramConfiguration<any>);
+				metric = new Histogram({ name, ...params, registers: [this.register] } as HistogramConfiguration<any>);
 				break;
 			}
 
 			case MetricDataType.SUMMARY: {
-				metric = new Summary({ name, ...params } as SummaryConfiguration<any>);
+				metric = new Summary({ name, ...params, registers: [this.register] } as SummaryConfiguration<any>);
 				break;
 			}
 		}
 
-		this.register.registerMetric(metric);
 		this.metrics.set(name, metric);
 
 		return metric;

@@ -7,6 +7,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { ROOT_CONTEXT, context, propagation, trace } from '@opentelemetry/api';
 import fg from 'fast-glob';
 
+import { setTimeout } from 'node:timers/promises';
 import fastifyMultipart from '@fastify/multipart';
 import { CacheDisabledModule, CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -39,6 +40,7 @@ import { AppService } from './app.service';
 @Global()
 @Module({})
 export class AppModule {
+	private static retries = 0;
 	private static instance: NestFastifyApplication;
 	private static options: AppOptions;
 
@@ -70,13 +72,29 @@ export class AppModule {
 	public static async boot(options: AppModuleOptions = {}): Promise<NestFastifyApplication> {
 		const { app } = options;
 
-		if (app) {
-			AppModule.instance = app;
-		} else {
-			await AppModule.compile(options);
+		try {
+			if (app) {
+				AppModule.instance = app;
+			} else {
+				await AppModule.compile(options);
+			}
+
+			await AppModule.listen();
+		} catch (e) {
+			const { retryLimit, retryDelay } = AppModule.options;
+
+			if (AppModule.retries >= retryLimit) {
+				process.exit(1);
+			}
+
+			AppModule.retries += 1;
+
+			const delay = retryDelay(AppModule.retries);
+			await setTimeout(delay);
+
+			return AppModule.boot(options);
 		}
 
-		await AppModule.listen();
 		return AppModule.instance;
 	}
 
@@ -151,6 +169,7 @@ export class AppModule {
 
 		AppModule.instance = await NestFactory.create(entryModule, httpAdapter, {
 			logger: ['error', 'warn'],
+			abortOnError: false,
 		});
 
 		const fastifyInstance = AppModule.instance.getHttpAdapter().getInstance();

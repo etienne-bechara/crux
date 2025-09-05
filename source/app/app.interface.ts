@@ -17,6 +17,10 @@ import { ValidateOptions } from '../validate/validate.interface';
 export interface AppOptions {
 	/** Provide an already built instance to skip `.compile()` step. */
 	app?: NestFastifyApplication;
+	/** Max amount of boot retries. Default: 5. */
+	retryLimit: number;
+	/** Retry delay in milliseconds based on number of attempts. Default: (a) => a > 4 ? 16_000 : 2 ** (a - 1) * 1000. */
+	retryDelay: (attempts: number) => number;
 	/** Environment variables file path. Default: Scans for `.env` on current and parent dirs. */
 	envPath?: string;
 	/** Disables all custom implementations (which can also be individually disabled). */

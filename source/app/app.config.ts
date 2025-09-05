@@ -31,6 +31,10 @@ export const FASTIFY_DEFAULT_OPTIONS: Record<string, any> = {
 };
 
 export const APP_DEFAULT_OPTIONS: AppOptions = {
+	retryLimit: 5,
+	retryDelay: (attempts: number): number => {
+		return attempts > 4 ? 16_000 : 2 ** (attempts - 1) * 1000;
+	},
 	name: 'unknown',
 	instance: crypto.randomBytes(8).toString('hex'),
 	port: 8080,
