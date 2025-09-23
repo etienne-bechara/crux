@@ -1,3 +1,10 @@
+# [6.6.0](https://github.com/etienne-bechara/crux/compare/v6.5.0...v6.6.0) (2025-09-23)
+
+
+### Features
+
+* **rate:** make default rate limit key be ip-method-path ([eb41d0e](https://github.com/etienne-bechara/crux/commit/eb41d0ed02dd2cb423c33b518d7c6825820b0809))
+
 # [6.5.0](https://github.com/etienne-bechara/crux/compare/v6.4.0...v6.5.0) (2025-09-05)
 
 
