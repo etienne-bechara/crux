@@ -22,35 +22,39 @@ export class RateInterceptor implements NestInterceptor {
 	 */
 	public async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
 		const options: RateLimitOptions = this.reflector.get(AppMetadataKey.RATE_LIMIT_OPTIONS, context.getHandler());
-		const { limit: optionsLimit, key: optionsKey, window: optionsWindow } = options || {};
+		const provider = this.cacheService.getProvider();
 
-		const limit = typeof optionsLimit === 'function' ? optionsLimit(this.contextService) : optionsLimit;
+		const { limit: optLimit, key: optKey, window: optWindow } = options || {};
 
-		const key =
-			typeof optionsKey === 'function'
-				? optionsKey(this.contextService)
-				: optionsKey || this.contextService.getRequestIp();
+		if (!optLimit) {
+			return next.handle();
+		}
 
-		const window =
-			typeof optionsWindow === 'function' ? optionsWindow(this.contextService) : optionsWindow || 60 * 1000;
+		const ip = this.contextService.getRequestIp();
+		const method = this.contextService.getRequestMethod();
+		const path = this.contextService.getRequestPath();
 
-		if (limit) {
-			const rateKey = `rate:${key}`;
-			const provider = this.cacheService.getProvider();
-			const current = await provider.incrbyfloat(rateKey, 1, { ttl: window });
+		const baseKey = `${ip}:${method}:${path}`;
+		const baseWindow = 60 * 1000;
 
-			if (current > limit) {
-				const ttl = await provider.ttl(rateKey);
+		const limit = typeof optLimit === 'function' ? optLimit(this.contextService) : optLimit;
+		const key = typeof optKey === 'function' ? optKey(this.contextService) : optKey || baseKey;
+		const window = typeof optWindow === 'function' ? optWindow(this.contextService) : optWindow || baseWindow;
 
-				throw new HttpException(
-					{
-						message: 'rate limit exceeded',
-						limit,
-						ttl,
-					},
-					HttpStatus.TOO_MANY_REQUESTS,
-				);
-			}
+		const rateKey = `rate:${key}`;
+		const current = await provider.incrbyfloat(rateKey, 1, { ttl: window });
+
+		if (current > limit) {
+			const ttl = await provider.ttl(rateKey);
+
+			throw new HttpException(
+				{
+					message: 'rate limit exceeded',
+					limit,
+					ttl,
+				},
+				HttpStatus.TOO_MANY_REQUESTS,
+			);
 		}
 
 		return next.handle();
