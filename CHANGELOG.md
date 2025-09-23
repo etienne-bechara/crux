@@ -1,3 +1,10 @@
+# [6.5.0](https://github.com/etienne-bechara/crux/compare/v6.4.0...v6.5.0) (2025-09-05)
+
+
+### Features
+
+* **app:** add boot retry support ([9611255](https://github.com/etienne-bechara/crux/commit/9611255d1f5c36b94c13fb572f408c4d315ca2ee))
+
 # [6.4.0](https://github.com/etienne-bechara/crux/compare/v6.3.1...v6.4.0) (2025-08-28)
 
 
