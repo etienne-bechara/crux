@@ -1,3 +1,10 @@
+## [6.6.1](https://github.com/etienne-bechara/crux/compare/v6.6.0...v6.6.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **orm:** expose entity manager clearing ([a91ed0c](https://github.com/etienne-bechara/crux/commit/a91ed0ca33979f9f1d8baf76b30583c10e635efe))
+
 # [6.6.0](https://github.com/etienne-bechara/crux/compare/v6.5.0...v6.6.0) (2025-09-23)
 
 
