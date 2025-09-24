@@ -36,6 +36,14 @@ export abstract class OrmBaseRepository<Entity extends object> {
 	}
 
 	/**
+	 * Clears the entity manager.
+	 * @param entities
+	 */
+	public clear(): void {
+		this.entityManager.clear();
+	}
+
+	/**
 	 * Creates a query builder instance .
 	 */
 	public createQueryBuilder(): QueryBuilder<Entity> {
