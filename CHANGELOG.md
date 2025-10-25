@@ -1,3 +1,10 @@
+## [6.6.2](https://github.com/etienne-bechara/crux/compare/v6.6.1...v6.6.2) (2025-10-25)
+
+
+### Bug Fixes
+
+* **http:** parse cookies using native getSetCookie ([33df354](https://github.com/etienne-bechara/crux/commit/33df35431eba9bd4747fb9e07726e8324a413fd1))
+
 ## [6.6.1](https://github.com/etienne-bechara/crux/compare/v6.6.0...v6.6.1) (2025-09-24)
 
 
