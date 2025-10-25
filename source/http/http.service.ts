@@ -455,11 +455,8 @@ export class HttpService {
 	 */
 	private parseCookies(response: Response): HttpCookie[] {
 		const { headers } = response;
-		const setCookie = headers.get('set-cookie');
+		const setCookieArray = headers.getSetCookie() || [];
 		const cookies: HttpCookie[] = [];
-		if (!setCookie) return cookies;
-
-		const setCookieArray = setCookie.split(/(?<!expires=\w{3}),/).map((c) => c.trim());
 
 		for (const cookie of setCookieArray) {
 			const name = /^(.+?)=/gi.exec(cookie);
